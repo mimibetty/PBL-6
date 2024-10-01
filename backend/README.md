@@ -14,4 +14,6 @@ uvicorn main:app --reload
 http://127.0.0.1:8000/docs
 
 # Test authentication simple
+```sh
 uvicorn testAuthen:app --reload
+```
