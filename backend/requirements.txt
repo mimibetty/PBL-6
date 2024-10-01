@@ -1,0 +1,6 @@
+passlib
+motor
+requests
+selenium
+python-jose
+PyJWT
