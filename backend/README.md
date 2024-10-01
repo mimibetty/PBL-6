@@ -12,3 +12,6 @@ uvicorn main:app --reload
 
 # Access API Document
 http://127.0.0.1:8000/docs
+
+# Test authentication simple
+uvicorn testAuthen:app --reload
