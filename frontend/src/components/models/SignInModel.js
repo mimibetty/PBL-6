@@ -8,13 +8,23 @@ class SignInModel {
 
   async authenticate() {
     try {
-      const response = await axios.post('http://127.0.0.1:8000/token', {
-        username: this.username,
-        password: this.password,
+      const data = new URLSearchParams();
+      data.append('username', this.username);
+      data.append('password', this.password);
+
+      const response = await axios.post('http://127.0.0.1:8000/login', data, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
       });
-      return { success: true, token: response.data.access_token };
+
+      if (response.data && response.data.access_token) {
+        return { success: true, token: response.data.access_token };
+      } else {
+        return { success: false, message: 'Token not received' };
+      }
     } catch (error) {
-      if (error.response && error.response.status === 401) {
+      if (error.response && error.response.status === 404) {
         return { success: false, message: 'Invalid username or password' };
       } else {
         return { success: false, message: 'An error occurred' };
@@ -24,3 +34,4 @@ class SignInModel {
 }
 
 export default SignInModel;
+

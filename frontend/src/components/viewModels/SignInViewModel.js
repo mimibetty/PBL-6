@@ -10,24 +10,45 @@ class SignInViewModel {
   async validate() {
     const signInModel = new SignInModel(this.username, this.password);
 
-    // Gửi yêu cầu xác thực qua API
-    const result = await signInModel.authenticate();
+    try {
+      // Send API request for authentication
+      const result = await signInModel.authenticate();
 
-    if (!result.success) {
-      return { success: false, message: result.message };
+      // Log the result for debugging purposes
+      console.log('Authentication result:', result);
+
+      // Handle failed authentication
+      if (!result.success) {
+        console.error('Login failed: ', result.message);
+        alert('Login failed: ' + result.message);  // Display error
+        return { success: false, message: result.message };
+      }
+
+      // Handle successful authentication with a token
+      if (result.token) {
+        console.log('Token received:', result.token); // Log token for debugging
+        if (this.rememberMe) {
+          localStorage.setItem('access_token', result.token);
+        } else {
+          sessionStorage.setItem('access_token', result.token);
+        }
+
+        // Display success message
+        alert('Login successful! Token: ' + result.token);
+        return { success: true, token: result.token };
+      } else {
+        // Handle case where the token is missing
+        console.error('Authentication succeeded but token is missing.');
+        alert('Authentication succeeded but token is missing.');
+        return { success: false, message: 'Token not received' };
+      }
+
+    } catch (error) {
+      // Handle any unexpected errors (e.g., network issues, server errors)
+      console.error('An error occurred during authentication:', error);
+      alert('An error occurred: ' + error.message);
+      return { success: false, message: 'An error occurred' };
     }
-
-    // Lưu token nếu đăng nhập thành công (tuỳ thuộc vào yêu cầu của bạn)
-    if (this.rememberMe) {
-      localStorage.setItem('access_token', result.token);
-    } else {
-      sessionStorage.setItem('access_token', result.token);
-    }
-
-    // Hiển thị token trong thông báo (hoặc bất kỳ hành động nào khác)
-    alert('Login successful! Token: ' + result.token);
-    
-    return { success: true, token: result.token };
   }
 }
 
