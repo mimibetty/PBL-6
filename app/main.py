@@ -5,6 +5,15 @@ from blog.routers import blog, user, authentication
 
 app = FastAPI()
 
+# Thêm CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8080"],  # Địa chỉ của ứng dụng Vue
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 models.Base.metadata.create_all(engine)
 
 app.include_router(authentication.router)

@@ -1,7 +1,9 @@
 # PBL-6
 
 SQLite
+
 [main.py](http://main.py/) nằm trong folder app
+Lưu ý, main.py chạy ở trong folder app chứ ko phải folder mặc định
 
 kích hoạt môi trường ảo venv\Scripts\activate
 
