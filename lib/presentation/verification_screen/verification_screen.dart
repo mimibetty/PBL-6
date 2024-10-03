@@ -97,7 +97,7 @@ class VerificationScreen extends GetWidget<VerificationController> {
                                           "#1212121D")))))),
                       CustomButton(
                           onTap: () {
-                            Get.toNamed(AppRoutes.homeScreen);
+                            Get.toNamed(AppRoutes.welcomeScreen);
                           },
                           width: 335,
                           text: "lbl_verify".tr,

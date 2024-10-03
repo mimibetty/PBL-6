@@ -1,3 +1,5 @@
+import 'package:travelappflutter/presentation/home_screen/binding/welcome_binding.dart';
+import 'package:travelappflutter/presentation/home_screen/welcome_screen.dart';
 import 'package:travelappflutter/presentation/splash_screen/splash_screen.dart';
 import 'package:travelappflutter/presentation/splash_screen/binding/splash_binding.dart';
 import 'package:travelappflutter/presentation/onboard_one_screen/onboard_one_screen.dart';
@@ -91,6 +93,8 @@ class AppRoutes {
   static String appNavigationScreen = '/app_navigation_screen';
 
   static String initialRoute = '/initialRoute';
+  
+  static String welcomeScreen = '/welcome_screen';
 
   static List<GetPage> pages = [
     GetPage(
@@ -98,6 +102,13 @@ class AppRoutes {
       page: () => SplashScreen(),
       bindings: [
         SplashBinding(),
+      ],
+    ),
+    GetPage(
+      name: welcomeScreen,
+      page: () => WelcomeScreen(),
+      bindings: [
+        WelcomeBinding(),
       ],
     ),
     GetPage(
@@ -151,7 +162,7 @@ class AppRoutes {
     ),
     GetPage(
       name: homeScreen,
-      page: () => HomeScreen(),
+      page: () => HomeScreen(destinations: [],),
       bindings: [
         HomeBinding(),
       ],

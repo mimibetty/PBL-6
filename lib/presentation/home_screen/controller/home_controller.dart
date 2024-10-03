@@ -3,7 +3,11 @@ import 'package:travelappflutter/presentation/home_screen/models/home_model.dart
 
 class HomeController extends GetxController {
   Rx<HomeModel> homeModelObj = HomeModel().obs;
+   var selectedPage = 0.obs;
 
+  void changePage(int index) {
+    selectedPage.value = index;
+  }
   @override
   void onReady() {
     super.onReady();

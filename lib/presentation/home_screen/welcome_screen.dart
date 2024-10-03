@@ -2,50 +2,62 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
+import 'package:travelappflutter/presentation/home_screen/home_screen.dart';
 import 'package:travelappflutter/presentation/home_screen/models/cities_model.dart';
+import 'package:travelappflutter/presentation/home_screen/models/topic_model.dart';
 import 'package:travelappflutter/presentation/home_screen/place_detail.dart';
+import 'package:travelappflutter/presentation/home_screen/widgets/city.dart';
+import 'package:travelappflutter/presentation/home_screen/widgets/recomendate_city.dart';
+import 'package:travelappflutter/presentation/home_screen/widgets/topic.dart';
 import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
 import 'package:travelappflutter/routes/app_routes.dart';
-import './widgets/recomendate.dart';
 import 'package:iconsax/iconsax.dart';
-import './widgets/popular_place.dart';
 import './models/travel_model.dart'; // add this package first for icon
 
-class HomeScreen extends StatefulWidget {
-  final List<TravelDestination> destinations;
-
-  const HomeScreen({super.key, required this.destinations});
+class WelcomeScreen extends StatefulWidget {
+  const WelcomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _TravelHomeScreenState();
+  State<WelcomeScreen> createState() => _TravelWelcomeScreenState();
 }
 
-class _TravelHomeScreenState extends State<HomeScreen> {
+class _TravelWelcomeScreenState extends State<WelcomeScreen> {
+  int selectedPage = 0;
+  List<Topic> topics = TopicModel.getTopics(); // Get topics list
+  List<TravelDestination> daNangDestinations = myDestination
+      .where((element) => element.location == "Da Nang , Viet Nam")
+      .toList();
+  List<TravelDestination> popular =
+      myDestination.where((element) => element.category == "popular").toList();
+
+  List<City> popularCities =
+      myCities.where((element) => element.rating >= 3.0).toList();
+
+  List<TravelDestination> filterDestinationsByTopic(String topicTag) {
+    return myDestination.where((destination) {
+      return destination.tag.contains(topicTag);
+    }).toList();
+  }
+
+  void navigateToProfile() {
+    Get.toNamed(AppRoutes.searchScreen);
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Lọc các địa điểm theo hai loại "popular" và "recommend"
-    List<TravelDestination> popularDestinations = widget.destinations
-        .where((destination) => destination.category == 'popular')
-        .toList();
-    List<TravelDestination> recommendDestinations = widget.destinations
-        .where((destination) => destination.category == 'recomend')
-        .toList();
-    print("Recommend Destinations: ${recommendDestinations.length}");
-
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: headerParts(),
       body: Column(
         children: [
           const SizedBox(height: 20),
-          // Section for Popular places
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Popular place",
+                  "Awesome topic",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
@@ -58,7 +70,7 @@ class _TravelHomeScreenState extends State<HomeScreen> {
                     fontSize: 14,
                     color: blueTextColor,
                   ),
-                ),
+                )
               ],
             ),
           ),
@@ -68,37 +80,49 @@ class _TravelHomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.only(bottom: 40),
             child: Row(
               children: List.generate(
-                popularDestinations
-                    .length, // Sử dụng danh sách đã lọc cho popular
+                topics.length, // Change from popular.length to topics.length
                 (index) => Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: GestureDetector(
                     onTap: () {
+                      // In ra console khi người dùng nhấn vào một topic
+                      print("User clicked on topic: ${topics[index].name}");
+
+                      // Lọc danh sách địa điểm dựa trên tag của topic
+                      List<TravelDestination> filteredDestinations =
+                          filterDestinationsByTopic(topics[index].name);
+
+                      // In ra danh sách các địa điểm đã lọc
+                      print(
+                          "Filtered destinations for ${topics[index].name}:");
+                      filteredDestinations.forEach((destination) {
+                        print(
+                            "Destination: ${destination.name}, Location: ${destination.location}");
+                      });
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => PlaceDetailScreen(
-                            destination: popularDestinations[index],
-                          ),
+                          builder: (_) =>
+                              HomeScreen(destinations: filteredDestinations),
                         ),
                       );
                     },
-                    child: PopularPlace(
-                      destination: popularDestinations[index],
+                    child: TopicWidget(
+                      topics[index], // Pass topic object to TopicWidget
                     ),
                   ),
                 ),
               ),
             ),
           ),
-          // Section for Recommendations
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Recommendation for you",
+                  "Popular Cities",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
@@ -111,7 +135,7 @@ class _TravelHomeScreenState extends State<HomeScreen> {
                     fontSize: 14,
                     color: blueTextColor,
                   ),
-                ),
+                )
               ],
             ),
           ),
@@ -121,8 +145,7 @@ class _TravelHomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Column(
                 children: List.generate(
-                  recommendDestinations
-                      .length, // Sử dụng danh sách đã lọc cho recommend
+                  popularCities.length, // Change myCities.length to popularCities.length
                   (index) => Padding(
                     padding: const EdgeInsets.only(bottom: 15),
                     child: GestureDetector(
@@ -130,14 +153,13 @@ class _TravelHomeScreenState extends State<HomeScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => PlaceDetailScreen(
-                              destination: recommendDestinations[index],
-                            ),
+                            builder: (_) =>
+                                HomeScreen(destinations: daNangDestinations),
                           ),
                         );
                       },
-                      child: Recomendate(
-                        destination: recommendDestinations[index],
+                      child: RecomendateCity(
+                        myCities: popularCities[index], // Change myCities[index] to popularCities[index]
                       ),
                     ),
                   ),
@@ -147,7 +169,8 @@ class _TravelHomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavBar(controller: HomeController()),
+      bottomNavigationBar: CustomBottomNavBar(
+          controller: HomeController()), // Thay thế bằng CustomBottomNavBar
     );
   }
 
@@ -156,37 +179,28 @@ class _TravelHomeScreenState extends State<HomeScreen> {
       elevation: 0,
       backgroundColor: Colors.white,
       leadingWidth: 180,
-      leading: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.black),
-              onPressed: () {
-                Navigator.pop(context); // Quay lại trang trước đó
-              },
-            ),
-            const SizedBox(width: 5),
-            const Icon(
-              Iconsax.location,
+      leading: const Row(
+        children: [
+          SizedBox(width: 15),
+          Icon(
+            Iconsax.location,
+            color: Colors.black,
+          ),
+          SizedBox(width: 5),
+          Text(
+            "Da Nang",
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 18,
               color: Colors.black,
             ),
-            const SizedBox(width: 5),
-            const Text(
-              "Da Nang",
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 18,
-                color: Colors.black,
-              ),
-            ),
-            const Icon(
-              Icons.keyboard_arrow_down,
-              size: 30,
-              color: Colors.black26,
-            ),
-          ],
-        ),
+          ),
+          Icon(
+            Icons.keyboard_arrow_down,
+            size: 30,
+            color: Colors.black26,
+          ),
+        ],
       ),
       actions: [
         Container(

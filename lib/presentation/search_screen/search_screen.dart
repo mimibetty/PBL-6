@@ -1,5 +1,4 @@
 import '../search_screen/widgets/search_item_widget.dart';
-import 'controller/search_controller.dart';
 import 'models/search_item_model.dart';
 import 'package:flutter/material.dart';
 import 'controller/search_controller.dart' as local; // Thêm prefix
