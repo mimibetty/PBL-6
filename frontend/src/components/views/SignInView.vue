@@ -65,23 +65,33 @@
   
   <style scoped>
   html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%; /* Đảm bảo toàn bộ body chiếm hết chiều rộng */
+  overflow: hidden; /* Ngăn cuộn ngang */
+  box-sizing: border-box;
   }
-  
-  .login-container {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-image: url('../pictures/background.jpg');
-    background-size: cover;
-    background-position: center;
-    height: 100vh; /* Full viewport height */
-    width: 100vw; /* Full viewport width */
+  *, *::before, *::after {
+  box-sizing: inherit; /* Đảm bảo các phần tử không vượt kích thước khung */
 }
+  
+.login-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-image: url('../pictures/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  height: 100vh; /* Đảm bảo container phủ toàn màn hình */
+  width: 100vw; /* Đảm bảo chiều rộng container không tràn */
+  max-width: 100vw;
+  overflow: hidden; /* Ngăn cuộn bên trong container */
+}
+
 
 .login-container::before {
     content: '';
@@ -105,20 +115,23 @@
   }
   
   form {
-    display: flex;
-    flex-direction: column;
-    width: 300px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 300px; /* Giới hạn độ rộng tối đa của form */
+  padding: 0 20px; /* Thêm padding cho form trên màn hình nhỏ */
 }
 
 input, 
-textarea { /* Áp dụng cho tất cả các ô nhập và textarea */
-    background-color: #f5f9e9; /* Màu nền vàng */
-    color: blue; /* Màu chữ xanh dương */
-    border: 1px solid #ccc; /* Thêm viền để ô nhập nổi bật hơn */
-    padding: 10px; /* Thêm khoảng cách bên trong */
-    margin-bottom: 10px; /* Khoảng cách giữa các ô nhập */
-    font-size: 16px; /* Kích thước chữ */
-    border-radius: 5px; /* Bo tròn góc ô nhập */
+textarea {
+  background-color: #f5f9e9;
+  color: blue;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  width: 100%; /* Đảm bảo các ô nhập chiếm toàn bộ chiều rộng */
 }
 
 input::placeholder, 
@@ -138,6 +151,8 @@ textarea::placeholder { /* Để đặt màu chữ cho placeholder */
   }
   
   .google-signin {
+  width: 100%; /* Đảm bảo các nút chiếm toàn bộ chiều rộng */
+  max-width: 300px;
     display: flex;
     align-items: center;
     background-color: #db4437;
