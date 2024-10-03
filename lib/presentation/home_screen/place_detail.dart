@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
+import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
+import '../review_widget/models/review_widget_model.dart';
 
 class PlaceDetailScreen extends StatefulWidget {
   final TravelDestination destination;
@@ -11,10 +13,28 @@ class PlaceDetailScreen extends StatefulWidget {
 }
 
 class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    allReviews = mockReviews; // Khởi tạo trong initState
+  }
+
   PageController pageController = PageController();
   int pageView = 0;
+  List<ReviewWidgetModel> allReviews =
+      mockReviews; // Sử dụng mockReviews đã tạo trước đó
+
   @override
   Widget build(BuildContext context) {
+    List<ReviewWidgetModel> filteredReviews = allReviews
+        .where((review) => review.destinationId == widget.destination.id)
+        .toList();
+
+    print("Filtered Reviews:");
+    for (var review in filteredReviews) {
+      print(
+          'ID: ${review.destinationId}, Name: ${review.context}'); // In ra ID và Name
+    }
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
@@ -40,7 +60,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
         ),
         centerTitle: true,
         title: const Text(
-          "Detali Page",
+          "Detail Page",
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -68,7 +88,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
         child: Column(
           children: [
             Container(
-              height: MediaQuery.of(context).size.height * 0.58,
+              height: MediaQuery.of(context).size.height * 0.5,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
                 color: Colors.white,
@@ -95,8 +115,8 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                       children: List.generate(
                         widget.destination.image!.length,
                         (index) => Image.network(
-                          fit: BoxFit.cover,
                           widget.destination.image![index],
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
@@ -260,12 +280,12 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
             const SizedBox(height: 10),
             Expanded(
               child: DefaultTabController(
-                length: 2,
+                length: 2, // Số lượng tab
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.54,
+                      width: MediaQuery.of(context).size.width,
                       child: const TabBar(
                         labelColor: blueTextColor,
                         labelStyle: TextStyle(
@@ -276,8 +296,22 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                         indicatorColor: blueTextColor,
                         dividerColor: Colors.transparent,
                         tabs: [
-                          Tab(text: 'Overview'),
-                          Tab(text: 'Review'),
+                          Tab(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal:
+                                      4.0), // Tăng chiều cao của tab Overview
+                              child: Text('Overview'),
+                            ),
+                          ),
+                          Tab(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  vertical:
+                                      8.0), // Chiều cao bình thường cho tab Review
+                              child: Text('Review'),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -296,9 +330,10 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                               ),
                             ),
                           ),
-                          const Center(
-                            child: Text('No Review yet'),
-                          ),
+                          ReviewWidget(
+                            reviews:
+                                filteredReviews, // Pass the filtered reviews list
+                          ), // Chỉ có 2 widget con, do đó loại bỏ Center
                         ],
                       ),
                     )
@@ -309,85 +344,75 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
           ],
         ),
       ),
-    bottomNavigationBar: Container(
+      bottomNavigationBar: Container(
         height: 110,
         decoration: const BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              offset: Offset(0, -1),
+              blurRadius: 10,
+            ),
+          ],
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 10,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Price",
-                    style: TextStyle(
-                      fontSize: 16,
-                    ),
-                  ),
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        TextSpan(
-                          text: '\$${widget.destination.price}',
-                          style: const TextStyle(
-                            fontSize: 23,
-                            fontWeight: FontWeight.w600,
-                            color: blueTextColor,
-                          ),
-                        ),
-                        TextSpan(
-                          text: ' / Person',
-                          style: TextStyle(
-                            color: Colors.black.withOpacity(0.6),
-                            fontSize: 16,
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.home,
+                  size: 30,
+                  color: Colors.black,
+                ),
+                const Text('Home'),
+              ],
             ),
-            const Spacer(),
-            TextButton(
-              onPressed: () {},
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 20,
-                  horizontal: 40,
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.favorite_border,
+                  size: 30,
+                  color: Colors.black,
                 ),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: kButtonColor),
-                child: const Row(
-                  children: [
-                    Icon(
-                      Icons.confirmation_number_outlined,
-                      color: Colors.white,
-                    ),
-                    SizedBox(width: 15),
-                    Text(
-                      "Add to Cart",
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
+                const Text('Favorite'),
+              ],
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.add_circle_outline,
+                  size: 30,
+                  color: Colors.black,
                 ),
-              ),
+                const Text('Add'),
+              ],
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.search,
+                  size: 30,
+                  color: Colors.black,
+                ),
+                const Text('Search'),
+              ],
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.person_outline,
+                  size: 30,
+                  color: Colors.black,
+                ),
+                const Text('Profile'),
+              ],
             ),
           ],
         ),

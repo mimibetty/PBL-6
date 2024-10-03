@@ -40,7 +40,7 @@ class _CityWidgetState extends State<CityWidget> {
         ),
         centerTitle: true,
         title: const Text(
-          "Detali Page",
+          "Detail Page",
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,

@@ -26,7 +26,7 @@ class TravelDestination {
 
 List<TravelDestination> myDestination = [
   TravelDestination(
-    id: 2,
+    id: 1,
     name: "Dragon Bridge",
     category: 'popular',
     image: [
@@ -43,7 +43,7 @@ List<TravelDestination> myDestination = [
     rate: 4.9,
   ),
   TravelDestination(
-    id: 7,
+    id: 2,
     price: 10,
     name: "My Khe Beach",
     image: [
@@ -58,6 +58,7 @@ List<TravelDestination> myDestination = [
     tag : "Must-see Attractions",
     description: description,
     rate: 4.8,
+
   ),
   TravelDestination(
     id: 3,
@@ -75,9 +76,10 @@ List<TravelDestination> myDestination = [
     tag:"Culture",
     description: description,
     rate: 4.7,
+
   ),
   TravelDestination(
-    id: 8,
+    id: 4,
     name: "Marble Moutains",
     review: random.nextInt(300) + 25,
     price: 30,
@@ -91,9 +93,10 @@ List<TravelDestination> myDestination = [
     description: description,
     tag:"Must-see Attractions",
     rate: 4.5,
+
   ),
   TravelDestination(
-    id: 1,
+    id: 5,
     name: "Sun World Ba Na Hills",
     review: random.nextInt(300) + 25,
     price: 50,
@@ -108,9 +111,10 @@ List<TravelDestination> myDestination = [
     tag:"Shopping",
     description: description,
     rate: 4.6,
+
   ),
   TravelDestination(
-    id: 9,
+    id: 6,
     name: "Asia Park",
     review: random.nextInt(300) + 25,
     category: "popular",
@@ -125,9 +129,10 @@ List<TravelDestination> myDestination = [
     tag:"Great Food",
     description: description,
     rate: 4.7,
+
   ),
   TravelDestination(
-    id: 12,
+    id: 7,
     name: "Han River Bridge",
     category: "popular",
     review: random.nextInt(300) + 25,
@@ -142,9 +147,10 @@ List<TravelDestination> myDestination = [
     tag:"Culture",
     description: description,
     rate: 4.8,
+
   ),
   TravelDestination(
-    id: 14,
+    id: 8,
     name: "Hot Spring Park",
     review: random.nextInt(300) + 25,
     category: "recomend",
@@ -158,6 +164,7 @@ List<TravelDestination> myDestination = [
     description: description,
     tag:"Must-see Attractions",
     rate: 4.7,
+
   ),
 ];
 const description =
