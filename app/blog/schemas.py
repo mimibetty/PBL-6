@@ -11,12 +11,12 @@ class Blog(BlogBase):
         orm_mode = True
 
 class User(BaseModel):
-    name:str
+    username:str
     email:str
     password:str
 
 class ShowUser(BaseModel):
-    name:str
+    username:str
     email:str
     blogs : List[Blog] =[]
     class Config():
@@ -32,7 +32,7 @@ class ShowBlog(BaseModel):
 
 
 class Login(BaseModel):
-    username: str
+    email: str
     password:str
 
 
