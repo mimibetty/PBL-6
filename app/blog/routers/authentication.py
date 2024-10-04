@@ -3,21 +3,39 @@ from fastapi import APIRouter, Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from blog import schemas, database, models, token, oauth2
 from blog.hashing import Hash
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 
 router = APIRouter(tags=['Authentication'])
 
-
+@router.post('/')
+async def get_user(request: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(database.get_db)):
+    # user_info = await user.get_by_id(id, db)  # Ensure this is awaited
+    # if user_info is None:
+    #     raise HTTPException(status_code=404, detail="User not found")
+    # return user_info
+    try:
+        result = await db.execute(select(models.User).filter(models.User.email == request.username))  # Chờ truy vấn
+        user = result.scalars().first()  # Lấy người dùng
+        if not user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail=f"User with the id {id} is not available")
+        return user
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail=f"Error retrieving user: {str(e)}")
 @router.post('/login')
-def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)):
-    user = db.query(models.User).filter(
-        models.User.email == request.username).first()
+async def login(request: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(database.get_db)):
+    result = await db.execute(select(models.User).filter(models.User.email == request.username))  # Chờ truy vấn
+    user = result.scalars().first()  # Lấy người dùng
+
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"Invalid Credentials")
+                            detail="Invalid Credentials")
+    
     if not Hash.verify(user.password, request.password):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"Incorrect password")
+                            detail="Incorrect password")
 
     access_token = token.create_access_token(data={"email": user.email, "role": user.role})
     return {"access_token": access_token, "token_type": "bearer"}

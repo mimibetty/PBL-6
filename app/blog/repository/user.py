@@ -1,9 +1,11 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from blog import models, schemas
 from fastapi import HTTPException, status
 from blog.hashing import Hash
+from sqlalchemy import select
 
-async def create(request: schemas.User, db: Session):
+
+async def create(request: schemas.User, db: AsyncSession):
     try:
         new_user = models.User(
             username=request.username,
@@ -11,14 +13,14 @@ async def create(request: schemas.User, db: Session):
             password=Hash.hash_password(request.password)
         )
         db.add(new_user)
-        db.commit()  # Chờ hoàn tất việc commit
-        db.refresh(new_user)  # Chờ làm mới đối tượng mới
+        await db.commit()  # Chờ hoàn tất việc commit
+        await db.refresh(new_user)  # Chờ làm mới đối tượng mới
         return new_user
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error creating user: {str(e)}")
 
-async def create_business_admin(request: schemas.User, db: Session):
+async def create_business_admin(request: schemas.User, db: AsyncSession):
     try:
         new_user = models.User(
             username=request.username,
@@ -27,16 +29,17 @@ async def create_business_admin(request: schemas.User, db: Session):
             role=request.role
         )
         db.add(new_user)
-        db.commit()  # Chờ hoàn tất việc commit
-        db.refresh(new_user)  # Chờ làm mới đối tượng mới
+        await db.commit()  # Chờ hoàn tất việc commit
+        await db.refresh(new_user)  # Chờ làm mới đối tượng mới
         return new_user
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error creating business admin: {str(e)}")
 
-async def get_by_id(id: int, db: Session):
+async def get_by_id(id: int, db: AsyncSession):
     try:
-        user = await db.query(models.User).filter(models.User.id == id).first()  # Chờ truy vấn
+        user = await db.execute(select(models.User).filter(models.User.id == id))  # Chờ truy vấn
+        user = user.scalars().first()
         if not user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"User with the id {id} is not available")
@@ -45,17 +48,20 @@ async def get_by_id(id: int, db: Session):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error retrieving user: {str(e)}")
 
-async def get_all(db: Session):
+async def get_all(db: AsyncSession):
     try:
-        users = await db.query(models.User).all()  # Chờ truy vấn
-        return users
+        print("fuck")
+        result = await db.execute(select(models.User))  # Chờ truy vấn
+        print("hell na")
+        return result.scalars().all()
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error retrieving users: {str(e)}")
 
-async def get_by_email(email: str, db: Session):
+async def get_by_email(email: str, db: AsyncSession):
     try:
-        user = await db.query(models.User).filter(models.User.email == email).first()  # Chờ truy vấn
+        user = await db.execute(select(models.User).filter(models.User.email == email))  # Chờ truy vấn
+        user = user.scalars().first()
         if not user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"User with the email {email} is not available")
@@ -64,9 +70,10 @@ async def get_by_email(email: str, db: Session):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error retrieving user by email: {str(e)}")
 
-async def update(id: int, request: schemas.User, db: Session):
+async def update(id: int, request: schemas.User, db: AsyncSession):
     try:
-        user = await db.query(models.User).filter(models.User.id == id).first()  # Chờ truy vấn
+        user = await db.execute(select(models.User).filter(models.User.id == id))  # Chờ truy vấn
+        user = user.scalars().first()
         if not user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"User with the id {id} is not available")
@@ -75,23 +82,24 @@ async def update(id: int, request: schemas.User, db: Session):
         user.email = request.email
         if request.password:  # Chỉ cập nhật password nếu có
             user.password = Hash.hash_password(request.password)
-        
-        db.commit()  # Chờ hoàn tất việc commit
-        db.refresh(user)  # Chờ làm mới đối tượng mới
+
+        await db.commit()  # Chờ hoàn tất việc commit
+        await db.refresh(user)  # Chờ làm mới đối tượng mới
         return user
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error updating user: {str(e)}")
 
-async def delete(id: int, db: Session):
+async def delete(id: int, db: AsyncSession):
     try:
-        user = await db.query(models.User).filter(models.User.id == id).first()  # Chờ truy vấn
+        user = await db.execute(select(models.User).filter(models.User.id == id))  # Chờ truy vấn
+        user = user.scalars().first()
         if not user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"User with the id {id} is not available")
 
         await db.delete(user)  # Chờ xóa đối tượng
-        db.commit()  # Chờ hoàn tất việc commit
+        await db.commit()  # Chờ hoàn tất việc commit
         return {"detail": "User deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

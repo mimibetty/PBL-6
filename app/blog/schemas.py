@@ -31,7 +31,7 @@ class ShowUser(BaseModel):
     user_info: Optional[UserInfoBase] = None
     class Config():
         from_attributes = True
-
+        orm_mode = True
 class ShowBlog(BaseModel):
     title: str
     body:str

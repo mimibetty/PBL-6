@@ -1,10 +1,9 @@
-
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from blog import models, schemas
 from fastapi import HTTPException, status
-from blog.hashing import Hash
+from sqlalchemy import select
 
-def create_user_info(request: schemas.UserInfoBase, user_id: int, db: Session):
+async def create_user_info(request: schemas.UserInfoBase, user_id: int, db: AsyncSession):
     try:
         new_user_info = models.UserInfo(
             business_description=request.business_description,
@@ -12,17 +11,17 @@ def create_user_info(request: schemas.UserInfoBase, user_id: int, db: Session):
             user_id=user_id
         )
         db.add(new_user_info)
-        db.commit()
-        db.refresh(new_user_info)
+        await db.commit()  # Chờ hoàn tất việc commit
+        await db.refresh(new_user_info)  # Chờ làm mới đối tượng mới
         return new_user_info
     except Exception as e:
-        db.rollback()
+        await db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create user info")
 
-
-def get_user_info(id: int, db: Session):
+async def get_user_info(id: int, db: AsyncSession):
     try:
-        user_info = db.query(models.UserInfo).filter(models.UserInfo.id == id).first()
+        result = await db.execute(select(models.UserInfo).filter(models.UserInfo.id == id))  # Chờ truy vấn
+        user_info = result.scalars().first()
         if not user_info:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"UserInfo with the id {id} is not available")
@@ -30,32 +29,34 @@ def get_user_info(id: int, db: Session):
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to retrieve user info")
 
-
-def update_user_info(id: int, request: schemas.UserInfoBase, db: Session):
+async def update_user_info(id: int, request: schemas.UserInfoBase, db: AsyncSession):
     try:
-        user_info = db.query(models.UserInfo).filter(models.UserInfo.id == id).first()
+        result = await db.execute(select(models.UserInfo).filter(models.UserInfo.id == id))  # Chờ truy vấn
+        user_info = result.scalars().first()
         if not user_info:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"UserInfo with the id {id} is not available")
+        
         user_info.business_description = request.business_description
         user_info.phone_number = request.phone_number
-        db.commit()
-        db.refresh(user_info)
+        await db.commit()  # Chờ hoàn tất việc commit
+        await db.refresh(user_info)  # Chờ làm mới đối tượng mới
         return user_info
     except Exception as e:
-        db.rollback()
+        await db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to update user info")
 
-
-def delete_user_info(id: int, db: Session):
+async def delete_user_info(id: int, db: AsyncSession):
     try:
-        user_info = db.query(models.UserInfo).filter(models.UserInfo.id == id).first()
+        result = await db.execute(select(models.UserInfo).filter(models.UserInfo.id == id))  # Chờ truy vấn
+        user_info = result.scalars().first()
         if not user_info:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"UserInfo with the id {id} is not available")
-        db.delete(user_info)
-        db.commit()
+        
+        await db.delete(user_info)  # Chờ xóa đối tượng
+        await db.commit()  # Chờ hoàn tất việc commit
         return {"message": "UserInfo deleted successfully"}
     except Exception as e:
-        db.rollback()
+        await db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete user info")
