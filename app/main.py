@@ -1,9 +1,10 @@
 from fastapi import FastAPI
-from blog import  models
-from blog.database import engine
+from blog import models
+from blog.database import engine, create_sample_data
 from blog.routers import blog, user, authentication
 from fastapi.middleware.cors import CORSMiddleware
 
+        
 app = FastAPI()
 
 # Thêm CORS middleware
@@ -16,6 +17,7 @@ app.add_middleware(
 )
 
 models.Base.metadata.create_all(engine)
+create_sample_data()
 
 app.include_router(authentication.router)
 app.include_router(blog.router)
