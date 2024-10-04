@@ -1,6 +1,7 @@
+from typing import Annotated
 from fastapi import APIRouter, Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
-from blog import schemas, database, models, token
+from blog import schemas, database, models, token, oauth2
 from blog.hashing import Hash
 from sqlalchemy.orm import Session
 
@@ -18,5 +19,11 @@ def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Incorrect password")
 
-    access_token = token.create_access_token(data={"sub": user.email, "role": user.role})
+    access_token = token.create_access_token(data={"email": user.email, "role": user.role})
     return {"access_token": access_token, "token_type": "bearer"}
+
+@router.get('/current-user')
+async def read_users_me(
+    current_user: Annotated[schemas.User, Depends(oauth2.get_current_user)],
+):
+    return current_user

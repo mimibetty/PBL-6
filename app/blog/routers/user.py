@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from blog import database, schemas, models, oauth2
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, status
@@ -20,8 +20,14 @@ def create_user(request: schemas.User, db: Session = Depends(get_db)):
 
 @router.get('/{id}', response_model=schemas.ShowUser)
 def get_user(id: int, db: Session = Depends(get_db)):
-    return user.show(id, db)
+    return user.get_by_id(id, db)
 
 @router.get('/', response_model=List[schemas.ShowUser])
-def all(db: Session = Depends(get_db), current_user: schemas.User = Depends(oauth2.get_current_user)):
-    return user.get_all(db)
+def admin_all(db: Session = Depends(get_db), current_user: schemas.User = Depends(oauth2.get_current_user)):
+    if current_user.role == "admin":
+        return user.get_all(db)
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have permission to access this resource."
+        )

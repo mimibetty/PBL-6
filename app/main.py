@@ -18,7 +18,9 @@ app.add_middleware(
 
 models.Base.metadata.drop_all(bind=engine)
 models.Base.metadata.create_all(engine)
-create_sample_data()
+@app.on_event("startup")
+async def startup_event():
+    await create_sample_data() 
 
 app.include_router(authentication.router)
 app.include_router(user.router)
