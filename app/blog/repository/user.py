@@ -7,7 +7,7 @@ from blog.hashing import Hash
 
 def create(request: schemas.User, db: Session):
     new_user = models.User(
-        username=request.username, email=request.email, password=Hash.bcrypt(request.password), role = request.role)
+        username=request.username, email=request.email, password=Hash.hash_password(request.password), role = request.role)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
@@ -20,3 +20,7 @@ def show(id: int, db: Session):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"User with the id {id} is not available")
     return user
+
+def get_all(db: Session):
+    users = db.query(models.User).all()
+    return users

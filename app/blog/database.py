@@ -36,8 +36,8 @@ def create_sample_data():
     if not existing_users:  # Nếu không có người dùng nào
         # Create sample users
         user1_data = schemas.User(username='user1', email='user1@gmail.com', password='123', role="guest")
-        business1_data = schemas.User(username='business1', email='user2@gmail.com', password='123', role="business")
-        admin1_data = schemas.User(username='admin1', email='user3@gmail.com', password='123', role="admin")
+        business1_data = schemas.User(username='business1', email='business1@gmail.com', password='123', role="business")
+        admin1_data = schemas.User(username='admin1', email='admin1@gmail.com', password='123', role="admin")
 
         # Call the create function for each user
         user1 = user.create(user1_data, db)
@@ -47,9 +47,10 @@ def create_sample_data():
         # Create user information related to user1 and user2
         user1_info = UserInfo(business_description='Tour operator', phone_number='123456789', user=user1)
         business1_info = UserInfo(business_description='Hotel owner', phone_number='987654321', user=business1)
+        admin1_info = UserInfo( phone_number='987654321', user=admin1)
 
         # Add user information to the session
-        db.add_all([user1_info, business1_info])
+        db.add_all([user1_info, business1_info, admin1_info])
 
         # Commit the transaction
         db.commit()

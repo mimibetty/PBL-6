@@ -14,7 +14,7 @@ class User(Base):
     
     # Relationship
     business_type = relationship("BusinessType", back_populates="user")
-    user_info = relationship("UserInfo", back_populates="user")  
+    user_info = relationship("UserInfo", back_populates="user", uselist=False)  
     reviews = relationship("Review", back_populates="user")
     journeys=  relationship("Journey", back_populates="user")
     destinations = relationship("Destination", back_populates="user")

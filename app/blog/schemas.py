@@ -8,7 +8,10 @@ class BlogBase(BaseModel):
 
 class Blog(BlogBase):
     class Config():
-        orm_mode = True
+        from_attributes = True
+class UserInfoBase(BaseModel):
+    business_description: str# Thông tin mô tả doanh nghiệp
+    phone_number: str
 
 class User(BaseModel):
     username:str
@@ -16,12 +19,18 @@ class User(BaseModel):
     password:str
     role: str
 
+class ShowUserInfo(BaseModel):
+    business_description: Optional[str]  # Thông tin mô tả doanh nghiệp
+    phone_number: Optional[str]  
+    user: User
+    class Config:
+        from_attributes = True
 class ShowUser(BaseModel):
     username:str
     email:str
-    blogs : List[Blog] =[]
+    user_info: Optional[UserInfoBase] = None
     class Config():
-        orm_mode = True
+        from_attributes = True
 
 class ShowBlog(BaseModel):
     title: str
@@ -29,7 +38,7 @@ class ShowBlog(BaseModel):
     creator: ShowUser
 
     class Config():
-        orm_mode = True
+        from_attributes = True
 
 
 class Login(BaseModel):
@@ -44,3 +53,5 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: Optional[str] = None
+    
+
