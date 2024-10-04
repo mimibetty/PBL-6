@@ -23,7 +23,7 @@ def get_db():
         db.close()
 
 
-async def create_sample_data():
+def create_sample_data():
     from .repository import user
     from .models import User, UserInfo
     from . import schemas  # Import schemas nếu cần
@@ -41,9 +41,9 @@ async def create_sample_data():
             admin1_data = schemas.User(username='admin1', email='admin1@gmail.com', password='123', role="admin")
 
             # Gọi hàm create cho mỗi người dùng
-            user1 = await user.create_business_admin(user1_data, db)
-            business1 = await user.create_business_admin(business1_data, db)
-            admin1 = await user.create_business_admin(admin1_data, db)
+            user1 = user.create_business_admin(user1_data, db)
+            business1 = user.create_business_admin(business1_data, db)
+            admin1 = user.create_business_admin(admin1_data, db)
 
             # Tạo thông tin người dùng liên quan đến user1 và user2
             user1_info = UserInfo(business_description='Tour operator', phone_number='123456789', user=user1)

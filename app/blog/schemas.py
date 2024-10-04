@@ -55,4 +55,7 @@ class TokenData(BaseModel):
     email: Optional[str] = None
     role: Optional[str] = None
     
-
+class SignUp(BaseModel):
+    email: str
+    password:str
+    username: str

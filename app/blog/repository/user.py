@@ -3,7 +3,7 @@ from blog import models, schemas
 from fastapi import HTTPException, status
 from blog.hashing import Hash
 
-async def create(request: schemas.User, db: Session):
+def create(request: schemas.User, db: Session):
     try:
         new_user = models.User(
             username=request.username,
@@ -18,7 +18,7 @@ async def create(request: schemas.User, db: Session):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error creating user: {str(e)}")
 
-async def create_business_admin(request: schemas.User, db: Session):
+def create_business_admin(request: schemas.User, db: Session):
     try:
         new_user = models.User(
             username=request.username,
@@ -34,9 +34,9 @@ async def create_business_admin(request: schemas.User, db: Session):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error creating business admin: {str(e)}")
 
-async def get_by_id(id: int, db: Session):
+def get_by_id(id: int, db: Session):
     try:
-        user = await db.query(models.User).filter(models.User.id == id).first()  # Chờ truy vấn
+        user = db.query(models.User).filter(models.User.id == id).first()  # Chờ truy vấn
         if not user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"User with the id {id} is not available")
@@ -45,17 +45,17 @@ async def get_by_id(id: int, db: Session):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error retrieving user: {str(e)}")
 
-async def get_all(db: Session):
+def get_all(db: Session):
     try:
-        users = await db.query(models.User).all()  # Chờ truy vấn
+        users = db.query(models.User).all()  # Chờ truy vấn
         return users
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error retrieving users: {str(e)}")
 
-async def get_by_email(email: str, db: Session):
+def get_by_email(email: str, db: Session):
     try:
-        user = await db.query(models.User).filter(models.User.email == email).first()  # Chờ truy vấn
+        user = db.query(models.User).filter(models.User.email == email).first()  # Chờ truy vấn
         if not user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"User with the email {email} is not available")
@@ -64,9 +64,9 @@ async def get_by_email(email: str, db: Session):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error retrieving user by email: {str(e)}")
 
-async def update(id: int, request: schemas.User, db: Session):
+def update(id: int, request: schemas.User, db: Session):
     try:
-        user = await db.query(models.User).filter(models.User.id == id).first()  # Chờ truy vấn
+        user = db.query(models.User).filter(models.User.id == id).first()  # Chờ truy vấn
         if not user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"User with the id {id} is not available")
@@ -83,14 +83,14 @@ async def update(id: int, request: schemas.User, db: Session):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error updating user: {str(e)}")
 
-async def delete(id: int, db: Session):
+def delete(id: int, db: Session):
     try:
-        user = await db.query(models.User).filter(models.User.id == id).first()  # Chờ truy vấn
+        user = db.query(models.User).filter(models.User.id == id).first()  # Chờ truy vấn
         if not user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"User with the id {id} is not available")
 
-        await db.delete(user)  # Chờ xóa đối tượng
+        db.delete(user)  # Chờ xóa đối tượng
         db.commit()  # Chờ hoàn tất việc commit
         return {"detail": "User deleted successfully"}
     except Exception as e:

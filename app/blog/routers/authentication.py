@@ -23,7 +23,7 @@ def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get('/current-user')
-async def read_users_me(
+def read_users_me(
     current_user: Annotated[schemas.User, Depends(oauth2.get_current_user)],
 ):
     return current_user
