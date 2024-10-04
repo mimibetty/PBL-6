@@ -9,6 +9,7 @@ class User(Base):
     username = Column(String(50), unique=True, default='Guest')
     password = Column(String(255), default='password123')  
     email = Column(String(50), unique=True)
+    role = Column(String(10), default="guest") #guest/business/admin
 
     
     # Relationship

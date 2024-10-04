@@ -35,21 +35,21 @@ def create_sample_data():
     
     if not existing_users:  # Nếu không có người dùng nào
         # Create sample users
-        user1_data = schemas.User(username='user1', email='user1@gmail.com', password='123')
-        user2_data = schemas.User(username='user2', email='user2@gmail.com', password='123')
-        user3_data = schemas.User(username='user3', email='user3@gmail.com', password='123')
+        user1_data = schemas.User(username='user1', email='user1@gmail.com', password='123', role="guest")
+        business1_data = schemas.User(username='business1', email='user2@gmail.com', password='123', role="business")
+        admin1_data = schemas.User(username='admin1', email='user3@gmail.com', password='123', role="admin")
 
         # Call the create function for each user
-        user2 = user.create(user2_data, db)
-        user3 = user.create(user3_data, db)
         user1 = user.create(user1_data, db)
+        business1 = user.create(business1_data, db)
+        admin1 = user.create(admin1_data, db)
 
         # Create user information related to user1 and user2
-        user_info1 = UserInfo(business_description='Tour operator', phone_number='123456789', user=user1_data)
-        user_info2 = UserInfo(business_description='Hotel owner', phone_number='987654321', user=user2_data)
+        user1_info = UserInfo(business_description='Tour operator', phone_number='123456789', user=user1)
+        business1_info = UserInfo(business_description='Hotel owner', phone_number='987654321', user=business1)
 
         # Add user information to the session
-        db.add_all([user_info1, user_info2])
+        db.add_all([user1_info, business1_info])
 
         # Commit the transaction
         db.commit()

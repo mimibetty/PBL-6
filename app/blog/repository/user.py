@@ -7,7 +7,7 @@ from blog.hashing import Hash
 
 def create(request: schemas.User, db: Session):
     new_user = models.User(
-        username=request.username, email=request.email, password=Hash.bcrypt(request.password))
+        username=request.username, email=request.email, password=Hash.bcrypt(request.password), role = request.role)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)

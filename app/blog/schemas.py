@@ -14,6 +14,7 @@ class User(BaseModel):
     username:str
     email:str
     password:str
+    role: str
 
 class ShowUser(BaseModel):
     username:str

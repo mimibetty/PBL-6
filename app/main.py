@@ -16,6 +16,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+models.Base.metadata.drop_all(bind=engine)
 models.Base.metadata.create_all(engine)
 create_sample_data()
 
