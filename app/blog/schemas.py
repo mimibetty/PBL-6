@@ -22,13 +22,12 @@ class User(BaseModel):
 class ShowUserInfo(BaseModel):
     business_description: Optional[str]  # Thông tin mô tả doanh nghiệp
     phone_number: Optional[str]  
-    user: User
     class Config:
         from_attributes = True
 class ShowUser(BaseModel):
     username:str
     email:str
-    user_info: Optional[UserInfoBase] = None
+    role: str
     class Config():
         from_attributes = True
 
