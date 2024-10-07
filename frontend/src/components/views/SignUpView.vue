@@ -1,5 +1,5 @@
 <template>
-    <div class="login-container">
+    <div class="signup-container">
       <h2 class="title">Sign up</h2>
       <form @submit.prevent="handleSignUp">
         <input
@@ -72,20 +72,22 @@
     height: 100%;
   }
   
-  .login-container {
-    position: relative;
+  .signup-container {
+    position: absolute;
+    top: 0;
+    left: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-image: url('../pictures/background.jpg');
+    background-image: url('@/assets/images/background.jpg');
     background-size: cover;
     background-position: center;
     height: 100vh; /* Full viewport height */
     width: 100vw; /* Full viewport width */
     }
 
-   .login-container::before {
+   .signup-container::before {
     content: '';
     position: absolute;
     top: 0;
@@ -96,7 +98,7 @@
     z-index: 1; /* Đặt lớp phủ lên trên hình nền */
  }
 
-  .login-container > * {
+  .signup-container > * {
     position: relative; /* Để văn bản nổi lên trên lớp phủ */
     z-index: 2; /* Đặt văn bản lên trên lớp phủ */
     color: #ffffff; /* Màu chữ */
