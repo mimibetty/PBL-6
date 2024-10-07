@@ -23,3 +23,9 @@ có 1 vài tính năng cần phải authen trước khi dùng, để authen thì
 ![image](https://github.com/user-attachments/assets/4f73b4c4-6adb-4910-b120-405c556bb385)
 
 authen chỗ cái khóa màu xanh lá bên góc phải trên 
+
+
+venv\Scripts\activate    
+
+uvicorn main:app --reload
+uvicorn main:app --host 0.0.0.0 --port 8000
