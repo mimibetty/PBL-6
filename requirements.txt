@@ -9,6 +9,12 @@ PyMySQL
 gunicorn
 python-dotenv
 pydantic
+PyJWT
+selenium
+motor
+requests
+
+
 h11
 starlette
 websockets
