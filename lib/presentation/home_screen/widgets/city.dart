@@ -68,7 +68,7 @@ class _CityWidgetState extends State<CityWidget> {
         child: Column(
           children: [
             Container(
-              height: MediaQuery.of(context).size.height * 0.58,
+              height: MediaQuery.of(context).size.height * 0.54,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
                 color: Colors.white,

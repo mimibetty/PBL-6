@@ -14,8 +14,6 @@ class CustomBottomNavBar extends StatelessWidget {
       borderRadius: BorderRadius.only(
         topLeft: Radius.circular(20.0),
         topRight: Radius.circular(20.0),
-        // bottomLeft: Radius.circular(20.0),
-        // bottomRight: Radius.circular(20.0),
       ),
       clipBehavior: Clip.hardEdge,
       child: BottomNavigationBar(
@@ -36,23 +34,28 @@ class CustomBottomNavBar extends StatelessWidget {
         ],
         currentIndex: controller.selectedPage.value,
         onTap: (index) {
+          // Cập nhật trạng thái của tab
           controller.changePage(index);
+
+          // Điều hướng đến màn hình tương ứng mà không làm mất trạng thái hiện tại
           switch (index) {
             case 0:
-              Get.offNamed('/welcome_screen');
+              Get.toNamed('/welcome_screen'); // Thay đổi từ Get.offNamed thành Get.toNamed
               break;
             case 1:
-              // Get.offNamed('/welcome_screen'); 
+              Get.toNamed('/search_screen');
               break;
             case 2:
-              Get.offNamed('/bookings');
+              Get.toNamed('/hoe');
               break;
             case 3:
-              Get.offNamed('/favorites'); 
+              Get.toNamed('/favorites');
               break;
             case 4:
-              Get.offNamed('/profile_screen');
+              Get.toNamed('/profile_screen');
               break;
+            default:
+              Get.toNamed('/welcome_screen');
           }
         },
       ),

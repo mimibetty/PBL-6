@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
+import 'package:travelappflutter/routes/app_routes.dart';
 import '../review_widget/models/review_widget_model.dart';
+import '../review_widget/widgets/create_review.dart';
 
 class PlaceDetailScreen extends StatefulWidget {
   final TravelDestination destination;
@@ -76,7 +80,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
               ),
             ),
             child: const Icon(
-              Icons.bookmark_outline,
+              Icons.favorite_border_sharp,
               size: 30,
             ),
           ),
@@ -348,71 +352,108 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
         height: 110,
         decoration: const BoxDecoration(
           color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              offset: Offset(0, -1),
-              blurRadius: 10,
-            ),
-          ],
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.home,
-                  size: 30,
-                  color: Colors.black,
-                ),
-                const Text('Home'),
-              ],
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 10,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Price",
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '\$${widget.destination.price}',
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: blueTextColor,
+                          ),
+                        ),
+                        TextSpan(
+                          text: ' / Person',
+                          style: TextStyle(
+                            color: Colors.black.withOpacity(0.6),
+                            fontSize: 16,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.favorite_border,
-                  size: 30,
-                  color: Colors.black,
+            const Spacer(),
+            TextButton(
+              onPressed: () {
+                // Get.toNamed(AppRoutes.createReviewScreen, arguments: {
+                //   'destinationId': widget
+                //       .destination.id, // Truyền id của destination nếu cần
+                // });
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: false,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(20),
+                    ),
+                  ),
+                  builder: (BuildContext context) {
+                    return FractionallySizedBox(
+                      heightFactor:
+                          0.8, 
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 10),
+                        child: ReviewFormPage(
+                          destinationId: widget.destination.id,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 20,
+                  horizontal: 20,
                 ),
-                const Text('Favorite'),
-              ],
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.add_circle_outline,
-                  size: 30,
-                  color: Colors.black,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color: kButtonColor),
+                child: const Row(
+                  children: [
+                    Icon(
+                      Icons.confirmation_number_outlined,
+                      color: Colors.white,
+                    ),
+                    SizedBox(width: 5),
+                    Text(
+                      "Create a review",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
-                const Text('Add'),
-              ],
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.search,
-                  size: 30,
-                  color: Colors.black,
-                ),
-                const Text('Search'),
-              ],
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.person_outline,
-                  size: 30,
-                  color: Colors.black,
-                ),
-                const Text('Profile'),
-              ],
+              ),
             ),
           ],
         ),

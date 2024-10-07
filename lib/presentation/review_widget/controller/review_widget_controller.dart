@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
-
 class ReviewWidgetController extends GetxController {
   RxList<ReviewWidgetModel> reviewList = mockReviews.obs; // Sử dụng dữ liệu giả lập từ mô hình
   RxList<ReviewWidgetModel> filteredReviews = <ReviewWidgetModel>[].obs;

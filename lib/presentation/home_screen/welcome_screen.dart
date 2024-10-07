@@ -23,6 +23,8 @@ class WelcomeScreen extends StatefulWidget {
 
 class _TravelWelcomeScreenState extends State<WelcomeScreen> {
   int selectedPage = 0;
+  bool showCarousel = true; // Biến để theo dõi hiển thị CarouselSlider
+
   List<Topic> topics = TopicModel.getTopics(); // Get topics list
   List<TravelDestination> daNangDestinations = myDestination
       .where((element) => element.location == "Da Nang , Viet Nam")
@@ -48,7 +50,7 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: headerParts(),
-      body: Column(
+      body: ListView(
         children: [
           const SizedBox(height: 20),
           const Padding(
@@ -80,7 +82,7 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
             padding: const EdgeInsets.only(bottom: 40),
             child: Row(
               children: List.generate(
-                topics.length, // Change from popular.length to topics.length
+                topics.length,
                 (index) => Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: GestureDetector(
@@ -104,7 +106,7 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (_) =>
-                              HomeScreen(destinations: filteredDestinations),
+                              HomeScreen(destinations: filteredDestinations,show:false),
                         ),
                       );
                     },
@@ -140,27 +142,27 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Column(
-                children: List.generate(
-                  popularCities.length, // Change myCities.length to popularCities.length
-                  (index) => Padding(
-                    padding: const EdgeInsets.only(bottom: 15),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                HomeScreen(destinations: daNangDestinations),
-                          ),
-                        );
-                      },
-                      child: RecomendateCity(
-                        myCities: popularCities[index], // Change myCities[index] to popularCities[index]
-                      ),
+          // Sử dụng Expanded cho danh sách thành phố nổi bật
+          SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Column(
+              children: List.generate(
+                popularCities.length,
+                (index) => Padding(
+                  padding: const EdgeInsets.only(bottom: 15),
+                  child: GestureDetector(
+                    onTap: () {
+                      
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              HomeScreen(destinations: daNangDestinations,show:true),
+                        ),
+                      );
+                    },
+                    child: RecomendateCity(
+                      myCities: popularCities[index],
                     ),
                   ),
                 ),

@@ -1,5 +1,6 @@
 import 'package:travelappflutter/presentation/home_screen/binding/welcome_binding.dart';
 import 'package:travelappflutter/presentation/home_screen/welcome_screen.dart';
+import 'package:travelappflutter/presentation/review_widget/binding/review_widget_binding.dart';
 import 'package:travelappflutter/presentation/splash_screen/splash_screen.dart';
 import 'package:travelappflutter/presentation/splash_screen/binding/splash_binding.dart';
 import 'package:travelappflutter/presentation/onboard_one_screen/onboard_one_screen.dart';
@@ -22,8 +23,8 @@ import 'package:travelappflutter/presentation/details_screen/details_screen.dart
 import 'package:travelappflutter/presentation/details_screen/binding/details_binding.dart';
 import 'package:travelappflutter/presentation/view_screen/view_screen.dart';
 import 'package:travelappflutter/presentation/view_screen/binding/view_binding.dart';
-import 'package:travelappflutter/presentation/schedule_screen/schedule_screen.dart';
-import 'package:travelappflutter/presentation/schedule_screen/binding/schedule_binding.dart';
+// import 'package:travelappflutter/presentation/schedule_screen/schedule_screen.dart';
+// import 'package:travelappflutter/presentation/schedule_screen/binding/schedule_binding.dart';
 import 'package:travelappflutter/presentation/popular_places_screen/popular_places_screen.dart';
 import 'package:travelappflutter/presentation/popular_places_screen/binding/popular_places_binding.dart';
 import 'package:travelappflutter/presentation/profile_screen/profile_screen.dart';
@@ -32,8 +33,8 @@ import 'package:travelappflutter/presentation/all_popular_trip_package_screen/al
 import 'package:travelappflutter/presentation/all_popular_trip_package_screen/binding/all_popular_trip_package_binding.dart';
 import 'package:travelappflutter/presentation/favorite_places_screen/favorite_places_screen.dart';
 import 'package:travelappflutter/presentation/favorite_places_screen/binding/favorite_places_binding.dart';
-import 'package:travelappflutter/presentation/messages_screen/messages_screen.dart';
-import 'package:travelappflutter/presentation/messages_screen/binding/messages_binding.dart';
+// import 'package:travelappflutter/presentation/messages_screen/messages_screen.dart';
+// import 'package:travelappflutter/presentation/messages_screen/binding/messages_binding.dart';
 import 'package:travelappflutter/presentation/chats_screen/chats_screen.dart';
 import 'package:travelappflutter/presentation/chats_screen/binding/chats_binding.dart';
 import 'package:travelappflutter/presentation/search_screen/search_screen.dart';
@@ -45,6 +46,8 @@ import 'package:travelappflutter/presentation/notification_screen/binding/notifi
 import 'package:travelappflutter/presentation/app_navigation_screen/app_navigation_screen.dart';
 import 'package:travelappflutter/presentation/app_navigation_screen/binding/app_navigation_binding.dart';
 import 'package:get/get.dart';
+
+import '../presentation/review_widget/widgets/create_review.dart';
 
 class AppRoutes {
   static String splashScreen = '/splash_screen';
@@ -96,6 +99,8 @@ class AppRoutes {
   
   static String welcomeScreen = '/welcome_screen';
 
+  static String createReviewScreen='/create_review_screen';
+
   static List<GetPage> pages = [
     GetPage(
       name: splashScreen,
@@ -116,6 +121,13 @@ class AppRoutes {
       page: () => OnboardOneScreen(),
       bindings: [
         OnboardOneBinding(),
+      ],
+    ),
+    GetPage(
+      name: createReviewScreen,
+      page: () =>ReviewFormPage(destinationId:0),
+      bindings: [
+        ReviewWidgetBinding(),
       ],
     ),
     GetPage(
@@ -162,7 +174,7 @@ class AppRoutes {
     ),
     GetPage(
       name: homeScreen,
-      page: () => HomeScreen(destinations: [],),
+      page: () => HomeScreen(destinations: [],show:true),
       bindings: [
         HomeBinding(),
       ],
@@ -181,13 +193,13 @@ class AppRoutes {
         ViewBinding(),
       ],
     ),
-    GetPage(
-      name: scheduleScreen,
-      page: () => ScheduleScreen(),
-      bindings: [
-        ScheduleBinding(),
-      ],
-    ),
+    // GetPage(
+    //   name: scheduleScreen,
+    //   page: () => ScheduleScreen(),
+    //   bindings: [
+    //     ScheduleBinding(),
+    //   ],
+    // ),
     GetPage(
       name: popularPlacesScreen,
       page: () => PopularPlacesScreen(),
@@ -216,13 +228,13 @@ class AppRoutes {
         FavoritePlacesBinding(),
       ],
     ),
-    GetPage(
-      name: messagesScreen,
-      page: () => MessagesScreen(),
-      bindings: [
-        MessagesBinding(),
-      ],
-    ),
+    // GetPage(
+    //   name: messagesScreen,
+    //   page: () => MessagesScreen(),
+    //   bindings: [
+    //     MessagesBinding(),
+    //   ],
+    // ),
     GetPage(
       name: chatsScreen,
       page: () => ChatsScreen(),

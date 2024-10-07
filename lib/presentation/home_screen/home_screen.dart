@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
 import 'package:travelappflutter/presentation/home_screen/models/cities_model.dart';
@@ -9,12 +10,13 @@ import 'package:travelappflutter/routes/app_routes.dart';
 import './widgets/recomendate.dart';
 import 'package:iconsax/iconsax.dart';
 import './widgets/popular_place.dart';
-import './models/travel_model.dart'; // add this package first for icon
+import './models/travel_model.dart';
 
 class HomeScreen extends StatefulWidget {
   final List<TravelDestination> destinations;
+  final bool show; 
 
-  const HomeScreen({super.key, required this.destinations});
+  const HomeScreen({super.key, required this.destinations, this.show = true});
 
   @override
   State<HomeScreen> createState() => _TravelHomeScreenState();
@@ -23,21 +25,75 @@ class HomeScreen extends StatefulWidget {
 class _TravelHomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    // Lọc các địa điểm theo hai loại "popular" và "recommend"
     List<TravelDestination> popularDestinations = widget.destinations
         .where((destination) => destination.category == 'popular')
         .toList();
+
     List<TravelDestination> recommendDestinations = widget.destinations
         .where((destination) => destination.category == 'recomend')
         .toList();
-    print("Recommend Destinations: ${recommendDestinations.length}");
+
+    List<String> allImages = [
+      ...widget.destinations
+          .where((destination) =>
+              destination.location.toLowerCase().contains("da nang"))
+          .expand((destination) => destination.image ?? []),
+      ...myCities
+          .where((city) => city.name.toLowerCase().contains("da nang"))
+          .expand((city) => city.images ?? []),
+    ];
 
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: headerParts(),
-      body: Column(
+      body: ListView(
         children: [
           const SizedBox(height: 20),
+          // Show slider only if widget.show is true
+          if (widget.show) ...[
+            // Section for Image Slider
+            CarouselSlider(
+              options: CarouselOptions(
+                height: 200,
+                enlargeCenterPage: true,
+                autoPlay: true,
+                aspectRatio: 16/9,
+                autoPlayCurve: Curves.fastOutSlowIn,
+                enableInfiniteScroll: true,
+                autoPlayAnimationDuration: Duration(milliseconds: 1500),
+                viewportFraction: 1,
+              ),
+              items: allImages.map((imageUrl) {
+                return Builder(
+                  builder: (BuildContext context) {
+                    return Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            offset: Offset(0, 4),
+                            blurRadius: 8,
+                            spreadRadius: 1,
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.network(
+                          imageUrl,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 20),
+          ],
           // Section for Popular places
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 15),
@@ -68,8 +124,7 @@ class _TravelHomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.only(bottom: 40),
             child: Row(
               children: List.generate(
-                popularDestinations
-                    .length, // Sử dụng danh sách đã lọc cho popular
+                popularDestinations.length,
                 (index) => Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: GestureDetector(
@@ -116,29 +171,26 @@ class _TravelHomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Column(
-                children: List.generate(
-                  recommendDestinations
-                      .length, // Sử dụng danh sách đã lọc cho recommend
-                  (index) => Padding(
-                    padding: const EdgeInsets.only(bottom: 15),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => PlaceDetailScreen(
-                              destination: recommendDestinations[index],
-                            ),
+          SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Column(
+              children: List.generate(
+                recommendDestinations.length,
+                (index) => Padding(
+                  padding: const EdgeInsets.only(bottom: 15),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => PlaceDetailScreen(
+                            destination: recommendDestinations[index],
                           ),
-                        );
-                      },
-                      child: Recomendate(
-                        destination: recommendDestinations[index],
-                      ),
+                        ),
+                      );
+                    },
+                    child: Recomendate(
+                      destination: recommendDestinations[index],
                     ),
                   ),
                 ),
