@@ -8,3 +8,7 @@ python-multipart
 PyMySQL
 gunicorn
 python-dotenv
+pydantic
+h11
+starlette
+websockets
