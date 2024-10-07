@@ -19,6 +19,7 @@ class User(Base):
     journeys=  relationship("Journey", back_populates="user")
     destinations = relationship("Destination", back_populates="user")
     forum_comments = relationship("ForumComment", back_populates="user")
+    city = relationship("City", back_populates="user")
 
     
 class UserInfo(Base):
@@ -46,12 +47,25 @@ class BusinessType(Base):
     # Relationship
     user = relationship("User", back_populates="business_type")
 
-class Destination(Base):
-    __tablename__ = 'destination'
+class City(Base):
+    __tablename__ = 'city'
     
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(50), default='Unnamed Destination')
-    type = Column(String(10), default='Business')  #Business/Admin
+    description = Column(String(50), default='No Description')
+    
+    # Foreign Key
+    user_id = Column(Integer, ForeignKey('user.id'))
+
+    # Relationship
+    user = relationship("User", back_populates="city")
+    destinations = relationship("Destination", back_populates="city")
+class Destination(Base):
+    __tablename__ = 'destination'
+    __table_args__ = {'extend_existing': True} 
+    
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(50), default='Unnamed Destination')
     address = Column(String(50), nullable=True, default='Unknown Address')
     price_bottom = Column(Integer, nullable=True, default=0)  
     price_top = Column(Integer, nullable=True, default=0)  
@@ -62,8 +76,17 @@ class Destination(Base):
 
     # Foreign Key
     user_id = Column(Integer, ForeignKey('user.id'))
+    city_id = Column(Integer, ForeignKey('city.id'))
 
+    # Self-referential Foreign Key to allow destinations to contain other destinations
+    parent_id = Column(Integer, ForeignKey('destination.id'), nullable=True)
+    
+    # Self-referential relationship to allow nested destinations
+    parent = relationship("Destination", remote_side=[id], back_populates="children")
+    children = relationship("Destination", back_populates="parent")
+    
     # Relationship
+    city = relationship("City", back_populates="destinations")
     user = relationship("User", back_populates="destinations")
     tags = relationship("Tag", back_populates="destinations")
     reviews = relationship("Review", back_populates="destination")
@@ -100,6 +123,7 @@ class DestinationJourney(Base):
     # Relationship
     journey = relationship("Journey", back_populates="destination_journeys")
     destination = relationship("Destination", back_populates="destination_journeys")
+    
     
 class Review(Base):
     __tablename__ = 'review'

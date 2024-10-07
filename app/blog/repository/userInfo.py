@@ -22,8 +22,7 @@ def create_user_info_by_userid(request: schemas.UserInfoBase, user_id: int, db: 
 
 def get_user_info_by_userid(user_id: int, db: Session):
     try:
-        user = db.query(models.User).filter(models.User.id == user_id).first()  # Chờ truy vấn
-        user_info = user.user_info
+        user_info = db.query(models.UserInfo).filter(models.UserInfo.user_id == user_id).first()  # Chờ truy vấn
         if not user_info:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"UserInfo with the user_id {user_id} is not available")
@@ -34,8 +33,7 @@ def get_user_info_by_userid(user_id: int, db: Session):
 
 def update_user_info_by_userid(user_id: int, request: schemas.UserInfoBase, db: Session):
     try:
-        user = db.query(models.User).filter(models.User.id == user_id).first()  # Chờ truy vấn
-        user_info = user.user_info
+        user_info = db.query(models.UserInfo).filter(models.UserInfo.user_id == user_id).first()  # Chờ truy vấn
         if not user_info:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"UserInfo with the user_id {user_id} is not available")
@@ -51,8 +49,7 @@ def update_user_info_by_userid(user_id: int, request: schemas.UserInfoBase, db: 
 
 def delete_user_info_by_userid(user_id: int, db: Session):
     try:
-        user = db.query(models.User).filter(models.User.id == user_id).first()  # Chờ truy vấn
-        user_info = user.user_info
+        user_info = db.query(models.UserInfo).filter(models.UserInfo.user_id == user_id).first()  # Chờ truy vấn
         if not user_info:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"UserInfo with the user_id {user_id} is not available")

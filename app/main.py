@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from blog import models
 from blog.database import engine, create_sample_data
-from blog.routers import blog, user, authentication, userInfo
+from blog.routers import blog, user, authentication, userInfo, city
 from fastapi.middleware.cors import CORSMiddleware
 
         
@@ -26,6 +26,7 @@ def startup_event():
 app.include_router(authentication.router)
 app.include_router(user.router)
 app.include_router(userInfo.router)
+app.include_router(city.router)
 
 
 # if __name__ == "__main__":

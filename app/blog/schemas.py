@@ -1,7 +1,6 @@
 from typing import List, Optional
 from pydantic import BaseModel
-
-
+from datetime import date, time
 class BlogBase(BaseModel):
     title: str
     body: str
@@ -58,3 +57,23 @@ class SignUp(BaseModel):
     email: str
     password:str
     username: str
+    
+class Destination(BaseModel):
+    name : str
+    address : str
+    price_bottom : int
+    price_top : int  
+    date_create : date  
+    age : int  
+    opentime : time  
+    duration : int  
+    
+class City(BaseModel):
+    name: str
+    description: str
+    
+class ShowCity(City):
+    destination: List[Destination] = []
+    
+    class Config():
+        from_attributes = True
