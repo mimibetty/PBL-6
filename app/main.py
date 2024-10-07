@@ -10,7 +10,7 @@ app = FastAPI()
 # Thêm CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080"],  # Địa chỉ của ứng dụng Vue
+    allow_origins=["*"],  # Địa chỉ của ứng dụng Vue
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
