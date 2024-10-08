@@ -4,12 +4,34 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
 from dotenv import load_dotenv
+import pymysql
+
+# DATABASE_URL=mysql+pymysql://travel_user:password@localhost:3306/db_connect
+# cnx = mysql.connector.connect(user="travel_user", password="{your_password}", host="travel-sql.mysql.database.azure.com", port=3306, database="{your_database}", ssl_ca="{ca-cert filename}", ssl_disabled=False)
+
 
 # Tải các biến môi trường từ tệp .env
 load_dotenv()
 DATABASE_URL = os.getenv('DATABASE_URL')
-# Communicate DB and our app
-engine = create_engine(DATABASE_URL)
+SSL_CA_PATH = os.getenv('SSL_CA_PATH')
+
+# Kiểm tra xem SSL_CA_PATH có tồn tại không
+if not SSL_CA_PATH or not os.path.exists(SSL_CA_PATH):
+    raise ValueError("SSL_CA_PATH không hợp lệ hoặc không tồn tại")
+
+# Cấu hình kết nối SSL
+ssl_args = {
+    "ssl": {
+        "ssl_ca": SSL_CA_PATH
+    }
+}
+
+# Tạo engine với cấu hình SSL
+try:
+    engine = create_engine(DATABASE_URL, connect_args=ssl_args)
+except Exception as e:
+    raise HTTPException(status_code=500, detail=f"Không thể kết nối đến database: {str(e)}")
+
 
 # high-level abstract (ORM) -> manage database through Object in code. Unlike Engine -> manage db through SQL command
 SessionLocal = sessionmaker(autocommit=False, autoflush = False, bind = engine)
