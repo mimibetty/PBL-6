@@ -15,6 +15,8 @@ load_dotenv()
 DATABASE_URL = os.getenv('DATABASE_URL')
 SSL_CA_PATH = os.getenv('SSL_CA_PATH')
 
+print('dasd', os.path.exists(SSL_CA_PATH))
+
 # Kiểm tra xem SSL_CA_PATH có tồn tại không
 if not SSL_CA_PATH or not os.path.exists(SSL_CA_PATH):
     raise ValueError("SSL_CA_PATH không hợp lệ hoặc không tồn tại")
