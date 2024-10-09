@@ -1,118 +1,390 @@
-import '../search_screen/widgets/search_item_widget.dart';
-import 'models/search_item_model.dart';
 import 'package:flutter/material.dart';
-import 'controller/search_controller.dart' as local; // Thêm prefix
-import 'package:travelappflutter/core/app_export.dart';
-import 'package:travelappflutter/widgets/app_bar/appbar_iconbutton.dart';
-import 'package:travelappflutter/widgets/app_bar/appbar_subtitle_1.dart';
-import 'package:travelappflutter/widgets/app_bar/appbar_title.dart';
-import 'package:travelappflutter/widgets/app_bar/custom_app_bar.dart';
+import 'package:travelappflutter/presentation/home_screen/const.dart';
+import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
+import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
+import 'package:travelappflutter/presentation/home_screen/place_detail.dart';
+import 'package:travelappflutter/presentation/home_screen/restaurant_detail.dart';
+import 'package:travelappflutter/presentation/home_screen/widgets/popular_place.dart';
+import 'package:travelappflutter/presentation/home_screen/widgets/recomendate.dart';
+import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
+import 'package:travelappflutter/presentation/search_screen/models/restaurant_model.dart';
 
-class SearchScreen extends GetWidget<local.SearchController> {
+class SearchScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
-            backgroundColor: ColorConstant.whiteA700,
-            appBar: CustomAppBar(
-                height: getVerticalSize(56.00),
-                leadingWidth: 64,
-                leading: AppbarIconbutton(
-                    svgPath: ImageConstant.imgArrowleft,
-                    margin: getMargin(left: 20, top: 6, bottom: 6),
-                    onTap: onTapArrowleft9),
-                centerTitle: true,
-                title: AppbarTitle(text: "lbl_search".tr),
-                actions: [
-                  AppbarSubtitle1(
-                      text: "lbl_cancel".tr,
-                      margin:
-                          getMargin(left: 20, top: 18, right: 20, bottom: 18))
-                ]),
-            body: Container(
-                width: size.width,
-                child: SingleChildScrollView(
-                    child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                      Container(
-                          margin: getMargin(left: 20, top: 24, right: 20),
-                          decoration: AppDecoration.fillGray100.copyWith(
-                              borderRadius: BorderRadiusStyle.circleBorder17),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Padding(
-                                    padding: getPadding(
-                                        left: 16, top: 12, bottom: 12),
-                                    child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          CommonImageView(
-                                              svgPath: ImageConstant
-                                                  .imgSearchBluegray400,
-                                              height: getSize(24.00),
-                                              width: getSize(24.00)),
-                                          Padding(
-                                              padding: getPadding(
-                                                  left: 12, top: 4, bottom: 4),
-                                              child: Text(
-                                                  "lbl_search_places".tr,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  textAlign: TextAlign.left,
-                                                  style: AppStyle
-                                                      .txtSFUIDisplayRegular16
-                                                      .copyWith(
-                                                          letterSpacing: 0.30,
-                                                          height: 1.00)))
-                                        ])),
-                                Padding(
-                                    padding: getPadding(
-                                        top: 12, right: 16, bottom: 12),
-                                    child: CommonImageView(
-                                        svgPath: ImageConstant.imgSignal24x40,
-                                        height: getVerticalSize(24.00),
-                                        width: getHorizontalSize(40.00)))
-                              ])),
-                      Align(
-                          alignment: Alignment.centerLeft,
-                          child: Padding(
-                              padding: getPadding(left: 20, top: 33, right: 20),
-                              child: Text("lbl_search_places".tr,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.left,
-                                  style: AppStyle.txtSFUIDisplaySemibold20
-                                      .copyWith(height: 1.00)))),
-                      Padding(
-                          padding: getPadding(left: 20, top: 20, right: 19),
-                          child: Obx(() => GridView.builder(
-                              shrinkWrap: true,
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                      mainAxisExtent: getVerticalSize(217.00),
-                                      crossAxisCount: 2,
-                                      mainAxisSpacing: getHorizontalSize(14.00),
-                                      crossAxisSpacing:
-                                          getHorizontalSize(14.00)),
-                              physics: BouncingScrollPhysics(),
-                              itemCount: controller
-                                  .searchModelObj.value.searchItemList.length,
-                              itemBuilder: (context, index) {
-                                SearchItemModel model = controller
-                                    .searchModelObj.value.searchItemList[index];
-                                return SearchItemWidget(model);
-                              })))
-                    ])))));
+  _SearchScreenState createState() => _SearchScreenState();
+}
+
+class _SearchScreenState extends State<SearchScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 4, vsync: this);
   }
 
-  onTapArrowleft9() {
-    Get.back();
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Lọc danh sách các địa điểm phổ biến và được đề xuất
+    List<TravelDestination> popularDestinations = myDestination
+        .where((destination) => destination.category == 'popular')
+        .toList();
+    List<TravelDestination> recommendDestinations = myDestination
+        .where((destination) => destination.category == 'recomend')
+        .toList();
+    List<Restaurant> restaurants =
+        restaurantList // Danh sách cho Special Offers
+            .where((destination) => destination.rating > 3.5)
+            .toList();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Where to?',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        bottom: TabBar(
+          controller: _tabController,
+          isScrollable: true,
+          labelColor: Colors.black,
+          unselectedLabelColor: Colors.grey,
+          indicatorColor: Colors.black,
+          tabs: [
+            Tab(icon: Icon(Icons.search), text: "Search All"),
+            Tab(icon: Icon(Icons.hotel), text: "Hotels"),
+            Tab(icon: Icon(Icons.event), text: "Things to Do"),
+            Tab(icon: Icon(Icons.restaurant), text: "Restaurants"),
+          ],
+        ),
+      ),
+      body: Column(
+        children: [
+          // Thêm khoảng cách giữa TabBar và Search bar
+          SizedBox(height: 20),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  // Phần tìm kiếm
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: 'Places to go, things to do, hotels...',
+                        suffixIcon: Container(
+                          margin: EdgeInsets.only(right: 8),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              // Add search logic here
+                            },
+                            child: Text("Search",
+                                style: TextStyle(color: Colors.white)),
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              primary: Colors.black,
+                            ),
+                          ),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 40),
+                  // Vùng hiển thị ảnh
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height * 0.25,
+                    child: Image.network(
+                      'https://media.istockphoto.com/id/827263174/photo/travel-planning-on-computer.jpg?s=612x612&w=0&k=20&c=jb2zUVSEygvRed_4Nns-8YLqQUFo5H5XaQzceIMrSuI=',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+
+                  SizedBox(height: 20),
+                  // Section for Popular Places
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Destination Spotlight",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Text(
+                          "See all",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: blueTextColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  // Hiển thị các địa điểm phổ biến
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.only(bottom: 40),
+                    child: Row(
+                      children: List.generate(
+                        popularDestinations.length,
+                        (index) => Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => PlaceDetailScreen(
+                                    destination: popularDestinations[index],
+                                  ),
+                                ),
+                              );
+                            },
+                            child: PopularPlace(
+                              destination: popularDestinations[index],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+                  // Section for Recommended Places
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "More to explore",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Text(
+                          "See all",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: blueTextColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  // Hiển thị các địa điểm được đề xuất
+                  SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: Column(
+                      children: List.generate(
+                        recommendDestinations.length,
+                        (index) => Padding(
+                          padding: const EdgeInsets.only(bottom: 15),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => PlaceDetailScreen(
+                                    destination: recommendDestinations[index],
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Recomendate(
+                              destination: recommendDestinations[index],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Thêm một phần mới cho Special Offers
+                  // Hiển thị các nhà hàng đặc biệt từ danh sách restaurant
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "You may like these",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Text(
+                          "See all",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: blueTextColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+// Hiển thị các nhà hàng với ảnh từ cơ sở dữ liệu
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.only(bottom: 40),
+                    child: Row(
+                      children: List.generate(
+                        restaurants.length, // Sử dụng danh sách nhà hàng
+                        (index) => Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => RestaurantDetailScreen(
+                                    // Thay vì destination, dùng nhà hàng
+                                    restaurant: restaurants[
+                                        index], // Chuyển restaurant vào PlaceDetailScreen
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Column(
+                              children: [
+                                // Hiển thị ảnh nhà hàng
+                                Container(
+                                  width: 200, // Kích thước ảnh
+                                  height: 150,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    image: DecorationImage(
+                                      image: NetworkImage(
+                                          restaurants[index].images[0]),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+
+                                // Hiển thị tên nhà hàng
+                                Text(
+                                  restaurants[index].restaurantName,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black,
+                                  ),
+                                ),
+
+                                const SizedBox(height: 5),
+
+                                // Hiển thị rating với 5 ô tròn và số bài review
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    for (int i = 1; i <= 5; i++)
+                                      Icon(
+                                        Icons.circle,
+                                        size: 12,
+                                        color: i <=
+                                                restaurants[index]
+                                                    .rating
+                                                    .floor()
+                                            ? Color(
+                                                0xFF13357B) // Màu chính: 13357B
+                                            : (i ==
+                                                        restaurants[index]
+                                                                .rating
+                                                                .floor() +
+                                                            1 &&
+                                                    restaurants[index].rating -
+                                                            restaurants[index]
+                                                                .rating
+                                                                .floor() >=
+                                                        0.5)
+                                                ? Color(0xFF13357B).withOpacity(
+                                                    0.5) // Màu nửa cho rating lẻ
+                                                : Colors
+                                                    .grey, // Màu xám cho phần còn lại
+                                      ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      "${restaurants[index].rating.toString()} ★",
+                                      style: TextStyle(
+                                          fontSize: 14, color: Colors.grey),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      "(${restaurants[index].review} reviews)", // Số lượng reviews từ restaurant.review
+                                      style: TextStyle(
+                                          fontSize: 14, color: Colors.grey),
+                                    ),
+                                  ],
+                                ),
+
+                                const SizedBox(height: 5),
+
+                                // Hiển thị các features (tính năng) của nhà hàng
+                                Wrap(
+                                  spacing: 4,
+                                  children: restaurants[index]
+                                      .feature
+                                      .map((feature) => Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 6, vertical: 3),
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  Colors.black.withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                            ),
+                                            child: Text(
+                                              feature,
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                          ))
+                                      .toList(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: 20),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      // Thanh điều hướng
+      bottomNavigationBar: CustomBottomNavBar(controller: HomeController()),
+    );
   }
 }

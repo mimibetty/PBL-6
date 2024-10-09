@@ -18,7 +18,8 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
   final FocusNode _focusNode = FocusNode();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   double _rating = 0;
-  List<File> _selectedImages = []; // Biến để lưu trữ danh sách các file ảnh đã chọn (tối đa 3)
+  List<File> _selectedImages =
+      []; // Biến để lưu trữ danh sách các file ảnh đã chọn (tối đa 3)
 
   @override
   void dispose() {
@@ -28,25 +29,25 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
   }
 
   Future<void> _pickImages() async {
-  if (_selectedImages.length >= 3) {
-    Get.snackbar('Limit reached', 'You can only select up to 3 images.');
-    return;
-  }
+    if (_selectedImages.length >= 3) {
+      Get.snackbar('Limit reached', 'You can only select up to 3 images.');
+      return;
+    }
 
-  final ImagePicker picker = ImagePicker(); // Tạo đối tượng ImagePicker
-  final List<XFile>? pickedFiles = await picker.pickMultiImage(); // Chọn nhiều ảnh từ thư viện
+    final ImagePicker picker = ImagePicker(); // Tạo đối tượng ImagePicker
+    final List<XFile>? pickedFiles =
+        await picker.pickMultiImage(); // Chọn nhiều ảnh từ thư viện
 
-  if (pickedFiles != null && pickedFiles.isNotEmpty) {
-    setState(() {
-      for (var pickedFile in pickedFiles) {
-        if (_selectedImages.length < 3) {
-          _selectedImages.add(File(pickedFile.path)); // Lưu file ảnh
+    if (pickedFiles != null && pickedFiles.isNotEmpty) {
+      setState(() {
+        for (var pickedFile in pickedFiles) {
+          if (_selectedImages.length < 3) {
+            _selectedImages.add(File(pickedFile.path)); // Lưu file ảnh
+          }
         }
-      }
-    });
+      });
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -147,10 +148,14 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                     allowHalfRating: true,
                     itemCount: 5,
                     itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                    itemBuilder: (context, _) => Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                      size: 20,
+                    itemBuilder: (context, _) => Container(
+                      width: 5, // Điều chỉnh độ rộng
+                      height: 10, // Điều chỉnh độ cao tương ứng
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Color(
+                            0xFF13357B), // Màu hình tròn được thay bằng mã màu 13357B
+                      ),
                     ),
                     onRatingUpdate: (rating) {
                       setState(() {

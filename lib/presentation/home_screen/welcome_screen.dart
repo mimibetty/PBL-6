@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
 import 'package:travelappflutter/presentation/home_screen/home_screen.dart';
@@ -24,6 +27,7 @@ class WelcomeScreen extends StatefulWidget {
 class _TravelWelcomeScreenState extends State<WelcomeScreen> {
   int selectedPage = 0;
   bool showCarousel = true; // Biến để theo dõi hiển thị CarouselSlider
+  String currentCity = "Loading..."; // Biến để lưu trữ thành phố hiện tại
 
   List<Topic> topics = TopicModel.getTopics(); // Get topics list
   List<TravelDestination> daNangDestinations = myDestination
@@ -39,6 +43,75 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
     return myDestination.where((destination) {
       return destination.tag.contains(topicTag);
     }).toList();
+  }
+
+  // Hàm lấy tọa độ GPS hiện tại
+  Future<Position> getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Kiểm tra dịch vụ GPS đã bật chưa
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('GPS chưa được bật.');
+    }
+
+    // Kiểm tra quyền truy cập vị trí
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Quyền truy cập vị trí bị từ chối.');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error('Quyền truy cập vị trí bị từ chối vĩnh viễn.');
+    }
+
+    // Lấy vị trí hiện tại
+    return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+  }
+
+  // Hàm chuyển tọa độ thành địa chỉ
+  Future<String> getCityFromCoordinates(Position position) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+
+      if (placemarks.isNotEmpty) {
+        // Lấy thành phố từ Placemark
+        return placemarks.first.locality ?? "Không rõ thành phố";
+      } else {
+        return "Không tìm thấy địa chỉ";
+      }
+    } catch (e) {
+      return "Lỗi khi lấy địa chỉ: $e";
+    }
+  }
+
+  // Hàm để lấy vị trí hiện tại và cập nhật thành phố
+  Future<void> _updateCurrentLocation() async {
+    try {
+      Position position = await getCurrentLocation();
+      String city = await getCityFromCoordinates(position);
+      setState(() {
+        currentCity = city;
+      });
+    } catch (e) {
+      setState(() {
+        currentCity = "Không thể lấy địa chỉ";
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _updateCurrentLocation(); // Lấy vị trí hiện tại khi khởi tạo
   }
 
   void navigateToProfile() {
@@ -181,23 +254,23 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
       elevation: 0,
       backgroundColor: Colors.white,
       leadingWidth: 180,
-      leading: const Row(
+      leading: Row(
         children: [
-          SizedBox(width: 15),
-          Icon(
+          const SizedBox(width: 15),
+          const Icon(
             Iconsax.location,
             color: Colors.black,
           ),
-          SizedBox(width: 5),
+          const SizedBox(width: 5),
           Text(
-            "Da Nang",
-            style: TextStyle(
+            currentCity, // Hiển thị thành phố hiện tại
+            style: const TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 18,
               color: Colors.black,
             ),
           ),
-          Icon(
+          const Icon(
             Icons.keyboard_arrow_down,
             size: 30,
             color: Colors.black26,

@@ -19,6 +19,8 @@ dependencies:
   carousel_slider: ^5.0.0
   image_picker: ^0.8.5
   file_picker: ^4.6.1
+  geolocator: ^10.0.0
+  geocoding: ^2.0.5    # Gói để chuyển đổi tọa độ thành địa chỉ
 
 dev_dependencies: 
   flutter_test: 
