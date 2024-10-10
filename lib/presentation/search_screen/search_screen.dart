@@ -3,13 +3,15 @@ import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/home_screen/place_detail.dart';
-import 'package:travelappflutter/presentation/home_screen/restaurant_detail.dart' as detail;
+import 'package:travelappflutter/presentation/home_screen/restaurant_detail.dart'
+    as detail;
 import 'package:travelappflutter/presentation/home_screen/widgets/popular_place.dart';
 import 'package:travelappflutter/presentation/home_screen/widgets/recomendate.dart';
 import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
 import 'package:travelappflutter/presentation/search_screen/models/restaurant_model.dart';
-import 'package:travelappflutter/presentation/search_screen/restaurant_search_screen.dart' as search;
-
+import 'package:travelappflutter/presentation/search_screen/restaurant_search_screen.dart'
+    as search;
+import 'package:travelappflutter/presentation/search_screen/thing_to_do_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   @override
@@ -22,23 +24,40 @@ class _SearchScreenState extends State<SearchScreen>
 
   @override
   void initState() {
+    List<TravelDestination> daNangDestinations = myDestination
+        .where((element) => element.location == "Da Nang , Viet Nam")
+        .toList();
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
     _tabController.addListener(() {
-  if (!_tabController.indexIsChanging) {
-    if (_tabController.index == 3) {
-      Future.microtask(() {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => search.RestaurantSearchScreen(), // Điều hướng đến trang RestaurantSearchScreen
-          ),
-        );
-      });
-    }
-  }
-});
-
+      if (!_tabController.indexIsChanging) {
+        if (_tabController.index == 3) {
+          Future.microtask(() {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => search
+                    .RestaurantSearchScreen(), // Điều hướng đến trang RestaurantSearchScreen
+              ),
+            );
+          });
+        }
+      }
+      if (!_tabController.indexIsChanging) {
+        if (_tabController.index == 2) {
+          Future.microtask(() {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ThingToDoScreen(
+                    destinations:
+                        daNangDestinations), // Điều hướng đến trang RestaurantSearchScreen
+              ),
+            );
+          });
+        }
+      }
+    });
   }
 
   @override

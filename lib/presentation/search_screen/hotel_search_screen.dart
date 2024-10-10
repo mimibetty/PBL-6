@@ -1,32 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:travelappflutter/presentation/home_screen/restaurant_detail.dart';
-import 'package:travelappflutter/presentation/search_screen/models/restaurant_model.dart';
+import 'package:travelappflutter/presentation/home_screen/hotel_detail.dart';
+import 'package:travelappflutter/presentation/search_screen/models/hotel_model.dart';
 
-class RestaurantSearchScreen extends StatefulWidget {
+class HotelSearchScreen extends StatefulWidget {
   @override
-  _RestaurantSearchScreenState createState() => _RestaurantSearchScreenState();
+  _HotelSearchScreenState createState() => _HotelSearchScreenState();
 }
 
-class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
+class _HotelSearchScreenState extends State<HotelSearchScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
-  List<Restaurant> filteredRestaurants = [];
-  late List<Restaurant> restaurants;
+  List<Hotel> filteredHotels = [];
+  late List<Hotel> hotels;
 
   @override
   void initState() {
     super.initState();
-    restaurants = restaurantList
-        .where((destination) => destination.rating > 3.5)
+    hotels = mockHotels
+        .where((hotel) => hotel.rating > 3.5)
         .toList();
-    filteredRestaurants = restaurants;
+    filteredHotels = hotels;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search Restaurants'),
+        title: Text('Search Hotels'),
         leading: BackButton(),
         actions: [
           IconButton(
@@ -43,22 +43,19 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Tiêu đề "Top Restaurants in Da Nang" nằm một dòng riêng
                 Text(
-                  "Top Restaurants in Da Nang",
+                  "Top Hotels in Da Nang",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 8),
-                // Số kết quả tìm thấy nằm một dòng riêng
                 Text.rich(
                   TextSpan(
                     children: [
                       TextSpan(
-                        text:
-                            "${filteredRestaurants.length}", // Số lượng in đậm
+                        text: "${filteredHotels.length}",
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.black,
@@ -66,8 +63,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
                         ),
                       ),
                       TextSpan(
-                        text:
-                            " result match your filter", 
+                        text: " result match your filter", 
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.black,
@@ -76,11 +72,10 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
                       ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
           ),
-          // Nút Sort được đặt riêng ra một container
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
@@ -96,7 +91,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
                     ),
                   ),
                   DropdownButton<String>(
-                    value: "Rating", // Default sort by rating
+                    value: "Rating",
                     items: <String>[
                       'Rating',
                       'Name',
@@ -108,7 +103,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
                       );
                     }).toList(),
                     onChanged: (String? newValue) {
-                      _sortRestaurants(newValue);
+                      _sortHotels(newValue);
                     },
                   ),
                 ],
@@ -118,9 +113,9 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
           const SizedBox(height: 16),
           Expanded(
             child: ListView.builder(
-              itemCount: filteredRestaurants.length,
+              itemCount: filteredHotels.length,
               itemBuilder: (context, index) {
-                final restaurant = filteredRestaurants[index];
+                final hotel = filteredHotels[index];
 
                 return GestureDetector(
                   onTap: () {
@@ -128,7 +123,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            RestaurantDetailScreen(restaurant: restaurant),
+                            HotelDetailScreen(hotel: hotel),
                       ),
                     );
                   },
@@ -140,27 +135,24 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Hiển thị ảnh nhà hàng
                             Container(
                               width: 120,
                               height: 120,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
                                 image: DecorationImage(
-                                  image: NetworkImage(restaurant.images[0]),
+                                  image: NetworkImage(hotel.images[0]),
                                   fit: BoxFit.cover,
                                 ),
                               ),
                             ),
                             const SizedBox(width: 15),
-                            // Hiển thị thông tin nhà hàng
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  // Tên nhà hàng
                                   Text(
-                                    restaurant.restaurantName,
+                                    hotel.hotelName,
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500,
@@ -170,46 +162,38 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
                                     maxLines: 1,
                                   ),
                                   const SizedBox(height: 15),
-                                  // Thời gian mở cửa
                                   Text(
-                                    "Time: ${restaurant.time}",
+                                    "Address: ${hotel.hotelLocation}",
                                     style: TextStyle(
-                                        fontSize: 14, color: Colors.black54),
+                                      fontSize: 14, color: Colors.black54),
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
                                   ),
                                   const SizedBox(height: 15),
-                                  // Đánh giá và số lượng review
                                   Row(
                                     children: [
                                       for (int i = 1; i <= 5; i++)
                                         Icon(
                                           Icons.circle,
                                           size: 12,
-                                          color: i <= restaurant.rating.floor()
+                                          color: i <= hotel.rating.floor()
                                               ? Color(0xFF13357B)
                                               : (i ==
-                                                          restaurant.rating
-                                                                  .floor() +
-                                                              1 &&
-                                                      restaurant.rating -
-                                                              restaurant.rating
-                                                                  .floor() >=
-                                                          0.5)
-                                                  ? Color(0xFF13357B)
-                                                      .withOpacity(0.5)
+                                                          hotel.rating.floor() + 1 &&
+                                                      hotel.rating - hotel.rating.floor() >= 0.5)
+                                                  ? Color(0xFF13357B).withOpacity(0.5)
                                                   : Colors.grey,
                                         ),
                                       const SizedBox(width: 8),
                                       Text(
-                                        "${restaurant.rating.toString()} ★",
+                                        "${hotel.rating.toString()} ★",
                                         style: TextStyle(
                                             fontSize: 14, color: Colors.grey),
                                       ),
                                       const SizedBox(width: 5),
                                       Expanded(
                                         child: Text(
-                                          "(${restaurant.review} reviews)",
+                                          "(${hotel.review} reviews)",
                                           style: TextStyle(
                                               fontSize: 14, color: Colors.grey),
                                           overflow: TextOverflow.ellipsis,
@@ -221,18 +205,15 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
                                   const SizedBox(height: 5),
                                   Divider(thickness: 1, color: Colors.black26),
                                   const SizedBox(height: 5),
-                                  // Các tính năng của nhà hàng
                                   Wrap(
                                     spacing: 4,
-                                    children: restaurant.feature
+                                    children: hotel.roomFeature
                                         .map((feature) => Container(
                                               padding: EdgeInsets.symmetric(
                                                   horizontal: 6, vertical: 3),
                                               decoration: BoxDecoration(
-                                                color: Colors.black
-                                                    .withOpacity(0.1),
-                                                borderRadius:
-                                                    BorderRadius.circular(15),
+                                                color: Colors.black.withOpacity(0.1),
+                                                borderRadius: BorderRadius.circular(15),
                                               ),
                                               child: Text(
                                                 feature,
@@ -262,91 +243,74 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
     );
   }
 
-  // Hiển thị menu lọc
   void _showFilterMenu(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.all(16.0),
-            child: FormBuilder(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 16),
-                  _buildCheckboxGroup('Establishment Type', 'types', [
-                    'Restaurant',
-                    'Coffee & Tea',
-                    'Bar & Pubs',
-                    'Dessert',
-                    'Bakeries',
-                    'Delivery Only',
-                  ]),
-                  _buildCheckboxGroup('Meals', 'meals', [
-                    'Breakfast',
-                    'Brunch',
-                    'Lunch',
-                    'Dinner',
-                  ]),
-                  _buildCheckboxGroup('Price', 'price', [
-                    'Cheap Eats',
-                    'Mid-range',
-                    'Fine Dining',
-                  ]),
-                  _buildCheckboxGroup('Cuisines', 'cuisines', [
-                    'Vietnamese',
-                    'Asian',
-                    'Seafood',
-                    'Deli',
-                  ]),
-                  _buildCheckboxGroup('Dishes', 'dishes', [
-                    'Beef',
-                    'Fish',
-                    'Salad',
-                    'Noodle',
-                  ]),
-                  _buildCheckboxGroup('Features', 'features', [
-                    'Seating',
-                    'Reservation',
-                    'Free Wifi',
-                    'Serves Alcohol',
-                  ]),
-                  _buildCheckboxGroup('Good for', 'good_for', [
-                    'Families with children',
-                    'Large groups',
-                    'Kids',
-                    'Romantic',
-                  ]),
-                  _buildCheckboxGroup('Other', 'other', [
-                    'Open Now',
-                  ]),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.saveAndValidate()) {
-                        var selectedFilters = _formKey.currentState!.value;
-                        _applyFilters(selectedFilters);
-                        Navigator.pop(context);
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      foregroundColor: Colors.white,
-                    ),
-                    child: Text('Apply Filters'),
+  showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) {
+      return SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(16.0),
+          child: FormBuilder(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 16),
+                FormBuilderDateRangePicker(
+                  name: 'date_range',
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime(2030),
+                  decoration: InputDecoration(
+                    labelText: 'Select Check-in & Check-out Dates',
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 16),
+                _buildCheckboxGroup('Price Range', 'price', [
+                  'Low',
+                  'Medium',
+                  'High',
+                ]),
+                _buildCheckboxGroup('Amenities', 'amenities', [
+                  'Free Wifi',
+                  'Breakfast Included',
+                  'Parking',
+                  'Pool',
+                ]),
+                const SizedBox(height: 16),
+                
+                const SizedBox(height: 16),
+                _buildCheckboxGroup('Hotel Star', 'hotel_star', [
+                  '1 Star',
+                  '2 Star',
+                  '3 Star',
+                  '4 Star',
+                  '5 Star',
+                ]),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.saveAndValidate()) {
+                      var selectedFilters = _formKey.currentState!.value;
+                      _applyFilters(selectedFilters);
+                      Navigator.pop(context);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: Text('Apply Filters'),
+                ),
+              ],
             ),
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
 
-  // Hàm hiển thị checkbox group
+
   Widget _buildCheckboxGroup(String title, String name, List<String> options) {
     return FormBuilderCheckboxGroup(
       decoration: InputDecoration(labelText: title),
@@ -357,31 +321,28 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
     );
   }
 
-  // Áp dụng bộ lọc
   void _applyFilters(Map<String, dynamic> filters) {
     // setState(() {
-    //   filteredRestaurants = restaurants.where((restaurant) {
-    //     bool matchesType = filters['types'] != null &&
-    //         filters['types'].any((type) => restaurant.type == type);
+    //   filteredHotels = hotels.where((hotel) {
     //     bool matchesPrice = filters['price'] != null &&
-    //         filters['price'].any((price) => restaurant.price == price);
-    //     // Các logic lọc khác
-    //     return matchesType && matchesPrice;
+    //         filters['price'].any((price) => hotel.price == price);
+    //     // Logic for other filters
+    //     return matchesPrice;
     //   }).toList();
     // });
   }
 
-  // Hàm sắp xếp
-  void _sortRestaurants(String? newValue) {
+  void _sortHotels(String? newValue) {
     // setState(() {
     //   if (newValue == "Rating") {
-    //     filteredRestaurants.sort((a, b) => b.rating.compareTo(a.rating));
+    //     filteredHotels.sort((a, b) => b.rating.compareTo(a.rating));
     //   } else if (newValue == "Name") {
-    //     filteredRestaurants.sort(
-    //         (a, b) => a.restaurantName.compareTo(b.restaurantName));
+    //     filteredHotels.sort(
+    //         (a, b) => a.hotelName.compareTo(b.hotelName));
     //   } else if (newValue == "Review Count") {
-    //     filteredRestaurants.sort((a, b) => b.review.compareTo(a.review));
+    //     filteredHotels.sort((a, b) => b.reviewCount.compareTo(a.reviewCount));
     //   }
     // });
   }
 }
+

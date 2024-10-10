@@ -16,6 +16,8 @@ class Restaurant {
   String restaurantLocation;
   int review;
   String priceRange;
+  String type;
+  String goodFor;
   Restaurant({
     required this.restaurantName,
     required this.restaurantId,
@@ -30,7 +32,9 @@ class Restaurant {
     required this.images,
     required this.restaurantLocation,
     required this.review,
-    required this.priceRange
+    required this.priceRange,
+    required this.type,
+    required this.goodFor
   });
 }
 
@@ -55,6 +59,8 @@ List<Restaurant> restaurantList = [
     restaurantLocation: "31-33 Trần Bạch Đằng, Phước Mỹ, Sơn Trà, Đà Nẵng ",
     review: random.nextInt(300) + 25,
     priceRange: "7.00\$-30.00\$",
+    type : "Restaurant",
+    goodFor :"Families with children"
 
 
   ),
@@ -77,6 +83,8 @@ List<Restaurant> restaurantList = [
     restaurantLocation: "InterContinental Danang Sun Peninsula Resort, Bãi Bắc, Sơn Trà, Đà Nẵng",
         review: random.nextInt(300) + 25,
     priceRange: "5.00\$-10.00\$",
+    type:"Restaurant",
+    goodFor : "Large groups"
 
 
   ),
@@ -99,6 +107,8 @@ List<Restaurant> restaurantList = [
     restaurantLocation: "Lô 8 Võ Nguyên Giáp, Mân Thái, Sơn Trà, Đà Nẵng",    
     review: random.nextInt(300) + 25,
     priceRange: "10.00\$-20.00\$",
+    type:"Restaurant",
+    goodFor:"Families with children"
 
 
   ),
@@ -121,6 +131,9 @@ List<Restaurant> restaurantList = [
     restaurantLocation: "04 Bạch Đằng, Thạch Thang, Hải Châu, Đà Nẵng",
         review: random.nextInt(300) + 25,
     priceRange: "20.00\$-35.00\$",
+    type:"Coffee & Tea, Restaurant",
+    goodFor:"Kids"
+
 
 
   ),
@@ -143,6 +156,8 @@ List<Restaurant> restaurantList = [
     restaurantLocation: "Belle Maison Parosand Danang, 216 Võ Nguyên Giáp, Phước Mỹ, Sơn Trà, Đà Nẵng ",
         review: random.nextInt(300) + 25,
     priceRange: "30.00\$-40.00\$",
+    type:"Bar & Pubs",
+    goodFor:"Romantic"
 
 
   ),

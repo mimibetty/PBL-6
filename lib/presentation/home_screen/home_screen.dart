@@ -6,6 +6,9 @@ import 'package:travelappflutter/presentation/home_screen/controller/home_contro
 import 'package:travelappflutter/presentation/home_screen/models/cities_model.dart';
 import 'package:travelappflutter/presentation/home_screen/place_detail.dart';
 import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
+import 'package:travelappflutter/presentation/search_screen/hotel_search_screen.dart';
+import 'package:travelappflutter/presentation/search_screen/restaurant_search_screen.dart';
+import 'package:travelappflutter/presentation/search_screen/thing_to_do_screen.dart';
 import 'package:travelappflutter/routes/app_routes.dart';
 import './widgets/recomendate.dart';
 import 'package:iconsax/iconsax.dart';
@@ -14,7 +17,7 @@ import './models/travel_model.dart';
 
 class HomeScreen extends StatefulWidget {
   final List<TravelDestination> destinations;
-  final bool show; 
+  final bool show;
 
   const HomeScreen({super.key, required this.destinations, this.show = true});
 
@@ -57,7 +60,7 @@ class _TravelHomeScreenState extends State<HomeScreen> {
                 height: 200,
                 enlargeCenterPage: true,
                 autoPlay: true,
-                aspectRatio: 16/9,
+                aspectRatio: 16 / 9,
                 autoPlayCurve: Curves.fastOutSlowIn,
                 enableInfiniteScroll: true,
                 autoPlayAnimationDuration: Duration(milliseconds: 1500),
@@ -206,14 +209,15 @@ class _TravelHomeScreenState extends State<HomeScreen> {
   AppBar headerParts() {
     return AppBar(
       elevation: 0,
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[200], // Thay đổi màu nền sáng hơn
       leadingWidth: 180,
       leading: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
             IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.black),
+              icon: const Icon(Icons.arrow_back,
+                  color: Colors.black), // Màu biểu tượng back
               onPressed: () {
                 Navigator.pop(context); // Quay lại trang trước đó
               },
@@ -221,7 +225,7 @@ class _TravelHomeScreenState extends State<HomeScreen> {
             const SizedBox(width: 5),
             const Icon(
               Iconsax.location,
-              color: Colors.black,
+              color: Colors.black, // Màu biểu tượng location
             ),
             const SizedBox(width: 5),
             const Text(
@@ -229,43 +233,77 @@ class _TravelHomeScreenState extends State<HomeScreen> {
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 18,
-                color: Colors.black,
+                color: Colors.black87, // Màu chữ tối hơn
               ),
             ),
             const Icon(
               Icons.keyboard_arrow_down,
               size: 30,
-              color: Colors.black26,
+              color: Colors.black26, // Màu mũi tên
             ),
           ],
         ),
       ),
       actions: [
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(
-              color: Colors.black12,
-            ),
-          ),
-          padding: const EdgeInsets.all(7),
-          child: const Stack(
-            children: [
-              Icon(
-                Iconsax.notification,
-                color: Colors.black,
-                size: 30,
-              ),
-              Positioned(
-                top: 5,
-                right: 5,
-                child: CircleAvatar(
-                  radius: 5,
-                  backgroundColor: Colors.red,
+        PopupMenuButton<String>(
+          icon: const Icon(Icons.menu,
+              color: Colors.black, size: 30), // Màu biểu tượng menu
+          onSelected: (value) {
+            // Xử lý sự kiện khi chọn một mục trong menu
+            switch (value) {
+              case 'Things to do':
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ThingToDoScreen(destinations: myDestination,),
+                  ),
+                );
+                break;
+              case 'Hotels':
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HotelSearchScreen(),
+                  ),
+                );
+                break;
+              case 'Restaurants':
+                Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RestaurantSearchScreen(),
+                ),
+              );
+                break;
+            }
+          },
+          // Thay đổi màu nền và màu chữ của menu
+          color: Colors.white, // Màu nền của menu
+          itemBuilder: (BuildContext context) {
+            return [
+              const PopupMenuItem<String>(
+                value: 'Things to do',
+                child: Text(
+                  'Things to do',
+                  style: TextStyle(color: Colors.black), // Màu chữ
                 ),
               ),
-            ],
-          ),
+              const PopupMenuItem<String>(
+                value: 'Hotels',
+                child: Text(
+                  'Hotels',
+                  style: TextStyle(color: Colors.black), // Màu chữ
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'Restaurants',
+                child: Text(
+                  'Restaurants',
+                  style: TextStyle(color: Colors.black), // Màu chữ
+                ),
+              ),
+            ];
+          },
         ),
         const SizedBox(width: 15),
       ],
