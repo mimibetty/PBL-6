@@ -15,18 +15,18 @@ class SignUpModel {
   async authenticate() {
     try {
       const data = {
-        name: this.username,
+        username: this.username,
         password: this.password,
         email: this.email
       };
-      const response = await axios.post('http://127.0.0.1:8000/user', data, {
+      const response = await axios.post('https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/user/', data, {
         headers: {
           'Content-Type': 'application/json',
         },
       });
 
-      if (response.data && response.data.name) {
-        return { success: true, name: response.data.name };  // Assuming name is returned
+      if (response.data && response.data.username) {
+        return { success: true, name: response.data.username };  // Assuming name is returned
       } else {
         return { success: false, message: 'Failed to register account' };
       }
