@@ -6,6 +6,7 @@ class BlogBase(BaseModel):
     body: str
 
 class Blog(BlogBase):
+    id: int
     class Config():
         from_attributes = True
 class UserInfoBase(BaseModel):
@@ -19,11 +20,13 @@ class User(BaseModel):
     role: str
 
 class ShowUserInfo(BaseModel):
+    id: str
     business_description: Optional[str]  # Thông tin mô tả doanh nghiệp
     phone_number: Optional[str]  
     class Config:
         from_attributes = True
 class ShowUser(BaseModel):
+    id: int
     username:str
     email:str
     role: str
@@ -31,6 +34,7 @@ class ShowUser(BaseModel):
         from_attributes = True
 
 class ShowBlog(BaseModel):
+    id: int
     title: str
     body:str
     creator: ShowUser
@@ -73,7 +77,40 @@ class City(BaseModel):
     description: str
     
 class ShowCity(City):
+    id: int
     destination: List[Destination] = []
     
+    class Config():
+        from_attributes = True
+        
+class Destination(BaseModel):
+    name : str
+    address : str
+    price_bottom : int  
+    price_top : int  
+    date_create : date 
+    age : int  
+    opentime : time
+    duration : int 
+
+class ShowDestination(Destination):
+    id: int
+    
+    class Config():
+        from_attributes = True
+        
+class Review(BaseModel):
+    title :str 
+    content :str 
+    rating : float
+    date_create :date
+    
+    
+    
+class ShowReview(Review):
+    id: int
+    # Foreign Key
+    user : ShowUser
+    destination :ShowDestination
     class Config():
         from_attributes = True
