@@ -4,6 +4,5 @@ __pycache__/
 # Bỏ qua các tệp .pyc
 *.pyc
 node_modules/
-venv/
-env/
+
 .env
