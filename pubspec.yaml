@@ -20,7 +20,12 @@ dependencies:
   image_picker: ^0.8.5
   file_picker: ^4.6.1
   geolocator: ^10.0.0
-  geocoding: ^2.0.5    # Gói để chuyển đổi tọa độ thành địa chỉ
+  geocoding: ^2.0.5  
+  url_launcher: ^6.3.0
+  flutter_bloc: ^8.0.0  # Phiên bản mới nhất
+  flutter_form_builder: ^8.0.0
+
+
 
 dev_dependencies: 
   flutter_test: 

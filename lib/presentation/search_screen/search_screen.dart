@@ -3,11 +3,13 @@ import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/home_screen/place_detail.dart';
-import 'package:travelappflutter/presentation/home_screen/restaurant_detail.dart';
+import 'package:travelappflutter/presentation/home_screen/restaurant_detail.dart' as detail;
 import 'package:travelappflutter/presentation/home_screen/widgets/popular_place.dart';
 import 'package:travelappflutter/presentation/home_screen/widgets/recomendate.dart';
 import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
 import 'package:travelappflutter/presentation/search_screen/models/restaurant_model.dart';
+import 'package:travelappflutter/presentation/search_screen/restaurant_search_screen.dart' as search;
+
 
 class SearchScreen extends StatefulWidget {
   @override
@@ -22,6 +24,21 @@ class _SearchScreenState extends State<SearchScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
+    _tabController.addListener(() {
+  if (!_tabController.indexIsChanging) {
+    if (_tabController.index == 3) {
+      Future.microtask(() {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => search.RestaurantSearchScreen(), // Điều hướng đến trang RestaurantSearchScreen
+          ),
+        );
+      });
+    }
+  }
+});
+
   }
 
   @override
@@ -261,7 +278,7 @@ class _SearchScreenState extends State<SearchScreen>
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => RestaurantDetailScreen(
+                                  builder: (_) => detail.RestaurantDetailScreen(
                                     // Thay vì destination, dùng nhà hàng
                                     restaurant: restaurants[
                                         index], // Chuyển restaurant vào PlaceDetailScreen

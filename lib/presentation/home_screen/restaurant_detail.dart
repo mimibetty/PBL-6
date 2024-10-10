@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
-import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
 import 'package:travelappflutter/presentation/search_screen/models/restaurant_model.dart';
-import 'package:travelappflutter/routes/app_routes.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../review_widget/models/review_widget_model.dart';
 import '../review_widget/widgets/create_review.dart';
 
@@ -21,13 +18,79 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   @override
   void initState() {
     super.initState();
-    allReviews = mockReviews; // Khởi tạo trong initState
+    allReviews = mockReviews;
   }
 
   PageController pageController = PageController();
   int pageView = 0;
-  List<ReviewWidgetModel> allReviews =
-      mockReviews; // Sử dụng mockReviews đã tạo trước đó
+  List<ReviewWidgetModel> allReviews = mockReviews;
+
+  Widget _buildContactInfo(String label, String value) {
+    return RichText(
+      text: TextSpan(
+        style: const TextStyle(
+            fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black),
+        children: [
+          TextSpan(
+              text: label,
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold)), // In đậm label
+          TextSpan(
+            text: ' $value',
+            style: TextStyle(
+              color: Colors.black87,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWebsiteInfo(String url) {
+    return GestureDetector(
+      onTap: () async {
+        if (await canLaunch(url)) {
+          await launch(url);
+        } else {
+          throw 'Could not launch $url';
+        }
+      },
+      child: RichText(
+        text: TextSpan(
+          style: const TextStyle(
+              fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black),
+          children: [
+            const TextSpan(
+                text: 'Website: ',
+                style: TextStyle(fontWeight: FontWeight.bold)), // In đậm label
+            TextSpan(
+              text: url,
+              style: const TextStyle(
+                color: Colors.blue, // Màu khác cho đường dẫn
+                decoration: TextDecoration.underline, // Gạch chân
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLocationInfo(String label, String location) {
+    return RichText(
+      text: TextSpan(
+        style: const TextStyle(
+            fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black),
+        children: [
+          TextSpan(
+              text: label,
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold)), // In đậm label
+          TextSpan(text: ' $location'), // Thêm địa điểm
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,11 +99,6 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
             (review) => review.destinationId == widget.restaurant.restaurantId)
         .toList();
 
-    print("Filtered Reviews:");
-    for (var review in filteredReviews) {
-      print(
-          'ID: ${review.destinationId}, Name: ${review.context}'); // In ra ID và Name
-    }
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
@@ -93,6 +151,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
         padding: const EdgeInsets.all(15),
         child: Column(
           children: [
+            // Image Carousel
             Container(
               height: MediaQuery.of(context).size.height * 0.5,
               decoration: BoxDecoration(
@@ -299,7 +358,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
             const SizedBox(height: 10),
             Expanded(
               child: DefaultTabController(
-                length: 2, // Số lượng tab
+                length: 3, // Số lượng tab (Overview, Review, Contact)
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -311,51 +370,78 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                           fontSize: 18,
                           fontWeight: FontWeight.w500,
                         ),
-                        unselectedLabelColor: Colors.black,
+                        unselectedLabelColor: Colors.grey,
                         indicatorColor: blueTextColor,
-                        dividerColor: Colors.transparent,
                         tabs: [
-                          Tab(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal:
-                                      4.0), // Tăng chiều cao của tab Overview
-                              child: Text('Overview'),
-                            ),
-                          ),
-                          Tab(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  vertical:
-                                      8.0), // Chiều cao bình thường cho tab Review
-                              child: Text('Review'),
-                            ),
-                          ),
+                          Tab(child: Text('Overview')),
+                          Tab(child: Text('Review')),
+                          Tab(child: Text('Contact')),
                         ],
                       ),
                     ),
                     Expanded(
                       child: TabBarView(
                         children: [
+                          // Overview Tab
                           Padding(
                             padding: const EdgeInsets.all(10),
-                            child: Text(
-                              widget.restaurant.about,
-                              maxLines: 3,
-                              style: const TextStyle(
-                                color: Colors.black54,
-                                fontSize: 14,
-                                height: 1.5,
+                            child: SingleChildScrollView(
+                              // Thêm SingleChildScrollView
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    widget.restaurant.about,
+                                    style: const TextStyle(
+                                      color: Colors.black54,
+                                      fontSize: 14,
+                                      height: 1.5,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  _buildContactInfo("Price Range :",
+                                      widget.restaurant.priceRange),
+                                  const SizedBox(height: 10),
+                                  _buildContactInfo("Cuisines :",
+                                      widget.restaurant.cuisines.join(', ')),
+                                  const SizedBox(height: 10),
+                                  _buildContactInfo("Feature :",
+                                      widget.restaurant.feature.join(', ')),
+                                  const SizedBox(height: 10),
+                                  _buildContactInfo("Meal :",
+                                      widget.restaurant.cuisines.join(', ')),
+                                  const SizedBox(height: 10),
+                                  _buildContactInfo(
+                                      "Open Time :", widget.restaurant.time),
+                                  const SizedBox(height: 10),
+                                ],
                               ),
                             ),
                           ),
-                          ReviewWidget(
-                            reviews:
-                                filteredReviews, // Pass the filtered reviews list
-                          ), // Chỉ có 2 widget con, do đó loại bỏ Center
+
+                          // Review Tab
+                          ReviewWidget(reviews: filteredReviews),
+                          // Contact Tab
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _buildContactInfo('Contact Number:',
+                                      widget.restaurant.contactNumber),
+                                  const SizedBox(height: 10),
+                                  _buildWebsiteInfo(widget.restaurant.website),
+                                  const SizedBox(height: 10),
+                                  _buildLocationInfo('Location:',
+                                      widget.restaurant.restaurantLocation),
+                                ],
+                              ),
+                            ),
+                          ),
                         ],
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -363,6 +449,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
           ],
         ),
       ),
+      // Bottom Navigation for "Create a review"
       bottomNavigationBar: Container(
         height: 110,
         decoration: const BoxDecoration(
@@ -375,30 +462,9 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 10,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Price",
-                    style: TextStyle(
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-            ),
             const Spacer(),
             TextButton(
               onPressed: () {
-                // Get.toNamed(AppRoutes.createReviewScreen, arguments: {
-                //   'destinationId': widget
-                //       .destination.id, // Truyền id của destination nếu cần
-                // });
                 showModalBottomSheet(
                   context: context,
                   isScrollControlled: false,
