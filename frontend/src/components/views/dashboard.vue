@@ -31,12 +31,6 @@
 
             <div class="flex-row">
               <span class="explore-viet-nam">Explore Viet Nam</span>
-              <button class="rectangle-4">
-                <div class="line"></div>
-              </button>
-              <div class="rectangle-5">
-                <div class="line-6"></div>
-              </div>
             </div>
             <span class="you-like-to-go">You Like To Go?</span>
           </div>
@@ -207,7 +201,7 @@ const {
   position: absolute;
   top: 0;
   left: 0;
-  width: fit-content;
+  width: 100%;
   height: fit-content;
   overflow: hidden;
   display: flex;
@@ -239,42 +233,43 @@ button {
 
 .flex-row-bfc {
   position: relative;
-  width: 1440px;
+  width: 100%;
   height: 674px;
   margin: -2px 0 0 0;
   z-index: 23;
 }
 .rectangle {
   position: absolute;
-  width: 125px;
-  height: 145px;
+  width: 9%;
+  height: 21.5%;
   top: 0;
-  left: 650px;
+  left: 40%;
   background: #13357b;
   z-index: 20;
 }
 .home {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   position: absolute;
-  width: 70px;
-  height: 30px;
-  top: 58px;
-  left: 27px;
+  width: 5%;
+  height: 20%;
+  top: 40%;
+  left: 50%;
   color: #f4fff8;
   font-family: Poppins, var(--default-font-family);
-  font-size: 20px;
+  font-size: 1.75vw;
   font-weight: 700;
-  line-height: 30px;
+  line-height: 150%;
   text-align: center;
+  
   white-space: nowrap;
   z-index: 21;
 }
 .rectangle-1 {
   position: absolute;
-  width: 1440px;
-  height: 640px;
+  width: 100%;
+  height: 95%;
   top: 2px;
   left: 0;
   background: rgba(0, 15, 8, 0.4);
@@ -283,17 +278,17 @@ button {
 }
 .rectangle-2 {
   position: relative;
-  width: 1440px;
-  height: 143px;
+  width: 100%;
+  height: 22.5%;
   margin: 0 0 0 0;
   background: #000000;
 }
 .image {
   position: absolute;
-  width: 120px;
-  height: 120px;
-  top: 13px;
-  left: 15px;
+  width: 8%;
+  height: 83.9%;
+  top: 9%;
+  left: 1%;
   background: url('@/assets/images/company_image.png')
     no-repeat center;
   background-size: cover;
@@ -302,22 +297,20 @@ button {
 }
 .union {
   position: absolute;
-  width: 4.00%;
-  height: 30.28%;
-  top: 30.08%;
-  left: 93%;
-  background: url('@/assets/images/personal_logo.png') no-repeat center;
-  background-size: 100% 100%;
-  z-index: 12;
-  cursor: pointer;
-  border: none;
-  background-color: transparent;
+  top: 34%;
+  right: 3%;
+  width: 4%; /* Đặt kích thước logo phù hợp */
+  height: 34%; /* Đặt kích thước logo phù hợp */
+  background: url('@/assets/personal.svg') no-repeat center;
+  background-size: contain; /* Hoặc cover nếu muốn ảnh bao phủ */
+  z-index: 13;
+  border: none; /* Đảm bảo không có viền bao quanh logo */
 }
 
 .menu-container {
   position: absolute;
-  top: 100px; /* Điều chỉnh để căn theo nhu cầu */
-  right: 50px; /* Điều chỉnh để căn theo nhu cầu */
+  top: 15%; /* Điều chỉnh để căn theo nhu cầu */
+  right: 3%; /* Điều chỉnh để căn theo nhu cầu */
   background-color: rgba(0, 0, 0, 0.8); /* Khung nền mờ xung quanh menu */
   padding: 20px;
   border-radius: 10px;
@@ -326,9 +319,17 @@ button {
   flex-direction: column;
   align-items: flex-start;
   width: 100%; /* Đặt chiều rộng cho khung bằng 100% so với container của nó */
-  max-width: 400px; /* Đặt giới hạn chiều rộng tối đa */
+  max-width: 20%; /* Đặt giới hạn chiều rộng tối đa */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Hiệu ứng đổ bóng */
 }
+
+/* Cho các phần tử khác */
+.other-elements {
+  pointer-events: none; /* Ngăn không cho phần tử khác chặn menu */
+}
+
+
+
 
 .menu-options {
   display: flex;
@@ -341,7 +342,7 @@ button {
   background-color: #1877f2; /* Màu xanh đậm giống Facebook */
   color: white; /* Màu chữ trắng */
   font-family: Poppins, var(--default-font-family);
-  font-size: 20px; /* Tăng kích thước chữ */
+  font-size: 1vw; /* Tăng kích thước chữ */
   font-weight: 700;
   padding: 15px 20px; /* Tăng kích thước vùng bấm */
   border: none;
@@ -371,31 +372,31 @@ button {
   align-items: flex-start;
   justify-content: flex-start;
   position: absolute;
-  height: 60px;
-  top: 41px;
-  left: 156px;
+  height: 40%;
+  top: 30%;
+  left: 10%;
   color: #f4fff8;
-  font-family: Poppins, var(--default-font-family);
-  font-size: 40px;
+  font-family: Jost, var(--default-font-family);
+  font-size: 3vw;
   font-weight: 700;
-  line-height: 60px;
+  line-height: 100%;
   text-align: left;
   white-space: nowrap;
-  z-index: 13;
+  z-index: 11;
 }
 .travel-itinerary {
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
   position: absolute;
-  height: 30px;
-  top: 56px;
-  left: 1049px;
+  height: 20%;
+  top: 40%;
+  left: 70%;
   color: #f4fff8;
   font-family: Poppins, var(--default-font-family);
-  font-size: 20px;
+  font-size: 1.5vw;
   font-weight: 700;
-  line-height: 30px;
+  line-height: 100%;
   text-align: left;
   white-space: nowrap;
   z-index: 17;
@@ -405,14 +406,14 @@ button {
   align-items: flex-start;
   justify-content: flex-start;
   position: absolute;
-  height: 30px;
-  top: 58px;
-  left: 802px;
+  height: 20%;
+  top: 40%;
+  left: 52%;
   color: #f4fff8;
   font-family: Poppins, var(--default-font-family);
-  font-size: 20px;
+  font-size: 1.5vw;
   font-weight: 700;
-  line-height: 30px;
+  line-height: 100%;
   text-align: left;
   white-space: nowrap;
   z-index: 15;
@@ -422,14 +423,14 @@ button {
   align-items: flex-start;
   justify-content: flex-start;
   position: absolute;
-  height: 30px;
-  top: 58px;
-  left: 1234px;
+  height: 20%;
+  top: 40%;
+  left: 83%;
   color: #f4fff8;
   font-family: Poppins, var(--default-font-family);
-  font-size: 20px;
+  font-size: 1.5vw;
   font-weight: 700;
-  line-height: 30px;
+  line-height: 100%;
   text-align: left;
   white-space: nowrap;
   z-index: 18;
@@ -439,23 +440,23 @@ button {
   align-items: flex-start;
   justify-content: flex-start;
   position: absolute;
-  height: 30px;
-  top: 58px;
-  left: 971px;
+  height: 20%;
+  top: 40%;
+  left: 65%;
   color: #f4fff8;
   font-family: Poppins, var(--default-font-family);
-  font-size: 20px;
+  font-size: 1.5vw;
   font-weight: 700;
-  line-height: 30px;
+  line-height: 100%;
   text-align: left;
   white-space: nowrap;
   z-index: 16;
 }
 .flex-row {
   position: relative;
-  width: 1440px;
+  width: 100%;
   height: 211px;
-  margin: 20px 0 0 0;
+  margin: 2% 0 0 0;
   z-index: 130;
 }
 
@@ -464,84 +465,44 @@ button {
   align-items: flex-start;
   justify-content: center;
   position: absolute;
-  width: 304px;
-  height: 43px;
-  top: 106px;
-  left: 560px;
+  width: 21%;
+  height: 20%;
+  top: 50%;
+  left: 40%;
   color: #ffffff;
   font-family: Jost, var(--default-font-family);
-  font-size: 35px;
+  font-size: 2vw;
   font-weight: 700;
-  line-height: 43px;
+  line-height: 100%;
   text-align: center;
   white-space: nowrap;
   z-index: 11;
 }
-.rectangle-4 {
-  position: absolute;
-  width: 120px;
-  height: 80px;
-  top: 117px;
-  left: 0;
-  cursor: pointer;
-  background: rgba(19, 53, 123, 0.75);
-  border: none;
-  z-index: 128;
-  border-radius: 0 50px 50px 0;
-}
-.line {
-  position: relative;
-  width: 28.075px;
-  height: 51.727px;
-  margin: 13.64px 0 0 32.272px;
-  background: url('@/assets/images/back_picture.png')
-    no-repeat center;
-  background-size: cover;
-  z-index: 129;
-}
-.rectangle-5 {
-  position: absolute;
-  width: 120px;
-  height: 80px;
-  top: 117px;
-  left: 1320px;
-  background: rgba(19, 53, 123, 0.75);
-  z-index: 130;
-  border-radius: 50px 0 0 50px;
-}
-.line-6 {
-  position: relative;
-  width: 28.075px;
-  height: 51.727px;
-  margin: 13.633px 0 0 60.153px;
-  background: url('@/assets/images/forward_picture.png')
-    no-repeat center;
-  background-size: cover;
-  z-index: 131;
-}
+
+
 .you-like-to-go {
   display: flex;
   align-items: flex-start;
   justify-content: center;
   position: relative;
-  width: 506px;
-  height: 73px;
-  margin: -9px 0 0 467px;
+  width: 35%;
+  height: 34%;
+  margin: -0.8% 0 0 33%;
   color: #ffffff;
   font-family: Jost, var(--default-font-family);
-  font-size: 60px;
+  font-size: 3vw;
   font-weight: 700;
-  line-height: 73px;
+  line-height: 100%;
   text-align: center;
   white-space: nowrap;
   z-index: 10;
 }
 .rectangle-7 {
   position: absolute;
-  width: 800px;
-  height: 65px;
-  top: 609px;
-  left: 310px;
+  width: 56%;
+  height: 10%;
+  top: 90%;
+  left: 21%;
   background: #d9d9d9cc;
   border: 30px solid rgba(19, 53, 123, 0.8);
   z-index: 23;
@@ -564,13 +525,13 @@ button {
 
 .search_form {
   flex-grow: 1;
-  height: 45px;
+  height: 20%;
   padding: 0 15px;
   color: #6e69b8;
   font-family: Lato, var(--default-font-family);
-  font-size: 20px;
+  font-size: 2vw;
   font-weight: 700;
-  line-height: 45px;
+  line-height: 100%;
   border: none;
   border-radius: 30px 0 0 30px;
   background: #e0e0e0; /* Màu xám */
@@ -578,12 +539,12 @@ button {
 }
 
 .search_button {
-  width: 110px;
-  height: 40px;
+  width: 15%;
+  height: 20%;
   cursor: pointer;
   color: #ffffff;
   font-family: Lato, var(--default-font-family);
-  font-size: 18px;
+  font-size: 1.25vw;
   font-weight: 700;
   background: #13357b;
   border: none;
@@ -597,64 +558,62 @@ button {
 
 .flex-row-eff {
   position: relative;
-  width: 550px;
+  width: 38%;
   height: 30px;
-  margin: 91px 0 0 91px;
-  z-index: 64;
-}
-.destination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  width: 250px;
-  height: 30px;
-  top: 0;
-  left: 150px;
-  color: #13357b;
-  font-family: Jost, var(--default-font-family);
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 28.9px;
-  text-align: center;
-  white-space: nowrap;
+  margin: 6.5% 0 0 6.5%;
   z-index: 64;
 }
 .line-9 {
   position: absolute;
-  width: 150px;
-  height: 1px;
-  top: 14px;
-  left: 0;
-  background: url('@/assets/images/blue_line.png')
-    no-repeat center;
+  width: 30%;
+  height: 5%;
+  top: 50%;
+  left: 0; /* Đặt ở phía trái */
+  background-color: #13357b;
   background-size: cover;
   z-index: 62;
 }
+
+.destination {
+  position: absolute;
+  width: 17%;
+  height: 5%; /* Điều chỉnh chiều cao cho đồng bộ */
+  top: 30%;
+  left: 36%; /* Căn chỉnh ở giữa, ngay sau line-9 */
+  color: #13357b;
+  font-family: Jost, var(--default-font-family);
+  font-size: 1.5vw;
+  font-weight: 400;
+  line-height: 100%;
+  text-align: center;
+  white-space: nowrap;
+  z-index: 64;
+}
+
 .line-a {
   position: absolute;
-  width: 150px;
-  height: 1px;
-  top: 14px;
-  left: 400px;
-  background: url('@/assets/images/blue_line.png')
-    no-repeat center;
+  width: 30%;
+  height: 5%;
+  top: 50%;
+  left: 65%; /* Đặt sau destination */
+  background-color: #13357b;
   background-size: cover;
   z-index: 63;
 }
+
 .popular-destination {
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  width: 350px;
+  width: 25%;
   height: 53px;
-  margin: 14px 0 0 100px;
+  margin: 1% 0 0 7%;
   color: #000000;
   font-family: Jost, var(--default-font-family);
-  font-size: 37px;
+  font-size: 2vw;
   font-weight: 400;
-  line-height: 53px;
+  line-height: 100%;
   text-align: center;
   white-space: nowrap;
   z-index: 65;
@@ -664,9 +623,9 @@ button {
   align-items: center;
   justify-content: space-between;
   position: relative;
-  width: 1081px;
+  width: 75%;
   height: 45px;
-  margin: 39px 0 0 30px;
+  margin: 2% 0 0 2%;
   z-index: 53;
 }
 
@@ -677,47 +636,54 @@ button {
   padding: 0; /* Loại bỏ padding mặc định */
 }
 
+/* Điều chỉnh nút back và forward */
+.back, .forward {
+  width: 70px; /* Kích thước chiều rộng của nút dựa trên phần tử cha */
+  height: 70px; /* Kích thước chiều cao của nút */
+  background-size: 100% 100%; /* Bắt buộc SVG thay đổi kích thước theo khung */
+  background-repeat: no-repeat; /* Tránh lặp lại hình ảnh */
+  border: none;
+}
+
 .back {
-  flex-shrink: 0;
-  position: relative;
-  width: 120px;
-  height: 40px;
-  background: url('@/assets/images/back_option.png') no-repeat center;
-  background-size: cover;
-  z-index: 53;
+  position: absolute;
+  top: 50%; 
+  transform: translateY(-50%);
+  left: 2%; 
+  background: url('@/assets/back-button.svg') center; /* Hình nền cho nút back */
+  z-index: 21;
 }
 
 .forward {
-  flex-shrink: 0;
-  position: relative;
-  width: 120px;
-  height: 40px;
-  background: url('@/assets/images/forward_option.png') no-repeat center;
-  background-size: cover;
-  z-index: 48;
+  position: absolute;
+  top: 50%; 
+  transform: translateY(-50%);
+  right: 2%; 
+  background: url('@/assets/forward-button.svg') center; /* Hình nền cho nút forward */
+  z-index: 22;
 }
 
 .flex-row-cdd {
   position: relative;
-  width: 1101px;
+  width: 76%;
   height: 45px;
-  margin: 50px 0 0 50px;
+  margin: 3% 0 0 3%;
   z-index: 142;
   display: flex;
   justify-content: space-between;
 }
 
 button.btn {
-  width: 130px;
-  height: 45px;
+  width: 15%;
+  height: 100%;
   background: #f4fff8; /* Màu nền mặc định: trắng */
   color: #13357b; /* Màu chữ mặc định: xanh */
   border: 2px solid #13357b;
   border-radius: 25px;
   font-family: Jost, var(--default-font-family);
-  font-size: 15px;
+  font-size: 1.25vw;
   font-weight: 400;
-  line-height: 21.675px;
+  line-height: 100%;
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
 }
@@ -737,7 +703,7 @@ button.btn:hover {
   align-items: center;
   justify-content: center; 
   grid-template-columns: repeat(4, 200px); 
-  grid-template-rows: repeat(2, 220px); /* Chiều cao tăng lên để thêm tên thành phố */
+  grid-template-rows: repeat(2, 200px); /* Chiều cao tăng lên để thêm tên thành phố */
   gap: 40px 80px; 
   overflow: hidden; 
   width: calc(4 * 200px + 3 * 80px); 
@@ -748,7 +714,7 @@ button.btn:hover {
   position: relative; /* Để chứa phần chữ có position absolute */
   background-color: rgb(225, 255, 0);
   color: rgb(53, 24, 219);
-  font-size: 18px;
+  font-size: 1vw;
   width: 200px;
   height: 200px;
   overflow: hidden;
@@ -777,64 +743,59 @@ button.btn:hover {
 
 .flex-row-e {
   position: relative;
-  width: 550px;
+  width: 38%;
   height: 30px;
-  margin: 106px 0 0 106px;
+  margin: 7.3% 0 0 7.3%;
   z-index: 37;
 }
 .wanna-try {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: absolute;
-  width: 250px;
-  height: 30px;
-  top: 0;
-  left: 150px;
+  width: 17%;
+  height: 5%; /* Điều chỉnh chiều cao cho đồng bộ */
+  top: 30%;
+  left: 36%; /* Căn chỉnh ở giữa, ngay sau line-9 */
   color: #13357b;
   font-family: Jost, var(--default-font-family);
-  font-size: 20px;
+  font-size: 1.5vw;
   font-weight: 400;
-  line-height: 28.9px;
+  line-height: 100%;
   text-align: center;
   white-space: nowrap;
-  z-index: 37;
+  z-index: 64;
 }
 .line-f {
   position: absolute;
-  width: 150px;
-  height: 1px;
-  top: 14px;
-  left: 0;
-  background: url('@/assets/images/blue_line.png')
-    no-repeat center;
+  width: 30%;
+  height: 5%;
+  top: 50%;
+  left: 0; /* Đặt ở phía trái */
+  background-color: #13357b;
   background-size: cover;
-  z-index: 35;
+  z-index: 62;
 }
 .line-10 {
   position: absolute;
-  width: 150px;
-  height: 1px;
-  top: 14px;
-  left: 400px;
-  background: url('@/assets/images/blue_line.png')
-    no-repeat center;
+  width: 30%;
+  height: 5%;
+  top: 50%;
+  left: 65%; /* Đặt ở phía trái */
+  background-color: #13357b;
   background-size: cover;
-  z-index: 36;
+  z-index: 62;
 }
 .awesome-topics {
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  width: 270px;
+  width: 19%;
   height: 53px;
-  margin: 14px 0 0 60px;
+  margin: 1% 0 0 4%;
   color: #000000;
   font-family: Jost, var(--default-font-family);
-  font-size: 37px;
+  font-size: 2.5vw;
   font-weight: 400;
-  line-height: 53px;
+  line-height: 100%;
   text-align: center;
   white-space: nowrap;
   z-index: 38;
@@ -844,14 +805,14 @@ button.btn:hover {
   align-items: center;
   justify-content: space-between;
   position: relative;
-  width: 1083px;
+  width: 75%;
   height: 45px;
-  margin: 23px 0 0 23px;
+  margin: 2% 0 0 2%;
   z-index: 45;
 }
 
 .grid-container-topic {
-  padding-top: 20px;
+  padding-top: 50px;
   display: grid;
   align-items: center;
   justify-content: center; 
@@ -895,81 +856,76 @@ button.btn:hover {
 
 .tour-proposal-1b {
   position: relative;
-  width: 550px;
+  width: 38%;
   height: 30px;
-  margin: 106px 0 0 106px;
+  margin: 7% 0 0 7%;
   z-index: 42;
 }
 .line-1c {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: absolute;
-  width: 250px;
-  height: 30px;
-  top: 0;
-  left: 150px;
+  width: 17%;
+  height: 5%; /* Điều chỉnh chiều cao cho đồng bộ */
+  top: 30%;
+  left: 36%; /* Căn chỉnh ở giữa, ngay sau line-9 */
   color: #13357b;
   font-family: Jost, var(--default-font-family);
-  font-size: 20px;
+  font-size: 1.5vw;
   font-weight: 400;
-  line-height: 28.9px;
+  line-height: 100%;
   text-align: center;
   white-space: nowrap;
-  z-index: 42;
+  z-index: 64;
 }
 .line-1d {
   position: absolute;
-  width: 150px;
-  height: 1px;
-  top: 14px;
-  left: 0;
-  background: url('@/assets/images/blue_line.png')
-    no-repeat center;
+  width: 30%;
+  height: 5%;
+  top: 50%;
+  left: 0; /* Đặt ở phía trái */
+  background-color: #13357b;
   background-size: cover;
-  z-index: 40;
+  z-index: 62;
 }
 .awesome-tour {
   position: absolute;
-  width: 150px;
-  height: 1px;
-  top: 14px;
-  left: 400px;
-  background: url('@/assets/images/blue_line.png')
-    no-repeat center;
+  width: 30%;
+  height: 5%;
+  top: 50%;
+  left: 65%; /* Đặt ở phía trái */
+  background-color: #13357b;
   background-size: cover;
-  z-index: 41;
+  z-index: 62;
 }
 .awesome-tour-1e {
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  width: 270px;
+  width: 19%;
   height: 53px;
-  margin: 14px 0 0 50px;
+  margin: 1% 0 0 4%;
   color: #000000;
   font-family: Jost, var(--default-font-family);
-  font-size: 37px;
+  font-size: 2.5vw;
   font-weight: 400;
-  line-height: 53px;
+  line-height: 100%;
   text-align: center;
   white-space: nowrap;
-  z-index: 43;
+  z-index: 38;
 }
 .tour-proposal-1f {
   display: flex;
   align-items: center;
   justify-content: space-between;
   position: relative;
-  width: 1083px;
+  width: 75%;
   height: 45px;
-  margin: 23px 0 0 23px;
+  margin: 2% 0 0 2%;
   z-index: 95;
 }
 
 .grid-container-tour {
-  padding-top: 20px;
+  padding-top: 50px;
   display: grid;
   align-items: center;
   justify-content: center;
@@ -1052,19 +1008,19 @@ button.btn:hover {
 
 .rectangle-43 {
   position: relative;
-  width: 1440px;
+  width: 100%;
   height: 179px;
-  margin: 266px 0 0 0;
+  margin: 18% 0 0 0;
   background: #13357b;
   z-index: 4;
   border-radius: 0 0 20px 20px;
 }
 .image-44 {
   position: absolute;
-  width: 140px;
-  height: 140px;
-  top: 20px;
-  left: 20px;
+  width: 10%;
+  height: 78%;
+  top: 11%;
+  left: 1%;
   background: url('@/assets/images/company_image.png')
     no-repeat center;
   background-size: cover;
@@ -1073,36 +1029,37 @@ button.btn:hover {
 }
 .flex-column-bf {
   position: absolute;
-  width: 685px;
-  height: 90px;
-  top: 55px;
-  left: 179px;
+  width: 47%;
+  height: 50%;
+  top: 30%;
+  left: 12%;
   font-size: 0px;
   z-index: 7;
 }
 .travel-company-co {
   display: block;
   position: relative;
-  height: 48px;
+  height: 26%;
   margin: 0 0 0 0;
   color: #ffffff;
   font-family: Poppins, var(--default-font-family);
-  font-size: 32px;
+  font-size: 2.5vw;
   font-weight: 700;
-  line-height: 48px;
+  line-height: 100%;
   text-align: left;
   white-space: nowrap;
   z-index: 6;
 }
 .term-of-use-contact-us {
   position: relative;
-  width: 242px;
-  height: 30px;
-  margin: 12px 0 0 3px;
+  top: 20%;
+  width: 17%;
+  height: 17%;
+  margin: 1% 0 0 0.25%;
   font-family: Poppins, var(--default-font-family);
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 30px;
+  font-size: 2vw;
+  font-weight: 400;
+  line-height: 100%;
   text-align: left;
   text-overflow: initial;
   white-space: nowrap;
@@ -1112,32 +1069,33 @@ button.btn:hover {
   position: relative;
   color: #ffffff;
   font-family: Poppins, var(--default-font-family);
-  font-size: 20px;
+  font-size: 1.8vw;
   font-weight: 600;
-  line-height: 30px;
+  line-height: 100%;
   text-align: left;
 }
 .empty {
   position: relative;
   color: #ffffff;
   font-family: Poppins, var(--default-font-family);
-  font-size: 20px;
+  font-size: 2.5vw;
   font-weight: 700;
-  line-height: 30px;
+  line-height: 100%;
   text-align: left;
 }
 .contact-us {
   position: relative;
+  left: 20%;
   color: #ffffff;
   font-family: Poppins, var(--default-font-family);
-  font-size: 20px;
+  font-size: 1.8vw;
   font-weight: 500;
-  line-height: 30px;
+  line-height: 100%;
   text-align: left;
 }
 .carousal {
   position: absolute;
-  width: 1440px;
+  width: 100%;
   height: 640px;
   top: 0;
   left: 0;
@@ -1149,12 +1107,11 @@ button.btn:hover {
 }
 .line-45 {
   position: absolute;
-  width: 1440px;
-  height: 2.004px;
+  width: 100%;
+  height: 2px;
   top: 143px;
   left: 0;
-  background: url('@/assets/images/white_line.png')
-    no-repeat center;
+  background-color: #f4f5f7;
   background-size: cover;
   z-index: 2;
 }
