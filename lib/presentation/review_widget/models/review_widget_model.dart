@@ -62,7 +62,7 @@ List<ReviewWidgetModel> mockReviews = [
     reviewId: '1',
     userId: 'user01',
     destinationId: 1,
-    context: 'Great place! Highly recommended.',
+    context: 'Great place! Highly recommended for tourism and family . Ill comeback next time.',
     rating: 4.5,
     dateCreated: DateTime.now(),
     likeCount: 10,

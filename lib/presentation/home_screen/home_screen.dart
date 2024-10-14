@@ -28,6 +28,12 @@ class HomeScreen extends StatefulWidget {
 class _TravelHomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
+    var cityDescription = myCities
+        .firstWhere(
+          (city) => city.name.toLowerCase().contains("da nang"),
+        )
+        .description;
+
     List<TravelDestination> popularDestinations = widget.destinations
         .where((destination) => destination.category == 'popular')
         .toList();
@@ -97,6 +103,24 @@ class _TravelHomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 20),
           ],
+          if (widget.show) // Kiểm tra giá trị của widget.show
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0), // Padding trái phải
+              child: Text(
+                cityDescription, // Hiển thị mô tả của thành phố
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.black54,
+                ),
+                maxLines: 100, // Giới hạn số dòng mô tả
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.justify, // Căn đều văn bản
+                softWrap: true, // Tự động xuống dòng nếu văn bản quá dài
+              ),
+            ),
+
+          const SizedBox(height: 10),
           // Section for Popular places
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 15),
@@ -255,7 +279,9 @@ class _TravelHomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ThingToDoScreen(destinations: myDestination,),
+                    builder: (context) => ThingToDoScreen(
+                      destinations: myDestination,
+                    ),
                   ),
                 );
                 break;
@@ -269,11 +295,11 @@ class _TravelHomeScreenState extends State<HomeScreen> {
                 break;
               case 'Restaurants':
                 Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => RestaurantSearchScreen(),
-                ),
-              );
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RestaurantSearchScreen(),
+                  ),
+                );
                 break;
             }
           },

@@ -4,7 +4,7 @@ import 'dart:math';
 Random random = Random();
 
 class Hotel {
-  final String hotelID; // ID của khách sạn
+  final int hotelID; // ID của khách sạn
   final String hotelName; // Tên khách sạn
   final double rating; // Đánh giá của khách sạn
   final String hotelContact; // Thông tin liên lạc
@@ -18,7 +18,7 @@ class Hotel {
   final int star; // Số sao của khách sạn
   final List<String> images;
   final String about;
-  final review;
+  final int review;
 
 
   Hotel({
@@ -96,7 +96,7 @@ class Booking {
 // Mock database cho các khách sạn ở Đà Nẵng
 List<Hotel> mockHotels = [
   Hotel(
-    hotelID: 'H001',
+    hotelID: 1,
     hotelName: 'InterContinental Danang Sun Peninsula Resort',
     rating: 4.2,
     hotelContact: '+84 236 3888 888',
@@ -136,7 +136,7 @@ List<Hotel> mockHotels = [
   
   ),
   Hotel(
-    hotelID: 'H002',
+    hotelID: 2,
     hotelName: 'Novotel Danang Premier Han River',
     rating: 4.8,
     hotelContact: '+84 236 3929 888',
@@ -175,7 +175,7 @@ List<Hotel> mockHotels = [
 
   ),
   Hotel(
-    hotelID: 'H003',
+    hotelID: 3,
     hotelName: 'Sheraton Grand Danang Resort',
     rating: 5,
     hotelContact: '+84 236 3989 999',
