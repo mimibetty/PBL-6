@@ -30,9 +30,6 @@ def get_reviews_of_destination_by_destinationId(destination_id: int, db: Session
 def get_reviews_of_user_in_1_destination_by_userId_and_destinationID(destination_id: int, user_id:int,  db: Session = Depends(get_db)):
     return review.get_reviews_of_user_in_1_destination_by_userId_and_destinationID(destination_id, user_id, db)
 
-@router.get("/", response_model=schemas.ShowReview)
-def get_all_review(db: Session = Depends(get_db)):
-    return review.get_all(db)
 
 @router.put("/{id}", response_model=schemas.ShowReview)
 def update_review_by_id(id: int, request: schemas.Review, db: Session = Depends(get_db)):

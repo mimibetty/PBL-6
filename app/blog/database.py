@@ -1,4 +1,5 @@
 from datetime import date
+import random
 from fastapi import HTTPException
 from sqlalchemy import create_engine, select
 from sqlalchemy.ext.declarative import declarative_base
@@ -47,11 +48,12 @@ def get_db():
     finally:
         db.close()
 
-
 def create_sample_data():
     from blog import repository
     from blog import models
     from . import schemas  # Import schemas nếu cần
+    from datetime import date  # Đảm bảo bạn import date
+    from fastapi import HTTPException
     # Lấy phiên làm việc với cơ sở dữ liệu
     db = next(get_db())
     
@@ -62,96 +64,89 @@ def create_sample_data():
         if not existing_users:  # Nếu không có người dùng nào
             # Tạo dữ liệu mẫu cho người dùng
             user1_data = schemas.User(username='user1', email='user1@gmail.com', password='123', role="guest")
-            business1_data = schemas.User(username='business1', email='business1@gmail.com', password='123', role="business")
             admin1_data = schemas.User(username='admin1', email='admin1@gmail.com', password='123', role="admin")
 
             # Gọi hàm create cho mỗi người dùng
             user1 = repository.user.create_business_admin(user1_data, db)
-            business1 = repository.user.create_business_admin(business1_data, db)
             admin1 = repository.user.create_business_admin(admin1_data, db)
 
             # Tạo thông tin người dùng liên quan đến user1 và user2
             user1_info = models.UserInfo(business_description='Tour operator', phone_number='123456789', user=user1)
-            business1_info = models.UserInfo(business_description='Hotel owner', phone_number='987654321', user=business1)
             admin1_info = models.UserInfo(phone_number='987654321', user=admin1)
-
-            # Thêm thông tin người dùng vào phiên làm việc
-            db.add_all([user1_info, business1_info, admin1_info])
-
-            # Commit giao dịch
+            
+            db.add_all([user1_info, admin1_info])
             db.commit()
             
-            city1 = models.City(
-                name="Đà Nẵng",
-                description="Thành phố biển xinh đẹp",
-                user_id=1  # Giả định user_id = 1 tồn tại
-            )
+            # Tạo 61 người dùng với phân quyền là business
+            cities = [
+                "Hà Nội", "TP Hồ Chí Minh", "Đà Nẵng", "Hải Phòng", "Nha Trang", 
+                "Cần Thơ", "Huế", "Quảng Ninh", "Vĩnh Phúc", "Đồng Nai",
+                "Bà Rịa - Vũng Tàu", "Bắc Ninh", "Thái Nguyên", "Nam Định", "Ninh Bình",
+                "Hà Nam", "Hưng Yên", "Điện Biên", "Hà Tĩnh", "Quảng Bình",
+                "Quảng Trị", "Thừa Thiên Huế", "Bình Định", "Phú Yên", "Khánh Hòa",
+                "Gia Lai", "Kon Tum", "Đắk Lắk", "Đắk Nông", "Lâm Đồng",
+                "Tây Ninh", "Long An", "Tiền Giang", "Bến Tre", "Trà Vinh",
+                "Vĩnh Long", "Hậu Giang", "Sóc Trăng", "Đồng Tháp", "An Giang",
+                "Kiên Giang", "Cà Mau", "Bạc Liêu", "Hà Giang", "Lào Cai",
+                "Yên Bái", "Tuyên Quang", "Hòa Bình", "Ninh Thuận", "Bình Thuận",
+                "Cao Bằng", "Thái Bình", "Bắc Kạn", "Lạng Sơn", "Đắk Lắk",
+                "Lâm Đồng", "Bến Tre", "Bình Dương", "Bình Phước", "Hưng Yên", "Vĩnh Phúc"
+            ]
 
-            city2 = models.City(
-                name="Hà Nội",
-                description="Thủ đô của Việt Nam",
-                user_id=1  # Giả định user_id = 1 tồn tại
-            )
+            for i in range(61):
+                username = f'business{i+1}'
+                email = f'business{i+1}@gmail.com'
+                password = '123'
 
-            db.add(city1)
-            db.add(city2)
-            db.commit()  # Lưu thay đổi vào cơ sở dữ liệu
+                # Tạo người dùng
+                user_data = schemas.User(username=username, email=email, password=password, role="business")
+                user = repository.user.create_business_admin(user_data, db)
 
-            # Thêm một số Destination
-            destination1 = models.Destination(
-                name="Bãi biển Mỹ Khê",
-                address="Đà Nẵng, Việt Nam",
-                price_bottom=200000,
-                price_top=500000,
-                date_create=date.today(),
-                age=2,
-                opentime="06:00:00",
-                duration=3,
-                user_id=1,  # Giả định user_id = 1 tồn tại
-                city_id=city1.id  # Sử dụng ID của city1
-            )
+                # Tạo thông tin người dùng
+                user_info = models.UserInfo(business_description='Business Owner', phone_number='0123456789', user=user)
+                db.add(user_info)
 
-            destination2 = models.Destination(
-                name="Phố cổ Hà Nội",
-                address="Hà Nội, Việt Nam",
-                price_bottom=50000,
-                price_top=300000,
-                date_create=date.today(),
-                age=5,
-                opentime="08:00:00",
-                duration=2,
-                user_id=1,  # Giả định user_id = 1 tồn tại
-                city_id=city2.id  # Sử dụng ID của city2
-            )
-
-            db.add(destination1)
-            db.add(destination2)
-            db.commit()  # Lưu thay đổi vào cơ sở dữ liệu
-
-            # Thêm một số Review
-            review1 = models.Review(
-                title="Review tuyệt vời cho Bãi biển Mỹ Khê",
-                content="Bãi biển Mỹ Khê là nơi tuyệt vời để thư giãn và tắm biển!",
-                rating=4.8,
-                date_create=date.today(),
-                user_id=1,  # Giả định user_id = 1 tồn tại
-                destination_id=destination1.id  # Sử dụng ID của destination1
-            )
-
-            review2 = models.Review(
-                title="Khám phá Phố cổ Hà Nội",
-                content="Phố cổ Hà Nội rất đẹp và có nhiều món ăn ngon!",
-                rating=4.5,
-                date_create=date.today(),
-                user_id=1,  # Giả định user_id = 1 tồn tại
-                destination_id=destination2.id  # Sử dụng ID của destination2
-            )
-
-            db.add(review1)
-            db.add(review2)
-            db.commit()  # Lưu thay đổi vào cơ sở dữ liệu
+                # Tạo thành phố
+                city = models.City(
+                    name=cities[i],
+                    description=f"{cities[i]} - một tỉnh thành tuyệt đẹp",
+                    user_id=user.id  # Liên kết với user vừa tạo
+                )
+                db.add(city)
+                db.commit()
+                # Thêm 5 điểm đến cho mỗi user
+                for j in range(5):
+                    destination = models.Destination(
+                        name=f"Destination {j+1} tại {cities[i]}",
+                        address=f"Địa chỉ {j+1}, {cities[i]}",
+                        price_bottom=0,
+                        price_top=0,
+                        date_create=date.today(),
+                        age=0,
+                        opentime="00:00:00",
+                        duration=24,
+                        user_id=user.id,
+                        city_id=city.id  # Liên kết với city vừa tạo
+                    )
+                    db.add(destination)
+                    db.commit()
+                    
+                    # Tạo 3-5 reviews cho mỗi destination
+                    num_reviews = random.randint(2, 5)
+                    for k in range(num_reviews):
+                        review = models.Review(
+                            title=f"Review {k + 1} for Destination {j + 1}",
+                            content=f"This is review {k + 1} for Destination {j + 1}.",
+                            rating= float(random.randint(1, 10)/2),  # Rating từ 1.0 đến 5.0
+                            date_create=date.today(),
+                            user_id=user.id,  # Gán user_id của user đã tạo
+                            destination_id=destination.id  # Gán destination_id của destination đã tạo
+                        )
+                        db.add(review)
+                    
+            db.commit()
             
-            
+            # 
             print("Sample data created.")
         else:
             print("Sample data already exists.")

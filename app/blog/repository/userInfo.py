@@ -23,6 +23,7 @@ def create_user_info_by_userid(request: schemas.UserInfoBase, user_id: int, db: 
 def get_user_info_by_userid(user_id: int, db: Session):
     try:
         user_info = db.query(models.UserInfo).filter(models.UserInfo.user_id == user_id).first()  # Chờ truy vấn
+        print(user_info.business_description)
         if not user_info:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"UserInfo with the user_id {user_id} is not available")

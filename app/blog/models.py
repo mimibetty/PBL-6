@@ -20,6 +20,7 @@ class User(Base):
     destinations = relationship("Destination", back_populates="user")
     forum_comments = relationship("ForumComment", back_populates="user")
     city = relationship("City", back_populates="user")
+    tours = relationship("Tour", back_populates="user")
 
     
 class UserInfo(Base):
@@ -76,21 +77,68 @@ class Destination(Base):
     # Foreign Key
     user_id = Column(Integer, ForeignKey('user.id'))
     city_id = Column(Integer, ForeignKey('city.id'))
-
-    # Self-referential Foreign Key to allow destinations to contain other destinations
-    parent_id = Column(Integer, ForeignKey('destination.id'), nullable=True)
-    
-    # Self-referential relationship to allow nested destinations
-    parent = relationship("Destination", remote_side=[id], back_populates="children")
-    children = relationship("Destination", back_populates="parent")
     
     # Relationship
     city = relationship("City", back_populates="destinations")
     user = relationship("User", back_populates="destinations")
     tags = relationship("Tag", back_populates="destinations")
     reviews = relationship("Review", back_populates="destination")
-    destination_journeys = relationship("DestinationJourney", back_populates="destination")  
+    restaurant = relationship("Restaurant", back_populates="destination")
+    hotel = relationship("Hotel", back_populates="destination")
+    # destination_journeys = relationship("DestinationJourney", back_populates="destination")  
+    tours = relationship("Tour",secondary="destination_tour", back_populates="destinations")
+    journeys = relationship("Journey",secondary="destination_journey", back_populates="destinations")
 
+class Restaurant(Base):
+    __tablename__ = 'restaurant'
+    
+    id = Column(Integer, primary_key=True, index=True)
+    cuisine = Column(String(50), default='Mixed')
+    special_diet = Column(String(50), nullable=True)
+    
+    destination_id = Column(Integer, ForeignKey('destination.id'), nullable=True)
+
+    destination = relationship("Destination", back_populates="restaurant")
+
+    
+class Hotel(Base):
+    __tablename__ = 'hotel'
+
+    id = Column(Integer, primary_key=True, index=True)
+    property_amenities = Column(String(255), default='Free Parking, Pool, Free breakfast')
+    room_features = Column(String(255), default='Soundproof room, Extra long bed')
+    room_types = Column(String(255), default='Ocean view, City view, family room')
+    hotel_class = Column(Integer, default=0)
+    hotel_styles = Column(String(255), default='Ocean view, Trendy')
+    Languages = Column(String(255), default='Vietnamese, English, Chinese')
+ 
+    
+    destination_id = Column(Integer, ForeignKey('destination.id'), nullable=True)
+
+    destination = relationship("Destination", back_populates="hotel")
+
+class Tour(Base):
+    __tablename__ = 'tour'
+    
+    id = Column(Integer, primary_key=True, index=True)    
+    name = Column(String(255))
+    
+    user_id = Column(Integer, ForeignKey('user.id'))
+    
+    # Relationship
+    user = relationship("User", back_populates="tours")
+    # Relationship with Destination through the intermediary table
+    destinations = relationship("Destination", secondary="destination_tour", back_populates="tours")
+
+
+class DestinationTour(Base):
+        
+    __tablename__ = 'destination_tour' 
+    
+    id = Column(Integer, primary_key=True, index=True)
+    
+    tour_id = Column(Integer, ForeignKey('tour.id'))
+    destination_id = Column(Integer, ForeignKey('destination.id'))
 class Tag(Base):
     __tablename__ = 'tag'
     
@@ -109,8 +157,8 @@ class Journey(Base):
     
     # Relationship
     user = relationship("User", back_populates="journeys")
-    destination_journeys = relationship("DestinationJourney", back_populates="journey")
-    
+    destinations = relationship("Destination", secondary="destination_journey", back_populates="journeys")
+
 class DestinationJourney(Base):
     __tablename__ = 'destination_journey' 
     
@@ -118,10 +166,6 @@ class DestinationJourney(Base):
     
     journey_id = Column(Integer, ForeignKey('journey.id'))
     destination_id = Column(Integer, ForeignKey('destination.id'))
-    
-    # Relationship
-    journey = relationship("Journey", back_populates="destination_journeys")
-    destination = relationship("Destination", back_populates="destination_journeys")
     
     
 class Review(Base):

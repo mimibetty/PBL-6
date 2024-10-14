@@ -20,7 +20,6 @@ class User(BaseModel):
     role: str
 
 class ShowUserInfo(BaseModel):
-    id: str
     business_description: Optional[str]  # Thông tin mô tả doanh nghiệp
     phone_number: Optional[str]  
     class Config:
