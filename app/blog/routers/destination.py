@@ -36,3 +36,8 @@ def update_destination_by_id(id: int, request: schemas.Destination, db: Session 
 @router.delete("/{id}")
 def delete_destination_by_id(id: int, db: Session = Depends(get_db)):
     return destination.delete_by_id(id, db)
+
+
+@router.get("/city/{city_id}", response_model=List[schemas.ShowDestination])
+def get_destination_by_city_id(city_id: int, db: Session = Depends(get_db)):
+    return destination.get_by_city_id(city_id, db)

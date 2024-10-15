@@ -35,6 +35,16 @@ def get_by_id(id: int, db: Session):
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error retrieving destination: {str(e)}")
+def get_by_city_id(city_id: int, db: Session):
+    try:
+        destinations = db.query(models.Destination).filter(models.Destination.city_id == city_id).all()  # Chờ truy vấn
+        if not destinations:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail=f"destinations with the city_id {city_id} is not available")
+        return destinations
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail=f"Error retrieving destinations: {str(e)}")
 
 def get_all(db: Session):
     try:
