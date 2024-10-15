@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from blog import models
-from blog.database import engine, create_sample_data
+from blog.database import engine, create_sample_data, delete_all
 from blog.routers import blog, user, authentication, userInfo, city, review, destination
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -19,6 +19,8 @@ app.add_middleware(
 
 # @app.on_event("startup")
 # def startup_event():
+#     # delete_all(engine=engine)
+    
 #     models.Base.metadata.drop_all(bind=engine)
 #     models.Base.metadata.create_all(engine)
 #     create_sample_data() 

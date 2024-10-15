@@ -1,12 +1,18 @@
 from datetime import date
 import random
 from fastapi import HTTPException
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine, select, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
 from dotenv import load_dotenv
 import pymysql
+
+from blog import repository
+from blog import models
+from . import schemas  # Import schemas nếu cần
+from datetime import date  # Đảm bảo bạn import date
+from fastapi import HTTPException
 
 # DATABASE_URL=mysql+pymysql://travel_user:password@localhost:3306/db_connect
 # cnx = mysql.connector.connect(user="travel_user", password="{your_password}", host="travel-sql.mysql.database.azure.com", port=3306, database="{your_database}", ssl_ca="{ca-cert filename}", ssl_disabled=False)
@@ -48,12 +54,12 @@ def get_db():
     finally:
         db.close()
 
+
+def delete_all(engine):
+    pass
+
 def create_sample_data():
-    from blog import repository
-    from blog import models
-    from . import schemas  # Import schemas nếu cần
-    from datetime import date  # Đảm bảo bạn import date
-    from fastapi import HTTPException
+
     # Lấy phiên làm việc với cơ sở dữ liệu
     db = next(get_db())
     
@@ -114,8 +120,8 @@ def create_sample_data():
                 )
                 db.add(city)
                 db.commit()
-                # Thêm 5 điểm đến cho mỗi user
-                for j in range(5):
+                # Thêm 2 điểm đến cho mỗi user
+                for j in range(2):
                     destination = models.Destination(
                         name=f"Destination {j+1} tại {cities[i]}",
                         address=f"Địa chỉ {j+1}, {cities[i]}",
@@ -130,9 +136,27 @@ def create_sample_data():
                     )
                     db.add(destination)
                     db.commit()
+                    hotel = models.Hotel(
+                        property_amenities='Free WiFi, Pool, Gym',
+                        room_features='AC, TV, Minibar',
+                        room_types='Suite, Deluxe',
+                        hotel_class=random.randint(3, 5),  # Hotel class từ 3-5 sao
+                        hotel_styles='Luxury, Modern',
+                        Languages='English, Vietnamese',
+                    )
+                    
+                    # restaurant = models.Restaurant(
+                    #     cuisine='Vietnamese, International',
+                    #     special_diet='Vegetarian, Vegan',
+                    # )
+                    # destination.restaurant = restaurant
+                    destination.hotel = hotel
+                    db.add_all([hotel,  destination])
+                    db.commit()
+                    
                     
                     # Tạo 3-5 reviews cho mỗi destination
-                    num_reviews = random.randint(2, 5)
+                    num_reviews = random.randint(1, 3)
                     for k in range(num_reviews):
                         review = models.Review(
                             title=f"Review {k + 1} for Destination {j + 1}",

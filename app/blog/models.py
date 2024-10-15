@@ -31,7 +31,7 @@ class UserInfo(Base):
     phone_number = Column(String(12), default='N/A')
     
     # Foreign Key
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
 
     # Relationship
     user = relationship("User", back_populates="user_info")
@@ -43,7 +43,7 @@ class BusinessType(Base):
     type = Column(String(50), default='General')  
 
     # Foreign Key
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
 
     # Relationship
     user = relationship("User", back_populates="business_type")
@@ -56,7 +56,7 @@ class City(Base):
     description = Column(String(50), default='No Description')
     
     # Foreign Key
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
 
     # Relationship
     user = relationship("User", back_populates="city")
@@ -75,16 +75,19 @@ class Destination(Base):
     duration = Column(Integer, nullable=True, default=3)  
 
     # Foreign Key
-    user_id = Column(Integer, ForeignKey('user.id'))
-    city_id = Column(Integer, ForeignKey('city.id'))
+    user_id = Column(Integer, ForeignKey('user.id', name="fk_destination_user", ondelete='CASCADE'))
+    city_id = Column(Integer, ForeignKey('city.id', name="fk_destination_city", ondelete='CASCADE'))
+    hotel_id = Column(Integer, ForeignKey('hotel.id', name="fk_destination_hotel", ondelete='CASCADE'), nullable=True)
+    restaurant_id = Column(Integer, ForeignKey('restaurant.id', name="fk_destination_restaurant", ondelete='CASCADE'), nullable=True)
+
     
     # Relationship
     city = relationship("City", back_populates="destinations")
     user = relationship("User", back_populates="destinations")
     tags = relationship("Tag", back_populates="destinations")
     reviews = relationship("Review", back_populates="destination")
-    restaurant = relationship("Restaurant", back_populates="destination")
-    hotel = relationship("Hotel", back_populates="destination")
+    restaurant = relationship("Restaurant", back_populates="destination", uselist=False)
+    hotel = relationship("Hotel", back_populates="destination", uselist=False)
     # destination_journeys = relationship("DestinationJourney", back_populates="destination")  
     tours = relationship("Tour",secondary="destination_tour", back_populates="destinations")
     journeys = relationship("Journey",secondary="destination_journey", back_populates="destinations")
@@ -96,7 +99,7 @@ class Restaurant(Base):
     cuisine = Column(String(50), default='Mixed')
     special_diet = Column(String(50), nullable=True)
     
-    destination_id = Column(Integer, ForeignKey('destination.id'), nullable=True)
+    # destination_id = Column(Integer, ForeignKey('destination.id', name="fk_hotel_destination", ondelete='CASCADE'), nullable=True)
 
     destination = relationship("Destination", back_populates="restaurant")
 
@@ -113,7 +116,7 @@ class Hotel(Base):
     Languages = Column(String(255), default='Vietnamese, English, Chinese')
  
     
-    destination_id = Column(Integer, ForeignKey('destination.id'), nullable=True)
+    # destination_id = Column(Integer, ForeignKey('destination.id', name="fk_hotel_destination", ondelete='CASCADE'), nullable=True)
 
     destination = relationship("Destination", back_populates="hotel")
 
@@ -123,7 +126,7 @@ class Tour(Base):
     id = Column(Integer, primary_key=True, index=True)    
     name = Column(String(255))
     
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
     
     # Relationship
     user = relationship("User", back_populates="tours")
@@ -137,13 +140,13 @@ class DestinationTour(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     
-    tour_id = Column(Integer, ForeignKey('tour.id'))
-    destination_id = Column(Integer, ForeignKey('destination.id'))
+    tour_id = Column(Integer, ForeignKey('tour.id', ondelete='CASCADE'))
+    destination_id = Column(Integer, ForeignKey('destination.id', ondelete='CASCADE'))
 class Tag(Base):
     __tablename__ = 'tag'
     
     id = Column(Integer, primary_key=True, index=True)  # Thêm trường id cho tag
-    destination_id = Column(Integer, ForeignKey('destination.id'))
+    destination_id = Column(Integer, ForeignKey('destination.id', ondelete='CASCADE'))
     tag_type = Column(String(50), default='General')  
     
     destinations = relationship("Destination", back_populates="tags")  
@@ -152,7 +155,7 @@ class Journey(Base):
     __tablename__ = 'journey' 
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
     duration = Column(Integer, nullable=True, default=0)  
     
     # Relationship
@@ -164,8 +167,8 @@ class DestinationJourney(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     
-    journey_id = Column(Integer, ForeignKey('journey.id'))
-    destination_id = Column(Integer, ForeignKey('destination.id'))
+    journey_id = Column(Integer, ForeignKey('journey.id', ondelete='CASCADE'))
+    destination_id = Column(Integer, ForeignKey('destination.id', ondelete='CASCADE'))
     
     
 class Review(Base):
@@ -178,8 +181,8 @@ class Review(Base):
     date_create = Column(Date, nullable=True, default=None)  
     
     # Foreign Key
-    user_id = Column(Integer, ForeignKey('user.id'))
-    destination_id = Column(Integer, ForeignKey('destination.id'))
+    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
+    destination_id = Column(Integer, ForeignKey('destination.id', ondelete='CASCADE'))
 
     # Relationship
     user = relationship("User", back_populates="reviews")
@@ -198,10 +201,10 @@ class ForumComment(Base):
     __tablename__ = 'forum_comment' 
     
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('user.id'))
-    forum_id = Column(Integer, ForeignKey('forum.id'))
+    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
+    forum_id = Column(Integer, ForeignKey('forum.id', ondelete='CASCADE'))
     
-    # replied_user_id = Column(Integer, ForeignKey('user.id'), nullable=True)
+    # replied_user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), nullable=True)
     content = Column(String(100), default='No Content')  
     like_count = Column(Integer, default=0)  
     dislike_count = Column(Integer, default=0)  
