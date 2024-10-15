@@ -81,7 +81,27 @@ class ShowCity(City):
     
     class Config():
         from_attributes = True
-        
+
+class Restaurant(BaseModel):
+    cuisine: Optional[str] = None
+    special_diet: Optional[str] = None
+
+class ShowRestaurant(Restaurant):
+    id: int
+    class Config():
+        from_attributes = True
+class Hotel(BaseModel):
+    property_amenities: str
+    room_features: str
+    room_types: str
+    hotel_class: int
+    hotel_styles: str
+    Languages: str
+class ShowHotel(Hotel):
+    id: int
+    class Config():
+        from_attributes = True
+
 class Destination(BaseModel):
     name : str
     address : str
@@ -94,6 +114,10 @@ class Destination(BaseModel):
 
 class ShowDestination(Destination):
     id: int
+    hotel_id: Optional[int] = None
+    restaurant_id: Optional[int] = None
+    hotel: Optional[ShowHotel] = None
+    restaurant: Optional[ShowRestaurant] = None
     
     class Config():
         from_attributes = True
