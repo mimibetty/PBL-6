@@ -24,9 +24,9 @@
       
       <div class="line-1"></div>
       <div class="flex-row-c">
-        <span class="name-of-destination">HaNoi</span>
-        <span class="entertainment">Entertainment</span>
-        <span class="food">Food</span>
+        <button class="name-of-destination">HaNoi</button>
+        <button class="thing-to-do">Things to do</button>
+        <button class="restaurant">Restaurant</button>
       </div>
       <div class="flex-row-d">
         <div class="line-2"></div>
@@ -153,7 +153,7 @@
 </template>
   
 <script setup>
-import { circles,rating, ratings, commentList, generateCircle, images, currentImage, nextImage, prevImage,totalRating, isDropdownVisible, toggleDropdown, isMenuVisible, toggleMenu } from '../viewModels/detailLocation_EntertainmentViewModel.js';
+import { circles,rating, ratings, commentList, generateCircle, images, currentImage, nextImage, prevImage,totalRating, isDropdownVisible, toggleDropdown, isMenuVisible, toggleMenu } from '../viewModels/detailLocation_PlaceViewModel.js';
 
 </script>
 
@@ -412,21 +412,21 @@ button {
 }
 .flex-row-c {
   display: flex; /* Đặt flexbox để các nút nằm cạnh nhau */
-  justify-content: space-between; /* Tạo khoảng cách đều giữa các nút */
+  justify-content: 10%; /* Tạo khoảng cách đều giữa các nút */
   align-items: center; /* Căn giữa các nút theo chiều dọc */
-  width: 50%;
+  width: 100%;
   height: 60px;
   margin: 7.01px 0 0 25px;
   z-index: 153;
 }
 .name-of-destination, 
-.entertainment, 
-.food {
-  width: 15%; /* Chiều rộng của mỗi nút */
+.thing-to-do, 
+.restaurant {
+  width: 20%; /* Chiều rộng của mỗi nút */
   height: 60px; /* Chiều cao của mỗi nút */
   color: #13357b;
   font-family: Poppins, var(--default-font-family);
-  font-size: 2.0vw;
+  font-size: 2vw;
   font-weight: 700;
   line-height: 100%;
   text-align: center;
@@ -441,8 +441,8 @@ button {
 }
 
 .name-of-destination:hover, 
-.entertainment:hover, 
-.food:hover {
+.thing-to-do:hover, 
+.restaurant:hover {
   background-color: #f0f0f0; /* Hiệu ứng khi hover vào nút */
 }
 .flex-row-d {
@@ -477,7 +477,7 @@ button {
   width: 20%;
   height: 5px;
   top: -1.504px;
-  left: 19%;
+  left: 22%;
   background-color: #13357b;
   background-size: cover;
   z-index: 17;

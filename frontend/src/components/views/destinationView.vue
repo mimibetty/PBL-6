@@ -25,8 +25,8 @@
       <div class="line-1"></div>
       <div class="flex-row-bf">
         <button class="name-of-destination">HaNoi</button>
-        <button class="entertainment">Entertainment</button>
-        <button class="food">Food</button>
+        <button class="thing-to-do">Things to do</button>
+        <button class="restaurant">Restaurant</button>
       </div>
 
       <div class="flex-row-aa">
@@ -230,7 +230,7 @@ button {
   height: 82%;
   top: 9%;
   left: 1%;
-  background: url(../assets/images/company_image.png)
+  background: url('@/assets/images/company_image.png')
     no-repeat center;
   background-size: cover;
   z-index: 27;
@@ -417,24 +417,28 @@ button {
 }
 .flex-row-bf {
   display: flex; /* Đặt flexbox để các nút nằm cạnh nhau */
-  justify-content: space-between; /* Tạo khoảng cách đều giữa các nút */
+  justify-content: 10%; /* Tạo khoảng cách đều giữa các nút */
   align-items: center; /* Căn giữa các nút theo chiều dọc */
-  width: 50%; /* Tổng chiều rộng của container */
+  width: 100%; /* Tổng chiều rộng của container */
   margin: 8.01px 0 0 33px;
   z-index: 154;
 }
 
 .name-of-destination, 
-.entertainment, 
-.food {
-  width: 15%; /* Chiều rộng của mỗi nút */
+.thing-to-do, 
+.restaurant {
+  width: 20%; /* Chiều rộng của mỗi nút */
   height: 60px; /* Chiều cao của mỗi nút */
   color: #13357b;
   font-family: Poppins, var(--default-font-family);
-  font-size: 1.5vw;
+  font-size: 2vw;
   font-weight: 700;
   line-height: 100%;
   text-align: center;
+  display: flex; /* Sử dụng Flexbox */
+  justify-content: center; /* Căn giữa theo chiều ngang */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  
   background-color: transparent; /* Nền trong suốt */
   border: none; /* Loại bỏ đường viền của nút */
   
@@ -442,8 +446,8 @@ button {
 }
 
 .name-of-destination:hover, 
-.entertainment:hover, 
-.food:hover {
+.thing-to-do:hover, 
+.restaurant:hover {
   background-color: #f0f0f0; /* Hiệu ứng khi hover vào nút */
 }
 .flex-row-aa {
@@ -469,7 +473,7 @@ button {
   width: 16%;
   height: 5px;
   top: -1%;
-  left: 1.2%;
+  left: 4%;
   background-color: #061a46;
   background-size: cover;
   z-index: 150;
@@ -583,7 +587,7 @@ button {
   left: 80%;
   border: 2px solid #13357b;
   z-index: 39;
-  border-radius: 50%;
+  border-radius: 20px; /* Bo góc vừa phải */
   box-sizing: content-box;
 }
 
@@ -752,17 +756,17 @@ button {
 
 
 .button-item {
-    background-color: transparent; 
-    color: #003366; 
-    border: 2px solid #003366; 
-    width: 15%; 
-    height: 40px; 
-    font-size: 1.75vw; 
-    font-weight: bold; 
-    border-radius: 60%; 
-    cursor: pointer; 
-    transition: background-color 0.3s, color 0.3s; 
-    flex-shrink: 0; 
+    background-color: transparent;
+    color: #003366;
+    border: 2px solid #003366;
+    width: 15%;
+    height: 40px;
+    font-size: 1.75vw;
+    font-weight: bold;
+    border-radius: 20px; /* Bo góc vừa phải */
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    flex-shrink: 0;
     margin-right: 4%; /* Khoảng cách giữa các nút */
 }
 

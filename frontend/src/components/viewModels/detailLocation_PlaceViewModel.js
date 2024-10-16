@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue';
 
-import { RatingModel, mockComments, ImageModel } from '../models/detailLocation_EntertainmentModel.js';
+import { RatingModel, mockComments, ImageModel } from '../models/detailLocation_PlaceModel.js';
 
 // Khởi tạo dữ liệu đánh giá
 const ratingModel = new RatingModel(3422, 2122, 5622, 2100, 300);
