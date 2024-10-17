@@ -606,6 +606,7 @@ button {
   background: #edf6f9;
   z-index: 40;
   border-radius: 15px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); /* Hiệu ứng bóng nổi */
 }
 .peoples-opinion {
   display: block;
