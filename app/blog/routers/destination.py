@@ -49,3 +49,11 @@ def create_destination_by_cityID(request: schemas.Restaurant, destination_id: in
 @router.put("/restaurant/{restaurant_id}", response_model=schemas.ShowRestaurant)
 def update_restaurant_info_by_id(request: schemas.Restaurant, restaurant_id: int, db: Session = Depends(get_db)):
     return destination.update_restaurant_info_by_id(request=request, id=restaurant_id, db=db)
+
+@router.post("/hotel/{destination_id}", response_model=schemas.ShowHotel)
+def create_destination_by_cityID(request: schemas.Hotel, destination_id: int, db: Session = Depends(get_db)):
+    return destination.create_hotel_info_by_destinationID(request=request, destination_id=destination_id, db=db)
+
+@router.put("/hotel/{hotel_id}", response_model=schemas.ShowHotel)
+def update_hotel_info_by_id(request: schemas.Hotel, hotel_id: int, db: Session = Depends(get_db)):
+    return destination.update_hotel_info_by_id(request=request, id=hotel_id, db=db)

@@ -145,7 +145,6 @@ def create_restaurant_info_by_destinationID(destination_id: int, request:schemas
 
 def update_restaurant_info_by_id(id:int, request: schemas.Restaurant, db: Session):
     try:
-        print(request)
         restaurant = db.query(models.Restaurant).filter(models.Restaurant.id == id).first()  # Chờ truy vấn
         if not restaurant:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -156,6 +155,52 @@ def update_restaurant_info_by_id(id:int, request: schemas.Restaurant, db: Sessio
         db.commit()  # Chờ hoàn tất việc commit
         db.refresh(restaurant)  # Chờ làm mới đối tượng mới
         return restaurant
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail=f"Error updating destination: {str(e)}")
+        
+
+
+def create_hotel_info_by_destinationID(destination_id: int, request:schemas.Hotel, db: Session):
+    try:
+        destination = db.query(models.Destination).filter(models.Destination.id == destination_id).first()  # Chờ truy vấn
+        new_hotel = models.Hotel(
+            property_amenities = request.property_amenities,
+            room_features = request.room_features,
+            room_types = request.room_types,
+            hotel_class = request.hotel_class,
+            hotel_styles = request.hotel_styles,
+            Languages = request.Languages
+        )
+        db.add(new_hotel)
+        db.commit()  # Chờ hoàn tất việc commit
+        db.refresh(new_hotel)  # Chờ làm mới đối tượng mới
+        
+        destination.hotel_id = new_hotel.id
+        db.commit()
+        db.refresh(destination)
+        return new_hotel
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail=f"Error deleting destination: {str(e)}")
+
+def update_hotel_info_by_id(id:int, request: schemas.Hotel, db: Session):
+    try:
+        hotel = db.query(models.Hotel).filter(models.Hotel.id == id).first()  # Chờ truy vấn
+        if not hotel:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail=f"hotel with the id {id} is not available")
+
+        hotel.property_amenities = request.property_amenities,
+        hotel.room_features = request.room_features,
+        hotel.room_types = request.room_types,
+        hotel.hotel_class = request.hotel_class,
+        hotel.hotel_styles = request.hotel_styles,
+        hotel.Languages = request.Languages
+
+        db.commit()  # Chờ hoàn tất việc commit
+        db.refresh(hotel)  # Chờ làm mới đối tượng mới
+        return hotel
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error updating destination: {str(e)}")
