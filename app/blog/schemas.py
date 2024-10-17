@@ -77,7 +77,7 @@ class City(BaseModel):
     
 class ShowCity(City):
     id: int
-    destination: List[Destination] = []
+    # destinations: List[Destination] = []
     
     class Config():
         from_attributes = True
