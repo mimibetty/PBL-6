@@ -41,3 +41,11 @@ def delete_destination_by_id(id: int, db: Session = Depends(get_db)):
 @router.get("/city/{city_id}", response_model=List[schemas.ShowDestination])
 def get_destination_by_city_id(city_id: int, db: Session = Depends(get_db)):
     return destination.get_by_city_id(city_id, db)
+
+@router.post("/restaurant/{destination_id}", response_model=schemas.ShowRestaurant)
+def create_destination_by_cityID(request: schemas.Restaurant, destination_id: int, db: Session = Depends(get_db)):
+    return destination.create_restaurant_info_by_destinationID(request=request, destination_id=destination_id, db=db)
+
+@router.put("/restaurant/{restaurant_id}", response_model=schemas.ShowRestaurant)
+def update_restaurant_info_by_id(request: schemas.Restaurant, restaurant_id: int, db: Session = Depends(get_db)):
+    return destination.update_restaurant_info_by_id(request=request, id=restaurant_id, db=db)
