@@ -56,7 +56,7 @@
       <span class="destination">Ha Noi</span>
       <span class="description">{{ truncatedDescription }}</span>
       <div class="read-more" @click="toggleReadMore">
-        <span class="line-9">{{ isReadMore ? 'Read less' : 'Read more' }}</span>
+        <span class="line-9">{{ isReadMore ? 'Read less ▲' : 'Read more ▼' }}</span>
         
       </div>
       <span class="filter-suggestion">Characteristic of Ha Noi</span>
@@ -73,7 +73,7 @@
         </button>
       </div>
       
-      <span class="entertainment-1d">Entertainment</span>
+      <span class="thing-to-do-1">Things to do</span>
       <div class="flex-row-cff">
         <div v-for="(item, index) in entertainments" :key="index" class="picture">
           
@@ -81,12 +81,12 @@
 
         
           <div class="heart-button" @click="toggleLikeStatus(item.id)">
-            <div class="heart-icon"></div>
+            <img :src="liked[item.id] ? heartFull : heartEmpty" alt="heart icon" class="heart-icon" />
           </div>
 
       
           <div class="info">
-            <h3>{{ item.name }}</h3>
+            <h3 class="item-name">{{ item.name }}</h3>
             <div class="rating">
               <img v-for="star in generateStars(item.rating)" :src="star" class="star" />
             </div>
@@ -96,7 +96,7 @@
           </div>
         </div>
       </div>
-      <span class="food-drink">Food & Drink</span>
+      <span class="restaurant-1">Restaurant</span>
       <div class="flex-row-cff1">
         <div v-for="(item, index) in entertainments" :key="index" class="picture">
           
@@ -104,12 +104,36 @@
 
         
           <div class="heart-button" @click="toggleLikeStatus(item.id)">
-            <div class="heart-icon"></div>
+            <img :src="liked[item.id] ? heartFull : heartEmpty" alt="heart icon" class="heart-icon" />
           </div>
 
       
           <div class="info">
-            <h3>{{ item.name }}</h3>
+            <h3 class="item-name">{{ item.name }}</h3>
+            <div class="rating">
+              <img v-for="star in generateStars(item.rating)" :src="star" class="star" />
+            </div>
+            <div class="tags">
+              <span v-for="(tag, i) in item.tag" :key="i" class="tag">{{ tag }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <span class="hotel-1">Resort & Hotel</span>
+      <div class="flex-row-cff2">
+        <div v-for="(item, index) in entertainments" :key="index" class="picture">
+          
+          <img :src="getImageUrl(item.imageUrl)" alt="Entertainment Image" class="entertainment-img" />
+
+        
+          <div class="heart-button" @click="toggleLikeStatus(item.id)">
+            <img :src="liked[item.id] ? heartFull : heartEmpty" alt="heart icon" class="heart-icon" />
+          </div>
+
+      
+          <div class="info">
+            <h3 class="item-name">{{ item.name }}</h3>
             <div class="rating">
               <img v-for="star in generateStars(item.rating)" :src="star" class="star" />
             </div>
@@ -143,12 +167,12 @@ const {
   entertainments,
   generateStars,
   getImageUrl,
+  isReadMore,
   liked,
   toggleLikeStatus,
   heartFull,
   heartEmpty,
 } = destinationViewModel();
-
 
 </script>
 
@@ -781,7 +805,7 @@ button.selected {
     background-color: #003366; 
     color: white; 
 }
-.entertainment-1d {
+.thing-to-do-1 {
   display: block;
   position: relative;
   height: 53px;
@@ -806,14 +830,14 @@ button.selected {
 .picture {
   position: relative;
   width: 25%;
-  height: calc(2 * 25%);
+  height: calc(3 * 25%);
   margin: 0 6% 12% 0;
-  background-color: #ffffff;
   border-radius: 20px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between; /* Thêm dòng này */
 }
 
 
@@ -823,11 +847,13 @@ button.selected {
   height: 45px;
   top: 16px;
   right: 16px;
-  background: url('@/assets/images/circle.png') no-repeat center;
-  background-size: cover;
-  border-radius: 50%;
+  background-color: #c5dff8; /* Thay thế hình ảnh bằng màu xanh dương */
+  border-radius: 50%; /* Giữ hình tròn */
   cursor: pointer;
   z-index: 99;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .heart-icon {
@@ -837,11 +863,6 @@ button.selected {
   background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;
-  background-image: url('@/assets/heart-none.svg');
-}
-
-.heart-button.active .heart-icon {
-  background-image: url('@/assets/heart-full.svg');
 }
 
 /* Styling for the entertainment image */
@@ -850,11 +871,19 @@ button.selected {
   height: 70%;
   object-fit: cover;
   border-radius: 20px 20px 0 0;
+  flex-shrink: 0;
 }
 
 .info {
-  margin-top: 10px;
-  text-align: center;
+  width: 100%;
+  text-align: left; /* Căn trái hoàn toàn */
+  color:#003366;
+  padding: 10px 0;
+}
+
+.item-name{
+  font-weight: bold; /* In đậm tên */
+  font-size: 18px;
 }
 
 .rating img {
@@ -863,22 +892,21 @@ button.selected {
 }
 
 .tags {
-  margin-top: 10px;
+  margin-top: 5px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start; /* Đảm bảo căn trái */
 }
 
 .tag {
   display: inline-block;
-  background-color: #f4f6f7; /* Màu xanh dương */
-  color: rgb(56, 21, 232);
-  padding: 5px 10px;
-  margin: 5px 0;
+  color: #003366;
+  padding: 5px 5px;
+  margin: 2px 0;
   border-radius: 5px;
 }
 
-.food-drink {
+.restaurant-1 {
   display: block;
   position: relative;
   height: 53px;
@@ -893,6 +921,28 @@ button.selected {
   z-index: 311;
 }
 .flex-row-cff1 {
+  display: flex;
+  flex-wrap: wrap;
+  width: calc(84% + 3.5% * 2); 
+  margin: 4.5% 0 0 8%;
+  z-index: 125;
+}
+
+.hotel-1 {
+  display: block;
+  position: relative;
+  height: 53px;
+  margin: 4.5% 0 0 8%;
+  color: #000000;
+  font-family: Poppins, var(--default-font-family);
+  font-size: 2.5vw;
+  font-weight: 700;
+  line-height: 100%;
+  text-align: left;
+  white-space: nowrap;
+  z-index: 311;
+}
+.flex-row-cff2 {
   display: flex;
   flex-wrap: wrap;
   width: calc(84% + 3.5% * 2); 
