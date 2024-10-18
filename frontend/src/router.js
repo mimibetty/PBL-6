@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 const SignInView = () => import('./components/views/SignInView.vue');
 const SignUpView = () => import('./components/views/SignUpView.vue');
 const DashBoardView = () => import('./components/views/dashboard.vue');
+const DashBoardView_Test = () => import('./components/views/Dashboard_Test.vue');
 const destinationView = () => import('./components/views/destinationView.vue');
 const detailLocation_Place = () => import('./components/views/detailLocation_Place.vue');
 const detailLocation_Attraction = () => import('./components/views/detailLocation_Attraction.vue');
@@ -24,6 +25,11 @@ const routes = [
     path: '/home',
     name: 'Dashboard',
     component: DashBoardView,  // Lazy load DashBoardView
+  },
+  {
+    path: '/test',
+    name: 'Dashboard_Test',
+    component: DashBoardView_Test,  // Lazy load DashBoardView
   },
   {
     path: '/destination',

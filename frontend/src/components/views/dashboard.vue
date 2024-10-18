@@ -257,7 +257,7 @@ button {
   top: 40%;
   left: 50%;
   color: #f4fff8;
-  font-family: Poppins, var(--default-font-family);
+  font-family: Roboto, var(--default-font-family);
   font-size: 1.75vw;
   font-weight: 700;
   line-height: 150%;
@@ -280,24 +280,22 @@ button {
   position: relative;
   width: 100%;
   height: 22.5%;
-  margin: 0 0 0 0;
-  background: #000000;
+  background: none;
 }
 .image {
   position: absolute;
-  width: 8%;
-  height: 83.9%;
-  top: 9%;
+  width: 100px;
+  height: 100px;
+  top: 13%;
   left: 1%;
-  background: url('@/assets/images/company_image.png')
-    no-repeat center;
-  background-size: cover;
-  z-index: 27;
+  background: url('@/assets/images/company_image.png') no-repeat center;
+  background-size: contain ;
+  z-index: 2;
   border-radius: 70px;
 }
 .union {
   position: absolute;
-  top: 34%;
+  top: 50%;
   right: 3%;
   width: 4%; /* Đặt kích thước logo phù hợp */
   height: 34%; /* Đặt kích thước logo phù hợp */
@@ -341,7 +339,7 @@ button {
 .menu-button {
   background-color: #1877f2; /* Màu xanh đậm giống Facebook */
   color: white; /* Màu chữ trắng */
-  font-family: Poppins, var(--default-font-family);
+  font-family: Roboto, var(--default-font-family);
   font-size: 1vw; /* Tăng kích thước chữ */
   font-weight: 700;
   padding: 15px 20px; /* Tăng kích thước vùng bấm */
@@ -376,7 +374,7 @@ button {
   top: 30%;
   left: 10%;
   color: #f4fff8;
-  font-family: Jost, var(--default-font-family);
+  font-family: Roboto, var(--default-font-family);
   font-size: 3vw;
   font-weight: 700;
   line-height: 100%;
@@ -393,7 +391,7 @@ button {
   top: 40%;
   left: 70%;
   color: #f4fff8;
-  font-family: Poppins, var(--default-font-family);
+  font-family: Roboto, var(--default-font-family);
   font-size: 1.5vw;
   font-weight: 700;
   line-height: 100%;
@@ -409,8 +407,8 @@ button {
   height: 20%;
   top: 40%;
   left: 52%;
-  color: #f4fff8;
-  font-family: Poppins, var(--default-font-family);
+  color: #EDF6F9;
+  font-family: Roboto, var(--default-font-family);
   font-size: 1.5vw;
   font-weight: 700;
   line-height: 100%;
@@ -426,8 +424,8 @@ button {
   height: 20%;
   top: 40%;
   left: 83%;
-  color: #f4fff8;
-  font-family: Poppins, var(--default-font-family);
+  color: #EDF6F9;
+  font-family: Roboto, var(--default-font-family);
   font-size: 1.5vw;
   font-weight: 700;
   line-height: 100%;
@@ -443,8 +441,8 @@ button {
   height: 20%;
   top: 40%;
   left: 65%;
-  color: #f4fff8;
-  font-family: Poppins, var(--default-font-family);
+  color: #EDF6F9;
+  font-family: Roboto, var(--default-font-family);
   font-size: 1.5vw;
   font-weight: 700;
   line-height: 100%;
@@ -470,7 +468,7 @@ button {
   top: 50%;
   left: 40%;
   color: #ffffff;
-  font-family: Jost, var(--default-font-family);
+  font-family: Rob, var(--default-font-family);
   font-size: 2vw;
   font-weight: 700;
   line-height: 100%;
@@ -489,7 +487,7 @@ button {
   height: 34%;
   margin: -0.8% 0 0 33%;
   color: #ffffff;
-  font-family: Jost, var(--default-font-family);
+  font-family: Rob, var(--default-font-family);
   font-size: 3vw;
   font-weight: 700;
   line-height: 100%;
@@ -581,7 +579,7 @@ button {
   top: 30%;
   left: 36%; /* Căn chỉnh ở giữa, ngay sau line-9 */
   color: #13357b;
-  font-family: Jost, var(--default-font-family);
+  font-family: Rob, var(--default-font-family);
   font-size: 1.5vw;
   font-weight: 400;
   line-height: 100%;
@@ -610,7 +608,7 @@ button {
   height: 53px;
   margin: 1% 0 0 7%;
   color: #000000;
-  font-family: Jost, var(--default-font-family);
+  font-family: Rob, var(--default-font-family);
   font-size: 2vw;
   font-weight: 400;
   line-height: 100%;
@@ -680,7 +678,7 @@ button.btn {
   color: #13357b; /* Màu chữ mặc định: xanh */
   border: 2px solid #13357b;
   border-radius: 25px;
-  font-family: Jost, var(--default-font-family);
+  font-family: Rob, var(--default-font-family);
   font-size: 1.25vw;
   font-weight: 400;
   line-height: 100%;
@@ -755,7 +753,7 @@ button.btn:hover {
   top: 30%;
   left: 36%; /* Căn chỉnh ở giữa, ngay sau line-9 */
   color: #13357b;
-  font-family: Jost, var(--default-font-family);
+  font-family: Rob, var(--default-font-family);
   font-size: 1.5vw;
   font-weight: 400;
   line-height: 100%;
@@ -792,7 +790,7 @@ button.btn:hover {
   height: 53px;
   margin: 1% 0 0 4%;
   color: #000000;
-  font-family: Jost, var(--default-font-family);
+  font-family: Rob, var(--default-font-family);
   font-size: 2.5vw;
   font-weight: 400;
   line-height: 100%;
@@ -868,7 +866,7 @@ button.btn:hover {
   top: 30%;
   left: 36%; /* Căn chỉnh ở giữa, ngay sau line-9 */
   color: #13357b;
-  font-family: Jost, var(--default-font-family);
+  font-family: Rob, var(--default-font-family);
   font-size: 1.5vw;
   font-weight: 400;
   line-height: 100%;
@@ -905,7 +903,7 @@ button.btn:hover {
   height: 53px;
   margin: 1% 0 0 4%;
   color: #000000;
-  font-family: Jost, var(--default-font-family);
+  font-family: Rob, var(--default-font-family);
   font-size: 2.5vw;
   font-weight: 400;
   line-height: 100%;
@@ -1042,7 +1040,7 @@ button.btn:hover {
   height: 26%;
   margin: 0 0 0 0;
   color: #ffffff;
-  font-family: Poppins, var(--default-font-family);
+  font-family: Roboto, var(--default-font-family);
   font-size: 2.5vw;
   font-weight: 700;
   line-height: 100%;
@@ -1056,7 +1054,7 @@ button.btn:hover {
   width: 17%;
   height: 17%;
   margin: 1% 0 0 0.25%;
-  font-family: Poppins, var(--default-font-family);
+  font-family: Roboto, var(--default-font-family);
   font-size: 2vw;
   font-weight: 400;
   line-height: 100%;
@@ -1068,7 +1066,7 @@ button.btn:hover {
 .term-of-use {
   position: relative;
   color: #ffffff;
-  font-family: Poppins, var(--default-font-family);
+  font-family: Roboto, var(--default-font-family);
   font-size: 1.8vw;
   font-weight: 600;
   line-height: 100%;
@@ -1077,7 +1075,7 @@ button.btn:hover {
 .empty {
   position: relative;
   color: #ffffff;
-  font-family: Poppins, var(--default-font-family);
+  font-family: Roboto, var(--default-font-family);
   font-size: 2.5vw;
   font-weight: 700;
   line-height: 100%;
@@ -1087,7 +1085,7 @@ button.btn:hover {
   position: relative;
   left: 20%;
   color: #ffffff;
-  font-family: Poppins, var(--default-font-family);
+  font-family: Roboto, var(--default-font-family);
   font-size: 1.8vw;
   font-weight: 500;
   line-height: 100%;
