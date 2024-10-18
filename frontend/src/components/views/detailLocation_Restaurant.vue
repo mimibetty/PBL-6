@@ -27,6 +27,7 @@
         <button class="name-of-destination">HaNoi</button>
         <button class="thing-to-do">Things to do</button>
         <button class="restaurant">Restaurant</button>
+        <button class="hotel">Resort & Hotel</button>
       </div>
       <div class="flex-row-d">
         <div class="line-2"></div>
@@ -454,7 +455,8 @@ button {
 }
 .name-of-destination, 
 .thing-to-do, 
-.restaurant {
+.restaurant,
+.hotel {
   width: 20%; /* Chiều rộng của mỗi nút */
   height: 60px; /* Chiều cao của mỗi nút */
   color: #13357b;
@@ -475,7 +477,8 @@ button {
 
 .name-of-destination:hover, 
 .thing-to-do:hover, 
-.restaurant:hover {
+.restaurant:hover,
+.hotel:hover {
   background-color: #f0f0f0; /* Hiệu ứng khi hover vào nút */
 }
 .flex-row-d {
@@ -510,7 +513,7 @@ button {
   width: 20%;
   height: 5px;
   top: -1.504px;
-  left: 45%;
+  left: 42%;
   background-color: #13357b;
   background-size: cover;
   z-index: 17;
