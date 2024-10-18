@@ -1,0 +1,349 @@
+{
+  "cities": [
+    {
+      "id": 1,
+      "name": "Bình Dương",
+      "location": "Southern Vietnam",
+      "reviewNumber": 1000,
+      "rating": 4.7,
+      "imageUrl": "/cities/binhduong.jpg"
+    },
+    {
+      "id": 2,
+      "name": "Cao Bằng",
+      "location": "Northern Vietnam",
+      "reviewNumber": 800,
+      "rating": 4.6,
+      "imageUrl": "/cities/caobang.jpg"
+    },
+    {
+      "id": 3,
+      "name": "Đắk Lắk",
+      "location": "Central Vietnam",
+      "reviewNumber": 1200,
+      "rating": 4.8,
+      "imageUrl": "/cities/daklak.jpg"
+    },
+    {
+      "id": 4,
+      "name": "Lâm Đồng",
+      "location": "Central Vietnam",
+      "reviewNumber": 1500,
+      "rating": 4.7,
+      "imageUrl": "/cities/dalat.jpg"
+    },
+    {
+      "id": 5,
+      "name": "Đà Nẵng",
+      "location": "Central Vietnam",
+      "reviewNumber": 2000,
+      "rating": 5.0,
+      "imageUrl": "/cities/danang.jpg"
+    },
+    {
+      "id": 6,
+      "name": "Hà Giang",
+      "location": "Northern Vietnam",
+      "reviewNumber": 950,
+      "rating": 4.0,
+      "imageUrl": "/cities/hagiang.jpg"
+    },
+    {
+      "id": 7,
+      "name": "Hà Nội",
+      "location": "Northern Vietnam",
+      "reviewNumber": 1800,
+      "rating": 4.5,
+      "imageUrl": "/cities/hanoi.jpg"
+    },
+    {
+      "id": 8,
+      "name": "Lào Cai",
+      "location": "Northern Vietnam",
+      "reviewNumber": 1100,
+      "rating": 4.8,
+      "imageUrl": "/cities/laocai.jpg"
+    },
+    {
+      "id": 9,
+      "name": "Khánh Hòa",
+      "location": "Central Vietnam",
+      "reviewNumber": 1400,
+      "rating": 4.7,
+      "imageUrl": "/cities/khanhhoa.jpg"
+    },
+    {
+      "id": 10,
+      "name": "Nghệ An",
+      "location": "Central Vietnam",
+      "reviewNumber": 900,
+      "rating": 4.4,
+      "imageUrl": "/cities/nghean.jpg"
+    },
+    {
+      "id": 11,
+      "name": "Thừa Thiên Huế",
+      "location": "Central Vietnam",
+      "reviewNumber": 1300,
+      "rating": 4.7,
+      "imageUrl": "/cities/thuathienhue.jpg"
+    },
+    {
+      "id": 12,
+      "name": "Thành Phố Hồ Chí Minh",
+      "location": "Southern Vietnam",
+      "reviewNumber": 2500,
+      "rating": 4.2,
+      "imageUrl": "/cities/tphochiminh.jpg"
+    }
+  ],
+  "topics":[
+    {
+      "id": 1,
+      "name": "Culture",
+      "imageUrl": "/topics/culture.jpg"
+    },
+    {
+      "id": 2,
+      "name": "Great Food",
+      "imageUrl": "/topics/food.jpg"
+    },
+    {
+      "id": 3,
+      "name": "Hotel",
+      "imageUrl": "/topics/hotel.jpg"
+    },
+    {
+      "id": 4,
+      "name": "Must See Attraction",
+      "imageUrl": "/topics/must-see-attraction.jpg"
+    },
+    {
+      "id": 5,
+      "name": "Shopping",
+      "imageUrl": "/topics/shopping.jpg"
+    }
+  ],
+  "tours": [
+    {
+      "id": 1,
+      "name": "Bình Dương Tour",
+      "location": "Bình Dương",
+      "reviewNumber": 1000,
+      "rating": 3.3,
+      "imageUrl": "/cities/binhduong.jpg"
+    },
+    {
+      "id": 2,
+      "name": "Cao Bằng Tour",
+      "location": "Cao Bằng",
+      "reviewNumber": 800,
+      "rating": 4.3,
+      "imageUrl": "/cities/caobang.jpg"
+    },
+    {
+      "id": 3,
+      "name": "Đắk Lắk Tour",
+      "location": "Đắk Lắk",
+      "reviewNumber": 1200,
+      "rating": 3.8,
+      "imageUrl": "/cities/daklak.jpg"
+    },
+    {
+      "id": 4,
+      "name": "Lâm Đồng Tour",
+      "location": "Lâm Đồng",
+      "reviewNumber": 1500,
+      "rating": 4.7,
+      "imageUrl": "/cities/dalat.jpg"
+    },
+    {
+      "id": 5,
+      "name": "Đà Nẵng Tour",
+      "location": "Đà Nẵng",
+      "reviewNumber": 2000,
+      "rating": 5.0,
+      "imageUrl": "/cities/danang.jpg"
+    },
+    {
+      "id": 6,
+      "name": "Hà Giang Tour",
+      "location": "Hà Giang",
+      "reviewNumber": 950,
+      "rating": 4.0,
+      "imageUrl": "/cities/hagiang.jpg"
+    },
+    {
+      "id": 7,
+      "name": "Hà Nội Tour",
+      "location": "Hà Nội",
+      "reviewNumber": 1800,
+      "rating": 4.5,
+      "imageUrl": "/cities/hanoi.jpg"
+    },
+    {
+      "id": 8,
+      "name": "Lào Cai Tour",
+      "location": "Lào Cai",
+      "reviewNumber": 1100,
+      "rating": 4.6,
+      "imageUrl": "/cities/laocai.jpg"
+    },
+    {
+      "id": 9,
+      "name": "Nha Trang Tour",
+      "location": "Khánh Hòa",
+      "reviewNumber": 1400,
+      "rating": 4.7,
+      "imageUrl": "/cities/khanhhoa.jpg"
+    },
+    {
+      "id": 10,
+      "name": "Nghệ An Tour",
+      "location": "Nghệ An",
+      "reviewNumber": 900,
+      "rating": 4.4,
+      "imageUrl": "/cities/nghean.jpg"
+    },
+    {
+      "id": 11,
+      "name": "Huế Tour",
+      "location": "Thừa Thiên Huế",
+      "reviewNumber": 1300,
+      "rating": 4.8,
+      "imageUrl": "/cities/thuathienhue.jpg"
+    }
+  ],
+  "entertainments":[
+    {
+      "id": 1,
+      "name": "Ho Tay WaterPark",
+      "tag": ["WaterPark", "Park"],
+      "reviewNumber": 1000,
+      "rating": 3.3,
+      "imageUrl": "/cities/binhduong.jpg"
+    },
+    {
+      "id": 2,
+      "name": "Vinpearl Oceanpark",
+      "tag": ["Hotel", "Park", "WaterPark"],
+      "reviewNumber": 800,
+      "rating": 4.3,
+      "imageUrl": "/cities/caobang.jpg"
+    },
+    {
+      "id": 3,
+      "name": "Bảo tàng quốc gia",
+      "tag": ["Museum"],
+      "reviewNumber": 1200,
+      "rating": 4.8,
+      "imageUrl": "/cities/daklak.jpg"
+    },
+    {
+      "id": 4,
+      "name": "Bitexco",
+      "tag": ["Market", "F&B"],
+      "reviewNumber": 1500,
+      "rating": 4.7,
+      "imageUrl": "/cities/dalat.jpg"
+    },
+    {
+      "id": 5,
+      "name": "King BBQ",
+      "tag": ["F&B"],
+      "reviewNumber": 2000,
+      "rating": 5.0,
+      "imageUrl": "/cities/danang.jpg"
+    },
+    {
+      "id": 6,
+      "name": "Phúc Long Coffee & Tea",
+      "tag": ["F&B"],
+      "reviewNumber": 950,
+      "rating": 4.0,
+      "imageUrl": "/cities/hagiang.jpg"
+    },
+    {
+      "id": 7,
+      "name": "Rạp chiếu phim quốc gia",
+      "tag": ["F&B", "Movie", "Museum"],
+      "reviewNumber": 1800,
+      "rating": 4.5,
+      "imageUrl": "/cities/hanoi.jpg"
+    },
+    {
+      "id": 8,
+      "name": "Bảo tàng du lịch quốc gia",
+      "tag": ["Museum"],
+      "reviewNumber": 1100,
+      "rating": 4.6,
+      "imageUrl": "/cities/laocai.jpg"
+    },
+    {
+      "id": 9,
+      "name": "CGV",
+      "tag": ["Entertainment", "F&B"],
+      "reviewNumber": 1400,
+      "rating": 4.7,
+      "imageUrl": "/cities/khanhhoa.jpg"
+    },
+    {
+      "id": 10,
+      "name": "Jump Area",
+      "tag": ["Entertainment"],
+      "reviewNumber": 900,
+      "rating": 4.4,
+      "imageUrl": "/cities/nghean.jpg"
+    },
+    {
+      "id": 11,
+      "name": "Bãi biển Quảng Nimh",
+      "tag": ["Entertainment", "Beach"],
+      "reviewNumber": 1300,
+      "rating": 4.8,
+      "imageUrl": "/cities/thuathienhue.jpg"
+    }
+  ],
+  "images":[
+    {
+      "id": 1,
+      "imageUrl": "/cities/binhduong.jpg"
+    },
+    {
+      "id": 2,
+      "imageUrl": "/cities/caobang.jpg"
+    },
+    {
+      "id": 3,
+      "imageUrl": "/cities/daklak.jpg"
+    },
+    {
+      "id": 4,
+      "imageUrl": "/cities/dalat.jpg"
+    },
+    {
+      "id": 5,
+      "imageUrl": "/cities/danang.jpg"
+    },
+    {
+      "id": 6,
+      "imageUrl": "/cities/hagiang.jpg"
+    },
+    {
+      "id": 7,
+      "imageUrl": "/cities/hanoi.jpg"
+    },
+    {
+      "id": 8,
+      "imageUrl": "/cities/laocai.jpg"
+    },
+    {
+      "id": 9,
+      "imageUrl": "/cities/khanhhoa.jpg"
+    },
+    {
+      "id": 10,
+      "imageUrl": "/cities/nghean.jpg"
+    }
+  ]
+}
