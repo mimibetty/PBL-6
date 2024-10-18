@@ -82,6 +82,7 @@ export default function () {
 
   const toggleLikeStatus = (id) => {
     liked.value[id] = !liked.value[id];
+    console.log(`Item ID: ${id}, Liked: ${liked.value[id]}`);
   };
 
   return {
@@ -94,6 +95,7 @@ export default function () {
     toggleHeart,
     truncatedDescription,
     toggleReadMore,
+    isReadMore,
     buttons,
     selectedIndices,
     selectButton,
