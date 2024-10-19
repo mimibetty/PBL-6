@@ -133,7 +133,7 @@ class Review(BaseModel):
 class ShowReview(Review):
     id: int
     # Foreign Key
-    user : ShowUser
-    destination :ShowDestination
+    user_id : int
+    destination_id :int
     class Config():
         from_attributes = True
