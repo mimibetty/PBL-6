@@ -1,3 +1,4 @@
+from typing import List
 from sqlalchemy.orm import Session
 from blog import models, schemas
 from fastapi import HTTPException, status
@@ -53,47 +54,34 @@ def get_all(db: Session):
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error retrieving destinations: {str(e)}")
-def sorting_by_ratings_and_quantity_of_reviews(db: Session):
+def sorting_by_ratings_and_quantity_of_reviews(destinations: List[models.Destination], db: Session):
     try:
-        # Lấy tất cả các điểm đến và đánh giá tương ứng
-        destinations = db.query(models.Destination).all()
-        
         # Tạo danh sách để lưu trữ thông tin điểm đến cùng với điểm số và số lượng đánh giá
         destination_scores = []
 
         for destination in destinations:
-            # Lấy tất cả các đánh giá cho destination
-            reviews = db.query(models.Review).filter(models.Review.destination_id == destination.id).all()
-            if reviews:
-                # Tính tổng số điểm và số lượng đánh giá
-                total_ratings = sum(review.rating for review in reviews)
-                quantity_of_reviews = len(reviews)
-                average_rating = total_ratings / quantity_of_reviews
+            # Sử dụng hàm get_ratings_and_reviews_of_destination để tính điểm số
+            review_data = get_ratings_and_reviews_number_of_destinationID(destination.id, db)
 
-                # Tính điểm theo công thức
-                point = quantity_of_reviews + (average_rating * 10)
+            # Sử dụng điểm số tính toán từ hàm get_ratings_and_reviews_of_destination
+            point = review_data["numberOfReviews"] * (review_data["ratings"] ** 2)
 
-                destination_scores.append({
-                    "destination": destination,
-                    "total_point": point
-                })
-            else:
-                destination_scores.append({
-                    "destination": destination,
-                    "total_point": 0
-                })
+            destination_scores.append({
+                "destination": destination,
+                "total_point": point
+            })
 
         # Sắp xếp danh sách theo total_point từ cao xuống thấp
         destination_scores.sort(key=lambda x: x['total_point'], reverse=True)
 
-         # Trả về danh sách các đối tượng Destination đã sắp xếp
+        # Trả về danh sách các đối tượng Destination đã sắp xếp
         sorted_destinations = [item["destination"] for item in destination_scores]
         return sorted_destinations
 
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                            detail=f"Error retrieving destinations: {str(e)}")
-    
+                            detail=f"Error sorting destinations: {str(e)}")
+        
 def update_by_id(id: int, request: schemas.Destination, db: Session):
     try:
         destination = db.query(models.Destination).filter(models.Destination.id == id).first()  # Chờ truy vấn
@@ -204,3 +192,25 @@ def update_hotel_info_by_id(id:int, request: schemas.Hotel, db: Session):
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error updating destination: {str(e)}")
+        
+
+def get_ratings_and_reviews_number_of_destinationID(destination_id: int, db: Session):
+    reviews = db.query(models.Review).filter(models.Review.destination_id == destination_id).all()
+    if reviews:
+        # Tính tổng số điểm và số lượng đánh giá
+        total_ratings = sum(review.rating for review in reviews)
+        quantity_of_reviews = len(reviews)
+        average_rating = total_ratings / quantity_of_reviews
+
+        # Tính điểm theo công thức
+        point = (average_rating * 10)
+
+        return {
+            "ratings": average_rating,
+            "numberOfReviews": quantity_of_reviews
+        }
+    else:
+        return {
+            "ratings": 0,
+            "numberOfReviews": 0
+        }
