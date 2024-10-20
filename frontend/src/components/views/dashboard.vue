@@ -3,18 +3,17 @@
     <template #default>
       <div class="main-container">
         <div class="flex-row-bfc">
-          <div class="rectangle">
-            <a href="#" class="home" @click.prevent="() => alert('Đã nhấn Home')">Home</a>
-          </div>
+          
           <div class="rectangle-1">
             <div class="rectangle-2">
               <div class="image"></div>
-              <button class="union" @click="toggleMenu"></button>
               <span class="travel-tips">Travel Tips</span>
-              <a href="#" class="travel-itinerary" @click.prevent="() => alert('Đã nhấn')">Travel Itinerary</a>
-              <a href="#" class="tour-proposal" @click.prevent="() => alert('Đã nhấn Proposal')">Tour Proposal</a>
-              <a href="#" class="forum" @click.prevent="() => alert('Đã nhấn Forum')">Forum</a>
-              <a href="#" class="trips" @click.prevent="() => alert('Đã nhấn Trip')">Trips</a>
+              <button class="union" @click="toggleMenu"></button>
+              <button class="home" @click="alert('Đã nhấn Home')">Home</button>
+              <button class="travel-itinerary"  @click.prevent="alert('Đã nhấn')">Travel Itinerary</button>
+              <button class="tour-proposal"  @click.prevent="alert('Đã nhấn Proposal')">Tour Proposal</button>
+              <button class="forum"  @click.prevent="alert('Đã nhấn Forum')">Forum</button>
+              <button class="trips"  @click.prevent="alert('Đã nhấn Trip')">Trips</button>
             </div>
 
             <!-- Khung menu ẩn -->
@@ -238,34 +237,7 @@ button {
   margin: -2px 0 0 0;
   z-index: 23;
 }
-.rectangle {
-  position: absolute;
-  width: 9%;
-  height: 21.5%;
-  top: 0;
-  left: 40%;
-  background: #13357b;
-  z-index: 20;
-}
-.home {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  width: 5%;
-  height: 20%;
-  top: 40%;
-  left: 50%;
-  color: #f4fff8;
-  font-family: Roboto, var(--default-font-family);
-  font-size: 1.75vw;
-  font-weight: 700;
-  line-height: 150%;
-  text-align: center;
-  
-  white-space: nowrap;
-  z-index: 21;
-}
+
 .rectangle-1 {
   position: absolute;
   width: 100%;
@@ -384,71 +356,114 @@ button {
 }
 .travel-itinerary {
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
+  align-items: center;
+  justify-content: center;
   position: absolute;
-  height: 20%;
-  top: 40%;
-  left: 70%;
+  width: 14%;
+  height: 100%;
+  top: 0%;
+  left: 68%;
+  background: none;
   color: #f4fff8;
   font-family: Roboto, var(--default-font-family);
-  font-size: 1.5vw;
+  font-size: 1.75vw;
   font-weight: 700;
-  line-height: 100%;
-  text-align: left;
+  line-height: 150%;
+  text-align: center;
+  border: none;
   white-space: nowrap;
-  z-index: 17;
+  z-index: 21;
 }
+
+.home {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  width: 10%;
+  height: 100%;
+  top: 0%;
+  left: 40%;
+  background: #13357b;
+  color: #f4fff8;
+  font-family: Roboto, var(--default-font-family);
+  font-size: 1.75vw;
+  font-weight: 700;
+  line-height: 150%;
+  text-align: center;
+  
+  white-space: nowrap;
+  z-index: 21;
+}
+
 .tour-proposal {
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
+  align-items: center;
+  justify-content: center;
   position: absolute;
-  height: 20%;
-  top: 40%;
-  left: 52%;
-  color: #EDF6F9;
+  width: 12%;
+  height: 100%;
+  top: 0%;
+  left: 50%;
+  background: none;
+  color: #f4fff8;
   font-family: Roboto, var(--default-font-family);
-  font-size: 1.5vw;
+  font-size: 1.75vw;
   font-weight: 700;
-  line-height: 100%;
-  text-align: left;
+  line-height: 150%;
+  text-align: center;
+  border: none;
   white-space: nowrap;
-  z-index: 15;
+  z-index: 21;
 }
 .forum {
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
+  align-items: center;
+  justify-content: center;
   position: absolute;
-  height: 20%;
-  top: 40%;
-  left: 83%;
-  color: #EDF6F9;
+  width: 6%;
+  height: 100%;
+  top: 0%;
+  left: 82%;
+  background: none;
+  color: #f4fff8;
   font-family: Roboto, var(--default-font-family);
-  font-size: 1.5vw;
+  font-size: 1.75vw;
   font-weight: 700;
-  line-height: 100%;
-  text-align: left;
+  line-height: 150%;
+  text-align: center;
+  border: none;
   white-space: nowrap;
-  z-index: 18;
+  z-index: 21;
 }
 .trips {
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
+  align-items: center;
+  justify-content: center;
   position: absolute;
-  height: 20%;
-  top: 40%;
-  left: 65%;
-  color: #EDF6F9;
+  width: 6%;
+  height: 100%;
+  top: 0%;
+  left: 62%;
+  background: none;
+  color: #f4fff8;
   font-family: Roboto, var(--default-font-family);
-  font-size: 1.5vw;
+  font-size: 1.75vw;
   font-weight: 700;
-  line-height: 100%;
-  text-align: left;
+  line-height: 150%;
+  text-align: center;
+  border: none;
   white-space: nowrap;
-  z-index: 16;
+  z-index: 21;
+}
+
+.home:hover, 
+.tour-proposal:hover, 
+.trips:hover, 
+.travel-itinerary:hover, 
+.forum:hover {
+  background-color: #8c9aec;
+  color: #dbe4f5;
 }
 .flex-row {
   position: relative;
