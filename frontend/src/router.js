@@ -10,6 +10,7 @@ const detailLocation_Place = () => import('./components/views/detailLocation_Pla
 const detailLocation_Attraction = () => import('./components/views/detailLocation_Attraction.vue');
 const detailLocation_Restaurant = () => import('./components/views/detailLocation_Restaurant.vue');
 const detailLocation_Hotel = () => import('./components/views/detailLocation_Hotel.vue');
+const writeReviewView = () => import('./components/views/writeReviewView.vue');
 
 const routes = [
   {
@@ -56,6 +57,11 @@ const routes = [
     path: '/detailLocation/Hotel',
     name: 'DetailLocation_Hotel',
     component: detailLocation_Hotel,  // Lazy load detailLocation_Hotel
+  },
+  {
+    path: '/writeReview',
+    name: 'WriteReview',
+    component: writeReviewView,  // Lazy load detailLocation_Hotel
   },
   // Đường dẫn mặc định nếu không có URL cụ thể
   {
