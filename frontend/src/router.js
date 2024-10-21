@@ -12,6 +12,7 @@ const detailLocation_Restaurant = () => import('./components/views/detailLocatio
 const detailLocation_Hotel = () => import('./components/views/detailLocation_Hotel.vue');
 const writeReviewView = () => import('./components/views/writeReviewView.vue');
 const uploadPictureView = () => import('./components/views/uploadPictureView.vue');
+const city_ThingToDo_list = () => import('./components/views/city_ThingToDo_list.vue');
 
 const routes = [
   {
@@ -38,6 +39,11 @@ const routes = [
     path: '/destination',
     name: 'Destination',
     component: destinationView,  // Lazy load destinationView
+  },
+  {
+    path: '/city/thingtodo',
+    name: 'City_ThingToDo',
+    component: city_ThingToDo_list,  // Lazy load destinationView
   },
   {
     path: '/detailLocation/Place',
