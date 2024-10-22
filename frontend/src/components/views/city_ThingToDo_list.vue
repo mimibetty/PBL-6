@@ -91,7 +91,7 @@
   </template>
 
 <script setup>
-import destinationViewModel from '../viewModels/city_ThingToDo_listViewModel';
+import destinationViewModel from '../viewModels/city_ThingToDo_ListViewModel';
 
 const {
   images,

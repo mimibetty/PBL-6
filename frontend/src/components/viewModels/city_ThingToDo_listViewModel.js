@@ -1,5 +1,5 @@
 import { ref, computed, onMounted } from 'vue';
-import ThingtodoModel from '../models/city_ThingToDo_listModel';
+import ThingtodoModel from '../models/city_ThingToDo_ListModel';
 
 export default function () {
   const model = ThingtodoModel();
