@@ -28,7 +28,7 @@ class CustomBottomNavBar extends StatelessWidget {
         items: const [
           BottomNavigationBarItem(icon: Icon(Iconsax.home1), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Iconsax.search_normal), label: 'Search'),
-          BottomNavigationBarItem(icon: Icon(Icons.confirmation_number_outlined), label: 'Bookings'),
+          BottomNavigationBarItem(icon: Icon(Icons.domain_add_outlined), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.bookmark_outline), label: 'Favorites'),
           BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
         ],
@@ -46,7 +46,7 @@ class CustomBottomNavBar extends StatelessWidget {
               Get.toNamed('/search_screen');
               break;
             case 2:
-              Get.toNamed('/hoe');
+              Get.toNamed('/business_creation_screen');
               break;
             case 3:
               Get.toNamed('/favorites');

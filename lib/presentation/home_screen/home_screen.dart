@@ -103,23 +103,38 @@ class _TravelHomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 20),
           ],
-          if (widget.show) // Kiểm tra giá trị của widget.show
+          if (widget.show)
             Padding(
               padding: const EdgeInsets.symmetric(
                   horizontal: 16.0), // Padding trái phải
-              child: Text(
-                cityDescription, // Hiển thị mô tả của thành phố
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black54,
-                ),
-                maxLines: 100, // Giới hạn số dòng mô tả
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.justify, // Căn đều văn bản
-                softWrap: true, // Tự động xuống dòng nếu văn bản quá dài
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start, // Canh lề trái
+                children: [
+                  Text(
+                    'Da Nang', // Tên thành phố
+                    style: TextStyle(
+                      fontSize: 24, // Kích thước chữ lớn
+                      fontWeight: FontWeight.bold, // Chữ in đậm
+                      color: Colors.black, // Màu chữ đen
+                    ),
+                  ),
+                  SizedBox(
+                      height: 8), // Khoảng cách giữa tên thành phố và mô tả
+                  Text(
+                    cityDescription, // Hiển thị mô tả của thành phố
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black54,
+                      height: 1.5, // Điều chỉnh khoảng cách dòng
+                    ),
+                    maxLines: 100, // Giới hạn số dòng mô tả
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.left, // Căn đều văn bản
+                    softWrap: true, // Tự động xuống dòng nếu văn bản quá dài
+                  ),
+                ],
               ),
             ),
-
           const SizedBox(height: 10),
           // Section for Popular places
           const Padding(

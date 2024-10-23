@@ -1,3 +1,5 @@
+import 'package:travelappflutter/presentation/business_creation_screen/binding/business_creation_screen_binding.dart';
+import 'package:travelappflutter/presentation/business_creation_screen/business_creation_screen.dart';
 import 'package:travelappflutter/presentation/home_screen/binding/welcome_binding.dart';
 import 'package:travelappflutter/presentation/home_screen/welcome_screen.dart';
 import 'package:travelappflutter/presentation/review_widget/binding/review_widget_binding.dart';
@@ -43,8 +45,6 @@ import 'package:travelappflutter/presentation/edit_profile_screen/edit_profile_s
 import 'package:travelappflutter/presentation/edit_profile_screen/binding/edit_profile_binding.dart';
 import 'package:travelappflutter/presentation/notification_screen/notification_screen.dart';
 import 'package:travelappflutter/presentation/notification_screen/binding/notification_binding.dart';
-import 'package:travelappflutter/presentation/app_navigation_screen/app_navigation_screen.dart';
-import 'package:travelappflutter/presentation/app_navigation_screen/binding/app_navigation_binding.dart';
 import 'package:get/get.dart';
 
 import '../presentation/review_widget/widgets/create_review.dart';
@@ -101,6 +101,8 @@ class AppRoutes {
 
   static String createReviewScreen='/create_review_screen';
 
+  static String businessCreationScreen='/business_creation_screen';
+
   static List<GetPage> pages = [
     GetPage(
       name: splashScreen,
@@ -128,6 +130,13 @@ class AppRoutes {
       page: () =>ReviewFormPage(destinationId:0),
       bindings: [
         ReviewWidgetBinding(),
+      ],
+    ),
+    GetPage(
+      name: businessCreationScreen,
+      page: () =>CreateBusinessPostScreen(),
+      bindings: [
+       BusinessCreationBinding(),
       ],
     ),
     GetPage(
@@ -263,13 +272,7 @@ class AppRoutes {
         NotificationBinding(),
       ],
     ),
-    GetPage(
-      name: appNavigationScreen,
-      page: () => AppNavigationScreen(),
-      bindings: [
-        AppNavigationBinding(),
-      ],
-    ),
+    
     GetPage(
       name: initialRoute,
       page: () => SplashScreen(),

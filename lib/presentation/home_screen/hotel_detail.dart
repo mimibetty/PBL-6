@@ -30,14 +30,18 @@ class HotelDetailScreen extends StatelessWidget {
         ? const Center(
             child: Text(
               'No Reviews Yet',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.grey),
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey),
             ),
           )
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: reviews.map((review) {
               return Container(
-                margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                margin:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -61,7 +65,9 @@ class HotelDetailScreen extends StatelessWidget {
                           backgroundColor: Colors.blueGrey[100],
                           child: Text(
                             review.context[0].toUpperCase(),
-                            style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -70,12 +76,14 @@ class HotelDetailScreen extends StatelessWidget {
                           children: [
                             Text(
                               review.userId,
-                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               '${review.dateCreated.toLocal()}'.split(' ')[0],
-                              style: const TextStyle(fontSize: 12, color: Colors.grey),
+                              style: const TextStyle(
+                                  fontSize: 12, color: Colors.grey),
                             ),
                           ],
                         ),
@@ -87,7 +95,9 @@ class HotelDetailScreen extends StatelessWidget {
                       children: List.generate(
                         5,
                         (index) => Icon(
-                          index < review.rating ? Icons.star : Icons.star_border,
+                          index < review.rating
+                              ? Icons.star
+                              : Icons.star_border,
                           color: Colors.amber[600],
                           size: 16,
                         ),
@@ -97,7 +107,8 @@ class HotelDetailScreen extends StatelessWidget {
                     // Nội dung review
                     Text(
                       review.context,
-                      style: const TextStyle(fontSize: 14, color: Colors.black87),
+                      style:
+                          const TextStyle(fontSize: 14, color: Colors.black87),
                     ),
                     const SizedBox(height: 10),
                     // Số lượt like
@@ -106,10 +117,12 @@ class HotelDetailScreen extends StatelessWidget {
                       children: [
                         Text(
                           '${review.likeCount} Likes',
-                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                          style:
+                              const TextStyle(fontSize: 12, color: Colors.grey),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.thumb_up_alt_outlined, color: Colors.blueGrey, size: 18),
+                          icon: const Icon(Icons.thumb_up_alt_outlined,
+                              color: Colors.blueGrey, size: 18),
                           onPressed: () {},
                         ),
                       ],
@@ -124,7 +137,7 @@ class HotelDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:AppBar(
+      appBar: AppBar(
         backgroundColor: Colors.white,
         leadingWidth: 64,
         leading: GestureDetector(
@@ -187,7 +200,8 @@ class HotelDetailScreen extends StatelessWidget {
                 ),
               ),
               child: const Icon(
-                Icons.add_comment_rounded, // Thay thế biểu tượng yêu thích bằng dấu +
+                Icons
+                    .add_comment_rounded, // Thay thế biểu tượng yêu thích bằng dấu +
                 size: 30,
               ),
             ),
@@ -195,7 +209,6 @@ class HotelDetailScreen extends StatelessWidget {
           const SizedBox(width: 10),
         ],
       ),
-
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -225,6 +238,28 @@ class HotelDetailScreen extends StatelessWidget {
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      for (int i = 1; i <= 5; i++)
+                        Icon(
+                          Icons.circle,
+                          size: 25,
+                          color: i <= hotel.rating.floor()
+                              ? Color(0xFF13357B)
+                              : (i == hotel.rating.floor() + 1 &&
+                                      hotel.rating - hotel.rating.floor() >=
+                                          0.5)
+                                  ? Color(0xFF13357B).withOpacity(0.5)
+                                  : Colors.grey,
+                        ),
+                      const SizedBox(width: 20),
+                      Text(
+                        "${hotel.rating.toString()} ★",
+                        style: TextStyle(fontSize: 15, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
 
                   // Hiển thị Address
                   RichText(
