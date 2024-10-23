@@ -15,6 +15,9 @@ const uploadPictureView = () => import('./components/views/uploadPictureView.vue
 const city_ThingToDo_list = () => import('./components/views/city_ThingToDo_List.vue');
 const city_Restaurant_list = () => import('./components/views/city_Restaurant_List.vue');
 const city_Hotel_list = () => import('./components/views/city_Hotel_List.vue');
+const ThingToDo_list = () => import('./components/views/ThingToDo_List.vue');
+const Restaurant_list = () => import('./components/views/Restaurant_List.vue');
+const Hotel_list = () => import('./components/views/Hotel_List.vue');
 
 const routes = [
   {
@@ -56,6 +59,21 @@ const routes = [
     path: '/city/hotel',
     name: 'City_Hotel',
     component: city_Hotel_list,  // Lazy load destinationView
+  },
+  {
+    path: '/thingtodo',
+    name: 'Thing_To_Do',
+    component: ThingToDo_list,  // Lazy load destinationView
+  },
+  {
+    path: '/restaurant',
+    name: 'Restaurant',
+    component: Restaurant_list,  // Lazy load destinationView
+  },
+  {
+    path: '/hotel',
+    name: 'Hotel',
+    component: Hotel_list,  // Lazy load destinationView
   },
   {
     path: '/detailLocation/Place',

@@ -4,9 +4,27 @@ export default function () {
   const heartFull = new URL('@/assets/heart-full.svg', import.meta.url).href;
   const heartEmpty = new URL('@/assets/heart-none.svg', import.meta.url).href;
   
+
   
 
-  const buttons = ['Drink', 'Museum', 'Outdoor', 'Adventure', 'Beach', 'Hotel', 'Food', 'F&B', 'Movie'];
+  const fetchCities = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/cities');
+      return response.data.map(city => ({
+        id: city.id,
+        name: city.name,
+        location: city.location,
+        reviewNumber: city.reviewNumber,
+        rating: city.rating,
+        imageUrl: city.imageUrl,
+      }));
+    } catch (error) {
+      console.error("Có lỗi xảy ra khi lấy dữ liệu thành phố:", error);
+      return []; // Return an empty array or handle as needed
+    }
+}
+
+
 
   const fetchEntertainments = async () => {
     try {
@@ -49,8 +67,7 @@ export default function () {
   return {
     heartFull,
     heartEmpty,
-    
-    buttons,
+    fetchCities,
     fetchEntertainments,
     generateStars
   };

@@ -29,21 +29,21 @@ export default function () {
 
 
   const generateStars = (rating) => {
-    const fullStar = new URL('@/assets/star_full.svg', import.meta.url).href;
-    const halfStar = new URL('@/assets/star_half.svg', import.meta.url).href;
-    const emptyStar = new URL('@/assets/star_none.svg', import.meta.url).href;
+    const fullCircle = new URL('@/assets/circle-full.svg', import.meta.url).href;
+    const halfCircle = new URL('@/assets/circle-half.svg', import.meta.url).href;
+    const emptyCircle = new URL('@/assets/circle-none.svg', import.meta.url).href;
 
-    let stars = [];
+    let circles = [];
     for (let i = 1; i <= 5; i++) {
-      if (rating >= i) {
-        stars.push(fullStar);
-      } else if ((rating > i - 1 && rating - i + 1 >= 0.5) && rating < i) {
-        stars.push(halfStar);
-      } else {
-        stars.push(emptyStar);
-      }
+        if (rating >= i) {
+        circles.push(fullCircle);
+        } else if ((rating > i - 1 && rating - i + 1 >= 0.5) && rating < i) {
+            circles.push(halfCircle);
+        } else {
+            circles.push(emptyCircle);
+        }
     }
-    return stars;
+    return circles;
   };
 
   return {
