@@ -565,7 +565,7 @@ button {
   width: 16%;
   height: 5px;
   top: -1%;
-  left: 43%;
+  left: 63%;
   background-color: #061a46;
   background-size: cover;
   z-index: 150;
@@ -579,7 +579,7 @@ button {
 }
 
 .search-background {
-  background-image: url('@/assets/images/background_picture.png');
+  background-image: url('@/assets/images/hotel_background.jpg');
   background-size: cover;
   background-position: center;
   height: 100%;
@@ -697,59 +697,81 @@ h1 {
   align-items: center;
 }
 
+/* Cấu trúc cơ bản của từng phần tử trong option */
 .option {
-  display: flex; /* Sử dụng flex cho mỗi phần tử option */
+  display: flex; /* Sử dụng flexbox để căn chỉnh */
   align-items: center; /* Căn giữa theo chiều dọc */
   background-color: #f6f8fa; /* Màu nền mặc định */
-  border-radius: 8px; /* Đường viền tròn */
-  padding: 10px 15px; /* Thêm padding cho các phần tử */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Đổ bóng để tạo hiệu ứng nổi */
-  cursor: pointer; /* Đổi con trỏ khi di chuột qua */
-  transition: background-color 0.3s ease; /* Hiệu ứng chuyển đổi mượt mà */
+  border-radius: 8px; /* Bo góc cho khung */
+  padding: 10px 15px; /* Khoảng cách padding trong khung */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Hiệu ứng đổ bóng */
+  cursor: pointer; /* Hiển thị con trỏ dạng pointer khi hover */
+  transition: background-color 0.3s ease; /* Hiệu ứng chuyển màu nền */
+  position: relative; /* Vị trí tương đối cho label và checkbox */
+  margin-bottom: 10px; /* Khoảng cách giữa các option */
 }
 
-/* Màu nền khi hover */
+/* Màu nền thay đổi khi hover */
 .option:hover {
-  background-color: #b0e0ff; /* Màu nền khi hover */
+  background-color: #b0e0ff; /* Đổi màu khi hover */
 }
 
-/* Checkbox */
-input[type="checkbox"] {
-  appearance: none; /* Ẩn checkbox mặc định */
-  width: 25px; /* Kích thước tùy chỉnh */
-  height: 25px; /* Kích thước tùy chỉnh */
-  border: 2px solid #007bff; /* Đường viền màu */
-  border-radius: 4px; /* Đường viền tròn */
-  cursor: pointer; /* Đổi con trỏ khi di chuột qua */
-  outline: none; /* Ẩn viền khi checkbox được chọn */
-  margin-right: 10px; /* Khoảng cách giữa checkbox và label */
+/* Ẩn checkbox mặc định */
+.option input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
 }
 
-/* Dấu tích cho checkbox khi chọn */
-input[type="checkbox"]:checked {
-  background-color: #0056b3; /* Màu nền khi checkbox được chọn */
-  border: 2px solid #0056b3; /* Đổi màu viền khi chọn */
+/* Khung tùy chỉnh cho checkbox chưa chọn */
+.option input[type="checkbox"] + label::before {
+  content: ''; /* Nội dung mặc định */
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  margin-right: 10px;
+  background-color: transparent; /* Nền trong suốt khi chưa chọn */
+  border: 2px solid #0056b3; /* Viền màu xanh lam */
+  border-radius: 4px; /* Bo góc cho checkbox */
+  transition: background-color 0.3s ease, border-color 0.3s ease; /* Hiệu ứng khi thay đổi */
 }
 
-/* Thay đổi màu nền của khung option khi checkbox được chọn */
+/* Dấu tích tùy chỉnh khi checkbox được chọn */
+.option input[type="checkbox"]:checked + label::before {
+  background-color: #5c7adf; /* Màu nền khi chọn */
+  content: '✔'; /* Dấu tích */
+  display: inline-block;
+  text-align: center;
+  color: white;
+  line-height: 25px; /* Căn giữa dấu tích theo chiều dọc */
+  font-size: 14px; /* Kích thước dấu tích */
+}
+
+/* Đổi màu nền và chữ khi checkbox được chọn */
 .option input[type="checkbox"]:checked + label {
+  background-color: #0056b3; /* Màu nền toàn bộ khi chọn */
   color: white; /* Đổi màu chữ khi chọn */
 }
 
-/* Thay đổi màu nền của khung option khi checkbox được chọn */
-.option input[type="checkbox"]:checked {
-  background-color: #0056b3; /* Đổi màu nền của khung khi checkbox được chọn */
-}
-
-/* Kích thước chữ cho label */
-label {
-  font-size: 1.5vw; /* Đặt kích thước chữ thành 1.5vw */
-  flex-grow: 1; /* Làm cho label chiếm không gian còn lại */
-  color: #0056b3;
+/* Căn chỉnh và định dạng cho label */
+.option label {
+  font-size: 1.5vw; /* Kích thước chữ */
+  color: #0056b3; /* Màu chữ khi chưa chọn */
+  flex-grow: 1; /* Làm cho label chiếm hết không gian còn lại */
   font-weight: bold;
+  cursor: pointer; /* Con trỏ khi hover */
+  display: flex; /* Sử dụng flex cho căn chỉnh */
+  align-items: center; /* Căn giữa nội dung dọc */
+  padding: 10px 0; /* Khoảng cách trên dưới */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Hiệu ứng chuyển đổi màu */
 }
 
-/* Định dạng dấu tích cho checkbox khi chọn */
+/* Hiệu ứng chuyển đổi cho label khi checkbox được chọn */
+.option input[type="checkbox"]:checked + label {
+  color: white; /* Đổi màu chữ khi được chọn */
+  background-color: #0056b3; /* Đổi màu nền khi được chọn */
+}
+
+/* Đặt kích thước và căn chỉnh cho dấu tích */
 input[type="checkbox"]:checked::after {
   content: ''; /* Chèn nội dung trống */
   display: block; /* Hiển thị khối */
@@ -761,16 +783,10 @@ input[type="checkbox"]:checked::after {
   margin-left: 8px; /* Khoảng cách bên trái cho dấu tích */
 }
 
-/* Thay đổi màu nền của khung option khi checkbox được chọn */
-.option input[type="checkbox"]:checked {
-  background-color: #0056b3; /* Đổi màu nền của khung khi checkbox được chọn */
-}
 
-/* Để đảm bảo khung option luôn đổi màu */
-.option input[type="checkbox"]:checked + label {
-  background-color: #0056b3; /* Đổi màu nền label khi checkbox được chọn */
-  color: white; /* Đổi màu chữ khi chọn */
-}
+
+
+
 
 
 
