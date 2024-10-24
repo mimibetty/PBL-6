@@ -93,9 +93,9 @@ const nextTour = () => {
 
 // Hàm tạo sao dựa trên rating
 const generateStars = (rating) => {
-  const fullStar = new URL('@/assets/star_full.svg', import.meta.url).href;
-  const halfStar = new URL('@/assets/star_half.svg', import.meta.url).href;
-  const emptyStar = new URL('@/assets/star_none.svg', import.meta.url).href;
+  const fullStar = new URL('@/assets/svg/star_full.svg', import.meta.url).href;
+  const halfStar = new URL('@/assets/svg/star_half.svg', import.meta.url).href;
+  const emptyStar = new URL('@/assets/svg/star_none.svg', import.meta.url).href;
 
   let stars = [];
   for (let i = 1; i <= 5; i++) {

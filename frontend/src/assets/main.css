@@ -6,6 +6,9 @@
   padding: 2rem;
   font-weight: normal;
 }
+p{
+  font-family: 'Roboto';
+}
 
 a,
 .green {
