@@ -32,7 +32,7 @@
         <div class="line-3"></div>
         <div class="line-4"></div>
       </div>
-      <span class="place-name">Ho Tay Water Park</span>
+      <span class="place-name">Văn Miếu Quốc Tử Giám</span>
       <div class="flex-row-ba">
         <div v-for="(circle, index) in circles" :key="index" class="circle">
           <img :src="circle" alt="Circle" />
@@ -45,17 +45,22 @@
         </div>
         <span class="write-review">Write review</span>
         <div class="rectangle-f">
-          <span class="peoples-opinion">People’s Opinion</span>
-          <div class="review-info">
-            <span class="review-name">“{{ commentList[0].title }}”<br /></span>
-            <span class="review-day"><br />{{ commentList[0].day }}<br /></span>
-            <span class="review-detail">
-              {{ commentList[0].comment }}<br/></span>
-          </div>
-          <div class="avatar">
-            <img :src="commentList[0].personalImage" alt="Avatar" />
-          </div>
-          <span class="avatar-user">By {{ commentList[0].user }}</span>
+            <span class="about">About</span>
+            <div class="place-info">
+                <span class="place-detail">
+                    {{ truncatedDescription }}<br/></span>
+                <div class="read-more" @click="toggleReadMore">
+                    <span class="line-read">{{ isReadMore ? 'Read less' : 'Read more' }}</span>
+                </div>
+            </div>
+            <div class="duration-line">
+                <img src="@/assets/clock.svg" alt="Clock Icon" class="clock-icon" />
+                <span class="duration">Duration: 5 days</span>
+            </div>
+            <div class="price-line">
+                <div class="divider"></div>
+                <span class="price">Price from: $30.000</span>
+            </div>
         </div>
         <div class="forward" @click="nextImage"></div>
         <div class="back" @click="prevImage"></div>
@@ -152,7 +157,7 @@
 </template>
   
 <script setup>
-import { circles,rating, ratings, commentList, generateCircle, images, currentImage, nextImage, prevImage,totalRating, isDropdownVisible, toggleDropdown, isMenuVisible, toggleMenu } from '../viewModels/detailLocation_PlaceViewModel.js';
+import { circles,rating, ratings, commentList, generateCircle, images, currentImage, nextImage, prevImage,totalRating, isDropdownVisible, toggleDropdown, isMenuVisible, toggleMenu, truncatedDescription, toggleReadMore,isReadMore } from '../viewModels/detailLocation_AttractionViewModel.js';
 
 </script>
 
@@ -549,16 +554,18 @@ button {
   z-index: 36;
 }
 .flex-row-da {
-  position: relative;
+  position: relative;  /* Giữ nguyên vị trí tương đối */
   width: 90%;
-  height: 567px;
-  margin: -0.2% 0 0 5.2%;
-  z-index: 66;
+  height: auto;        /* Cho phép chiều cao thay đổi linh hoạt */
+  margin: 0 0 0 5.2%;  /* Điều chỉnh lại margin */
+  z-index: 66;         /* Giữ nguyên z-index */
+  display: flex;       /* Sử dụng flexbox để sắp xếp phần tử */
+  flex-direction: column; /* Đảm bảo các phần tử nằm dọc xuống phía dưới */
 }
 .rectangle-a {
   position: absolute;
   width: 58%;
-  height: 88%;
+  height: auto;                  /* Cho phép chiều cao tự động */
   top: 0;
   left: 40%;
   background-color: #023e8a;
@@ -569,32 +576,11 @@ button {
 
 .photo-image {
   width: 100%;
-  height: 100%;
+  height: auto;                  /* Cho phép chiều cao tự động */
   object-fit: cover;
   border-radius: 20px;
 }
 
-.platter {
-  flex-shrink: 0;
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 54;
-  overflow: hidden;
-  border-radius: 100px;
-}
-.ultrathin {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  background: rgba(189, 224, 254, 0.75);
-  z-index: 55;
-  backdrop-filter: blur(25px);
-}
 
 .write-review {
   display: flex;
@@ -615,9 +601,9 @@ button {
   z-index: 37;
 }
 .rectangle-f {
-  position: absolute;
+  position: relative;
   width: 37%;
-  height: 81%;
+  height: auto; /* Đặt height là auto để tự động theo nội dung */
   top: 19%;
   left: 0;
   font-size: 0px;
@@ -625,8 +611,38 @@ button {
   z-index: 40;
   border-radius: 15px;
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); /* Hiệu ứng bóng nổi */
+  padding: 10px; /* Thêm padding nếu cần khoảng cách giữa viền và nội dung */
 }
-.peoples-opinion {
+
+.place-info {
+  position: relative;
+  width: 90%;
+  height: auto; /* Đặt height là auto để tự động tăng theo nội dung */
+  margin: 10% 0 0 3.5%;
+  font-family: Inter, var(--default-font-family);
+  font-size: 2.25vw;
+  font-weight: 700;
+  line-height: 100%;
+  text-align: left;
+  text-overflow: initial;
+  white-space: normal; /* Cho phép nội dung xuống dòng */
+  word-wrap: break-word; /* Cho phép cắt dòng nếu từ quá dài */
+  z-index: 44;
+}
+
+.place-detail {
+  position: relative;
+  color: #023e8a;
+  font-family: Inter, var(--default-font-family);
+  font-size: 1.25vw;
+  font-weight: 500;
+  line-height: 100%;
+  text-align: left;
+  max-width: 100%;
+  white-space: normal; /* Cho phép ngắt dòng */
+  overflow-wrap: break-word; /* Cắt từ nếu quá dài */
+}
+.about {
   display: block;
   position: relative;
   height: 10%;
@@ -640,7 +656,7 @@ button {
   white-space: nowrap;
   z-index: 41;
 }
-.review-info {
+.place-info {
   position: relative;
   width: 90%;
   height: auto;
@@ -654,26 +670,9 @@ button {
   white-space: nowrap;
   z-index: 44;
 }
-.review-name {
-  position: relative;
-  color: #023e8a;
-  font-family: Inter, var(--default-font-family);
-  font-size: 1.75vw;
-  font-weight: 700;
-  line-height: 100%;
-  text-align: left;
-}
-.review-day {
-  position: relative;
-  color: #023e8a;
-  font-family: Inter, var(--default-font-family);
-  font-size: 1.5vw;
-  font-weight: 500;
-  line-height: 100%;
-  text-align: left;
-}
 
-.review-detail {
+
+.place-detail {
   position: relative;
   color: #023e8a;
   font-family: Inter, var(--default-font-family);
@@ -685,40 +684,80 @@ button {
   white-space: normal; /* Allow wrapping */
   overflow-wrap: break-word; /* Break words if necessary */
 }
-.avatar {
-  position: absolute;
-  width: 10%;
-  height: 12%;
-  top: 10%;
-  left: 4%;
-  z-index: 135;
-  overflow: hidden;
-  border-radius: 9999px;
-}
 
-.avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 9999px;
-}
-
-.avatar-user {
+.read-more {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  position: absolute;
-  height: 5.8%;
-  top: 12%;
-  left: 15%;
-  color: #023e8a;
-  font-family: Inter, var(--default-font-family);
-  font-size: 2vw;
+  width: 12%; /* Điều chỉnh kích thước để phù hợp với văn bản và mũi tên */
+  height: 29px;
+  margin: 1% 0 0 8%;
+  z-index: 35;
+  cursor: pointer;
+}
+
+.line-read {
+  display: inline-flex;
+  align-items: center;
+  color: #13357b;
+  font-family: Jost, var(--default-font-family);
+  font-size: 1.5vw;
   font-weight: 700;
   line-height: 100%;
   text-align: left;
+  text-decoration: underline;
   white-space: nowrap;
-  z-index: 43;
+}
+
+.duration-line{
+  position: relative;
+  margin-top: 30px;
+  margin-left: 10px;
+  color: #023e8a;
+  
+}
+
+.duration {
+  font-family: Inter, var(--default-font-family);
+  font-size: 1.5vw;
+  font-weight: 700;
+  line-height: 100%;
+  text-align: left;
+  max-width: 100%; /* Set max-width to trigger wrapping */
+  white-space: normal; /* Allow wrapping */
+  overflow-wrap: break-word; /* Break words if necessary */
+}
+.clock-icon {
+  width: 24px; /* Điều chỉnh kích thước theo nhu cầu */
+  height: 24px; /* Điều chỉnh kích thước theo nhu cầu */
+  margin-right: 8px; /* Khoảng cách giữa hình đồng hồ và văn bản */
+}
+.divider {
+  height: 2px; /* Chiều cao của đường gạch ngang */
+  background-color: #023e8a; /* Màu sắc đường gạch ngang */
+  margin: 10px 0; /* Khoảng cách phía trên và dưới đường gạch ngang */
+  width: 100%; /* Chiều rộng đầy đủ của phần tử cha */
+}
+.price-line{
+  position: relative;
+  margin-top: 30px;
+  margin-left: 10px;
+  color: #023e8a;
+  text-align: center;
+  align-items: center;
+  
+}
+
+.price {
+  font-family: Inter, var(--default-font-family);
+  
+  font-size: 2.5vw;
+  font-weight: 700;
+  line-height: 100%;
+  text-align: left;
+  max-width: 100%; /* Set max-width to trigger wrapping */
+  white-space: normal; /* Allow wrapping */
+  overflow-wrap: break-word; /* Break words if necessary */
 }
 
 /* Điều chỉnh nút back và forward */
@@ -755,6 +794,7 @@ button {
   position: relative;
   height: 12%;
   margin: 7.7% 0 0 5.3%;
+  margin-top: 40px;
   color: #13357b;
   font-family: Jost, var(--default-font-family);
   font-size: 4vw;

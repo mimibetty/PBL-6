@@ -33,45 +33,33 @@
         <div class="line-3"></div>
         <div class="line-4"></div>
       </div>
-      <div class="flex-row">
-        <div class="image-list" v-for="image in images" :key="image.id">
-          <img :src="currentImage" :alt="`City ${image.id}`" class="city-image">
+      <div class="container">
+        <div class="content">
+            <div class="image-container">
+                <div class="background"></div> <!-- Đặt background bên trong image-container -->
+                <img src="@/assets/images/background_picture.png" alt="Ha Noi Beach" class="city-image">
+            </div>
+            <div class="text-container">
+                <h2>Things to do in Ha Noi</h2>
+                <p>Check out must-see sights and activities:</p>
+            </div>
         </div>
-        <button class="back" @click="prevImage"></button>
-        <button class="forward" @click="nextImage"></button>
       </div>
-      <div class="flex-row-ba">
-        <div class="rectangle-8">
-          <span class="save">Save</span>
-          <!-- Bổ sung @click để chuyển màu khi nhấn -->
-          <div class="heart" @click="toggleHeart">
-            <img :src="isHeartFilled ? heartFull : heartEmpty" alt="Heart Icon" class="icon" />
-          </div>
-        </div>
-        <span class="discover">Discover</span>
-      </div>
-
-      <span class="destination">Ha Noi</span>
-      <span class="description">{{ truncatedDescription }}</span>
-      <div class="read-more" @click="toggleReadMore">
-        <span class="line-9">{{ isReadMore ? 'Read less ▲' : 'Read more ▼' }}</span>
-        
-      </div>
-      <span class="filter-suggestion">Characteristic of Ha Noi</span>
-      <span class="option-category">Select a category to filter suggestion</span>
       <div class="slider">
-        <button 
-          v-for="(item, index) in buttons" 
-            :key="index" 
-          class="button-item" 
-          :class="{ selected: selectedIndices.includes(index) }" 
-          @click="selectButton(index)"
-        >
-          {{ item }}
-        </button>
+        <div class="button-grid">
+            <button 
+                v-for="(item, index) in buttons" 
+                :key="index" 
+                class="button-item" 
+                :class="{ selected: selectedIndices.includes(index) }" 
+                @click="selectButton(index)"
+            >
+                {{ item }}
+            </button>
+        </div>
       </div>
       
-      <span class="thing-to-do-1">Things to do</span>
+      <span class="thing-to-do-1">Top Attractions in HaNoi</span>
       <div class="flex-row-cff">
         <div v-for="(item, index) in entertainments" :key="index" class="picture">
           
@@ -87,90 +75,40 @@
             <h3 class="item-name">{{ item.name }}</h3>
             <div class="rating">
               <img v-for="star in generateStars(item.rating)" :src="star" class="star" />
+              <span class="rating-count">{{ item.reviewNumber }}</span>
             </div>
             <div class="tags">
               <span v-for="tag in item.tag" :key="tag" class="tag">{{ tag }}</span>
             </div>
+            <div class="line-10"></div>
+            <span class="item-description">{{ item.description }}</span>
           </div>
         </div>
       </div>
-      <span class="restaurant-1">Restaurant</span>
-      <div class="flex-row-cff1">
-        <div v-for="(item, index) in entertainments" :key="index" class="picture">
-          
-          <img :src="getImageUrl(item.imageUrl)" alt="Entertainment Image" class="entertainment-img" />
-
-        
-          <div class="heart-button" @click="toggleLikeStatus(item.id)">
-            <img :src="liked[item.id] ? heartFull : heartEmpty" alt="heart icon" class="heart-icon" />
-          </div>
-
       
-          <div class="info">
-            <h3 class="item-name">{{ item.name }}</h3>
-            <div class="rating">
-              <img v-for="star in generateStars(item.rating)" :src="star" class="star" />
-            </div>
-            <div class="tags">
-              <span v-for="(tag, i) in item.tag" :key="i" class="tag">{{ tag }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <span class="hotel-1">Resort & Hotel</span>
-      <div class="flex-row-cff2">
-        <div v-for="(item, index) in entertainments" :key="index" class="picture">
-          
-          <img :src="getImageUrl(item.imageUrl)" alt="Entertainment Image" class="entertainment-img" />
-
-        
-          <div class="heart-button" @click="toggleLikeStatus(item.id)">
-            <img :src="liked[item.id] ? heartFull : heartEmpty" alt="heart icon" class="heart-icon" />
-          </div>
-
       
-          <div class="info">
-            <h3 class="item-name">{{ item.name }}</h3>
-            <div class="rating">
-              <img v-for="star in generateStars(item.rating)" :src="star" class="star" />
-            </div>
-            <div class="tags">
-              <span v-for="(tag, i) in item.tag" :key="i" class="tag">{{ tag }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import destinationViewModel from '../viewModels/destinationViewModel';
+import destinationViewModel from '../viewModels/city_ThingToDo_ListViewModel';
 
 const {
   images,
   isMenuVisible,
   toggleMenu,
-  currentImage,
-  nextImage,
-  prevImage,
-  isHeartFilled,
-  toggleHeart,
-  truncatedDescription,
-  toggleReadMore,
   buttons,
   selectedIndices,
   selectButton,
   entertainments,
   generateStars,
   getImageUrl,
-  isReadMore,
   liked,
   toggleLikeStatus,
   heartFull,
   heartEmpty,
 } = destinationViewModel();
+
 
 </script>
 
@@ -514,305 +452,112 @@ button {
   width: 16%;
   height: 5px;
   top: -1%;
-  left: 4%;
+  left: 24%;
   background-color: #061a46;
   background-size: cover;
   z-index: 150;
 }
-.flex-row {
-  position: relative;
-  width: 90%;
-  height: 468px;
-  margin: 8% 0 0 5%;
-  z-index: 22;
+
+
+.container { 
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-color: #e8f4f8;
+    padding: 40px;
+    height: 500px;
+    top: 50px;
+    left: 10%;
+    border-radius: 10px;
+    width: 100%;
 }
 
-.image-list {
-  position: absolute;
-  width: 95%;
-  height: 100%;
-  top: 0;
-  left: 2.4%;
-  background: black no-repeat center;
-  background-size: cover;
-  z-index: 19;
-  border-radius: 20px;
+.content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
 }
 
-.frame {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: nowrap;
-  gap: 8px;
-  position: relative;
-  width: 5.6%;
-  margin: 92% 0 0 39%;
-  padding: 8px 12px 8px 12px;
-  z-index: 24;
-  border-radius: 50px;
-  backdrop-filter: blur(20px);
+.image-container {
+    position: relative;
+    flex: 0 0 35%;
+    display: flex; /* Thêm display: flex */
+    justify-content: flex-end; /* Căn giữa các phần tử bên phải */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    height: auto;
+    z-index: 1;
 }
 
-.platter {
-  flex-shrink: 0;
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 25;
-  overflow: hidden;
-  border-radius: 100px;
+.background {
+    position: absolute;
+    width: 100%; /* Cho background rộng bằng với hình */
+    height: 100%; /* Cho background cao bằng hình */
+    background-color: #e0c6f7;
+    border-radius: 10px;
+    top: 0;
+    left: 0; /* Đảm bảo nó căn chỉnh đúng bên trái */
+    z-index: -1; /* Đặt background phía sau hình */
 }
 
-.ultrathin {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  background: rgba(189, 224, 254, 0.75);
-  z-index: 26;
-  backdrop-filter: blur(25px);
-}
 
 .city-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 20px;
+    width: 80%; /* Có thể điều chỉnh theo nhu cầu */
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 80%; /* Đảm bảo hình ảnh không vượt quá container */
+    max-height: 40%;
 }
 
-/* Điều chỉnh nút back và forward */
-.back, .forward {
-  width: 50px; /* Kích thước chiều rộng của nút dựa trên phần tử cha */
-  height: 50px; /* Kích thước chiều cao của nút */
-  background-size: 100% 100%; /* Bắt buộc SVG thay đổi kích thước theo khung */
-  background-repeat: no-repeat; /* Tránh lặp lại hình ảnh */
-  border: none;
+.text-container {
+    flex: 1;
+    max-width: 50%;
+    padding-left: 20px;
 }
 
-.back {
-  position: absolute;
-  top: 50%; 
-  transform: translateY(-50%);
-  left: 2%; 
-  background: url('@/assets/back.svg') center; /* Hình nền cho nút back */
-  z-index: 21;
+.text-container h2 {
+    font-size: 2.5vw;
+    font-weight: bold;
+    color: #202124;
+    margin-bottom: 10px;
 }
 
-.forward {
-  position: absolute;
-  top: 50%; 
-  transform: translateY(-50%);
-  right: 2%; 
-  background: url('@/assets/forward.svg') center; /* Hình nền cho nút forward */
-  z-index: 22;
+.text-container p {
+    font-size: 1.5vw;
+    color: #5f6368;
 }
 
-
-.flex-row-ba {
-  position: relative;
-  width: 46%;
-  height: 57px;
-  margin: 2% 0 0 7.7%;
-  z-index: 39;
-}
-
-.rectangle-8 {
-  position: absolute;
-  width: 30%;
-  height: 100%;
-  top: 0;
-  left: 80%;
-  border: 2px solid #13357b;
-  z-index: 39;
-  border-radius: 20px; /* Bo góc vừa phải */
-  box-sizing: content-box;
-}
-
-.save {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  position: absolute;
-  height: 75%;
-  top: 14%;
-  left: 40%;
-  color: #13357b;
-  font-family: Jost, var(--default-font-family);
-  font-size: 2vw;
-  font-weight: 700;
-  line-height: 100%;
-  text-align: center;
-  white-space: nowrap;
-  z-index: 40;
-}
-
-.heart {
-  position: absolute;
-  width: 40%;
-  height: 70%;
-  top: 18%;
-  left: 15%;
-  z-index: 152;
-  overflow: hidden;
-}
-.icon {
-  width: 38.839px; /* Đặt chiều rộng cho icon */
-  height: 34.386px; /* Đặt chiều cao cho icon */
-  margin: 2.997px 0 0 0.58px;
-}
-
-
-.discover {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  position: absolute;
-  top: 24%;
-  right: 36%;
-  bottom: 0.5%;
-  left: 0;
-  color: #13357b;
-  font-family: Jost, var(--default-font-family);
-  font-size: 2vw;
-  font-weight: 700;
-  line-height: 100%;
-  text-align: left;
-  white-space: nowrap;
-  z-index: 37;
-}
-.destination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  width: 11.5%;
-  height: 64px;
-  margin: 3% 0 0 7%;
-  color: #13357b;
-  font-family: Roboto, var(--default-font-family);
-  font-size: 3vw;
-  font-weight: 700;
-  line-height: 100%;
-  text-align: center;
-  white-space: nowrap;
-  z-index: 36;
-}
-
-.description {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  position: relative;
-  width: 70%;
-  height: auto;
-  margin: 1% 0 0 8%;
-  color: #13357b;
-  font-family: Jost, var(--default-font-family);
-  font-size: 1.5vw;
-  font-weight: 400;
-  line-height: 100%;
-  text-align: left;
-  z-index: 32;
-}
-
-.read-more {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 12%; /* Điều chỉnh kích thước để phù hợp với văn bản và mũi tên */
-  height: 29px;
-  margin: 1% 0 0 8%;
-  z-index: 35;
-  cursor: pointer;
-}
-
-.line-9 {
-  display: inline-flex;
-  align-items: center;
-  color: #13357b;
-  font-family: Jost, var(--default-font-family);
-  font-size: 1.5vw;
-  font-weight: 700;
-  line-height: 100%;
-  text-align: left;
-  text-decoration: underline;
-  white-space: nowrap;
-}
-
-.line-9::after {
-  content: '';
-  display: inline-block;
-  width: 18px; /* Điều chỉnh kích thước mũi tên */
-  height: 18px;
-  margin-left: 8px; /* Khoảng cách giữa văn bản và mũi tên */
-  background: url('@/assets/images/read-more-arrow.png') no-repeat center;
-  background-size: cover;
-}
-
-.filter-suggestion {
-  display: block;
-  position: relative;
-  height: 50px;
-  margin: 3% 0 0 8%;
-  color: #13357b;
-  font-family: Jost, var(--default-font-family);
-  font-size: 2.5vw;
-  font-weight: 700;
-  line-height: 100%;
-  text-align: left;
-  white-space: nowrap;
-  z-index: 68;
-}
-
-.option-category {
-  display: block;
-  position: relative;
-  height: 29px;
-  margin: 0 0 0 8%;
-  color: #13357b;
-  font-family: Jost, var(--default-font-family);
-  font-size: 1.75vw;
-  font-weight: 400;
-  line-height: 100%;
-  text-align: left;
-  white-space: nowrap;
-  z-index: 69;
-}
 
 .slider {
-    position: relative; /* Hoặc absolute, tùy vào cách bố trí */
-    left: 8%; /* Căn chỉnh lề trái */
-    display: flex; 
-    overflow-x: auto; 
-    white-space: nowrap; 
+    position: relative;
+    margin-top: 100px; /* Khoảng cách giữa slider và phần tử trước đó */
+    margin-left: 10%;
     padding: 10px; 
-    
     border-radius: 15px; 
-    max-width: 100%; 
+    max-width: 100%; /* Chiều rộng tối đa */
+    display: block; /* Đảm bảo slider là một khối nằm dưới phần tử trước */
 }
 
+.button-grid {
+    display: grid;
+    
+    grid-template-columns: repeat(4, 1fr); /* 4 item mỗi hàng */
+    grid-gap: 20px; /* Khoảng cách giữa các item */
+}
 
 .button-item {
-    background-color: transparent;
+    background-color: #21b8e6;
     color: #003366;
     border: 2px solid #003366;
-    width: 15%;
-    height: 40px;
+    
+    width: 80%; /* Để item chiếm toàn bộ không gian của cột */
+    height: 100%;
     font-size: 1.75vw;
     font-weight: bold;
     border-radius: 20px; /* Bo góc vừa phải */
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s;
-    flex-shrink: 0;
-    margin-right: 4%; /* Khoảng cách giữa các nút */
-}
-
-.button-item:last-child {
-    margin-right: 0; /* Không thêm khoảng cách cho nút cuối cùng */
 }
 
 button.selected {
@@ -851,9 +596,17 @@ button.selected {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between; /* Thêm dòng này */
+  justify-content: space-between; /* Đảm bảo các phần tử nằm giữa */
+  border: 1px solid #ccc; /* Thêm viền */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng nhạt */
+  transition: all 0.3s ease-in-out; /* Hiệu ứng hover */
 }
 
+.picture:hover {
+  transform: translateY(-5px); /* Nổi lên khi hover */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Tăng độ nổi bóng khi hover */
+  border-color: #888; /* Thay đổi màu viền khi hover */
+}
 
 .heart-button {
   position: absolute;
@@ -861,7 +614,7 @@ button.selected {
   height: 45px;
   top: 16px;
   right: 16px;
-  background-color: #c5dff8; /* Thay thế hình ảnh bằng màu xanh dương */
+  background-color: #c5dff8; /* Màu xanh dương nhạt */
   border-radius: 50%; /* Giữ hình tròn */
   cursor: pointer;
   z-index: 99;
@@ -891,11 +644,13 @@ button.selected {
 .info {
   width: 100%;
   text-align: left; /* Căn trái hoàn toàn */
-  color:#003366;
-  padding: 10px 0;
+  color: #003366;
+  margin: 2px 0;
+  font-size: 1.25vw;
+  padding: 10px 5px;
 }
 
-.item-name{
+.item-name {
   font-weight: bold; /* In đậm tên */
   font-size: 18px;
 }
@@ -906,65 +661,58 @@ button.selected {
 }
 
 .tags {
-  margin-top: 5px;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start; /* Đảm bảo căn trái */
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+  font-size: 14px;
+  color: #003366;
 }
 
 .tag {
   display: inline-block;
+  padding: 5px 10px;
+  background-color: #e8f4f8;
+  border-radius: 5px;
+  position: relative;
+  font-size: 0.8vw;
+  margin-right: 5px; /* Khoảng cách giữa các tag */
+}
+
+.tag::after {
+  content: "&"; /* Thêm ký tự & sau mỗi tag */
+  position: absolute;
+  right: -10px;
+  color: #003366;
+}
+
+.tag:last-child::after {
+  content: ""; /* Xóa ký tự & cho tag cuối cùng */
+}
+
+.line-10 {
+  width: 100%; /* Dòng kẻ kéo dài toàn bộ chiều rộng */
+  height: 1px; /* Độ dày của dòng kẻ */
+  background-color: #061a46; /* Màu xanh đậm */
+  margin: 10px 0; /* Khoảng cách trên và dưới dòng kẻ */
+}
+
+.item-description{
+  display: inline-block;
   color: #003366;
   padding: 5px 5px;
   margin: 2px 0;
+  font-size: 1vw;
   border-radius: 5px;
 }
 
-.restaurant-1 {
-  display: block;
-  position: relative;
-  height: 53px;
-  margin: 4.5% 0 0 8%;
-  color: #000000;
-  font-family: Poppins, var(--default-font-family);
-  font-size: 2.5vw;
-  font-weight: 700;
-  line-height: 100%;
-  text-align: left;
-  white-space: nowrap;
-  z-index: 311;
+.rating-count{
+  display: inline-block;
+  color: #003366;
+  padding: 0px 5px;
+  margin: 2px 0;
+  border-radius: 5px;
 }
-.flex-row-cff1 {
-  display: flex;
-  flex-wrap: wrap;
-  width: calc(84% + 3.5% * 2); 
-  margin: 4.5% 0 0 8%;
-  z-index: 125;
-}
-
-.hotel-1 {
-  display: block;
-  position: relative;
-  height: 53px;
-  margin: 4.5% 0 0 8%;
-  color: #000000;
-  font-family: Poppins, var(--default-font-family);
-  font-size: 2.5vw;
-  font-weight: 700;
-  line-height: 100%;
-  text-align: left;
-  white-space: nowrap;
-  z-index: 311;
-}
-.flex-row-cff2 {
-  display: flex;
-  flex-wrap: wrap;
-  width: calc(84% + 3.5% * 2); 
-  margin: 4.5% 0 0 8%;
-  z-index: 125;
-}
-
-
 
 
 

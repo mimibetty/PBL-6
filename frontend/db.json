@@ -221,6 +221,7 @@
       "tag": ["WaterPark", "Park"],
       "reviewNumber": 1000,
       "rating": 3.3,
+      "description": "A fantastic family destination, Ho Tay WaterPark offers thrilling water slides and relaxing pools. With lush greenery surrounding the park, it's an ideal spot for a refreshing day out. Don't miss the wave pool for some fun!",
       "imageUrl": "/cities/binhduong.jpg"
     },
     {
@@ -229,6 +230,7 @@
       "tag": ["Hotel", "Park", "WaterPark"],
       "reviewNumber": 800,
       "rating": 4.3,
+      "description": "This vibrant water park features exciting attractions and shows. From lazy rivers to thrilling rides, there's something for everyone. The clean facilities and friendly staff enhance the overall experience, making it a must-visit.",
       "imageUrl": "/cities/caobang.jpg"
     },
     {
@@ -237,6 +239,7 @@
       "tag": ["Museum"],
       "reviewNumber": 1200,
       "rating": 4.8,
+      "description": "The National Museum showcases Vietnam's rich history and culture. Its diverse exhibits, including ancient artifacts and artworks, provide a captivating insight into the nation's heritage. A perfect spot for history enthusiasts!",
       "imageUrl": "/cities/daklak.jpg"
     },
     {
@@ -245,6 +248,7 @@
       "tag": ["Market", "F&B"],
       "reviewNumber": 1500,
       "rating": 4.7,
+      "description": "The Bitexco Financial Tower is an architectural marvel. Its sky deck offers breathtaking views of the city skyline. Enjoy dining and shopping within the building, making it a great place to visit for both tourists and locals.",
       "imageUrl": "/cities/dalat.jpg"
     },
     {
@@ -253,6 +257,7 @@
       "tag": ["F&B"],
       "reviewNumber": 2000,
       "rating": 5.0,
+      "description": "King BBQ offers a delightful Korean dining experience with a wide range of grilled meats and side dishes. The cozy atmosphere and attentive service make it an enjoyable place to gather with friends and family.",
       "imageUrl": "/cities/danang.jpg"
     },
     {
@@ -261,6 +266,7 @@
       "tag": ["F&B"],
       "reviewNumber": 950,
       "rating": 4.0,
+      "description": "A popular spot for coffee lovers, Phuc Long serves delicious beverages and light snacks. The relaxing ambiance and friendly staff create a perfect environment for socializing or studying.",
       "imageUrl": "/cities/hagiang.jpg"
     },
     {
@@ -269,6 +275,7 @@
       "tag": ["F&B", "Movie", "Museum"],
       "reviewNumber": 1800,
       "rating": 4.5,
+      "description": "The National Cinema is a great venue for movie lovers. With comfortable seating and a wide selection of films, it's an ideal place to catch the latest releases. The ticket prices are also quite reasonable!",
       "imageUrl": "/cities/hanoi.jpg"
     },
     {
@@ -277,6 +284,7 @@
       "tag": ["Museum"],
       "reviewNumber": 1100,
       "rating": 4.6,
+      "description": "This museum offers a fascinating exploration of Vietnam's tourism industry. Engaging displays and informative exhibits make it a valuable stop for anyone interested in the country's travel culture and heritage.",
       "imageUrl": "/cities/laocai.jpg"
     },
     {
@@ -285,6 +293,7 @@
       "tag": ["Entertainment", "F&B"],
       "reviewNumber": 1400,
       "rating": 4.7,
+      "description": "CGV cinemas provide a premium movie-watching experience with state-of-the-art screens and sound systems. The comfortable seating and variety of films cater to all audiences, making it a favorite among moviegoers.",
       "imageUrl": "/cities/khanhhoa.jpg"
     },
     {
@@ -293,14 +302,16 @@
       "tag": ["Entertainment"],
       "reviewNumber": 900,
       "rating": 4.4,
+      "description": "Jump Area is an exciting trampoline park that promises hours of fun for all ages. The various activities, from dodgeball to foam pits, create an exhilarating environment for friends and family to enjoy together",
       "imageUrl": "/cities/nghean.jpg"
     },
     {
       "id": 11,
-      "name": "Bãi biển Quảng Nimh",
+      "name": "Bãi biển Quảng Ninh",
       "tag": ["Entertainment", "Beach"],
       "reviewNumber": 1300,
       "rating": 4.8,
+      "description": "Quang Ninh Beach offers stunning views and a relaxing atmosphere. The soft sand and gentle waves make it perfect for sunbathing or swimming. A great escape from the city's hustle and bustle!",
       "imageUrl": "/cities/thuathienhue.jpg"
     }
   ],

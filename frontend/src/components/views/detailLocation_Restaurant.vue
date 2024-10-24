@@ -32,7 +32,7 @@
         <div class="line-3"></div>
         <div class="line-4"></div>
       </div>
-      <span class="place-name">Ho Tay Water Park</span>
+      <span class="place-name">King BBQ</span>
       <div class="flex-row-ba">
         <div v-for="(circle, index) in circles" :key="index" class="circle">
           <img :src="circle" alt="Circle" />
@@ -44,21 +44,54 @@
             <img :src="currentImage" :alt="`Photo ${image.id}`" class="photo-image">
         </div>
         <span class="write-review">Write review</span>
-        <div class="rectangle-f">
-          <span class="peoples-opinion">People’s Opinion</span>
-          <div class="review-info">
-            <span class="review-name">“{{ commentList[0].title }}”<br /></span>
-            <span class="review-day"><br />{{ commentList[0].day }}<br /></span>
-            <span class="review-detail">
-              {{ commentList[0].comment }}<br/></span>
-          </div>
-          <div class="avatar">
-            <img :src="commentList[0].personalImage" alt="Avatar" />
-          </div>
-          <span class="avatar-user">By {{ commentList[0].user }}</span>
-        </div>
         <div class="forward" @click="nextImage"></div>
         <div class="back" @click="prevImage"></div>
+      </div>
+      <div class="flex-row-detail">
+        <div class="location-part">
+            <h3>Location and contact</h3>
+            <div class="map-box">Map</div>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <i class="icon-location"></i>
+                    <p>18 Phan Boi Chau Street, Hoan Kiem Dist, Hanoi</p>
+                </div>
+                <div class="contact-item">
+                    <i class="icon-phone"></i>
+                    <p>+84 90 324 69 63</p>
+                </div>
+            </div>
+        </div>
+        <div class="restaurant-detail">
+            <h3 class="section-title">Details</h3>
+
+            <div class="details-grid">
+                <div class="detail-item">
+                    <h4>PRICE RANGE</h4>
+                    <p>0.000 ~ 250.000 VND</p>
+                </div>
+
+                <div class="detail-item">
+                    <h4>SPECIAL DIETS</h4>
+                    <p>Vegetarian friendly, Vegan options, Gluten free options</p>
+                </div>
+
+                <div class="detail-item">
+                    <h4>CUISINES</h4>
+                    <p>Vietnamese</p>
+                </div>
+
+                <div class="detail-item">
+                    <h4>MEALS</h4>
+                    <p>Breakfast, Lunch, Dinner, Brunch, Late Night</p>
+                </div>
+
+                <div class="detail-item full-width">
+                    <h4>FEATURES</h4>
+                    <p>Delivery, Takeout, Reservations, Outdoor Seating, Buffet, Seating, Highchairs Available, Wheelchair Accessible, Serves Alcohol, Full Bar, Wine and Beer, Accepts Mastercard, Accepts Visa, Cash Only, Free Wifi, Accepts Credit Cards, Table Service</p>
+                </div>
+            </div>
+        </div>
       </div>
       <span class="contribute">Contribute</span>
       <div class="flex-row-df">
@@ -152,7 +185,7 @@
 </template>
   
 <script setup>
-import { circles,rating, ratings, commentList, generateCircle, images, currentImage, nextImage, prevImage,totalRating, isDropdownVisible, toggleDropdown, isMenuVisible, toggleMenu } from '../viewModels/detailLocation_PlaceViewModel.js';
+import { circles,rating, ratings, commentList, generateCircle, images, currentImage, nextImage, prevImage,totalRating, isDropdownVisible, toggleDropdown, isMenuVisible, toggleMenu } from '../viewModels/detailLocation_RestaurantViewModel.js';
 
 </script>
 
@@ -495,7 +528,7 @@ button {
   width: 20%;
   height: 5px;
   top: -1.504px;
-  left: 22%;
+  left: 42%;
   background-color: #13357b;
   background-size: cover;
   z-index: 17;
@@ -557,14 +590,14 @@ button {
 }
 .rectangle-a {
   position: absolute;
-  width: 58%;
+  width: 100%;
   height: 88%;
-  top: 0;
-  left: 40%;
+  top: 20%;
+  left: 0%;
   background-color: #023e8a;
   background-size: cover;
   z-index: 47;
-  border-radius: 20px 20px 0 0;
+  border-radius: 20px 20px 20px 20px;
 }
 
 .photo-image {
@@ -574,27 +607,7 @@ button {
   border-radius: 20px;
 }
 
-.platter {
-  flex-shrink: 0;
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 54;
-  overflow: hidden;
-  border-radius: 100px;
-}
-.ultrathin {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  background: rgba(189, 224, 254, 0.75);
-  z-index: 55;
-  backdrop-filter: blur(25px);
-}
+
 
 .write-review {
   display: flex;
@@ -614,112 +627,7 @@ button {
   text-decoration: underline;
   z-index: 37;
 }
-.rectangle-f {
-  position: absolute;
-  width: 37%;
-  height: 81%;
-  top: 19%;
-  left: 0;
-  font-size: 0px;
-  background: #edf6f9;
-  z-index: 40;
-  border-radius: 15px;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); /* Hiệu ứng bóng nổi */
-}
-.peoples-opinion {
-  display: block;
-  position: relative;
-  height: 10%;
-  margin: 0.8% 0 0 4%;
-  color: #023e8a;
-  font-family: Inter, var(--default-font-family);
-  font-size: 2vw;
-  font-weight: 700;
-  line-height: 100%;
-  text-align: left;
-  white-space: nowrap;
-  z-index: 41;
-}
-.review-info {
-  position: relative;
-  width: 90%;
-  height: auto;
-  margin: 10% 0 0 3.5%;
-  font-family: Inter, var(--default-font-family);
-  font-size: 2.25vw;
-  font-weight: 700;
-  line-height: 100%;
-  text-align: left;
-  text-overflow: initial;
-  white-space: nowrap;
-  z-index: 44;
-}
-.review-name {
-  position: relative;
-  color: #023e8a;
-  font-family: Inter, var(--default-font-family);
-  font-size: 1.75vw;
-  font-weight: 700;
-  line-height: 100%;
-  text-align: left;
-}
-.review-day {
-  position: relative;
-  color: #023e8a;
-  font-family: Inter, var(--default-font-family);
-  font-size: 1.5vw;
-  font-weight: 500;
-  line-height: 100%;
-  text-align: left;
-}
 
-.review-detail {
-  position: relative;
-  color: #023e8a;
-  font-family: Inter, var(--default-font-family);
-  font-size: 1.25vw;
-  font-weight: 500;
-  line-height: 100%;
-  text-align: left;
-  max-width: 100%; /* Set max-width to trigger wrapping */
-  white-space: normal; /* Allow wrapping */
-  overflow-wrap: break-word; /* Break words if necessary */
-}
-.avatar {
-  position: absolute;
-  width: 10%;
-  height: 12%;
-  top: 10%;
-  left: 4%;
-  z-index: 135;
-  overflow: hidden;
-  border-radius: 9999px;
-}
-
-.avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 9999px;
-}
-
-.avatar-user {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  position: absolute;
-  height: 5.8%;
-  top: 12%;
-  left: 15%;
-  color: #023e8a;
-  font-family: Inter, var(--default-font-family);
-  font-size: 2vw;
-  font-weight: 700;
-  line-height: 100%;
-  text-align: left;
-  white-space: nowrap;
-  z-index: 43;
-}
 
 /* Điều chỉnh nút back và forward */
 .back, .forward {
@@ -732,22 +640,141 @@ button {
 
 .back {
   position: absolute;
-  top: 50%; 
+  top: 60%; 
   transform: translateY(-50%);
-  left: 38%; 
+  left: 0%; 
   background: url('@/assets/back.svg') center; /* Hình nền cho nút back */
   z-index: 99;
 }
 
 .forward {
   position: absolute;
-  top: 50%; 
+  top: 60%; 
   transform: translateY(-50%);
   right: 0%; 
   background: url('@/assets/forward.svg') center; /* Hình nền cho nút forward */
   z-index: 99;
 }
 
+.flex-row-detail {
+  display: flex;
+  width: 90%;
+  height: auto;
+  margin: -0.2% 0 0 5.2%;
+  z-index: 66;
+}
+
+/* Left column: Location and contact */
+.location-part {
+  width: 30%;
+  background-color: #f9fbfd;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.location-part h3 {
+  font-size: 18px;
+  font-weight: bold;
+  color: #16328e;
+  margin-bottom: 15px;
+}
+
+.map-box {
+  width: 100%;
+  height: 150px;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+}
+
+.contact-item i {
+  font-size: 18px;
+  color: #16328e;
+  margin-right: 10px;
+}
+
+.contact-item p {
+  font-size: 14px;
+  color: #2c3e50;
+}
+
+/* Right column: Restaurant details */
+.restaurant-detail {
+  width: 70%;
+  padding: 20px;
+  margin-left: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #16328e;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.details-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+.detail-item {
+  width: calc(50% - 10px);
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.detail-item.full-width {
+  width: 100%;
+}
+
+.detail-item h4 {
+  font-size: 16px;
+  font-weight: bold;
+  color: #16328e;
+}
+
+.detail-item p {
+  font-size: 14px;
+  color: #2c3e50;
+  margin-top: 5px;
+}
+
+/* Icons for location and phone */
+.icon-location::before {
+  content: "📍";
+}
+
+.icon-phone::before {
+  content: "📞";
+}
 
 
 .contribute {
