@@ -17,7 +17,7 @@
 
       <!-- Google Sign in -->
       <div class="google-signin-container">
-        <img src="@/assets/google_logo.svg" alt="Google Logo" class="google-logo"/>
+        <img src="@/assets/assets/google_logo.svg" alt="Google Logo" class="google-logo"/>
         <button class="google-signin">
           Join With Google
         </button>
