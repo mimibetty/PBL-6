@@ -18,6 +18,7 @@ const city_Hotel_list = () => import('./components/views/city_Hotel_List.vue');
 const ThingToDo_list = () => import('./components/views/ThingToDo_List.vue');
 const Restaurant_list = () => import('./components/views/Restaurant_List.vue');
 const Hotel_list = () => import('./components/views/Hotel_List.vue');
+const Topic_list = () => import('./components/views/Topic_List.vue');
 
 const routes = [
   {
@@ -74,6 +75,11 @@ const routes = [
     path: '/hotel',
     name: 'Hotel',
     component: Hotel_list,  // Lazy load destinationView
+  },
+  {
+    path: '/topic',
+    name: 'Topic',
+    component: Topic_list,  // Lazy load destinationView
   },
   {
     path: '/detailLocation/Place',
