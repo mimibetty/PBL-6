@@ -125,13 +125,14 @@ class AppRoutes {
         OnboardOneBinding(),
       ],
     ),
-    GetPage(
-      name: createReviewScreen,
-      page: () =>ReviewFormPage(destinationId:0),
-      bindings: [
-        ReviewWidgetBinding(),
-      ],
-    ),
+    // GetPage(
+    //   name: createReviewScreen,
+    //   page: () => ReviewFormPage(destinationId), // Truyền destinationId vào
+
+    //   bindings: [
+    //     ReviewWidgetBinding(),
+    //   ],
+    // ),
     GetPage(
       name: businessCreationScreen,
       page: () =>CreateBusinessPostScreen(),
@@ -281,4 +282,6 @@ class AppRoutes {
       ],
     )
   ];
+  
+  
 }

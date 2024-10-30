@@ -36,7 +36,7 @@ class PopularPlace extends StatelessWidget {
               image: DecorationImage(
                 fit: BoxFit.cover,
                 image: NetworkImage(
-                  destination.image![0],
+                  destination.images![0],
                 ),
               ),
             ),

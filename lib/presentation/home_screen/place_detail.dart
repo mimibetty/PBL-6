@@ -30,11 +30,11 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final destinationId = widget.destination.id;
     List<ReviewWidgetModel> filteredReviews = allReviews
         .where((review) => review.destinationId == widget.destination.id)
         .toList();
 
-    print("Filtered Reviews:");
     for (var review in filteredReviews) {
       print(
           'ID: ${review.destinationId}, Name: ${review.context}'); // In ra ID và Name
@@ -71,17 +71,28 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
           ),
         ),
         actions: [
-          Container(
-            padding: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: Colors.black12,
+          GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => ReviewFormPage(
+                      destinationId: destinationId,
+                      modeType: 3,), // Truyền destinationId vào
+                ),
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Colors.black12,
+                ),
               ),
-            ),
-            child: const Icon(
-              Icons.favorite_border_sharp,
-              size: 30,
+              child: const Icon(
+                Icons.add_comment_rounded, // Biểu tượng thêm bình luận
+                size: 30,
+              ),
             ),
           ),
           const SizedBox(width: 10),
@@ -117,9 +128,9 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                         });
                       },
                       children: List.generate(
-                        widget.destination.image!.length,
+                        widget.destination.images!.length,
                         (index) => Image.network(
-                          widget.destination.image![index],
+                          widget.destination.images![index],
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -142,13 +153,13 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                               ),
                               borderRadius: BorderRadius.circular(15),
                               image: DecorationImage(
-                                image: widget.destination.image!.length - 1 !=
+                                image: widget.destination.images!.length - 1 !=
                                         pageView
                                     ? NetworkImage(
-                                        widget.destination.image![pageView + 1],
+                                        widget.destination.images![pageView + 1],
                                       )
                                     : NetworkImage(
-                                        widget.destination.image![0],
+                                        widget.destination.images![0],
                                       ),
                                 fit: BoxFit.cover,
                               ),
@@ -164,7 +175,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: List.generate(
-                                    widget.destination.image!.length,
+                                    widget.destination.images!.length,
                                     (index) => GestureDetector(
                                       onTap: () {
                                         if (pageController.hasClients) {
@@ -399,62 +410,6 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
               ),
             ),
             const Spacer(),
-            TextButton(
-              onPressed: () {
-                // Get.toNamed(AppRoutes.createReviewScreen, arguments: {
-                //   'destinationId': widget
-                //       .destination.id, // Truyền id của destination nếu cần
-                // });
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: false,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(20),
-                    ),
-                  ),
-                  builder: (BuildContext context) {
-                    return FractionallySizedBox(
-                      heightFactor:
-                          0.8, 
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 10),
-                        child: ReviewFormPage(
-                          destinationId: widget.destination.id,
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 20,
-                  horizontal: 20,
-                ),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: kButtonColor),
-                child: const Row(
-                  children: [
-                    Icon(
-                      Icons.confirmation_number_outlined,
-                      color: Colors.white,
-                    ),
-                    SizedBox(width: 5),
-                    Text(
-                      "Create a review",
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
           ],
         ),
       ),

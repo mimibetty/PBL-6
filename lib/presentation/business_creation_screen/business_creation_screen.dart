@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/widget/open_hours_widget.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/widget/price_slide_widget.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/widget/start_rating_widget.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/widget/ticket_requirement_widget.dart';
+import 'package:travelappflutter/presentation/common_views/image_picker_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
 import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
 
@@ -19,6 +22,7 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
   final List<String> hotelFeatures = ["WiFi", "Bể bơi", "Gym"];
   final List<String> restaurantFeatures = ["Ăn nhanh", "Giao hàng", "Đặt bàn"];
   final List<String> cuisines = ["Việt Nam", "Trung Quốc", "Nhật Bản"];
+  List<File> selectedImages = []; // Danh sách hình ảnh đã chọn
 
   String name = '';
   String phoneNumber = '';
@@ -114,19 +118,28 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
                   },
                 ),
                 SizedBox(height: 32.0),
-                StarRatingWidget(
-                  onRatingUpdate: (rating) {
-                    setState(() {
-                      starRating =
-                          rating.toString(); // Cập nhật giá trị đánh giá
-                    });
-                  },
-                ),
+                // StarRatingWidget(
+                //   onRatingUpdate: (rating) {
+                //     setState(() {
+                //       starRating =
+                //           rating.toString(); // Cập nhật giá trị đánh giá
+                //     });
+                //   },
+                // ),
                 SizedBox(height: 32.0),
                 if (selectedBusinessType == 'hotel') ...[
                   _buildDropdownHotelFeatures(),
                   SizedBox(height: 16.0),
-                  _buildTextInput('Description', (value) => description = value),
+                  _buildTextInput(
+                      'Description', (value) => description = value),
+                  StarRatingWidget(
+                    onRatingUpdate: (rating) {
+                      setState(() {
+                        starRating =
+                            rating.toString(); // Cập nhật giá trị đánh giá
+                      });
+                    },
+                  ),
                 ] else if (selectedBusinessType == 'restaurant') ...[
                   _buildDropdownCuisine(),
                   SizedBox(height: 16.0),
@@ -154,15 +167,25 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
                   _buildTextInput(
                       'Duration (Hour)', (value) => duration = value),
                   SizedBox(height: 16.0),
-                  _buildTextInput('What is included', (value) => whatIncluded = value),
-                  SizedBox(height: 16.0),
                   _buildTextInput(
-                      'What is not included', (value) => whatNotIncluded = value),
+                      'What is included', (value) => whatIncluded = value),
                   SizedBox(height: 16.0),
-                  _buildTextInput(
-                      'Additional Information', (value) => additionalInfo = value),
+                  _buildTextInput('What is not included',
+                      (value) => whatNotIncluded = value),
+                  SizedBox(height: 16.0),
+                  _buildTextInput('Additional Information',
+                      (value) => additionalInfo = value),
                 ],
+                ImagePickerWidget(
+                  selectedImages: selectedImages,
+                  onImagesPicked: (images) {
+                    setState(() {
+                      selectedImages = images;
+                    });
+                  },
+                ),
                 SizedBox(height: 20),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -184,18 +207,18 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
     );
   }
 
-  Widget _buildElevatedButton(String label, VoidCallback onPressed) {
-  return ElevatedButton(
-    onPressed: onPressed,
-    style: ElevatedButton.styleFrom(
-      primary: Colors.blue, // Nền đen
-    ),
-    child: Text(
-      label,
-      style: TextStyle(color: Colors.white), // Chữ trắng
-    ),
-  );
-}
+   Widget _buildElevatedButton(String label, VoidCallback onPressed) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        primary: Colors.blue, // Nền đen
+      ),
+      child: Text(
+        label,
+        style: TextStyle(color: Colors.white), // Chữ trắng
+      ),
+    );
+  }
 
   Widget _buildDropdownBusinessType() {
     return DropdownButtonFormField<String>(

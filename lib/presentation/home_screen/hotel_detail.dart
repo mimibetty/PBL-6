@@ -8,7 +8,7 @@ import 'package:travelappflutter/presentation/search_screen/models/hotel_model.d
 class HotelDetailScreen extends StatelessWidget {
   final Hotel hotel;
 
-  HotelDetailScreen({required this.hotel});
+  HotelDetailScreen({super.key,required this.hotel});
 
   // Hàm mở trang web
   Future<void> _launchURL(String url) async {
@@ -169,26 +169,12 @@ class HotelDetailScreen extends StatelessWidget {
         actions: [
           GestureDetector(
             onTap: () {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: false,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(20),
-                  ),
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => ReviewFormPage(
+                      destinationId: hotel.hotelID,
+                      modeType: 2,),
                 ),
-                builder: (BuildContext context) {
-                  return FractionallySizedBox(
-                    heightFactor: 0.8,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 10),
-                      child: ReviewFormPage(
-                        destinationId: hotel.hotelID,
-                      ),
-                    ),
-                  );
-                },
               );
             },
             child: Container(

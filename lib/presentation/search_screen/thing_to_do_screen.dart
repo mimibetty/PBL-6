@@ -62,7 +62,7 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
       ...widget.destinations
           .where((destination) =>
               destination.location.toLowerCase().contains("da nang"))
-          .expand((destination) => destination.image ?? []),
+          .expand((destination) => destination.images ?? []),
       ...myCities
           .where((city) => city.name.toLowerCase().contains("da nang"))
           .expand((city) => city.images ?? []),

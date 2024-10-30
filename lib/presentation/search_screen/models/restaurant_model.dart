@@ -41,7 +41,7 @@ class Restaurant {
 List<Restaurant> restaurantList = [
   Restaurant(
     restaurantName: "Bếp Cuốn Đà Nẵng",
-    restaurantId: 1,
+    restaurantId: 101,
     contactNumber: "0123456789",
     website: "http://bepcuondanang.com",
     time: "10:00 AM - 10:00 PM",
@@ -66,7 +66,7 @@ List<Restaurant> restaurantList = [
   ),
   Restaurant(
     restaurantName: "La Maison 1888",
-    restaurantId: 2,
+    restaurantId: 102,
     contactNumber: "0987654321",
     website: "http://lamaison1888.com",
     time: "12:00 PM - 11:00 PM",
@@ -90,7 +90,7 @@ List<Restaurant> restaurantList = [
   ),
   Restaurant(
     restaurantName: "Nhà Hàng Hải Sản Bé Mặn",
-    restaurantId: 3,
+    restaurantId: 103,
     contactNumber: "0912345678",
     website: "http://besanseafood.com",
     time: "9:00 AM - 10:30 PM",
@@ -114,7 +114,7 @@ List<Restaurant> restaurantList = [
   ),
   Restaurant(
     restaurantName: "Nhà Hàng Madame Lân",
-    restaurantId: 4,
+    restaurantId: 104,
     contactNumber: "0778889999",
     website: "http://madamelan.com",
     time: "8:00 AM - 11:00 PM",
@@ -139,7 +139,7 @@ List<Restaurant> restaurantList = [
   ),
   Restaurant(
     restaurantName: "Sky 21 Bar & Bistro",
-    restaurantId: 5,
+    restaurantId: 105,
     contactNumber: "0901234567",
     website: "http://sky21danang.com",
     time: "5:00 PM - 2:00 AM",

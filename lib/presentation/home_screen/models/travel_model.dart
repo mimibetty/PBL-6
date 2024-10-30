@@ -5,7 +5,7 @@ Random random = Random();
 
 class TravelDestination {
   final int id, price, review;
-  final List<String>? image;
+  final List<String>? images;
   final String name, description, category, location;
   final double rate;
   final String tag;
@@ -17,7 +17,7 @@ class TravelDestination {
     required this.category,
     required this.description,
     required this.review,
-    required this.image,
+    required this.images,
     required this.rate,
     required this.location,
     required this.tag,
@@ -29,7 +29,7 @@ List<TravelDestination> myDestination = [
     id: 1,
     name: "Dragon Bridge",
     category: 'popular',
-    image: [
+    images: [
       "https://statics.vinwonders.com/dragon-bridge-1_1664459719.jpeg",
       "https://statics.vinwonders.com/dragon-bridge-2_1664459711.jpeg",
       "https://www.asme.org/getmedia/757bda08-e4d9-458f-8d68-46e3f364e4bb/dragon-bridge-breathes-fire-into-economy_hero.jpg.aspx?width=460&height=360&ext=.jpg",
@@ -46,7 +46,7 @@ List<TravelDestination> myDestination = [
     id: 2,
     price: 10,
     name: "My Khe Beach",
-    image: [
+    images: [
       "https://static.vinwonders.com/2022/09/My-khe-beach-1.jpeg",
       "https://phongnhalocals.com/wp-content/uploads/2022/06/my-khe-beach-da-nang-phong-nha-locals-9-1024x639.png",
       "https://centralvietnamguide.com/wp-content/uploads/2022/03/my-khe-beach-2.jpg",
@@ -66,7 +66,7 @@ List<TravelDestination> myDestination = [
     review: random.nextInt(300) + 25,
     price: 20,
     category: 'recomend',
-    image: [
+    images: [
       "https://tiki.vn/blog/wp-content/uploads/2023/03/chua-linh-ung-da-nang.jpg",
       "https://banahills.sunworld.vn/wp-content/uploads/2024/01/chua-linh-ung-bai-but-13.jpg",
       "https://static.vinwonders.com/2022/03/chua-linh-ung-da-nang-01.jpg",
@@ -84,7 +84,7 @@ List<TravelDestination> myDestination = [
     review: random.nextInt(300) + 25,
     price: 30,
     category: "popular",
-    image: [
+    images: [
       "https://danangsensetravel.com/view/at_ngu-hanh-son_28c756519df3a3e701e05302ca79903a.jpg",
       "https://www.arttravel.com.vn/upload/images/9(1).jpg",
       "https://huesmiletravel.com.vn/wp-content/uploads/2019/04/ngu-hanh-son-2020-1.jpg",
@@ -101,7 +101,7 @@ List<TravelDestination> myDestination = [
     review: random.nextInt(300) + 25,
     price: 50,
     category: 'recomend',
-    image: [
+    images: [
       "https://banahills.sunworld.vn/wp-content/uploads/2018/08/cap-treo-01-1-768x508.jpg",
       "https://upload.wikimedia.org/wikipedia/commons/2/27/Kali_Gandaki_Valley%2C_Road%2C_Mustang%2C_Nepal%2C_Himalaya.jpg",
       "https://static.toiimg.com/photo/54323153.cms",
@@ -119,7 +119,7 @@ List<TravelDestination> myDestination = [
     review: random.nextInt(300) + 25,
     category: "popular",
     price: 40,
-    image: [
+    images: [
       "https://cdn3.ivivu.com/2024/01/Asia-Park-ivivu.jpg",
       "https://res.klook.com/images/fl_lossy.progressive,q_65/c_fill,w_3000,h_1685,f_auto/w_80,x_15,y_15,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/scjd7xbufij2grfywbjt/DaNangDowntownTicket(SunWorldAsiaPark)-Klook.jpg",
       "https://res.klook.com/images/fl_lossy.progressive,q_65/c_fill,w_1295,h_720/w_80,x_15,y_15,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/ubhkeoxquhsqoysp8naw/DaNangDowntownTicket(SunWorldAsiaPark).jpg",
@@ -137,7 +137,7 @@ List<TravelDestination> myDestination = [
     category: "popular",
     review: random.nextInt(300) + 25,
     price: 0,
-    image: [
+    images: [
       "https://upload.wikimedia.org/wikipedia/commons/0/0c/Han_River_Bridge_Apr08.jpg",
       "https://halotravel.vn/wp-content/uploads/2021/07/cau-quay-song-han-1.jpg",
       "https://cdn3.ivivu.com/2022/09/cau-song-han-da-nang-ivivu-1.jpg",
@@ -155,7 +155,7 @@ List<TravelDestination> myDestination = [
     review: random.nextInt(300) + 25,
     category: "recomend",
     price:30,
-    image: [
+    images: [
       "https://dulichkhampha24.com/wp-content/uploads/2020/01/gioi-thieu-ve-nui-than-tai-14.jpg",
       "https://katana.bdatrip.com/image/w=0/https://images.bdatrip.com/2022/7/6f12a9ce-53559970_543713052790724_3623039273342266783_n.webp",
       "https://drinkies.vn/wp-content/uploads/2022/08/nui-than-tai.jpg",

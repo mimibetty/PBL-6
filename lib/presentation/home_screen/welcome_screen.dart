@@ -9,7 +9,6 @@ import 'package:travelappflutter/presentation/home_screen/home_screen.dart';
 import 'package:travelappflutter/presentation/home_screen/models/cities_model.dart';
 import 'package:travelappflutter/presentation/home_screen/models/topic_model.dart';
 import 'package:travelappflutter/presentation/home_screen/place_detail.dart';
-import 'package:travelappflutter/presentation/home_screen/widgets/city.dart';
 import 'package:travelappflutter/presentation/home_screen/widgets/recomendate_city.dart';
 import 'package:travelappflutter/presentation/home_screen/widgets/topic.dart';
 import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';

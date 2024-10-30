@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
 import 'package:travelappflutter/presentation/search_screen/models/restaurant_model.dart';
@@ -130,29 +132,17 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
             fontWeight: FontWeight.w600,
           ),
         ),
+        
         actions: [
           GestureDetector(
+            
             onTap: () {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: false,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(20),
-                  ),
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => ReviewFormPage(
+                      destinationId: widget.restaurant.restaurantId,
+                      modeType: 1,), // Truyền destinationId vào
                 ),
-                builder: (BuildContext context) {
-                  return FractionallySizedBox(
-                    heightFactor: 0.8,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 10),
-                      child: ReviewFormPage(
-                        destinationId: widget.restaurant.restaurantId,
-                      ),
-                    ),
-                  );
-                },
               );
             },
             child: Container(
@@ -164,7 +154,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                 ),
               ),
               child: const Icon(
-                Icons.add_comment_rounded, // Thay thế biểu tượng yêu thích bằng dấu +
+                Icons.add_comment_rounded, // Biểu tượng thêm bình luận
                 size: 30,
               ),
             ),
