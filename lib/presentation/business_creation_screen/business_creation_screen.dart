@@ -6,6 +6,7 @@ import 'package:travelappflutter/presentation/business_creation_screen/widget/pr
 import 'package:travelappflutter/presentation/business_creation_screen/widget/start_rating_widget.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/widget/ticket_requirement_widget.dart';
 import 'package:travelappflutter/presentation/common_views/image_picker_widget.dart';
+import 'package:travelappflutter/presentation/common_views/selected_chip_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
 import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
 
@@ -45,6 +46,7 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
   String whatIncluded = '';
   String whatNotIncluded = '';
   String additionalInfo = '';
+  List<String> selectedCuisine = [];
 
   void _updatePriceRange(String range) {
     setState(() {
@@ -118,18 +120,40 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
                   },
                 ),
                 SizedBox(height: 32.0),
-                // StarRatingWidget(
-                //   onRatingUpdate: (rating) {
-                //     setState(() {
-                //       starRating =
-                //           rating.toString(); // Cập nhật giá trị đánh giá
-                //     });
-                //   },
-                // ),
-                SizedBox(height: 32.0),
+                
                 if (selectedBusinessType == 'hotel') ...[
-                  _buildDropdownHotelFeatures(),
-                  SizedBox(height: 16.0),
+                  Container(
+                    alignment:
+                        Alignment.centerLeft, // Căn toàn bộ container sang trái
+                    child: Text(
+                      'Select Hotel Features',
+                      style: TextStyle(
+                        fontSize: 18, // Kích thước font chữ
+                        fontWeight: FontWeight.bold, // Đặt văn bản in đậm
+                      ),
+                      textAlign: TextAlign.left, // Căn trái
+                    ),
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  SelectableChipWidget(
+                    labels: [
+                      'Sea View',
+                      'Free Wi-Fi',
+                      'Breakfast Included',
+                      'Rooftop Bar',
+                      'Infinity Pool',
+                      'Private Beach',
+                      'Luxury Amenities',
+                    ],
+                    onSelectionChanged: (selectedLabels) {
+                      setState(() {
+                        selectedRestaurantFeatures = selectedLabels;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 30.0),
                   _buildTextInput(
                       'Description', (value) => description = value),
                   StarRatingWidget(
@@ -140,12 +164,73 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
                       });
                     },
                   ),
+                  SizedBox(height: 10,)
                 ] else if (selectedBusinessType == 'restaurant') ...[
-                  _buildDropdownCuisine(),
+                  Container(
+                    alignment:
+                        Alignment.centerLeft, // Căn toàn bộ container sang trái
+                    child: Text(
+                      'Select Cuisines',
+                      style: TextStyle(
+                        fontSize: 18, // Kích thước font chữ
+                        fontWeight: FontWeight.bold, // Đặt văn bản in đậm
+                      ),
+                      textAlign: TextAlign.left, // Căn trái
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  SelectableChipWidget(
+                    labels: [
+                      'Chinese',
+                      'Vietnamese',
+                      'French',
+                      'Korean',
+                    ],
+                    onSelectionChanged: (selectedLabels) {
+                      setState(() {
+                        selectedCuisine = selectedLabels;
+                      });
+                    },
+                  ),
                   SizedBox(height: 16.0),
-                  _buildDropdownRestaurantFeatures(),
-                  SizedBox(height: 6.0),
-                  _buildTextInput('Meals', (value) => meal = value),
+                  Container(
+                    alignment:
+                        Alignment.centerLeft, // Căn toàn bộ container sang trái
+                    child: Text(
+                      'Select Restaurant Features',
+                      style: TextStyle(
+                        fontSize: 18, // Kích thước font chữ
+                        fontWeight: FontWeight.bold, // Đặt văn bản in đậm
+                      ),
+                      textAlign: TextAlign.left, // Căn trái
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  SelectableChipWidget(
+                    labels: [
+                      "Vegetarian Options",
+                      "Outdoor Seating",
+                      "Fine Dining",
+                      "Luxury",
+                      "Sea View",
+                      "Fresh Seafood",
+                      "Family Friendly",
+                      "Traditional Cuisine",
+                      "Rooftop Bar",
+                      "Live Music",
+                    ],
+                    onSelectionChanged: (selectedLabels) {
+                      setState(() {
+                        selectedRestaurantFeatures = selectedLabels;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 16.0),
+                  _buildTextInput('Special Diets', (value) => meal = value),
                   SizedBox(height: 16.0),
                   PriceRangeSlider(onPriceRangeChanged: _updatePriceRange),
                 ] else if (selectedBusinessType == 'thing_to_do') ...[
@@ -207,7 +292,7 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
     );
   }
 
-   Widget _buildElevatedButton(String label, VoidCallback onPressed) {
+  Widget _buildElevatedButton(String label, VoidCallback onPressed) {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
@@ -286,45 +371,6 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
           return null;
         },
       ),
-    );
-  }
-
-  Widget _buildDropdownHotelFeatures() {
-    return _buildDropdown(
-      label: 'Tiện Nghi Khách Sạn',
-      items: hotelFeatures,
-      selectedItems: selectedHotelFeatures,
-      onChanged: (value) {
-        setState(() {
-          selectedHotelFeatures = value;
-        });
-      },
-    );
-  }
-
-  Widget _buildDropdownRestaurantFeatures() {
-    return _buildDropdown(
-      label: 'Tiện Nghi Nhà Hàng',
-      items: restaurantFeatures,
-      selectedItems: selectedRestaurantFeatures,
-      onChanged: (value) {
-        setState(() {
-          selectedRestaurantFeatures = value;
-        });
-      },
-    );
-  }
-
-  Widget _buildDropdownCuisine() {
-    return _buildDropdown(
-      label: 'Ẩm Thực',
-      items: cuisines,
-      selectedItems: [cuisine],
-      onChanged: (value) {
-        setState(() {
-          cuisine = value as String;
-        });
-      },
     );
   }
 

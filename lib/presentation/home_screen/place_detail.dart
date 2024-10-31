@@ -359,60 +359,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-        height: 110,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 10,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Price",
-                    style: TextStyle(
-                      fontSize: 16,
-                    ),
-                  ),
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        TextSpan(
-                          text: '\$${widget.destination.price}',
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: blueTextColor,
-                          ),
-                        ),
-                        TextSpan(
-                          text: ' / Person',
-                          style: TextStyle(
-                            color: Colors.black.withOpacity(0.6),
-                            fontSize: 16,
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Spacer(),
-          ],
-        ),
-      ),
+      
     );
   }
 }

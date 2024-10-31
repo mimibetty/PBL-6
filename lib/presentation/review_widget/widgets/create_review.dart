@@ -2,21 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:io';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:travelappflutter/presentation/common_views/image_picker_widget.dart';
+import 'package:travelappflutter/presentation/common_views/selected_chip_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/search_screen/models/hotel_model.dart';
 import 'package:travelappflutter/presentation/search_screen/models/restaurant_model.dart';
-import 'package:travelappflutter/routes/app_routes.dart';
 
 class ReviewFormPage extends StatefulWidget {
   final int destinationId;
   final int modeType;
 
-  ReviewFormPage(
-      {Key? key, required this.destinationId, required this.modeType})
-      : super(key: key);
+  ReviewFormPage({Key? key, required this.destinationId, required this.modeType}) : super(key: key);
 
   @override
   _ReviewFormPageState createState() => _ReviewFormPageState();
@@ -24,44 +22,64 @@ class ReviewFormPage extends StatefulWidget {
 
 class _ReviewFormPageState extends State<ReviewFormPage> {
   final TextEditingController _contextController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
+  
   final FocusNode _focusNode = FocusNode();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  
   double _rating = 0;
-  List<File> selectedImages = []; // Danh sách hình ảnh đã chọn
+  List<File> selectedImages = [];
+  List<String> monthYearList = [];
+  
+  // Các biến để lưu giá trị
+  String? selectedMonthYear;
+  String selectedPurpose = '';
+  List<String> selectedCompanions = [];
+  String reviewText = '';
+  String reviewTitle = '';
 
   late final destination = _getDestination();
+
+  @override
+  void initState() {
+    super.initState();
+    _generateMonthYearList();
+  }
 
   // Hàm lấy destination dựa vào modeType
   _getDestination() {
     if (widget.modeType == 1) {
       return restaurantList.firstWhere(
         (r) => r.restaurantId == widget.destinationId,
-        orElse: () =>
-            restaurantList[0], // Default to the first restaurant if not found
+        orElse: () => restaurantList[0],
       );
     } else if (widget.modeType == 2) {
       return mockHotels.firstWhere(
         (h) => h.hotelID == widget.destinationId,
-        orElse: () => mockHotels[0], // Default to the first hotel if not found
+        orElse: () => mockHotels[0],
       );
     } else {
       return myDestination.firstWhere(
         (d) => d.id == widget.destinationId,
-        orElse: () =>
-            myDestination[0], // Default to the first destination if not found
+        orElse: () => myDestination[0],
       );
     }
   }
 
-  void initState() {
-    super.initState();
-    // In ra destinationId khi khởi tạo
-    print("Destination ID nè 1: ${widget.destinationId}");
+  void _generateMonthYearList() {
+    DateTime now = DateTime.now();
+    DateFormat formatter = DateFormat('MMMM/yyyy');
+
+    for (int i = 0; i < 12; i++) {
+      DateTime month = DateTime(now.year, now.month - i, 1);
+      monthYearList.add(formatter.format(month));
+    }
   }
 
   @override
   void dispose() {
     _contextController.dispose();
+    _titleController.dispose();
     _focusNode.dispose();
     super.dispose();
   }
@@ -79,14 +97,7 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Tell us, how was your visit?',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 16),
-
-            // Hiển thị destinationId
-
+            Text('Tell us, how was your visit?', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             SizedBox(height: 16),
 
             Card(
@@ -95,34 +106,26 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                   Image.network(
                     destination.images != null && destination.images!.isNotEmpty
                         ? destination.images![0]
-                        : 'https://example.com/default_image.jpg', // Fallback image
+                        : 'https://example.com/default_image.jpg',
                     fit: BoxFit.cover,
                   ),
-                  if (widget.modeType == 1)
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        '${destination.restaurantName}\n${destination.restaurantLocation}',
-                        textAlign: TextAlign.center,
-                      ),
-                    )
-                  else if (widget.modeType == 2)
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        '${destination.hotelName}\n${destination.hotelLocation}',
-                        textAlign: TextAlign.center,
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      widget.modeType == 1
+                          ? '${destination.restaurantName}\n${destination.restaurantLocation}'
+                          : widget.modeType == 2
+                              ? '${destination.hotelName ?? destination.name}\n${destination.hotelLocation ?? destination.location}'
+                              : '${destination.name}\n${destination.location}',
+                      textAlign: TextAlign.center,
                     ),
+                  ),
                 ],
               ),
             ),
-
             SizedBox(height: 16),
-            Text(
-              'How would you rate your experience?',
-              style: TextStyle(fontSize: 18),
-            ),
+
+            Text('How would you rate your experience?', style: TextStyle(fontSize: 18)),
             RatingBar.builder(
               initialRating: 3,
               minRating: 1,
@@ -130,10 +133,7 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
               allowHalfRating: true,
               itemCount: 5,
               itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-              itemBuilder: (context, _) => Icon(
-                Icons.star,
-                color: Colors.amber,
-              ),
+              itemBuilder: (context, _) => Icon(Icons.star, color: Colors.amber),
               onRatingUpdate: (rating) {
                 setState(() {
                   _rating = rating;
@@ -141,57 +141,78 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
               },
             ),
             SizedBox(height: 16),
-            // DropdownButton<String>(
-            //   hint: Text('When did you go?'),
-            //   items: <String>['January', 'February', 'March','April']
-            //       .map((String value) {
-            //     return DropdownMenuItem<String>(
-            //       value: value,
-            //       child: Text(value),
-            //     );
-            //   }).toList(),
-            //   onChanged: (_) {},
-            // ),
-            SizedBox(height: 16),
-            Text('Who did you go with?'),
-            Wrap(
-              spacing: 8.0,
-              children: ['Business', 'Couples', 'Family', 'Friends', 'Solo']
-                  .map((label) => ChoiceChip(
-                        label: Text(label),
-                        selected: false,
-                        onSelected: (bool selected) {},
-                      ))
-                  .toList(),
+
+            DropdownButton<String>(
+              hint: Text('When did you go?'),
+              value: selectedMonthYear,
+              items: monthYearList.map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  selectedMonthYear = newValue;
+                });
+              },
             ),
             SizedBox(height: 16),
+
+            Text('Who did you go with?'),
+            SizedBox(height:10),
+            SelectableChipWidget(
+              labels: ['Business', 'Couples', 'Family', 'Friends', 'Solo'],
+              onSelectionChanged: (selectedLabels) {
+                setState(() {
+                  selectedCompanions = selectedLabels;
+                });
+              },
+            ),
+            SizedBox(height: 16),
+
             DropdownButton<String>(
               hint: Text('What were you here for?'),
+              value: selectedPurpose.isNotEmpty ? selectedPurpose : null,
               items: <String>['Business', 'Leisure'].map((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(value),
                 );
               }).toList(),
-              onChanged: (_) {},
+              onChanged: (String? newValue) {
+                setState(() {
+                  selectedPurpose = newValue ?? '';
+                });
+              },
             ),
             SizedBox(height: 16),
+
             TextField(
+              controller: _contextController,
               decoration: InputDecoration(
                 labelText: 'Write your review',
                 border: OutlineInputBorder(),
               ),
               maxLines: 5,
-              controller: _contextController,
+              onChanged: (value) {
+                reviewText = value;
+              },
             ),
             SizedBox(height: 16),
+
             TextField(
+              controller: _titleController,
               decoration: InputDecoration(
                 labelText: 'Title your review',
                 border: OutlineInputBorder(),
               ),
+              onChanged: (value) {
+                reviewTitle = value;
+              },
             ),
             SizedBox(height: 16),
+
             ImagePickerWidget(
               selectedImages: selectedImages,
               onImagesPicked: (images) {
@@ -201,28 +222,21 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
               },
             ),
             SizedBox(height: 16),
+
             Row(
-              mainAxisAlignment: MainAxisAlignment.center, // Căn giữa các nút
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextButton(
                   onPressed: () {
                     Get.back();
-                    // Hiển thị thông báo thành công
-                    Get.snackbar(
-                      "Success", // Tiêu đề thông báo
-                      "Review submitted successfully!", // Nội dung thông báo
-                      snackPosition: SnackPosition.BOTTOM, // Vị trí thông báo
-                      duration:
-                          Duration(seconds: 2), // Thời gian hiển thị thông báo
-                      backgroundColor: Colors.green, // Màu nền của thông báo
-                      colorText: Colors.white, // Màu chữ
-                    );
+                    Get.snackbar("Success", "Review submitted successfully!",
+                        snackPosition: SnackPosition.BOTTOM,
+                        duration: Duration(seconds: 2),
+                        backgroundColor: Colors.green,
+                        colorText: Colors.white);
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 10, // Kích thước chiều dọc
-                      horizontal: 15, // Kích thước chiều ngang
-                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
                       color: kButtonColor,
@@ -230,63 +244,43 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.confirmation_number_outlined,
-                          color: Colors.white,
-                        ),
+                        Icon(Icons.confirmation_number_outlined, color: Colors.white),
                         SizedBox(width: 5),
-                        Text(
-                          "Create a review",
-                          style: TextStyle(
-                            fontSize: 14, // Kích thước chữ
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
+                        Text("Create a review", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white)),
                       ],
                     ),
                   ),
                 ),
-                SizedBox(width: 10), // Khoảng cách giữa hai nút
+                SizedBox(width: 10),
                 TextButton(
                   onPressed: () {
-                    // Hành động cho nút reset
-                    // Ví dụ: xóa thông tin đã nhập hoặc làm mới các trường
-                    Get.snackbar(
-                      "Reset", // Tiêu đề thông báo
-                      "Fields have been reset!", // Nội dung thông báo
-                      snackPosition: SnackPosition.BOTTOM, // Vị trí thông báo
-                      duration:
-                          Duration(seconds: 2), // Thời gian hiển thị thông báo
-                      backgroundColor: Colors.red, // Màu nền của thông báo
-                      colorText: Colors.white, // Màu chữ
-                    );
+                    setState(() {
+                      _contextController.clear();
+                      _titleController.clear();
+                      _rating = 0;
+                      selectedMonthYear = null;
+                      selectedPurpose = '';
+                      selectedCompanions.clear();
+                      selectedImages.clear();
+                    });
+                    Get.snackbar("Reset", "Fields have been reset!",
+                        snackPosition: SnackPosition.BOTTOM,
+                        duration: Duration(seconds: 2),
+                        backgroundColor: Colors.red,
+                        colorText: Colors.white);
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 10, // Kích thước chiều dọc
-                      horizontal: 15, // Kích thước chiều ngang
-                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
-                      color: Colors.red, // Màu nền cho nút reset
+                      color: Colors.red,
                     ),
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.refresh, // Biểu tượng cho nút reset
-                          color: Colors.white,
-                        ),
+                        Icon(Icons.refresh, color: Colors.white),
                         SizedBox(width: 5),
-                        Text(
-                          "Reset",
-                          style: TextStyle(
-                            fontSize: 14, // Kích thước chữ
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
+                        Text("Reset", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white)),
                       ],
                     ),
                   ),

@@ -1,13 +1,14 @@
-
-
 class ReviewWidgetModel {
   final String reviewId;         // Mã định danh của review
   final String userId;           // Mã định danh của người dùng
-  final int destinationId;    // Mã định danh của địa điểm
+  final int destinationId;       // Mã định danh của địa điểm
   final String context;          // Nội dung của review
   final double rating;           // Đánh giá (từ 1 đến 5)
   final DateTime dateCreated;    // Ngày tạo review
   int likeCount;                 // Số lượng lượt thích
+  final String travelTime;       // Thời gian đi
+  final String whoGoWith;        // Ai đi cùng
+  final String title;            // Tiêu đề của review
 
   ReviewWidgetModel({
     required this.reviewId,
@@ -16,7 +17,10 @@ class ReviewWidgetModel {
     required this.context,
     required this.rating,
     required this.dateCreated,
-    this.likeCount = 0,          // Số lượt thích mặc định là 0
+    this.likeCount = 0,           // Số lượt thích mặc định là 0
+    required this.travelTime,
+    required this.whoGoWith,
+    required this.title,          // Thêm trường title
   });
 
   // Phương thức tăng lượt thích
@@ -37,9 +41,12 @@ class ReviewWidgetModel {
       userId: json['userId'],
       destinationId: json['destinationId'],
       context: json['context'],
-      rating: json['rating'],
+      rating: json['rating'].toDouble(), // Đảm bảo rating là double
       dateCreated: DateTime.parse(json['dateCreated']),
       likeCount: json['likeCount'] ?? 0,
+      travelTime: json['travelTime'] ?? '',
+      whoGoWith: json['whoGoWith'] ?? '',
+      title: json['title'] ?? '',        // Thêm trường title
     );
   }
 
@@ -52,6 +59,9 @@ class ReviewWidgetModel {
       'rating': rating,
       'dateCreated': dateCreated.toIso8601String(),
       'likeCount': likeCount,
+      'travelTime': travelTime,
+      'whoGoWith': whoGoWith,
+      'title': title,                    // Thêm trường title
     };
   }
 }
@@ -62,10 +72,13 @@ List<ReviewWidgetModel> mockReviews = [
     reviewId: '1',
     userId: 'user01',
     destinationId: 1,
-    context: 'Great place! Highly recommended for tourism and family . Ill comeback next time.',
-    rating: 4.5,
+    context: 'Great place! Highly recommended for tourism and family. I\'ll come back next time.',
+    rating: 4.6,
     dateCreated: DateTime.now(),
     likeCount: 10,
+    travelTime: 'September/2024',
+    whoGoWith: 'family',
+    title: 'Amazing Experience!',       // Thêm tiêu đề cho review
   ),
   ReviewWidgetModel(
     reviewId: '2',
@@ -75,6 +88,9 @@ List<ReviewWidgetModel> mockReviews = [
     rating: 5.0,
     dateCreated: DateTime.now(),
     likeCount: 15,
+    travelTime: 'August/2024',
+    whoGoWith: 'friends',
+    title: 'Unforgettable Trip!',       // Thêm tiêu đề cho review
   ),
   ReviewWidgetModel(
     reviewId: '3',
@@ -84,5 +100,8 @@ List<ReviewWidgetModel> mockReviews = [
     rating: 3.0,
     dateCreated: DateTime.now(),
     likeCount: 7,
+    travelTime: 'October/2024',
+    whoGoWith: 'solo',
+    title: 'Average Experience',        // Thêm tiêu đề cho review
   ),
 ];

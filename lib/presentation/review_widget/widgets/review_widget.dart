@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // Để định dạng ngày
+import 'package:travelappflutter/presentation/common_views/circle_rating_widget_view.dart';
 import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
 
 class ReviewWidget extends StatelessWidget {
@@ -16,55 +18,105 @@ class ReviewWidget extends StatelessWidget {
             ),
           )
         : ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 10),
             itemCount: reviews.length,
             itemBuilder: (context, index) {
               final review = reviews[index];
+              String formattedDate = DateFormat('dd MMM yyyy')
+                  .format(review.dateCreated); // Định dạng ngày
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                color: const Color(0xFFF1F3F5), // Màu nền của card
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: const Color(0xFF1B1B1B), // Màu nền avatar
-                    child: Text(
-                      review.context[0].toUpperCase(), // Lấy chữ cái đầu tiên của context làm avatar
-                      style: const TextStyle(color: Colors.white, fontSize: 20),
-                    ),
-                  ),
-                  title: Text(
-                    review.context,
-                    style: const TextStyle(fontSize: 16, color: Color(0xFF1B1B1B)), // Màu chữ
-                  ),
-                  subtitle: Column(
+                color: const Color(0xFFF1F3F5),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
+                        mainAxisAlignment: MainAxisAlignment
+                            .spaceBetween, // Sử dụng spaceBetween để phân bố không gian
                         children: [
-                          Icon(
-                            Icons.star,
-                            color: Colors.amber[700],
-                            size: 20,
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundColor: const Color(0xFF1B1B1B),
+                                radius: 20,
+                                child: Text(
+                                  review.context[0].toUpperCase(),
+                                  style: const TextStyle(
+                                      color: Colors.white, fontSize: 20),
+                                ),
+                              ),
+                              const SizedBox(width: 20),
+                              Text(
+                                review.userId.toString(),
+                                style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w900),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 5),
-                          Text(
-                            review.rating.toString(),
-                            style: const TextStyle(fontSize: 14, color: Color(0xFF1B1B1B)), // Màu chữ
+                          Row(
+                            // Đưa phần Likes vào một Row riêng bên phải
+                            children: [
+                              Icon(
+                                Icons.thumb_up_alt_outlined,
+                                color: Colors.blueAccent,
+                                size: 18,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${review.likeCount} Likes',
+                                style: const TextStyle(
+                                    fontSize: 12, color: Colors.black),
+                              ),
+                            ],
                           ),
                         ],
                       ),
+
+                      const SizedBox(height: 10),
+
+                      CircleRatingWidget(rating: review.rating, size: 15),
+                      const SizedBox(height: 10),
+                      //Hiển thị travelTime và whoGoWith ở dòng tiếp theo
+                      Text(
+                        '${review.travelTime} * ${review.whoGoWith}',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: Colors.black,
+                        ),
+                      ),
                       const SizedBox(height: 5),
                       Text(
-                        '${review.dateCreated.toLocal()}',
-                        style: const TextStyle(fontSize: 12, color: Colors.grey),
+                        review.title,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          color: Color(0xFF1B1B1B),
+                          fontWeight: FontWeight.bold
+                        ),
                       ),
-                    ],
-                  ),
-                  trailing: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                      const SizedBox(height: 5),
                       Text(
-                        '${review.likeCount} Likes',
-                        style: const TextStyle(fontSize: 12, color: Colors.black),
+                        review.context,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFF1B1B1B),
+                        ),
                       ),
+
+                      const SizedBox(height: 5),
+                      Text(
+                        'Written $formattedDate',
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                      const SizedBox(height: 5),
+                      // Thêm phần thích (Likes) dưới đây nếu cần
                     ],
                   ),
                 ),
