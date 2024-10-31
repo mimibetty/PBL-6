@@ -174,7 +174,7 @@ class AppRoutes {
     ),
     GetPage(
       name: homeScreen,
-      page: () => HomeScreen(destinations: [],show:true),
+      page: () => HomeScreen(show:true),
       bindings: [
         HomeBinding(),
       ],

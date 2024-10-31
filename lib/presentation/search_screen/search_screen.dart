@@ -24,7 +24,7 @@ class _SearchScreenState extends State<SearchScreen>
 
   @override
   void initState() {
-    List<TravelDestination> daNangDestinations = myDestination
+    List<TravelDestination> daNangDestinations = danangDestinations
         .where((element) => element.location == "Da Nang , Viet Nam")
         .toList();
     super.initState();
@@ -68,13 +68,16 @@ class _SearchScreenState extends State<SearchScreen>
 
   @override
   Widget build(BuildContext context) {
-    // Lọc danh sách các địa điểm phổ biến và được đề xuất
-    List<TravelDestination> popularDestinations = myDestination
-        .where((destination) => destination.category == 'popular')
-        .toList();
-    List<TravelDestination> recommendDestinations = myDestination
-        .where((destination) => destination.category == 'recommend')
-        .toList();
+    // tạm thời chưa làm, để trống 
+    List<TravelDestination> popularDestinations = danangDestinations;
+    List<TravelDestination> recommendDestinations = danangDestinations;
+    // // Lọc danh sách các địa điểm phổ biến và được đề xuất
+    // List<TravelDestination> popularDestinations = danangDestinations
+    //     .where((destination) => destination.category == 'popular')
+    //     .toList();
+    // List<TravelDestination> recommendDestinations = danangDestinations
+    //     .where((destination) => destination.category == 'recommend')
+    //     .toList();
     List<Restaurant> restaurants =
         restaurantList // Danh sách cho Special Offers
             .where((destination) => destination.rating > 3.5)

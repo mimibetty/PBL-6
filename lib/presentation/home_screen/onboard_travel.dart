@@ -59,7 +59,7 @@ class _TravelOnBoardingScreenState extends State<TravelOnBoardingScreen> {
                         Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const HomeScreen(destinations: [],),
+                              builder: (_) => const HomeScreen(),
                             ),
                             (route) => false);
                       },
@@ -144,7 +144,7 @@ class _TravelOnBoardingScreenState extends State<TravelOnBoardingScreen> {
                               Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => const HomeScreen(destinations: [],),
+                                    builder: (_) => const HomeScreen(),
                                   ),
                                   (route) => false);
                             },

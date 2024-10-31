@@ -36,7 +36,7 @@ class PopularPlace extends StatelessWidget {
               image: DecorationImage(
                 fit: BoxFit.cover,
                 image: NetworkImage(
-                  destination.image![0],
+                  destination.images![0],
                 ),
               ),
             ),
@@ -72,7 +72,7 @@ class PopularPlace extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 5),
                                 Text(
-                                  destination.location,
+                                  destination.address.district,
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 18,
@@ -91,7 +91,7 @@ class PopularPlace extends StatelessWidget {
                             ),
                             const SizedBox(width: 5),
                             Text(
-                              destination.rate.toString(),
+                              destination.rating.toString(),
                               style: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,

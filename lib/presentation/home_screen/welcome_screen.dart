@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
+import 'package:travelappflutter/presentation/home_screen/controller/welcome_controller.dart';
 import 'package:travelappflutter/presentation/home_screen/home_screen.dart';
 import 'package:travelappflutter/presentation/home_screen/models/cities_model.dart';
 import 'package:travelappflutter/presentation/home_screen/models/topic_model.dart';
-import 'package:travelappflutter/presentation/home_screen/place_detail.dart';
-import 'package:travelappflutter/presentation/home_screen/widgets/city.dart';
 import 'package:travelappflutter/presentation/home_screen/widgets/recomendate_city.dart';
 import 'package:travelappflutter/presentation/home_screen/widgets/topic.dart';
 import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
-import 'package:travelappflutter/routes/app_routes.dart';
 import 'package:iconsax/iconsax.dart';
 import './models/travel_model.dart'; // add this package first for icon
 
@@ -30,20 +27,25 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
   String currentCity = "Loading..."; // Biến để lưu trữ thành phố hiện tại
 
   List<Topic> topics = TopicModel.getTopics(); // Get topics list
-  List<TravelDestination> daNangDestinations = myDestination
+  List<TravelDestination> daNangDestinations = danangDestinations
       .where((element) => element.location == "Da Nang , Viet Nam")
-      .toList();
-  List<TravelDestination> popular =
-      myDestination.where((element) => element.category == "popular").toList();
+      .toList(); // need fix (change to controller get popular destinations)
+  // tạm thời chưa làm, bỏ trống 
+  List<TravelDestination> popularDestinations = danangDestinations;
+  List<TravelDestination> recommendDestinations = danangDestinations;
+  // List<TravelDestination> popular =
+  //     danangDestinations.where((element) => element.category == "popular").toList();
 
-  List<City> popularCities =
-      myCities.where((element) => element.rating >= 4.0).toList();
 
+  // tạm thời chưa làm, bỏ trống 
   List<TravelDestination> filterDestinationsByTopic(String topicTag) {
-    return myDestination.where((destination) {
-      return destination.tag.contains(topicTag);
-    }).toList();
-  }
+  return daNangDestinations;
+}
+//   List<TravelDestination> filterDestinationsByTopic(String topicTag) {
+//     return daNangDestinations.where((destination) {
+//       return destination.tag.contains(topicTag);
+//     }).toList();
+//   }
 
   // Hàm lấy tọa độ GPS hiện tại
   Future<Position> getCurrentLocation() async {
@@ -120,6 +122,7 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+  final WelcomeController welcomeController = Get.find<WelcomeController>();
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: headerParts(),
@@ -179,7 +182,11 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (_) =>
-                              HomeScreen(destinations: filteredDestinations,show:false),
+                              HomeScreen(
+                                tag : topics[index].name,
+                                //destinations: filteredDestinations,
+                                show:false
+                          ),
                         ),
                       );
                     },
@@ -215,8 +222,18 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          // Sử dụng Expanded cho danh sách thành phố nổi bật
-          SingleChildScrollView(
+        // Sử dụng Obx để quan sát myCities và cập nhật danh sách khi có thay đổi
+        Obx(() {
+          List<CityModel> popularCities = welcomeController.myCities.value
+              .where((city) => 
+                  city.name == "Hà Nội" || 
+                  city.name == "TP Hồ Chí Minh" || 
+                  city.name == "Đà Nẵng" || 
+                  city.name == "Huế" || 
+                  city.name == "Hải Phòng" || 
+                  city.name == "Cần Thơ")
+              .toList();
+          return SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Column(
               children: List.generate(
@@ -225,12 +242,16 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
                   padding: const EdgeInsets.only(bottom: 15),
                   child: GestureDetector(
                     onTap: () {
-                      
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) =>
-                              HomeScreen(destinations: daNangDestinations,show:true),
+                          builder: (_) => HomeScreen(
+                            cityID : popularCities[index].id,
+                            cityName : popularCities[index].name,
+                            tag : 'null',
+                            //destinations: daNangDestinations,
+                            show: true,
+                          ),
                         ),
                       );
                     },
@@ -241,13 +262,13 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: CustomBottomNavBar(
-          controller: HomeController()), // Thay thế bằng CustomBottomNavBar
-    );
-  }
+          );
+        }),
+      ],
+    ),
+    bottomNavigationBar: CustomBottomNavBar(controller: HomeController()),
+  );
+}
 
   AppBar headerParts() {
     return AppBar(

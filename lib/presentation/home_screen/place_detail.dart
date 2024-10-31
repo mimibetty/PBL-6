@@ -117,9 +117,9 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                         });
                       },
                       children: List.generate(
-                        widget.destination.image!.length,
+                        widget.destination.images!.length,
                         (index) => Image.network(
-                          widget.destination.image![index],
+                          widget.destination.images![index],
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -142,13 +142,13 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                               ),
                               borderRadius: BorderRadius.circular(15),
                               image: DecorationImage(
-                                image: widget.destination.image!.length - 1 !=
+                                image: widget.destination.images!.length - 1 !=
                                         pageView
                                     ? NetworkImage(
-                                        widget.destination.image![pageView + 1],
+                                        widget.destination.images![pageView + 1],
                                       )
                                     : NetworkImage(
-                                        widget.destination.image![0],
+                                        widget.destination.images![0],
                                       ),
                                 fit: BoxFit.cover,
                               ),
@@ -164,7 +164,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: List.generate(
-                                    widget.destination.image!.length,
+                                    widget.destination.images!.length,
                                     (index) => GestureDetector(
                                       onTap: () {
                                         if (pageController.hasClients) {
@@ -223,8 +223,9 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                               size: 20,
                                             ),
                                             const SizedBox(width: 5),
-                                            Text(
-                                              widget.destination.location,
+                                            
+                                            Text(                                             
+                                              widget.destination.address.district,
                                               style: const TextStyle(
                                                 fontSize: 15,
                                                 color: Colors.white,
@@ -248,7 +249,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                             ),
                                             const SizedBox(width: 5),
                                             Text(
-                                              widget.destination.rate
+                                              widget.destination.rating
                                                   .toString(),
                                               style: const TextStyle(
                                                 fontSize: 17,
@@ -260,7 +261,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                         ),
                                         const SizedBox(height: 5),
                                         Text(
-                                          '(${widget.destination.review} reviews)',
+                                          '(${widget.destination.numOfReviews} reviews)',
                                           style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 14,
@@ -378,7 +379,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                     TextSpan(
                       children: [
                         TextSpan(
-                          text: '\$${widget.destination.price}',
+                          text: '\$${widget.destination.priceTop}',
                           style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,

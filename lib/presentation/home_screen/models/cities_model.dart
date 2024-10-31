@@ -1,84 +1,91 @@
-import 'dart:math';
+class CityModel {
+  final int id;
+  final String name;
+  final String description;
+  final List<ImageModel> images;
+  final String region; // Thêm field region
 
-Random random = Random();
-
-class City {
-  final int id, population;
-  final List<String>? images;
-  final String name, description, country, bestSeason;
-  final double rating;
-
-  City({
+  CityModel({
     required this.id,
     required this.name,
-    required this.country,
-    required this.bestSeason,
     required this.description,
     required this.images,
-    required this.rating,
-    required this.population,
+    required this.region,
   });
-  // Phương thức để tạo đối tượng City từ JSON
-  factory City.fromJson(Map<String, dynamic> json) {
-    return City(
+
+  factory CityModel.fromJson(Map<String, dynamic> json) {
+    // Sử dụng dictionary cityRegionMap để lấy region từ id
+    String region = cityRegionMap[json['id']] ?? 'Unknown';
+
+    return CityModel(
       id: json['id'],
       name: json['name'],
-      country: json['country'],
-      bestSeason: json['bestSeason'],
       description: json['description'],
-      images: List<String>.from(json['images']),
-      rating: json['rating'].toDouble(),
-      population: json['population'],
+      images: (json['images'] as List)
+          .map((imageJson) => ImageModel.fromJson(imageJson))
+          .toList(),
+      region: region,
     );
   }
 }
 
-List<City> myCities = [
-  City(
-    id: 1,
-    name: "Da Nang",
-    country: "Vietnam",
-    bestSeason: "Spring",
-    images: [
-     "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcTK5fU829cTV6v4hsIBrZkfYD06AInXVXbwl2uXtckuLbPhq_qqG0Qrwpcb3Vg3JRljQpO9JQtGZqX71TKyRqfcPFU8qd5VWZSxgC6dnA",
-     "https://tourism.danang.vn/wp-content/uploads/2023/02/cau-rong-da-nang.jpeg",
-     "https://drt.danang.vn/content/images/size/w1024/format/avif/2024/01/cay-cau-da-nang.jpeg",
-    ],
-    population: 1135000,
-    description: description,
-    rating: 4.8,
-  ),
-  City(
-    id: 2,
-    name: "Hanoi",
-    country: "Vietnam",
-    bestSeason: "Autumn",
-    images: [
-     "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/33/f7/12/caption.jpg?w=1400&h=1400&s=1",
-     "https://hoanghamobile.com/tin-tuc/wp-content/uploads/2024/04/anh-ha-noi.jpg",
-     "https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcSkvIRJAxyaFKaZyTN5DkBpVngaFr0tTCwxmsngyAGtz9fMBBCjUy0K4WtFeqp1y32v6JoU4BWqX0QsA3l7USa5vaCN9m5mnFbFTxpDdw",
-    ],
-    population: 8000000,
-    description: description,
-    rating: 4.6,
-  ),
-  City(
-    id: 3,
-    name: "Ho Chi Minh City",
-    country: "Vietnam",
-    bestSeason: "Dry Season",
-    images: [
-     "https://tphcm.dangcongsan.vn/DATA/72/IMAGES/2023/11/tao-da-de-tphcm-phat-trien-thanh-do-thi-thong-minh1517188897.jpg",
-      "https://www.visithcmc.vn/uploads/0000/6/2021/08/22/hcmc-1120046774-1.jpg",
-      "https://file1.dangcongsan.vn/data/0/images/2021/06/30/maipq/quan-1.jpeg",
-    ],
-    population: 9000000,
-    description: description,
-    rating: 4.7,
-  ),
-];
+class ImageModel {
+  final int id;
+  final String url;
 
+  ImageModel({
+    required this.id,
+    required this.url,
+  });
 
+  factory ImageModel.fromJson(Map<String, dynamic> json) {
+    return ImageModel(
+      id: json['id'],
+      url: json['url'],
+    );
+  }
+}
 
-const description =
-    'Cities across the world offer a wide variety of experiences, blending history, culture, and modernity. From ancient landmarks to bustling markets, every city has its own story to tell. Whether you’re looking for adventure, relaxation, or cultural immersion, there’s a city waiting for you to explore.';
+final Map<int, String> cityRegionMap = {
+  1: 'Northern Vietnam',
+  2: 'Southern Vietnam',
+  3: 'Central Vietnam',
+  4: 'Northern Vietnam',
+  5: 'Central Vietnam',
+  6: 'Southern Vietnam',
+  7: 'Central Vietnam',
+  8: 'Northern Vietnam',
+  9: 'Northern Vietnam',
+  10: 'Southern Vietnam',
+  11: 'Central Vietnam',
+  12: 'Northern Vietnam',
+  13: 'Northern Vietnam',
+  14: 'Northern Vietnam',
+  15: 'Northern Vietnam',
+  16: 'Northern Vietnam',
+  17: 'Northern Vietnam',
+  18: 'Northern Vietnam',
+  19: 'Central Vietnam',
+  20: 'Central Vietnam',
+  21: 'Central Vietnam',
+  22: 'Central Vietnam',
+  23: 'Central Vietnam',
+  24: 'Central Vietnam',
+  25: 'Central Vietnam',
+  26: 'Central Vietnam',
+  27: 'Central Vietnam',
+  28: 'Central Vietnam',
+  29: 'Central Vietnam',
+  30: 'Central Vietnam',
+  31: 'Southern Vietnam',
+  32: 'Southern Vietnam',
+  33: 'Southern Vietnam',
+  34: 'Southern Vietnam',
+  35: 'Southern Vietnam',
+  36: 'Southern Vietnam',
+  37: 'Southern Vietnam',
+  38: 'Southern Vietnam',
+  39: 'Southern Vietnam',
+  40: 'Southern Vietnam',
+  // Thêm các tỉnh còn lại
+};

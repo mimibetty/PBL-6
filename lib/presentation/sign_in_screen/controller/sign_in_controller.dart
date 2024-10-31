@@ -57,7 +57,8 @@ class SignInController extends GetxController {
       accessToken.value = signInResponse.accessToken!;
 
       // Navigate to the home screen if login is successful
-      Get.offNamed(AppRoutes.welcomeScreen); 
+      //Get.offNamed(AppRoutes.welcomeScreen); 
+      Get.toNamed('/welcome_screen');
       Get.snackbar('Success', 'Logged in successfully!');
     } else {
       // Display error details if login fails
