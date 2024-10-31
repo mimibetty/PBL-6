@@ -27,6 +27,8 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
   String currentCity = "Loading..."; // Biến để lưu trữ thành phố hiện tại
 
   List<Topic> topics = TopicModel.getTopics(); // Get topics list
+
+  ////
   List<TravelDestination> daNangDestinations = danangDestinations
       .where((element) => element.location == "Da Nang , Viet Nam")
       .toList(); // need fix (change to controller get popular destinations)
@@ -37,15 +39,6 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
   //     danangDestinations.where((element) => element.category == "popular").toList();
 
 
-  // tạm thời chưa làm, bỏ trống 
-  List<TravelDestination> filterDestinationsByTopic(String topicTag) {
-  return daNangDestinations;
-}
-//   List<TravelDestination> filterDestinationsByTopic(String topicTag) {
-//     return daNangDestinations.where((destination) {
-//       return destination.tag.contains(topicTag);
-//     }).toList();
-//   }
 
   // Hàm lấy tọa độ GPS hiện tại
   Future<Position> getCurrentLocation() async {
@@ -111,6 +104,7 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
   }
 
   @override
+
   void initState() {
     super.initState();
     _updateCurrentLocation(); // Lấy vị trí hiện tại khi khởi tạo
@@ -166,25 +160,14 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
                       // In ra console khi người dùng nhấn vào một topic
                       print("User clicked on topic: ${topics[index].name}");
 
-                      // Lọc danh sách địa điểm dựa trên tag của topic
-                      List<TravelDestination> filteredDestinations =
-                          filterDestinationsByTopic(topics[index].name);
-
-                      // In ra danh sách các địa điểm đã lọc
-                      print(
-                          "Filtered destinations for ${topics[index].name}:");
-                      filteredDestinations.forEach((destination) {
-                        print(
-                            "Destination: ${destination.name}, Location: ${destination.location}");
-                      });
-
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) =>
                               HomeScreen(
+                                cityID: 0,
+                                cityName: '',
                                 tag : topics[index].name,
-                                //destinations: filteredDestinations,
                                 show:false
                           ),
                         ),
@@ -248,7 +231,7 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
                           builder: (_) => HomeScreen(
                             cityID : popularCities[index].id,
                             cityName : popularCities[index].name,
-                            tag : 'null',
+                            tag : null,
                             //destinations: daNangDestinations,
                             show: true,
                           ),

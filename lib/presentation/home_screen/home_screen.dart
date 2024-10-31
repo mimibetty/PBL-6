@@ -3,13 +3,13 @@ import 'package:get/get.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
+import 'package:travelappflutter/presentation/home_screen/controller/topic_controller.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/welcome_controller.dart';
 import 'package:travelappflutter/presentation/home_screen/place_detail.dart';
 import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
 import 'package:travelappflutter/presentation/search_screen/hotel_search_screen.dart';
 import 'package:travelappflutter/presentation/search_screen/restaurant_search_screen.dart';
 import 'package:travelappflutter/presentation/search_screen/thing_to_do_screen.dart';
-import 'package:travelappflutter/routes/app_routes.dart';
 import './widgets/recomendate.dart';
 import 'package:iconsax/iconsax.dart';
 import './widgets/popular_place.dart';
@@ -36,17 +36,34 @@ class HomeScreen extends StatefulWidget {
 
 class _TravelHomeScreenState extends State<HomeScreen> {
   final HomeController homeController = Get.put(HomeController());
+  final TopicController topicController = Get.put(TopicController()); // Khởi tạo controller
+  // Gọi hàm lọc dựa trên `Topic`
+  void filterDestinationsByTopic(String topic) {
+    topicController.fetchDestinationsByTopic(topic); // Gọi API cho từng `Topic`
+  }
 
   @override
   void initState() {
     super.initState();
     _fetchDestinations(); // Fetch destinations based on parameters
   }
+Future<void> _fetchDestinations() async {
+  if (widget.tag != null) {
+    await topicController.fetchDestinationsByTopic(widget.tag!);
+    homeController.myDestination.value = topicController.destinations.value;
 
-  Future<void> _fetchDestinations() async {
-    if (widget.cityID != null && widget.cityName != null) {
-      await homeController.getDestinationByCityID(widget.cityID!, widget.cityName!);
-    }
+  } else if (widget.cityID != null || widget.cityName != null) {
+    await homeController.getDestinationByCityID(widget.cityID!, widget.cityName!);
+  }
+
+}
+
+
+  List<int> getHotelIDs(List<TravelDestination> destinations) {
+    return destinations.where((hotel) => hotel.hotelId != null).map((hotel) => hotel.hotelId!).toList();
+  }
+  List<int> getRestaurantIDs(List<TravelDestination> destinations) {
+    return destinations.where((hotel) => hotel.restaurantId != null).map((hotel) => hotel.restaurantId!).toList();
   }
 
 @override
@@ -90,6 +107,7 @@ class _TravelHomeScreenState extends State<HomeScreen> {
             ...destinations.expand((destination) => destination.images ?? []),
             ...cities.expand((city) => city.images.map((image) => image.url)),
           ];
+
         return ListView(
           children: [
             const SizedBox(height: 20),
@@ -305,7 +323,10 @@ class _TravelHomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => HotelSearchScreen(),
+                    builder: (context) => HotelSearchScreen(
+                      cityNames: widget.cityName!,
+                     hotelIDs: getHotelIDs(homeController.myDestination.value), // Directly fetching hotel IDs here
+                    ),
                   ),
                 );
                 break;

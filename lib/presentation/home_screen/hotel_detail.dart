@@ -256,7 +256,7 @@ class HotelDetailScreen extends StatelessWidget {
                   ),
                   Wrap(
                     spacing: 4,
-                    children: hotel.roomFeature
+                    children: hotel.roomFeatures
                         .map((feature) => Chip(label: Text(feature)))
                         .toList(),
                   ),
@@ -282,7 +282,7 @@ class HotelDetailScreen extends StatelessWidget {
                   ),
                   Wrap(
                     spacing: 4,
-                    children: hotel.hotelStyle
+                    children: hotel.hotelStyles
                         .map((style) => Chip(label: Text(style)))
                         .toList(),
                   ),
@@ -295,7 +295,7 @@ class HotelDetailScreen extends StatelessWidget {
                   ),
                   Wrap(
                     spacing: 4,
-                    children: hotel.hotelLanguage
+                    children: hotel.hotelLanguages
                         .map((language) => Chip(label: Text(language)))
                         .toList(),
                   ),
