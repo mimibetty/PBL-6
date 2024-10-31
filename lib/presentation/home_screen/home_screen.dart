@@ -46,7 +46,7 @@ class _TravelHomeScreenState extends State<HomeScreen> {
       ...widget.destinations
           .where((destination) =>
               destination.location.toLowerCase().contains("da nang"))
-          .expand((destination) => destination.images ?? []),
+          .expand((destination) => destination.images?? []),
       ...myCities
           .where((city) => city.name.toLowerCase().contains("da nang"))
           .expand((city) => city.images ?? []),

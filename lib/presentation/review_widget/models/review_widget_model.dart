@@ -7,8 +7,11 @@ class ReviewWidgetModel {
   final DateTime dateCreated;    // Ngày tạo review
   int likeCount;                 // Số lượng lượt thích
   final String travelTime;       // Thời gian đi
-  final String whoGoWith;        // Ai đi cùng
-  final String title;            // Tiêu đề của review
+  final List<String> companions;        // Ai đi cùng
+  final String title; 
+  final List<String>? images;
+  final String purpose;
+  // final int modeType;
 
   ReviewWidgetModel({
     required this.reviewId,
@@ -17,10 +20,13 @@ class ReviewWidgetModel {
     required this.context,
     required this.rating,
     required this.dateCreated,
-    this.likeCount = 0,           // Số lượt thích mặc định là 0
+    required this.purpose,
+    this.likeCount = 0,          
     required this.travelTime,
-    required this.whoGoWith,
-    required this.title,          // Thêm trường title
+    required this.companions,
+    required this.title,    
+    required this.images, 
+    // required this.modeType,   
   });
 
   // Phương thức tăng lượt thích
@@ -45,8 +51,11 @@ class ReviewWidgetModel {
       dateCreated: DateTime.parse(json['dateCreated']),
       likeCount: json['likeCount'] ?? 0,
       travelTime: json['travelTime'] ?? '',
-      whoGoWith: json['whoGoWith'] ?? '',
-      title: json['title'] ?? '',        // Thêm trường title
+      companions: json['whoGoWith'] ?? '',
+      title: json['title'] ?? '', 
+      images:json['images']?? '',      // Thêm trường title
+      purpose: json['purpose']?? '',
+      // modeType: json['modeTypoe']?? '',
     );
   }
 
@@ -60,8 +69,11 @@ class ReviewWidgetModel {
       'dateCreated': dateCreated.toIso8601String(),
       'likeCount': likeCount,
       'travelTime': travelTime,
-      'whoGoWith': whoGoWith,
-      'title': title,                    // Thêm trường title
+      'companions': companions,
+      'title': title,     
+      'images':images,       
+      'purpose':purpose, 
+      // 'modeType':modeType,      
     };
   }
 }
@@ -77,8 +89,18 @@ List<ReviewWidgetModel> mockReviews = [
     dateCreated: DateTime.now(),
     likeCount: 10,
     travelTime: 'September/2024',
-    whoGoWith: 'family',
+    companions: [
+      'Family'
+      'Friends'
+    ],
     title: 'Amazing Experience!',       // Thêm tiêu đề cho review
+    images :[
+      "https://duthuyendanang.com/wp-content/uploads/2021/08/cau-rong-da-nang-a-1024x664.jpg",
+      "https://danangbest.com/upload_content/cau-rong-da-nang-4.webp",
+
+    ],
+    purpose:'Leisure',
+    // modeType:1,
   ),
   ReviewWidgetModel(
     reviewId: '2',
@@ -89,8 +111,17 @@ List<ReviewWidgetModel> mockReviews = [
     dateCreated: DateTime.now(),
     likeCount: 15,
     travelTime: 'August/2024',
-    whoGoWith: 'friends',
-    title: 'Unforgettable Trip!',       // Thêm tiêu đề cho review
+    companions: [
+      'Friends'
+    ],
+    title: 'Unforgettable Trip!', 
+    images : [
+      'https://ngocanhtravel.vn/wp-content/uploads/2022/06/bai-bien-my-khe-da-nang-min.jpg',
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSDdZGDD0FF1USQuM1HacAqUWT34p6uJdwtNeDx9jNtNOMrsWFwVQwa6i6pqAO60-xflg&usqp=CAU',
+    ],
+    purpose:'Business',
+    // modeType: 1,
+
   ),
   ReviewWidgetModel(
     reviewId: '3',
@@ -101,7 +132,16 @@ List<ReviewWidgetModel> mockReviews = [
     dateCreated: DateTime.now(),
     likeCount: 7,
     travelTime: 'October/2024',
-    whoGoWith: 'solo',
-    title: 'Average Experience',        // Thêm tiêu đề cho review
+    companions: [
+      'Solo'
+    ],
+    title: 'Average Experience',    
+    images: [
+      'https://dichvuthuexedanang.com/wp-content/uploads/2019/08/bien-my-khe-da-nang2-min.jpeg',
+      'https://danangxanh.net/data/images/bien-my-khe.jpg',
+    ],
+    purpose:'Leisure',
+    // modeType: 1,
+
   ),
 ];

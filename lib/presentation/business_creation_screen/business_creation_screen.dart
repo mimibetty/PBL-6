@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:travelappflutter/presentation/business_creation_screen/business_post_screen.dart';
+import 'package:travelappflutter/presentation/business_creation_screen/models/business_model.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/widget/open_hours_widget.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/widget/price_slide_widget.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/widget/start_rating_widget.dart';
@@ -15,7 +17,12 @@ class CreateBusinessPostScreen extends StatefulWidget {
   _CreateBusinessPostScreenState createState() =>
       _CreateBusinessPostScreenState();
 }
-
+Business getBusinessById(String id) {
+  return mockBusinessDatabase.firstWhere(
+    (business) => business.id == id,
+   
+  );
+}
 class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
   String? selectedBusinessType;
   final _formKey = GlobalKey<FormState>();
@@ -24,6 +31,8 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
   final List<String> restaurantFeatures = ["Ăn nhanh", "Giao hàng", "Đặt bàn"];
   final List<String> cuisines = ["Việt Nam", "Trung Quốc", "Nhật Bản"];
   List<File> selectedImages = []; // Danh sách hình ảnh đã chọn
+  
+  Business businessA1 = getBusinessById("A1");
 
   String name = '';
   String phoneNumber = '';
@@ -87,6 +96,21 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
       appBar: AppBar(
         title: Text('Business Creation Screen'),
         backgroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add, color: Colors.black),
+            onPressed: () {
+              // Replace this with the actual Business object
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BusinessPostScreen(business: businessA1),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Container(
         color: Colors.grey[100], // Màu nền xám nhạt

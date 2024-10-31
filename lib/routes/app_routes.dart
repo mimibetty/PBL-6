@@ -1,5 +1,6 @@
 import 'package:travelappflutter/presentation/business_creation_screen/binding/business_creation_screen_binding.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/business_creation_screen.dart';
+import 'package:travelappflutter/presentation/business_creation_screen/business_post_screen.dart';
 import 'package:travelappflutter/presentation/home_screen/binding/welcome_binding.dart';
 import 'package:travelappflutter/presentation/home_screen/welcome_screen.dart';
 import 'package:travelappflutter/presentation/review_widget/binding/review_widget_binding.dart';
@@ -25,8 +26,6 @@ import 'package:travelappflutter/presentation/details_screen/details_screen.dart
 import 'package:travelappflutter/presentation/details_screen/binding/details_binding.dart';
 import 'package:travelappflutter/presentation/view_screen/view_screen.dart';
 import 'package:travelappflutter/presentation/view_screen/binding/view_binding.dart';
-// import 'package:travelappflutter/presentation/schedule_screen/schedule_screen.dart';
-// import 'package:travelappflutter/presentation/schedule_screen/binding/schedule_binding.dart';
 import 'package:travelappflutter/presentation/popular_places_screen/popular_places_screen.dart';
 import 'package:travelappflutter/presentation/popular_places_screen/binding/popular_places_binding.dart';
 import 'package:travelappflutter/presentation/profile_screen/profile_screen.dart';
@@ -96,12 +95,14 @@ class AppRoutes {
   static String appNavigationScreen = '/app_navigation_screen';
 
   static String initialRoute = '/initialRoute';
-  
+
   static String welcomeScreen = '/welcome_screen';
 
-  static String createReviewScreen='/create_review_screen';
+  static String createReviewScreen = '/create_review_screen';
 
-  static String businessCreationScreen='/business_creation_screen';
+  static String businessCreationScreen = '/business_creation_screen';
+
+  static String businessPostScreen = '/business_post_screen';
 
   static List<GetPage> pages = [
     GetPage(
@@ -135,11 +136,18 @@ class AppRoutes {
     // ),
     GetPage(
       name: businessCreationScreen,
-      page: () =>CreateBusinessPostScreen(),
+      page: () => CreateBusinessPostScreen(),
       bindings: [
-       BusinessCreationBinding(),
+        BusinessCreationBinding(),
       ],
     ),
+    GetPage(
+      name: businessPostScreen,
+      page: () => BusinessPostScreen(business: Get.arguments),
+      binding:
+          BusinessCreationBinding(), // Gán Binding nếu bạn sử dụng cho Controller
+    ),
+
     GetPage(
       name: onboardTwoScreen,
       page: () => OnboardTwoScreen(),
@@ -184,7 +192,7 @@ class AppRoutes {
     ),
     GetPage(
       name: homeScreen,
-      page: () => HomeScreen(destinations: [],show:true),
+      page: () => HomeScreen(destinations: [], show: true),
       bindings: [
         HomeBinding(),
       ],
@@ -273,7 +281,7 @@ class AppRoutes {
         NotificationBinding(),
       ],
     ),
-    
+
     GetPage(
       name: initialRoute,
       page: () => SplashScreen(),
@@ -282,6 +290,4 @@ class AppRoutes {
       ],
     )
   ];
-  
-  
 }

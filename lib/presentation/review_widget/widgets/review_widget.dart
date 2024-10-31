@@ -85,7 +85,7 @@ class ReviewWidget extends StatelessWidget {
                       const SizedBox(height: 10),
                       //Hiển thị travelTime và whoGoWith ở dòng tiếp theo
                       Text(
-                        '${review.travelTime} * ${review.whoGoWith}',
+                        '${review.travelTime} * ${review.companions}',
                         style: const TextStyle(
                           fontSize: 15,
                           color: Colors.black,

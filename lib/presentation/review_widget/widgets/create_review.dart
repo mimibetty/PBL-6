@@ -7,6 +7,8 @@ import 'package:travelappflutter/presentation/common_views/image_picker_widget.d
 import 'package:travelappflutter/presentation/common_views/selected_chip_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
+import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
+import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
 import 'package:travelappflutter/presentation/search_screen/models/hotel_model.dart';
 import 'package:travelappflutter/presentation/search_screen/models/restaurant_model.dart';
 
@@ -14,7 +16,9 @@ class ReviewFormPage extends StatefulWidget {
   final int destinationId;
   final int modeType;
 
-  ReviewFormPage({Key? key, required this.destinationId, required this.modeType}) : super(key: key);
+  ReviewFormPage(
+      {Key? key, required this.destinationId, required this.modeType})
+      : super(key: key);
 
   @override
   _ReviewFormPageState createState() => _ReviewFormPageState();
@@ -23,14 +27,14 @@ class ReviewFormPage extends StatefulWidget {
 class _ReviewFormPageState extends State<ReviewFormPage> {
   final TextEditingController _contextController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
-  
+
   final FocusNode _focusNode = FocusNode();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  
+
   double _rating = 0;
   List<File> selectedImages = [];
   List<String> monthYearList = [];
-  
+
   // Các biến để lưu giá trị
   String? selectedMonthYear;
   String selectedPurpose = '';
@@ -97,9 +101,9 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Tell us, how was your visit?', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            Text('Tell us, how was your visit?',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             SizedBox(height: 16),
-
             Card(
               child: Column(
                 children: [
@@ -124,8 +128,8 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
               ),
             ),
             SizedBox(height: 16),
-
-            Text('How would you rate your experience?', style: TextStyle(fontSize: 18)),
+            Text('How would you rate your experience?',
+                style: TextStyle(fontSize: 18)),
             RatingBar.builder(
               initialRating: 3,
               minRating: 1,
@@ -133,7 +137,8 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
               allowHalfRating: true,
               itemCount: 5,
               itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-              itemBuilder: (context, _) => Icon(Icons.star, color: Colors.amber),
+              itemBuilder: (context, _) =>
+                  Icon(Icons.star, color: Colors.amber),
               onRatingUpdate: (rating) {
                 setState(() {
                   _rating = rating;
@@ -141,7 +146,6 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
               },
             ),
             SizedBox(height: 16),
-
             DropdownButton<String>(
               hint: Text('When did you go?'),
               value: selectedMonthYear,
@@ -158,9 +162,8 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
               },
             ),
             SizedBox(height: 16),
-
             Text('Who did you go with?'),
-            SizedBox(height:10),
+            SizedBox(height: 10),
             SelectableChipWidget(
               labels: ['Business', 'Couples', 'Family', 'Friends', 'Solo'],
               onSelectionChanged: (selectedLabels) {
@@ -170,7 +173,6 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
               },
             ),
             SizedBox(height: 16),
-
             DropdownButton<String>(
               hint: Text('What were you here for?'),
               value: selectedPurpose.isNotEmpty ? selectedPurpose : null,
@@ -187,7 +189,6 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
               },
             ),
             SizedBox(height: 16),
-
             TextField(
               controller: _contextController,
               decoration: InputDecoration(
@@ -200,7 +201,6 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
               },
             ),
             SizedBox(height: 16),
-
             TextField(
               controller: _titleController,
               decoration: InputDecoration(
@@ -212,7 +212,6 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
               },
             ),
             SizedBox(height: 16),
-
             ImagePickerWidget(
               selectedImages: selectedImages,
               onImagesPicked: (images) {
@@ -222,21 +221,71 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
               },
             ),
             SizedBox(height: 16),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextButton(
                   onPressed: () {
-                    Get.back();
-                    Get.snackbar("Success", "Review submitted successfully!",
+                    // Create a new review instance
+                    ReviewWidgetModel newReview = ReviewWidgetModel(
+                      destinationId: widget.destinationId,
+                      title: reviewTitle,
+                      context: reviewText,
+                      rating: _rating,
+                      travelTime: selectedMonthYear ?? '',
+                      purpose: selectedPurpose,
+                      images: selectedImages
+                          .map((file) => file.path)
+                          .toList(), // Convert File to String
+                      companions: selectedCompanions,
+                      dateCreated: DateTime.now(),
+                      reviewId:
+                          '1', // Consider using a unique ID generator for reviewId
+                      userId: '1', // Consider using the actual user's ID
+                    );
+
+                    // Get an instance of ReviewWidgetController
+                    final controller = Get.find<ReviewWidgetController>();
+
+                    // Submit the review
+                    try {
+                      // Safely map the List<String>? to List<File>
+                      List<File> imageFiles = newReview.images
+                              ?.map((imagePath) => File(imagePath))
+                              .toList() ??
+                          [];
+
+                      controller.setReviewData(
+                        destinationId: newReview.destinationId,
+                        rating: newReview.rating,
+                        context: newReview.context,
+                        monthYear: newReview.travelTime,
+                        purpose: newReview.purpose,
+                        companions: newReview.companions,
+                        text: newReview
+                            .context, // Ensure this aligns with your logic
+                        title: newReview.title,
+                        images: imageFiles, // Pass the List<File>
+                      );
+
+                      // Provide feedback to the user
+                      Get.snackbar(
+                        'Success',
+                        'Review submitted successfully!',
                         snackPosition: SnackPosition.BOTTOM,
-                        duration: Duration(seconds: 2),
-                        backgroundColor: Colors.green,
-                        colorText: Colors.white);
+                      );
+                    } catch (e) {
+                      // Handle errors
+                      Get.snackbar(
+                        'Error',
+                        e.toString(),
+                        snackPosition: SnackPosition.BOTTOM,
+                      );
+                    }
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
                       color: kButtonColor,
@@ -244,9 +293,14 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.confirmation_number_outlined, color: Colors.white),
+                        Icon(Icons.confirmation_number_outlined,
+                            color: Colors.white),
                         SizedBox(width: 5),
-                        Text("Create a review", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white)),
+                        Text("Create a review",
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white)),
                       ],
                     ),
                   ),
@@ -270,7 +324,8 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                         colorText: Colors.white);
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
                       color: Colors.red,
@@ -280,7 +335,11 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                       children: [
                         Icon(Icons.refresh, color: Colors.white),
                         SizedBox(width: 5),
-                        Text("Reset", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white)),
+                        Text("Reset",
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white)),
                       ],
                     ),
                   ),
