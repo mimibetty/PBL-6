@@ -28,4 +28,5 @@ def read_users_me(
 ):
     user = db.query(models.User).filter(
         models.User.email == current_user.email).first()
+    print(user.id)
     return schemas.ShowUser.from_orm(user).dict()
