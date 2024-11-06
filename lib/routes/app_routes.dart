@@ -123,13 +123,7 @@ class AppRoutes {
         OnboardOneBinding(),
       ],
     ),
-    GetPage(
-      name: createReviewScreen,
-      page: () =>ReviewFormPage(destinationId:0),
-      bindings: [
-        ReviewWidgetBinding(),
-      ],
-    ),
+
     GetPage(
       name: onboardTwoScreen,
       page: () => OnboardTwoScreen(),

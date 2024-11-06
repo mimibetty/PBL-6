@@ -423,6 +423,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                             horizontal: 20, vertical: 10),
                         child: ReviewFormPage(
                           destinationId: widget.destination.id,
+                          modeType: 3,
                         ),
                       ),
                     );

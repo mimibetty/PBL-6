@@ -332,7 +332,7 @@ class HotelDetailScreen extends StatelessWidget {
                   ),
                   Wrap(
                     spacing: 4,
-                    children: hotel.roomFeature
+                    children: hotel.roomFeatures
                         .map((feature) => Chip(label: Text(feature)))
                         .toList(),
                   ),

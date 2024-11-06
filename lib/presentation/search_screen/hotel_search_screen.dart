@@ -193,7 +193,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                                       const SizedBox(width: 5),
                                       Expanded(
                                         child: Text(
-                                          "(${hotel.review} reviews)",
+                                          "(${hotel.reviewCount} reviews)",
                                           style: TextStyle(
                                               fontSize: 14, color: Colors.grey),
                                           overflow: TextOverflow.ellipsis,
@@ -207,7 +207,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                                   const SizedBox(height: 5),
                                   Wrap(
                                     spacing: 4,
-                                    children: hotel.roomFeature
+                                    children: hotel.roomFeatures
                                         .map((feature) => Container(
                                               padding: EdgeInsets.symmetric(
                                                   horizontal: 6, vertical: 3),

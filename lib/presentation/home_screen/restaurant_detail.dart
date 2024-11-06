@@ -481,6 +481,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                             horizontal: 20, vertical: 10),
                         child: ReviewFormPage(
                           destinationId: widget.restaurant.restaurantId,
+                          modeType: 3,
                         ),
                       ),
                     );
