@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
-import 'package:travelappflutter/presentation/home_screen/controller/welcome_controller.dart';
+import 'package:travelappflutter/presentation/home_screen/models/cities_model.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/home_screen/place_detail.dart';
 import 'package:travelappflutter/presentation/home_screen/widgets/popular_place.dart';
@@ -49,30 +49,24 @@ Widget experienceButton(String label, int count, IconData icon) {
 
 class _ThingToDoScreenState extends State<ThingToDoScreen> {
   @override
-  
   Widget build(BuildContext context) {
-    // tạm thời bỏ trống, xử lý sau :
-    List<TravelDestination> popularDestinations = widget.destinations.toList();
-    List<TravelDestination> recommendDestinations = widget.destinations.toList();
+    List<TravelDestination> popularDestinations = widget.destinations
+        .where((destination) => destination.category == 'popular')
+        .toList();
 
-    // List<TravelDestination> popularDestinations = widget.destinations
-    //     .where((destination) => destination.category == 'popular')
-    //     .toList();
-
-    // List<TravelDestination> recommendDestinations = widget.destinations
-    //     .where((destination) => destination.category == 'recommend')
-    //     .toList();
+    List<TravelDestination> recommendDestinations = widget.destinations
+        .where((destination) => destination.category == 'recomend')
+        .toList();
 
     List<String> allImages = [
       ...widget.destinations
           .where((destination) =>
               destination.location.toLowerCase().contains("da nang"))
           .expand((destination) => destination.images ?? []),
-      ...Get.find<WelcomeController>().myCities.value
+      ...myCities
           .where((city) => city.name.toLowerCase().contains("da nang"))
-          .expand((city) => city.images.cast<String>() ?? []),
+          .expand((city) => city.images ?? []),
     ];
-
 
     return Scaffold(
       backgroundColor: kBackgroundColor,
