@@ -1,25 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:get/get.dart';
 import 'package:travelappflutter/presentation/home_screen/hotel_detail.dart';
+import 'package:travelappflutter/presentation/search_screen/controller/hotel_search_controller.dart';
 import 'package:travelappflutter/presentation/search_screen/models/hotel_model.dart';
 
 class HotelSearchScreen extends StatefulWidget {
+  final List<int> hotelIDs;
+  final String cityNames;
+
+  const HotelSearchScreen({
+    Key? key,
+    required this.hotelIDs,
+    required this.cityNames,
+  }) : super(key: key);
+
   @override
   _HotelSearchScreenState createState() => _HotelSearchScreenState();
 }
 
 class _HotelSearchScreenState extends State<HotelSearchScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
-  List<Hotel> filteredHotels = [];
-  late List<Hotel> hotels;
+  late List<Hotel> filteredHotels = []; // Changed to late initialization
+  late final HotelController hotelController;
 
   @override
   void initState() {
     super.initState();
-    hotels = mockHotels
-        .where((hotel) => hotel.rating > 3.5)
+    hotelController = Get.put(HotelController());
+    for (int hotelID in widget.hotelIDs) {
+      hotelController.fetchHotelData(hotelID.toString());
+    }
+  void _filterHotels() {
+    filteredHotels = hotelController.hotels
+        .where((hotel) => hotel.rating > 0.0 && hotel.reviewCount > 0)
         .toList();
-    filteredHotels = hotels;
+    if (mounted) { // Kiểm tra xem widget có còn trong cây không
+      setState(() {}); // Cập nhật giao diện khi hoàn tất lọc
+    }
+  }
+
+    // Đảm bảo gọi _filterHotels() sau khi hàm đã được định nghĩa
+    ever(hotelController.hotels, (_) {
+      _filterHotels();
+    });
+
+    print(filteredHotels);
+  }
+  @override
+  void dispose() {
+    Get.delete<HotelController>(); // Hủy lắng nghe controller khi widget bị hủy
+    print('disposed');
+    super.dispose();
   }
 
   @override
@@ -44,7 +76,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Top Hotels in Da Nang",
+                  "Top Hotels in ${widget.cityNames}",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -345,4 +377,3 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
     // });
   }
 }
-

@@ -119,8 +119,8 @@ const descriptionConst =
       hotelId: 1,
       restaurantId: 1,
       images: [
-        'https://example.com/mykhe-beach.jpg',
-        'https://example.com/mykhe-beach-2.jpg',
+      "https://banahills.sunworld.vn/wp-content/uploads/2018/08/cap-treo-01-1-768x508.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/2/27/Kali_Gandaki_Valley%2C_Road%2C_Mustang%2C_Nepal%2C_Himalaya.jpg",
       ],
       rating: 4.5,
       numOfReviews: 100,
@@ -147,8 +147,8 @@ const descriptionConst =
       hotelId: 2,
       restaurantId: 2,
       images: [
-        'https://example.com/linh-ung-temple.jpg',
-        'https://example.com/linh-ung-temple-2.jpg',
+      "https://upload.wikimedia.org/wikipedia/commons/0/0c/Han_River_Bridge_Apr08.jpg",
+      "https://halotravel.vn/wp-content/uploads/2021/07/cau-quay-song-han-1.jpg",
       ],
       rating: 4.2,
       numOfReviews: 50,

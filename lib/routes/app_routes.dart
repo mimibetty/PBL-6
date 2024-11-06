@@ -1,3 +1,6 @@
+import 'package:travelappflutter/presentation/business_creation_screen/binding/business_creation_screen_binding.dart';
+import 'package:travelappflutter/presentation/business_creation_screen/business_creation_screen.dart';
+import 'package:travelappflutter/presentation/business_creation_screen/business_post_screen.dart';
 import 'package:travelappflutter/presentation/home_screen/binding/welcome_binding.dart';
 import 'package:travelappflutter/presentation/home_screen/welcome_screen.dart';
 import 'package:travelappflutter/presentation/review_widget/binding/review_widget_binding.dart';
@@ -15,16 +18,12 @@ import 'package:travelappflutter/presentation/sign_up_screen/sign_up_screen.dart
 import 'package:travelappflutter/presentation/sign_up_screen/binding/sign_up_binding.dart';
 import 'package:travelappflutter/presentation/forgot_password_screen/forgot_password_screen.dart';
 import 'package:travelappflutter/presentation/forgot_password_screen/binding/forgot_password_binding.dart';
-import 'package:travelappflutter/presentation/verification_screen/verification_screen.dart';
-import 'package:travelappflutter/presentation/verification_screen/binding/verification_binding.dart';
 import 'package:travelappflutter/presentation/home_screen/home_screen.dart';
 import 'package:travelappflutter/presentation/home_screen/binding/home_binding.dart';
 import 'package:travelappflutter/presentation/details_screen/details_screen.dart';
 import 'package:travelappflutter/presentation/details_screen/binding/details_binding.dart';
 import 'package:travelappflutter/presentation/view_screen/view_screen.dart';
 import 'package:travelappflutter/presentation/view_screen/binding/view_binding.dart';
-// import 'package:travelappflutter/presentation/schedule_screen/schedule_screen.dart';
-// import 'package:travelappflutter/presentation/schedule_screen/binding/schedule_binding.dart';
 import 'package:travelappflutter/presentation/popular_places_screen/popular_places_screen.dart';
 import 'package:travelappflutter/presentation/popular_places_screen/binding/popular_places_binding.dart';
 import 'package:travelappflutter/presentation/profile_screen/profile_screen.dart';
@@ -43,8 +42,6 @@ import 'package:travelappflutter/presentation/edit_profile_screen/edit_profile_s
 import 'package:travelappflutter/presentation/edit_profile_screen/binding/edit_profile_binding.dart';
 import 'package:travelappflutter/presentation/notification_screen/notification_screen.dart';
 import 'package:travelappflutter/presentation/notification_screen/binding/notification_binding.dart';
-import 'package:travelappflutter/presentation/app_navigation_screen/app_navigation_screen.dart';
-import 'package:travelappflutter/presentation/app_navigation_screen/binding/app_navigation_binding.dart';
 import 'package:get/get.dart';
 
 import '../presentation/review_widget/widgets/create_review.dart';
@@ -96,10 +93,14 @@ class AppRoutes {
   static String appNavigationScreen = '/app_navigation_screen';
 
   static String initialRoute = '/initialRoute';
-  
+
   static String welcomeScreen = '/welcome_screen';
 
-  static String createReviewScreen='/create_review_screen';
+  static String createReviewScreen = '/create_review_screen';
+
+  static String businessCreationScreen = '/business_creation_screen';
+
+  static String businessPostScreen = '/business_post_screen';
 
   static List<GetPage> pages = [
     GetPage(
@@ -122,6 +123,27 @@ class AppRoutes {
       bindings: [
         OnboardOneBinding(),
       ],
+    ),
+    // GetPage(
+    //   name: createReviewScreen,
+    //   page: () => ReviewFormPage(destinationId), // Truyền destinationId vào
+
+    //   bindings: [
+    //     ReviewWidgetBinding(),
+    //   ],
+    // ),
+    GetPage(
+      name: businessCreationScreen,
+      page: () => CreateBusinessPostScreen(),
+      bindings: [
+        BusinessCreationBinding(),
+      ],
+    ),
+    GetPage(
+      name: businessPostScreen,
+      page: () => BusinessPostScreen(business: Get.arguments),
+      binding:
+          BusinessCreationBinding(), // Gán Binding nếu bạn sử dụng cho Controller
     ),
 
     GetPage(
@@ -160,15 +182,8 @@ class AppRoutes {
       ],
     ),
     GetPage(
-      name: verificationScreen,
-      page: () => VerificationScreen(),
-      bindings: [
-        VerificationBinding(),
-      ],
-    ),
-    GetPage(
       name: homeScreen,
-      page: () => HomeScreen(show:true),
+      page: () => HomeScreen(show: true),
       bindings: [
         HomeBinding(),
       ],
@@ -257,13 +272,7 @@ class AppRoutes {
         NotificationBinding(),
       ],
     ),
-    GetPage(
-      name: appNavigationScreen,
-      page: () => AppNavigationScreen(),
-      bindings: [
-        AppNavigationBinding(),
-      ],
-    ),
+
     GetPage(
       name: initialRoute,
       page: () => SplashScreen(),
