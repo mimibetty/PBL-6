@@ -333,6 +333,7 @@ class HotelDetailScreen extends StatelessWidget {
                   Wrap(
                     spacing: 4,
                     children: hotel.roomFeatures
+
                         .map((feature) => Chip(label: Text(feature)))
                         .toList(),
                   ),
@@ -351,6 +352,33 @@ class HotelDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
 
+                  const SizedBox(height: 10),
+                  
+                  // Hiển thị Hotel Style
+                  Text(
+                    "Hotel Style",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Wrap(
+                    spacing: 4,
+                    children: hotel.hotelStyles
+                        .map((style) => Chip(label: Text(style)))
+                        .toList(),
+                  ),
+                  const SizedBox(height: 10),
+                  
+                  // Hiển thị Hotel Language
+                  Text(
+                    "Hotel Language",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Wrap(
+                    spacing: 4,
+                    children: hotel.hotelLanguages
+                        .map((language) => Chip(label: Text(language)))
+                        .toList(),
+                  ),
+                  const SizedBox(height: 10),
                   // Hiển thị Description
                   Text(
                     "Description",

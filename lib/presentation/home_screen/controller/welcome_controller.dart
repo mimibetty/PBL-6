@@ -20,10 +20,7 @@ class WelcomeController extends GetxController {
         
         // Log cities information for verification
         myCities.value.forEach((city) {
-          print("City: ${city.name}");
-          print("Description: ${city.description}");
           city.images.forEach((image) {
-            print("Image URL: ${image.url}");
           });
         });
       } else {

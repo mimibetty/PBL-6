@@ -37,15 +37,11 @@ class HomeController extends GetxController {
 
   ///
 Future<void> getDestinationByCityID(int cityID, String cityName) async {
-  print('Fetching data for cityID: $cityID, cityName: $cityName');
   try {
     final url = 'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/?city_id=$cityID&sort_by_reviews=true&get_rating=true';
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      // In JSON gốc để kiểm tra cấu trúc trước khi ánh xạ vào model
-      print("Full JSON Response: ${utf8.decode(response.bodyBytes)}");
-
       final decodedResponse = json.decode(utf8.decode(response.bodyBytes));
 
       // Ánh xạ JSON thành danh sách các điểm đến
