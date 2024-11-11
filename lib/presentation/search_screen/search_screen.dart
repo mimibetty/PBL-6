@@ -29,35 +29,35 @@ class _SearchScreenState extends State<SearchScreen>
         .toList();
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
-    _tabController.addListener(() {
-      if (!_tabController.indexIsChanging) {
-        if (_tabController.index == 3) {
-          Future.microtask(() {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => search
-                    .RestaurantSearchScreen(), // Điều hướng đến trang RestaurantSearchScreen
-              ),
-            );
-          });
-        }
-      }
-      if (!_tabController.indexIsChanging) {
-        if (_tabController.index == 2) {
-          Future.microtask(() {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => ThingToDoScreen(
-                    destinations:
-                        daNangDestinations), // Điều hướng đến trang RestaurantSearchScreen
-              ),
-            );
-          });
-        }
-      }
-    });
+    // _tabController.addListener(() {
+    //   if (!_tabController.indexIsChanging) {
+    //     if (_tabController.index == 3) {
+    //       Future.microtask(() {
+    //         Navigator.push(
+    //           context,
+    //           MaterialPageRoute(
+    //             builder: (_) => search
+    //                 .RestaurantSearchScreen(), // Điều hướng đến trang RestaurantSearchScreen
+    //           ),
+    //         );
+    //       });
+    //     }
+    //   }
+    //   if (!_tabController.indexIsChanging) {
+    //     if (_tabController.index == 2) {
+    //       Future.microtask(() {
+    //         Navigator.push(
+    //           context,
+    //           MaterialPageRoute(
+    //             builder: (_) => ThingToDoScreen(
+    //                 destinations:
+    //                     daNangDestinations), // Điều hướng đến trang RestaurantSearchScreen
+    //           ),
+    //         );
+    //       });
+    //     }
+    //   }
+    // });
   }
 
   @override

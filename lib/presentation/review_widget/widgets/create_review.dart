@@ -129,9 +129,9 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
             ),
             SizedBox(height: 16),
             Text('How would you rate your experience?',
-                style: TextStyle(fontSize: 18)),
+                style: TextStyle(fontSize: 17)),
             RatingBar.builder(
-              initialRating: 3,
+              initialRating: 0,
               minRating: 1,
               direction: Axis.horizontal,
               allowHalfRating: true,
@@ -162,7 +162,8 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
               },
             ),
             SizedBox(height: 16),
-            Text('Who did you go with?'),
+            Text('Who did you go with ?',
+                style: TextStyle(fontSize: 17)),
             SizedBox(height: 10),
             SelectableChipWidget(
               labels: ['Business', 'Couples', 'Family', 'Friends', 'Solo'],

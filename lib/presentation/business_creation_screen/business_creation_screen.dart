@@ -380,7 +380,7 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
           filled: true,
           fillColor: Colors.white, // Màu nền trắng
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.zero, // Không bo góc
+            borderRadius: BorderRadius.circular(10), // Không bo góc
             borderSide: BorderSide(
               color: Colors.grey, // Màu viền
               width: 1.0,

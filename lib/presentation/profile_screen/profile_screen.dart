@@ -1,491 +1,106 @@
+import 'package:flutter/material.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
 import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
+import 'package:travelappflutter/presentation/profile_screen/preferences_screen.dart';
 
-import 'controller/profile_controller.dart';
-import 'package:flutter/material.dart';
-import 'package:travelappflutter/core/app_export.dart';
+import '../sign_in_screen/sign_in_screen.dart';
 
-import 'package:travelappflutter/widgets/custom_radio_button.dart';
-
-class ProfileScreen extends GetWidget<ProfileController> {
+class ProfileScreen extends StatelessWidget {
+  void _signOut(BuildContext context) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => SignInScreen()),
+    );
+  }
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: ColorConstant.whiteA700,
-        
-        body: Container(
-            width: size.width,
-            child: SingleChildScrollView(
-                child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                  Padding(
-                      padding: getPadding(left: 20, top: 24, right: 20),
-                      child: CommonImageView(
-                          svgPath: ImageConstant.imgFile96x96,
-                          height: getSize(96.00),
-                          width: getSize(96.00))),
-                  Padding(
-                      padding: getPadding(left: 20, top: 13, right: 20),
-                      child: Text("Trần Minh Nhật".tr,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.left,
-                          style: AppStyle.txtSFUIDisplayMedium24
-                              .copyWith(height: 1.00))),
-                  Padding(
-                      padding: getPadding(left: 20, top: 8, right: 20),
-                      child: Text("nhattranlucky@gmail.com".tr,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.left,
-                          style: AppStyle.txtSFUIDisplayRegular14Bluegray400
-                              .copyWith(height: 1.00))),
-                  Container(
-                      margin: getMargin(left: 20, top: 30, right: 20),
-                      decoration: AppDecoration.outlineBluegray2001e1.copyWith(
-                          borderRadius: BorderRadiusStyle.circleBorder17),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Padding(
-                                padding:
-                                    getPadding(left: 16, top: 16, bottom: 16),
-                                child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text("lbl_reward_points".tr,
-                                              overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.left,
-                                              style: AppStyle
-                                                  .txtSFUIDisplaySemibold14
-                                                  .copyWith(
-                                                      letterSpacing: 0.50,
-                                                      height: 1.00))),
-                                      Padding(
-                                          padding: getPadding(
-                                              left: 33, top: 10, right: 32),
-                                          child: Text("lbl_360".tr,
-                                              overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.left,
-                                              style: AppStyle
-                                                  .txtSFUIDisplaySemibold16BlueA400
-                                                  .copyWith(
-                                                      letterSpacing: 0.50,
-                                                      height: 1.00)))
-                                    ])),
-                            Container(
-                                height: getVerticalSize(78.00),
-                                width: getHorizontalSize(1.00),
-                                margin: getMargin(left: 13),
-                                decoration: BoxDecoration(
-                                    color: ColorConstant.gray100,
-                                    borderRadius: BorderRadius.circular(
-                                        getHorizontalSize(0.75)))),
-                            Padding(
-                                padding:
-                                    getPadding(left: 11, top: 16, bottom: 16),
-                                child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text("lbl_travel_trips".tr,
-                                              overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.left,
-                                              style: AppStyle
-                                                  .txtSFUIDisplaySemibold14
-                                                  .copyWith(
-                                                      letterSpacing: 0.50,
-                                                      height: 1.00))),
-                                      Padding(
-                                          padding: getPadding(
-                                              left: 24, top: 10, right: 24),
-                                          child: Text("lbl_238".tr,
-                                              overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.left,
-                                              style: AppStyle
-                                                  .txtSFUIDisplaySemibold16BlueA400
-                                                  .copyWith(
-                                                      letterSpacing: 0.50,
-                                                      height: 1.00)))
-                                    ])),
-                            Container(
-                                height: getVerticalSize(78.00),
-                                width: getHorizontalSize(1.00),
-                                margin: getMargin(left: 13),
-                                decoration: BoxDecoration(
-                                    color: ColorConstant.gray100,
-                                    borderRadius: BorderRadius.circular(
-                                        getHorizontalSize(0.75)))),
-                            Padding(
-                                padding:
-                                    getPadding(left: 11, top: 16, bottom: 16),
-                                child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text("lbl_bucket_list".tr,
-                                              overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.left,
-                                              style: AppStyle
-                                                  .txtSFUIDisplaySemibold14
-                                                  .copyWith(
-                                                      letterSpacing: 0.50,
-                                                      height: 1.00))),
-                                      Padding(
-                                          padding: getPadding(
-                                              left: 22, top: 10, right: 22),
-                                          child: Text("lbl_473".tr,
-                                              overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.left,
-                                              style: AppStyle
-                                                  .txtSFUIDisplaySemibold16BlueA400
-                                                  .copyWith(
-                                                      letterSpacing: 0.50,
-                                                      height: 1.00)))
-                                    ]))
-                          ])),
-                  Container(
-                      height: getVerticalSize(344.00),
-                      width: getHorizontalSize(335.00),
-                      margin:
-                          getMargin(left: 20, top: 30, right: 20, bottom: 5),
-                      child: Stack(alignment: Alignment.centerLeft, children: [
-                        Align(
-                            alignment: Alignment.centerLeft,
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(
-                                    getHorizontalSize(16.00)),
-                                child: CommonImageView(
-                                    svgPath: ImageConstant.imgRectangle839,
-                                    height: getVerticalSize(344.00),
-                                    width: getHorizontalSize(335.00),
-                                    fit: BoxFit.cover))),
-                        Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                                padding: getPadding(top: 24, bottom: 24),
-                                child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Align(
-                                          alignment: Alignment.center,
-                                          child: Padding(
-                                              padding: getPadding(
-                                                  left: 16, right: 16),
-                                              child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  mainAxisSize:
-                                                      MainAxisSize.max,
-                                                  children: [
-                                                    CustomRadioButton(
-                                                        text: "lbl_profile".tr,
-                                                        value: "lbl_profile".tr,
-                                                        groupValue: controller
-                                                            .radioGroup.value,
-                                                        onChange: (value) {
-                                                          controller.radioGroup
-                                                              .value = value;
-                                                        }),
-                                                    CommonImageView(
-                                                        svgPath: ImageConstant
-                                                            .imgArrowright,
-                                                        height: getSize(24.00),
-                                                        width: getSize(24.00))
-                                                  ]))),
-                                      Container(
-                                          height: getVerticalSize(1.00),
-                                          width: getHorizontalSize(335.00),
-                                          margin: getMargin(top: 16),
-                                          decoration: BoxDecoration(
-                                              color: ColorConstant.gray100)),
-                                      Align(
-                                          alignment: Alignment.center,
-                                          child: Padding(
-                                              padding: getPadding(
-                                                  left: 16, top: 22, right: 16),
-                                              child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  mainAxisSize:
-                                                      MainAxisSize.max,
-                                                  children: [
-                                                    Row(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          CommonImageView(
-                                                              svgPath: ImageConstant
-                                                                  .imgLocation24x24,
-                                                              height: getSize(
-                                                                  24.00),
-                                                              width: getSize(
-                                                                  24.00)),
-                                                          Padding(
-                                                              padding:
-                                                                  getPadding(
-                                                                      left: 14,
-                                                                      top: 2,
-                                                                      bottom:
-                                                                          2),
-                                                              child: Text(
-                                                                  "lbl_bookmarked"
-                                                                      .tr,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                  textAlign:
-                                                                      TextAlign
-                                                                          .left,
-                                                                  style: AppStyle
-                                                                      .txtSFUIDisplayMedium16
-                                                                      .copyWith(
-                                                                          letterSpacing:
-                                                                              0.50,
-                                                                          height:
-                                                                              1.00)))
-                                                        ]),
-                                                    CommonImageView(
-                                                        svgPath: ImageConstant
-                                                            .imgArrowright,
-                                                        height: getSize(24.00),
-                                                        width: getSize(24.00))
-                                                  ]))),
-                                      Container(
-                                          height: getVerticalSize(1.00),
-                                          width: getHorizontalSize(335.00),
-                                          margin: getMargin(top: 16),
-                                          decoration: BoxDecoration(
-                                              color: ColorConstant.gray100)),
-                                      Align(
-                                          alignment: Alignment.center,
-                                          child: Padding(
-                                              padding: getPadding(
-                                                  left: 16, top: 22, right: 16),
-                                              child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  mainAxisSize:
-                                                      MainAxisSize.max,
-                                                  children: [
-                                                    Row(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          CommonImageView(
-                                                              svgPath:
-                                                                  ImageConstant
-                                                                      .imgReply,
-                                                              height: getSize(
-                                                                  24.00),
-                                                              width: getSize(
-                                                                  24.00)),
-                                                          Padding(
-                                                              padding:
-                                                                  getPadding(
-                                                                      left: 14,
-                                                                      top: 2,
-                                                                      bottom:
-                                                                          2),
-                                                              child: Text(
-                                                                  "lbl_previous_trips"
-                                                                      .tr,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                  textAlign:
-                                                                      TextAlign
-                                                                          .left,
-                                                                  style: AppStyle
-                                                                      .txtSFUIDisplayMedium16
-                                                                      .copyWith(
-                                                                          letterSpacing:
-                                                                              0.50,
-                                                                          height:
-                                                                              1.00)))
-                                                        ]),
-                                                    CommonImageView(
-                                                        svgPath: ImageConstant
-                                                            .imgArrowright,
-                                                        height: getSize(24.00),
-                                                        width: getSize(24.00))
-                                                  ]))),
-                                      Container(
-                                          height: getVerticalSize(1.00),
-                                          width: getHorizontalSize(335.00),
-                                          margin: getMargin(top: 16),
-                                          decoration: BoxDecoration(
-                                              color: ColorConstant.gray100)),
-                                      Align(
-                                          alignment: Alignment.center,
-                                          child: Padding(
-                                              padding: getPadding(
-                                                  left: 16, top: 22, right: 16),
-                                              child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  mainAxisSize:
-                                                      MainAxisSize.max,
-                                                  children: [
-                                                    Row(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          CommonImageView(
-                                                              svgPath:
-                                                                  ImageConstant
-                                                                      .imgSettings,
-                                                              height: getSize(
-                                                                  24.00),
-                                                              width: getSize(
-                                                                  24.00)),
-                                                          Padding(
-                                                              padding:
-                                                                  getPadding(
-                                                                      left: 14,
-                                                                      top: 2,
-                                                                      bottom:
-                                                                          2),
-                                                              child: Text(
-                                                                  "lbl_settings"
-                                                                      .tr,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                  textAlign:
-                                                                      TextAlign
-                                                                          .left,
-                                                                  style: AppStyle
-                                                                      .txtSFUIDisplayMedium16
-                                                                      .copyWith(
-                                                                          letterSpacing:
-                                                                              0.50,
-                                                                          height:
-                                                                              1.00)))
-                                                        ]),
-                                                    CommonImageView(
-                                                        svgPath: ImageConstant
-                                                            .imgArrowright,
-                                                        height: getSize(24.00),
-                                                        width: getSize(24.00))
-                                                  ]))),
-                                      Container(
-                                          height: getVerticalSize(1.00),
-                                          width: getHorizontalSize(335.00),
-                                          margin: getMargin(top: 16),
-                                          decoration: BoxDecoration(
-                                              color: ColorConstant.gray100)),
-                                      Align(
-                                          alignment: Alignment.center,
-                                          child: Padding(
-                                              padding: getPadding(
-                                                  left: 16, top: 22, right: 16),
-                                              child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  mainAxisSize:
-                                                      MainAxisSize.max,
-                                                  children: [
-                                                    Row(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          CommonImageView(
-                                                              svgPath:
-                                                                  ImageConstant
-                                                                      .imgUser2,
-                                                              height: getSize(
-                                                                  24.00),
-                                                              width: getSize(
-                                                                  24.00)),
-                                                          Padding(
-                                                              padding:
-                                                                  getPadding(
-                                                                      left: 14,
-                                                                      top: 2,
-                                                                      bottom:
-                                                                          2),
-                                                              child: Text(
-                                                                  "lbl_version"
-                                                                      .tr,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                  textAlign:
-                                                                      TextAlign
-                                                                          .left,
-                                                                  style: AppStyle
-                                                                      .txtSFUIDisplayMedium16
-                                                                      .copyWith(
-                                                                          letterSpacing:
-                                                                              0.50,
-                                                                          height:
-                                                                              1.00)))
-                                                        ]),
-                                                    CommonImageView(
-                                                        svgPath: ImageConstant
-                                                            .imgArrowright,
-                                                        height: getSize(24.00),
-                                                        width: getSize(24.00))
-                                                  ]))),
-                                      Container(
-                                          height: getVerticalSize(1.00),
-                                          width: getHorizontalSize(335.00),
-                                          margin: getMargin(top: 16),
-                                          decoration: BoxDecoration(
-                                              color: ColorConstant.gray100))
-                                    ])))
-                      ]))
-                ]))),
-        bottomNavigationBar: CustomBottomNavBar(controller: HomeController()),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Profile Screen'),
+        backgroundColor: Colors.white,
       ),
+      body: ListView(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        children: [
+          // Profile
+          ListTile(
+            leading: CircleAvatar(
+              backgroundImage: AssetImage('assets/profile_image.jpg'), // Đặt đường dẫn ảnh avatar
+            ),
+            title: Text(
+              'Profile',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+            ),
+            trailing: Icon(Icons.chevron_right),
+          ),
+          Divider(),
+
+          // Rewards Section
+          Padding(
+            padding: const EdgeInsets.only(top: 10.0),
+            child: Text(
+              'Rewards',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+          ),
+          ListTile(
+            leading: Icon(Icons.monetization_on, color: Colors.amber),
+            title: Text('Rewards'),
+            trailing: Icon(Icons.chevron_right),
+          ),
+          Divider(),
+          ListTile(
+            leading: Icon(Icons.local_offer_outlined),
+            title: Text('Offers'),
+            trailing: Icon(Icons.chevron_right),
+          ),
+          Divider(),
+
+          // Settings Section
+          Padding(
+            padding: const EdgeInsets.only(top: 10.0),
+            child: Text(
+              'Settings',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+          ),
+          ListTile(
+            leading: Icon(Icons.settings_outlined),
+            title: Text('Preferences'),
+            trailing: Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PreferencesPage()),
+              );
+            },
+        
+          ),
+          Divider(),
+          ListTile(
+            leading: Icon(Icons.help_outline),
+            title: Text('Support'),
+            trailing: Icon(Icons.chevron_right),
+          ),
+          Divider(),
+
+          // Sign Out
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20.0),
+            child: Center(
+              child: GestureDetector(
+                onTap: () => _signOut(context), // Gọi hàm đăng xuất khi nhấn
+                child: Text(
+                  'Sign Out',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.red),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: CustomBottomNavBar(
+          controller: HomeController()),
     );
   }
 }

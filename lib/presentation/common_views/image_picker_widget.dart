@@ -55,7 +55,9 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
             ),
           
           SizedBox(height: 10), // Khoảng cách dưới hình ảnh
-          Text('Add some photos'),
+          Text('Add some photos',
+                style: TextStyle(fontSize: 17)),
+                SizedBox(height: 10,),
             GestureDetector(
               onTap: _pickImages,
               child: Container(

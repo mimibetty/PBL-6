@@ -52,7 +52,7 @@ class CustomBottomNavBar extends StatelessWidget {
               Get.toNamed('/business_post_screen');
               break;
             case 4:
-              Get.toNamed('/profile');
+              Get.toNamed('/profile_screen');
               break;
             default:
               Get.toNamed('/welcome_screen');
