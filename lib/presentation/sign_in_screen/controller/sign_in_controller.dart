@@ -27,51 +27,54 @@ class SignInController extends GetxController {
   }
 
   Future<void> signIn() async {
-  isLoading.value = true;
+    isLoading.value = true;
 
-  // Get the input from the controllers
-  String username = usernameController.text.trim();
-  String password = passwordController.text.trim();
+    // Get the input from the controllers
+    String username = usernameController.text.trim();
+    String password = passwordController.text.trim();
 
-  // Create a login model
-  signInModelObj.value = SignInModel(username: username, password: password);
+    // Create a login model
+    signInModelObj.value = SignInModel(username: username, password: password);
 
-  try {
-    print("trytopostlogin");
-    final response = await http.post(
-      Uri.parse('https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/login'),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: {
-        'username': signInModelObj.value.username,
-        'password': signInModelObj.value.password,
-      },
-    );
+    try {
+      print("trytopostlogin");
+      final response = await http.post(
+        Uri.parse('https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/login'),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: {
+          'username': signInModelObj.value.username,
+          'password': signInModelObj.value.password,
+        },
+      ).timeout(Duration(seconds: 5)); // Add a timeout of 10 seconds
 
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
-    if (response.statusCode == 200) {
-      final responseData = json.decode(response.body);
-      
-      SignInResponseModel signInResponse = SignInResponseModel.fromJson(responseData);
-      accessToken.value = signInResponse.accessToken!;
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        
+        SignInResponseModel signInResponse = SignInResponseModel.fromJson(responseData);
+        accessToken.value = signInResponse.accessToken!;
 
-      // Navigate to the home screen if login is successful
-      //Get.offNamed(AppRoutes.welcomeScreen); 
-      Get.toNamed('/welcome_screen');
-      Get.snackbar('Success', 'Logged in successfully!');
-    } else {
-      // Display error details if login fails
-      final responseData = json.decode(response.body);
-      String errorDetail = responseData['detail'] ?? 'Failed to sign in';
-      // Log chi tiết lỗi ra console
-      print('Login failed: Status Code: ${response.statusCode}, Response: $responseData');
-      Get.snackbar('Error', errorDetail, snackPosition: SnackPosition.BOTTOM);
+        // Navigate to the home screen if login is successful
+        //Get.offNamed(AppRoutes.welcomeScreen); 
+        Get.toNamed(AppRoutes.welcomeScreen);
+        Get.snackbar('Success', 'Logged in successfully!');
+      } else {
+        // Display error details if login fails
+        final responseData = json.decode(response.body);
+        String errorDetail = responseData['detail'] ?? 'Failed to sign in';
+        // Log chi tiết lỗi ra console
+        print('Login failed: Status Code: ${response.statusCode}, Response: $responseData');
+        Get.snackbar('Error', errorDetail, snackPosition: SnackPosition.BOTTOM);
+      }
+    } catch (e) {
+      print('Exception caught: $e'); // Log the exception
+      Get.snackbar('Error', 'Something went wrong: $e', snackPosition: SnackPosition.BOTTOM);
+    } finally {
+      isLoading.value = false;
     }
-  } catch (e) {
-    Get.snackbar('Error', 'Something went wrong: $e', snackPosition: SnackPosition.BOTTOM);
-  } finally {
-    isLoading.value = false;
-  }
   }
 }

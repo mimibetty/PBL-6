@@ -3,7 +3,6 @@ import 'package:travelappflutter/presentation/business_creation_screen/business_
 import 'package:travelappflutter/presentation/business_creation_screen/business_post_screen.dart';
 import 'package:travelappflutter/presentation/home_screen/binding/welcome_binding.dart';
 import 'package:travelappflutter/presentation/home_screen/welcome_screen.dart';
-import 'package:travelappflutter/presentation/review_widget/binding/review_widget_binding.dart';
 import 'package:travelappflutter/presentation/splash_screen/splash_screen.dart';
 import 'package:travelappflutter/presentation/splash_screen/binding/splash_binding.dart';
 import 'package:travelappflutter/presentation/onboard_one_screen/onboard_one_screen.dart';
@@ -32,8 +31,6 @@ import 'package:travelappflutter/presentation/all_popular_trip_package_screen/al
 import 'package:travelappflutter/presentation/all_popular_trip_package_screen/binding/all_popular_trip_package_binding.dart';
 import 'package:travelappflutter/presentation/favorite_places_screen/favorite_places_screen.dart';
 import 'package:travelappflutter/presentation/favorite_places_screen/binding/favorite_places_binding.dart';
-// import 'package:travelappflutter/presentation/messages_screen/messages_screen.dart';
-// import 'package:travelappflutter/presentation/messages_screen/binding/messages_binding.dart';
 import 'package:travelappflutter/presentation/chats_screen/chats_screen.dart';
 import 'package:travelappflutter/presentation/chats_screen/binding/chats_binding.dart';
 import 'package:travelappflutter/presentation/search_screen/search_screen.dart';
@@ -44,7 +41,6 @@ import 'package:travelappflutter/presentation/notification_screen/notification_s
 import 'package:travelappflutter/presentation/notification_screen/binding/notification_binding.dart';
 import 'package:get/get.dart';
 
-import '../presentation/review_widget/widgets/create_review.dart';
 
 class AppRoutes {
   static String splashScreen = '/splash_screen';
