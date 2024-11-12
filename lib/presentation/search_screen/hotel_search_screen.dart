@@ -1,30 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:get/get.dart';
 import 'package:travelappflutter/presentation/home_screen/hotel_detail.dart';
+import 'package:travelappflutter/presentation/search_screen/controller/hotel_search_controller.dart';
 import 'package:travelappflutter/presentation/search_screen/models/hotel_model.dart';
 
 class HotelSearchScreen extends StatefulWidget {
+  final List<int> hotelIDs;
+  final String cityNames;
+
+  const HotelSearchScreen({
+    Key? key,
+    required this.hotelIDs,
+    required this.cityNames,
+  }) : super(key: key);
+
   @override
   _HotelSearchScreenState createState() => _HotelSearchScreenState();
 }
 
 class _HotelSearchScreenState extends State<HotelSearchScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
-  List<Hotel> filteredHotels = [];
-  late List<Hotel> hotels;
+  late List<Hotel> filteredHotels = []; // Changed to late initialization
+  late final HotelController hotelController;
 
   @override
   void initState() {
     super.initState();
-    hotels = mockHotels.where((hotel) => hotel.rating > 3.5).toList();
-    filteredHotels = hotels;
+    hotelController = Get.put(HotelController());
+    for (int hotelID in widget.hotelIDs) {
+      hotelController.fetchHotelData(hotelID.toString());
+    }
+  void _filterHotels() {
+    filteredHotels = hotelController.hotels
+        .where((hotel) => hotel.rating > 0.0 && hotel.reviewCount > 0)
+        .toList();
+    if (mounted) { // Kiểm tra xem widget có còn trong cây không
+      setState(() {}); // Cập nhật giao diện khi hoàn tất lọc
+    }
+  }
+
+    // Đảm bảo gọi _filterHotels() sau khi hàm đã được định nghĩa
+    ever(hotelController.hotels, (_) {
+      _filterHotels();
+    });
+
+    print(filteredHotels);
+  }
+  @override
+  void dispose() {
+    Get.delete<HotelController>(); // Hủy lắng nghe controller khi widget bị hủy
+    print('disposed');
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search Hotels'),
+        title: Text('Hotels'),
         leading: BackButton(),
         actions: [
           IconButton(
@@ -42,7 +76,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Top Hotels in Da Nang",
+                  "Top Hotels in ${widget.cityNames}",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -61,7 +95,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                         ),
                       ),
                       TextSpan(
-                        text: " result match your filter",
+                        text: " result match your filter", 
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.black,
@@ -120,7 +154,8 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => HotelDetailScreen(hotel: hotel),
+                        builder: (context) =>
+                            HotelDetailScreen(hotel: hotel),
                       ),
                     );
                   },
@@ -162,7 +197,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                                   Text(
                                     "Address: ${hotel.hotelLocation}",
                                     style: TextStyle(
-                                        fontSize: 14, color: Colors.black54),
+                                      fontSize: 14, color: Colors.black54),
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
                                   ),
@@ -176,14 +211,9 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                                           color: i <= hotel.rating.floor()
                                               ? Color(0xFF13357B)
                                               : (i ==
-                                                          hotel.rating.floor() +
-                                                              1 &&
-                                                      hotel.rating -
-                                                              hotel.rating
-                                                                  .floor() >=
-                                                          0.5)
-                                                  ? Color(0xFF13357B)
-                                                      .withOpacity(0.5)
+                                                          hotel.rating.floor() + 1 &&
+                                                      hotel.rating - hotel.rating.floor() >= 0.5)
+                                                  ? Color(0xFF13357B).withOpacity(0.5)
                                                   : Colors.grey,
                                         ),
                                       const SizedBox(width: 8),
@@ -195,7 +225,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                                       const SizedBox(width: 5),
                                       Expanded(
                                         child: Text(
-                                          "(${hotel.review} reviews)",
+                                          "(${hotel.reviewCount} reviews)",
                                           style: TextStyle(
                                               fontSize: 14, color: Colors.grey),
                                           overflow: TextOverflow.ellipsis,
@@ -208,18 +238,14 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                                   Divider(thickness: 1, color: Colors.black26),
                                   const SizedBox(height: 5),
                                   Wrap(
-                                    spacing:
-                                        8, // Khoảng cách giữa các phần tử trên cùng một dòng
-                                    runSpacing: 8, // Khoảng cách giữa các dòng
-                                    children: hotel.roomFeature
+                                    spacing: 4,
+                                    children: hotel.roomFeatures
                                         .map((feature) => Container(
                                               padding: EdgeInsets.symmetric(
                                                   horizontal: 6, vertical: 3),
                                               decoration: BoxDecoration(
-                                                color: Colors.black
-                                                    .withOpacity(0.1),
-                                                borderRadius:
-                                                    BorderRadius.circular(15),
+                                                color: Colors.black.withOpacity(0.1),
+                                                borderRadius: BorderRadius.circular(15),
                                               ),
                                               child: Text(
                                                 feature,
@@ -230,7 +256,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                                               ),
                                             ))
                                         .toList(),
-                                  )
+                                  ),
                                 ],
                               ),
                             ),
@@ -250,70 +276,72 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
   }
 
   void _showFilterMenu(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.all(16.0),
-            child: FormBuilder(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 16),
-                  FormBuilderDateRangePicker(
-                    name: 'date_range',
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime(2030),
-                    decoration: InputDecoration(
-                      labelText: 'Select Check-in & Check-out Dates',
-                    ),
+  showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) {
+      return SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(16.0),
+          child: FormBuilder(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 16),
+                FormBuilderDateRangePicker(
+                  name: 'date_range',
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime(2030),
+                  decoration: InputDecoration(
+                    labelText: 'Select Check-in & Check-out Dates',
                   ),
-                  const SizedBox(height: 16),
-                  _buildCheckboxGroup('Price Range', 'price', [
-                    'Low',
-                    'Medium',
-                    'High',
-                  ]),
-                  _buildCheckboxGroup('Amenities', 'amenities', [
-                    'Free Wifi',
-                    'Breakfast Included',
-                    'Parking',
-                    'Pool',
-                  ]),
-                  const SizedBox(height: 16),
-                  const SizedBox(height: 16),
-                  _buildCheckboxGroup('Hotel Star', 'hotel_star', [
-                    '1 Star',
-                    '2 Star',
-                    '3 Star',
-                    '4 Star',
-                    '5 Star',
-                  ]),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.saveAndValidate()) {
-                        var selectedFilters = _formKey.currentState!.value;
-                        _applyFilters(selectedFilters);
-                        Navigator.pop(context);
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      foregroundColor: Colors.white,
-                    ),
-                    child: Text('Apply Filters'),
+                ),
+                const SizedBox(height: 16),
+                _buildCheckboxGroup('Price Range', 'price', [
+                  'Low',
+                  'Medium',
+                  'High',
+                ]),
+                _buildCheckboxGroup('Amenities', 'amenities', [
+                  'Free Wifi',
+                  'Breakfast Included',
+                  'Parking',
+                  'Pool',
+                ]),
+                const SizedBox(height: 16),
+                
+                const SizedBox(height: 16),
+                _buildCheckboxGroup('Hotel Star', 'hotel_star', [
+                  '1 Star',
+                  '2 Star',
+                  '3 Star',
+                  '4 Star',
+                  '5 Star',
+                ]),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.saveAndValidate()) {
+                      var selectedFilters = _formKey.currentState!.value;
+                      _applyFilters(selectedFilters);
+                      Navigator.pop(context);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
                   ),
-                ],
-              ),
+                  child: Text('Apply Filters'),
+                ),
+              ],
             ),
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
+
 
   Widget _buildCheckboxGroup(String title, String name, List<String> options) {
     return FormBuilderCheckboxGroup(

@@ -3,245 +3,266 @@ import 'package:get/get.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
-import 'package:travelappflutter/presentation/home_screen/models/cities_model.dart';
+import 'package:travelappflutter/presentation/home_screen/controller/topic_controller.dart';
+import 'package:travelappflutter/presentation/home_screen/controller/welcome_controller.dart';
 import 'package:travelappflutter/presentation/home_screen/place_detail.dart';
 import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
 import 'package:travelappflutter/presentation/search_screen/hotel_search_screen.dart';
 import 'package:travelappflutter/presentation/search_screen/restaurant_search_screen.dart';
 import 'package:travelappflutter/presentation/search_screen/thing_to_do_screen.dart';
-import 'package:travelappflutter/routes/app_routes.dart';
 import './widgets/recomendate.dart';
 import 'package:iconsax/iconsax.dart';
 import './widgets/popular_place.dart';
 import './models/travel_model.dart';
 
 class HomeScreen extends StatefulWidget {
-  final List<TravelDestination> destinations;
+  final int? cityID;
+  final String? cityName;
+  final String? tag;
   final bool show;
 
-  const HomeScreen({super.key, required this.destinations, this.show = true});
+  const HomeScreen({
+    super.key,
+    this.cityID,
+    this.cityName,
+    this.tag,
+    this.show = true,
+  });
+
 
   @override
   State<HomeScreen> createState() => _TravelHomeScreenState();
 }
 
 class _TravelHomeScreenState extends State<HomeScreen> {
+  final HomeController homeController = Get.put(HomeController());
+  final TopicController topicController = Get.put(TopicController()); // Khởi tạo controller
+  // Gọi hàm lọc dựa trên `Topic`
+  void filterDestinationsByTopic(String topic) {
+    topicController.fetchDestinationsByTopic(topic); // Gọi API cho từng `Topic`
+  }
+
   @override
+  void initState() {
+    super.initState();
+    _fetchDestinations(); // Fetch destinations based on parameters
+  }
+Future<void> _fetchDestinations() async {
+  if (widget.tag != null) {
+    await topicController.fetchDestinationsByTopic(widget.tag!);
+    homeController.myDestination.value = topicController.destinations.value;
+
+  } else if (widget.cityID != null || widget.cityName != null) {
+    await homeController.getDestinationByCityID(widget.cityID!, widget.cityName!);
+  }
+
+}
+
+
+  List<int> getHotelIDs(List<TravelDestination> destinations) {
+    return destinations.where((hotel) => hotel.hotelId != null).map((hotel) => hotel.hotelId!).toList();
+  }
+  List<int> getRestaurantIDs(List<TravelDestination> destinations) {
+    return destinations.where((hotel) => hotel.restaurantId != null).map((hotel) => hotel.restaurantId!).toList();
+  }
+
+@override
   Widget build(BuildContext context) {
-    var cityDescription = myCities
-        .firstWhere(
-          (city) => city.name.toLowerCase().contains("da nang"),
-        )
-        .description;
-
-    List<TravelDestination> popularDestinations = widget.destinations
-        .where((destination) => destination.category == 'popular')
-        .toList();
-
-    List<TravelDestination> recommendDestinations = widget.destinations
-        .where((destination) => destination.category == 'recomend')
-        .toList();
-
-    List<String> allImages = [
-      ...widget.destinations
-          .where((destination) =>
-              destination.location.toLowerCase().contains("da nang"))
-          .expand((destination) => destination.images?? []),
-      ...myCities
-          .where((city) => city.name.toLowerCase().contains("da nang"))
-          .expand((city) => city.images ?? []),
-    ];
-
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: headerParts(),
-      body: ListView(
-        children: [
-          const SizedBox(height: 20),
-          // Show slider only if widget.show is true
-          if (widget.show) ...[
-            // Section for Image Slider
-            CarouselSlider(
-              options: CarouselOptions(
-                height: 200,
-                enlargeCenterPage: true,
-                autoPlay: true,
-                aspectRatio: 16 / 9,
-                autoPlayCurve: Curves.fastOutSlowIn,
-                enableInfiniteScroll: true,
-                autoPlayAnimationDuration: Duration(milliseconds: 1500),
-                viewportFraction: 1,
-              ),
-              items: allImages.map((imageUrl) {
-                return Builder(
-                  builder: (BuildContext context) {
-                    return Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black26,
-                            offset: Offset(0, 4),
-                            blurRadius: 8,
-                            spreadRadius: 1,
-                          ),
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                          imageUrl,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                        ),
-                      ),
-                    );
-                  },
-                );
-              }).toList(),
-            ),
+      body: Obx(() {
+        // tạm thời để trống, xử lý sau
+        List<TravelDestination> popularDestinations = homeController.myDestination.value.toList();
+        List<TravelDestination> recommendDestinations = homeController.myDestination.value.toList();
+
+        // List<TravelDestination> popularDestinations = homeController.myDestination.value
+        //     .where((destination) => destination.category == 'popular')
+        //     .toList();
+
+        // List<TravelDestination> recommendDestinations = homeController.myDestination.value
+        //     .where((destination) => destination.category == 'recommend')
+        //     .toList();
+
+        // List<String> allImages = [
+        //   ...homeController.myDestination.value
+        //       .where((destination) =>
+        //           destination.location.toLowerCase().contains(widget.cityName!))
+        //       .expand((destination) => destination.images ?? []),
+        //   ...Get.find<WelcomeController>().myCities.value
+        //       .where((city) => city.name.toLowerCase().contains(widget.cityName!))
+        //       .expand((city) => city.images!.cast<String>()),
+        // ];
+        // các địa điểm từ `myDestination` thỏa mãn điều kiện
+          var destinations = homeController.myDestination.value
+              .where((destination) =>
+                  destination.address.district.contains(widget.cityName!))
+              .toList();
+          // các thành phố từ `myCities` thỏa mãn điều kiện
+          var cities = Get.find<WelcomeController>().myCities.value
+              .where((city) => city.name.contains(widget.cityName!))
+              .toList();
+          // Sau khi in, tạo `allImages` như trước:
+          List<String> allImages = [
+            ...destinations.expand((destination) => destination.images ?? []),
+            ...cities.expand((city) => city.images.map((image) => image.url)),
+          ];
+
+        return ListView(
+          children: [
             const SizedBox(height: 20),
-          ],
-          if (widget.show)
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0), // Padding trái phải
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start, // Canh lề trái
+            // Show slider only if widget.show is true
+            if (widget.show) ...[
+              // Section for Image Slider
+              CarouselSlider(
+                options: CarouselOptions(
+                  height: 200,
+                  enlargeCenterPage: true,
+                  autoPlay: true,
+                  aspectRatio: 16 / 9,
+                  autoPlayCurve: Curves.fastOutSlowIn,
+                  enableInfiniteScroll: true,
+                  autoPlayAnimationDuration: Duration(milliseconds: 1500),
+                  viewportFraction: 1,
+                ),
+                items: allImages.map((imageUrl) {
+                  return Builder(
+                    builder: (BuildContext context) {
+                      return Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              offset: Offset(0, 4),
+                              blurRadius: 8,
+                              spreadRadius: 1,
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.network(
+                            imageUrl,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 20),
+            ],
+            // Section for Popular places
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Da Nang', // Tên thành phố
+                    "Popular place",
                     style: TextStyle(
-                      fontSize: 24, // Kích thước chữ lớn
-                      fontWeight: FontWeight.bold, // Chữ in đậm
-                      color: Colors.black, // Màu chữ đen
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
                     ),
                   ),
-                  SizedBox(
-                      height: 8), // Khoảng cách giữa tên thành phố và mô tả
                   Text(
-                    cityDescription, // Hiển thị mô tả của thành phố
+                    "See all",
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.black54,
-                      height: 1.5, // Điều chỉnh khoảng cách dòng
+                      color: blueTextColor,
                     ),
-                    maxLines: 100, // Giới hạn số dòng mô tả
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.left, // Căn đều văn bản
-                    softWrap: true, // Tự động xuống dòng nếu văn bản quá dài
                   ),
                 ],
               ),
             ),
-          const SizedBox(height: 10),
-          // Section for Popular places
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Popular place",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
-                  ),
-                ),
-                Text(
-                  "See all",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: blueTextColor,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 15),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.only(bottom: 40),
-            child: Row(
-              children: List.generate(
-                popularDestinations.length,
-                (index) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => PlaceDetailScreen(
-                            destination: popularDestinations[index],
+            const SizedBox(height: 15),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.only(bottom: 40),
+              child: Row(
+                children: List.generate(
+                  popularDestinations.length,
+                  (index) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => PlaceDetailScreen(
+                              destination: popularDestinations[index],
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                    child: PopularPlace(
-                      destination: popularDestinations[index],
+                        );
+                      },
+                      child: PopularPlace(
+                        destination: popularDestinations[index],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-          // Section for Recommendations
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Recommendation for you",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
+            // Section for Recommendations
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Recommendation for you",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
                   ),
-                ),
-                Text(
-                  "See all",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: blueTextColor,
+                  Text(
+                    "See all",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: blueTextColor,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 20),
-          SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: Column(
-              children: List.generate(
-                recommendDestinations.length,
-                (index) => Padding(
-                  padding: const EdgeInsets.only(bottom: 15),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => PlaceDetailScreen(
-                            destination: recommendDestinations[index],
+            const SizedBox(height: 20),
+            SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: Column(
+                children: List.generate(
+                  recommendDestinations.length,
+                  (index) => Padding(
+                    padding: const EdgeInsets.only(bottom: 15),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => PlaceDetailScreen(
+                              destination: recommendDestinations[index],
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                    child: Recomendate(
-                      destination: recommendDestinations[index],
+                        );
+                      },
+                      child: Recomendate(
+                        destination: recommendDestinations[index],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: CustomBottomNavBar(controller: HomeController()),
+          ],
+        );
+      }),
+      bottomNavigationBar: CustomBottomNavBar(controller: homeController),
     );
   }
 
@@ -249,7 +270,7 @@ class _TravelHomeScreenState extends State<HomeScreen> {
     return AppBar(
       elevation: 0,
       backgroundColor: Colors.grey[200], // Thay đổi màu nền sáng hơn
-      leadingWidth: 180,
+      leadingWidth: 500,//Tránh overflow
       leading: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
@@ -267,9 +288,9 @@ class _TravelHomeScreenState extends State<HomeScreen> {
               color: Colors.black, // Màu biểu tượng location
             ),
             const SizedBox(width: 5),
-            const Text(
-              "Da Nang",
-              style: TextStyle(
+            Text(
+              widget.cityName ?? 'Unknown City', // Tên thành phố hien tại
+              style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 18,
                 color: Colors.black87, // Màu chữ tối hơn
@@ -294,9 +315,7 @@ class _TravelHomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ThingToDoScreen(
-                      destinations: myDestination,
-                    ),
+                    builder: (context) => ThingToDoScreen(destinations: danangDestinations,),
                   ),
                 );
                 break;
@@ -304,17 +323,20 @@ class _TravelHomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => HotelSearchScreen(),
+                    builder: (context) => HotelSearchScreen(
+                      cityNames: widget.cityName!,
+                     hotelIDs: getHotelIDs(homeController.myDestination.value), // Directly fetching hotel IDs here
+                    ),
                   ),
                 );
                 break;
               case 'Restaurants':
                 Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => RestaurantSearchScreen(),
-                  ),
-                );
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RestaurantSearchScreen(),
+                ),
+              );
                 break;
             }
           },

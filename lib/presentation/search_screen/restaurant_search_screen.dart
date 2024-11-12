@@ -26,7 +26,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search Restaurants'),
+        title: Text('Restaurants'),
         leading: BackButton(),
         actions: [
           IconButton(

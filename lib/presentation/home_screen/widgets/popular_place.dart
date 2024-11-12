@@ -51,36 +51,45 @@ class PopularPlace extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              destination.name,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                const Icon(
-                                  Icons.location_on,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                destination.name,
+                                style: const TextStyle(
+                                  fontSize: 16,
                                   color: Colors.white,
-                                  size: 18,
+                                  fontWeight: FontWeight.w500,
                                 ),
-                                const SizedBox(width: 5),
-                                Text(
-                                  destination.location,
-                                  style: const TextStyle(
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                              ),
+                              const SizedBox(height: 5),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  const Icon(
+                                    Icons.location_on,
                                     color: Colors.white,
-                                    fontSize: 18,
+                                    size: 18,
                                   ),
-                                )
-                              ],
-                            )
-                          ],
+                                  const SizedBox(width: 5),
+                                  Expanded(
+                                    child: Text(
+                                      destination.address.district,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                         Row(
                           children: [
@@ -91,15 +100,15 @@ class PopularPlace extends StatelessWidget {
                             ),
                             const SizedBox(width: 5),
                             Text(
-                              destination.rate.toString(),
+                              destination.rating.toString(),
                               style: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
-                            )
+                            ),
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ),

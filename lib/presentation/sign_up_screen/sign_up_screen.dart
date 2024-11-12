@@ -62,8 +62,8 @@ class SignUpScreen extends GetWidget<SignUpController> {
                                   width: 335,
                                   focusNode: FocusNode(),
                                   controller:
-                                      controller.groupFiftyOneController,
-                                  hintText: "lbl_leonardo_smith".tr,
+                                      controller.usernameController,
+                                  hintText: "msg_enter_username".tr,
                                   margin:
                                       getMargin(left: 20, top: 40, right: 20),
                                   alignment: Alignment.center),
@@ -84,88 +84,120 @@ class SignUpScreen extends GetWidget<SignUpController> {
                                     }
                                     return null;
                                   }),
-                              Align(
+                            //   Align(
+                            //       alignment: Alignment.center,
+                            //       child: Container(
+                            //           height: getVerticalSize(56.00),
+                            //           width: getHorizontalSize(335.00),
+                            //           margin: getMargin(
+                            //               left: 20, top: 24, right: 20),
+                            //           child: Stack(
+                            //               alignment: Alignment.center,
+                            //               children: [
+                            //                 Align(
+                            //                     alignment: Alignment.centerLeft,
+                            //                     child: Container(
+                            //                         height:
+                            //                             getVerticalSize(56.00),
+                            //                         width: getHorizontalSize(
+                            //                             335.00),
+                            //                         decoration: BoxDecoration(
+                            //                             color: ColorConstant
+                            //                                 .gray100,
+                            //                             borderRadius:
+                            //                                 BorderRadius.circular(
+                            //                                     getHorizontalSize(
+                            //                                         14.00))))),
+                            //                 Align(
+                            //                     alignment: Alignment.center,
+                            //                     child: Padding(
+                            //                         padding:
+                            //                             getPadding(all: 16),
+                            //                         child: Row(
+                            //                             crossAxisAlignment:
+                            //                                 CrossAxisAlignment
+                            //                                     .center,
+                            //                             mainAxisSize:
+                            //                                 MainAxisSize.max,
+                            //                             children: [
+                            //                               Padding(
+                            //                                   padding:
+                            //                                       getPadding(
+                            //                                           top: 8,
+                            //                                           bottom:
+                            //                                               8),
+                            //                                   child: CommonImageView(
+                            //                                       svgPath:
+                            //                                           ImageConstant
+                            //                                               .img,
+                            //                                       height:
+                            //                                           getVerticalSize(
+                            //                                               8.00),
+                            //                                       width: getHorizontalSize(
+                            //                                           97.00))),
+                            //                               Padding(
+                            //                                   padding:
+                            //                                       getPadding(
+                            //                                           left:
+                            //                                               182),
+                            //                                   child: CommonImageView(
+                            //                                       svgPath:
+                            //                                           ImageConstant
+                            //                                               .imgEyeicon,
+                            //                                       height:
+                            //                                           getSize(
+                            //                                               24.00),
+                            //                                       width: getSize(
+                            //                                           24.00)))
+                            //                             ])))
+                            //               ]))),
+                            //   Padding(
+                            //       padding:
+                            //           getPadding(left: 20, top: 16, right: 20),
+                            //       child: Text("msg_password_must_b".tr,
+                            //           overflow: TextOverflow.ellipsis,
+                            //           textAlign: TextAlign.left,
+                            //           style: AppStyle
+                            //               .txtSFUIDisplayRegular14Bluegray400
+                            //               .copyWith(height: 1.00))),
+                                                           Obx(() => CustomTextFormField(
+                                  width: 335,
+                                  focusNode: FocusNode(),
+                                  controller: controller.passwordController,
+                                  hintText: "msg_enter_password".tr,
+                                  margin:
+                                      getMargin(left: 20, top: 24, right: 20),
+                                  textInputAction: TextInputAction.done,
                                   alignment: Alignment.center,
-                                  child: Container(
-                                      height: getVerticalSize(56.00),
-                                      width: getHorizontalSize(335.00),
-                                      margin: getMargin(
-                                          left: 20, top: 24, right: 20),
-                                      child: Stack(
-                                          alignment: Alignment.center,
-                                          children: [
-                                            Align(
-                                                alignment: Alignment.centerLeft,
-                                                child: Container(
-                                                    height:
-                                                        getVerticalSize(56.00),
-                                                    width: getHorizontalSize(
-                                                        335.00),
-                                                    decoration: BoxDecoration(
-                                                        color: ColorConstant
-                                                            .gray100,
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                                getHorizontalSize(
-                                                                    14.00))))),
-                                            Align(
-                                                alignment: Alignment.center,
-                                                child: Padding(
-                                                    padding:
-                                                        getPadding(all: 16),
-                                                    child: Row(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        mainAxisSize:
-                                                            MainAxisSize.max,
-                                                        children: [
-                                                          Padding(
-                                                              padding:
-                                                                  getPadding(
-                                                                      top: 8,
-                                                                      bottom:
-                                                                          8),
-                                                              child: CommonImageView(
-                                                                  svgPath:
-                                                                      ImageConstant
-                                                                          .img,
-                                                                  height:
-                                                                      getVerticalSize(
-                                                                          8.00),
-                                                                  width: getHorizontalSize(
-                                                                      97.00))),
-                                                          Padding(
-                                                              padding:
-                                                                  getPadding(
-                                                                      left:
-                                                                          182),
-                                                              child: CommonImageView(
-                                                                  svgPath:
-                                                                      ImageConstant
-                                                                          .imgEyeicon,
-                                                                  height:
-                                                                      getSize(
-                                                                          24.00),
-                                                                  width: getSize(
-                                                                      24.00)))
-                                                        ])))
-                                          ]))),
-                              Padding(
-                                  padding:
-                                      getPadding(left: 20, top: 16, right: 20),
-                                  child: Text("msg_password_must_b".tr,
-                                      overflow: TextOverflow.ellipsis,
-                                      textAlign: TextAlign.left,
-                                      style: AppStyle
-                                          .txtSFUIDisplayRegular14Bluegray400
-                                          .copyWith(height: 1.00))),
+                                  isObscureText: !controller.isPasswordVisible.value,
+                                  suffix: IconButton(
+                                    icon: Icon(
+                                      controller.isPasswordVisible.value
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                    ),
+                                    onPressed: () {
+                                      controller.isPasswordVisible.value =
+                                          !controller.isPasswordVisible.value;
+                                    },
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return "Please enter password";
+                                    }
+                                    return null;
+                                  })),   
                               CustomButton(
                                   width: 335,
                                   text: "lbl_sign_up2".tr,
                                   margin:
                                       getMargin(left: 20, top: 40, right: 20),
-                                  alignment: Alignment.center),
+                                  alignment: Alignment.center,
+                                  onTap: () {
+                                    if (_formKey.currentState?.validate() ?? false) {
+                                      controller.signUp();
+                                    }
+                                  }),
                               Align(
                                   alignment: Alignment.center,
                                   child: Padding(
@@ -184,16 +216,21 @@ class SignUpScreen extends GetWidget<SignUpController> {
                                                 style: AppStyle
                                                     .txtSFUIDisplayRegular14
                                                     .copyWith(height: 1.00)),
-                                            Padding(
-                                                padding: getPadding(left: 8),
-                                                child: Text("lbl_sign_in2".tr,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    textAlign: TextAlign.left,
-                                                    style: AppStyle
-                                                        .txtSFUIDisplayMedium14
-                                                        .copyWith(
-                                                            height: 1.00)))
+                                            GestureDetector(
+                                                onTap: () {
+                                                    Get.toNamed(
+                                                    AppRoutes.signInScreen);
+                                                },
+                                                child: Padding(
+                                                    padding: getPadding(left: 8),
+                                                    child: Text("lbl_sign_in2".tr,
+                                                        overflow:
+                                                            TextOverflow.ellipsis,
+                                                        textAlign: TextAlign.left,
+                                                        style: AppStyle
+                                                            .txtSFUIDisplayMedium14
+                                                            .copyWith(
+                                                                height: 1.00))))
                                           ]))),
                               Align(
                                   alignment: Alignment.center,

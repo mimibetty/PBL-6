@@ -3,7 +3,8 @@ import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/models/cities_model.dart';
 
 class RecomendateCity extends StatelessWidget {
-  final City myCities;
+  final CityModel myCities;
+
   const RecomendateCity({super.key, required this.myCities});
 
   @override
@@ -28,26 +29,26 @@ class RecomendateCity extends StatelessWidget {
               image: DecorationImage(
                 fit: BoxFit.cover,
                 image: NetworkImage(
-                  myCities.images![0],
+                  myCities.images[0].url,
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 24),
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start, // Ensure left alignment
               children: [
                 Text(
                   myCities.name,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 19,
                     color: Colors.black,
                     fontWeight: FontWeight.w600,
                   ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 9),
                 Row(
                   children: [
                     const Icon(
@@ -55,70 +56,33 @@ class RecomendateCity extends StatelessWidget {
                       color: Colors.black,
                       size: 16,
                     ),
-                    Text(
-                      myCities.country,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.black.withOpacity(0.6),
-                      ),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 5),
-                Row(
-                  children: [
-                    Text.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                            text: "${myCities.rating}",
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
-                            ),
-                          ),
-                          // TextSpan(
-                          //   text: "(${myCities.population} peoples )",
-                          //   style: TextStyle(
-                          //     fontSize: 10,
-                          //     fontWeight: FontWeight.w400,
-                          //     color: Colors.black.withOpacity(0.6),
-                          //   ),
-                          // ),
-                        ],
+                    Expanded( // Changed from Flexible to Expanded
+                      child: Text(
+                        myCities.region,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.black.withOpacity(0.6),
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
-                )
+                ),
+                const SizedBox(height: 36), // Reduced spacing for better layout
+                Text(
+                  myCities.description,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: blueTextColor,
+                  ),
+                  textAlign: TextAlign.right, // Explicitly set text alignment
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
               ],
             ),
           ),
-          Column(
-            children: [
-              const Spacer(),
-              Text.rich(
-                TextSpan(
-                  children: [
-                    TextSpan(
-                      text: "${myCities.bestSeason}",
-                      style: const TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w500,
-                          color: blueTextColor),
-                    ),
-                    TextSpan(
-                      text: " Best Season",
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.black.withOpacity(0.6),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          )
         ],
       ),
     );

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
 import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
 import 'package:travelappflutter/presentation/profile_screen/account_info_screen.dart';
+import 'package:travelappflutter/presentation/profile_screen/change_pw_screen.dart';
+import 'package:travelappflutter/presentation/profile_screen/language_selection_screen.dart';
 
 
 class PreferencesPage extends StatelessWidget {
@@ -48,10 +50,16 @@ class PreferencesPage extends StatelessWidget {
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('English (Vietnam)'),
+                Text('English(Vietnam)'),
                 Icon(Icons.chevron_right),
               ],
             ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LanguageSelectionScreen()),
+              );
+            },
           ),
           Divider(),
           // Currency
@@ -94,8 +102,22 @@ class PreferencesPage extends StatelessWidget {
             trailing: Icon(Icons.chevron_right),
           ),
           Divider(),
-          // Manage Privacy
-         
+         ListTile(
+            title: Text(
+              'Change Password',
+              style: TextStyle(fontSize: 18),
+
+              
+            ),
+            trailing: Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ChangePasswordScreen()),
+              );
+            },
+          ),
+          Divider(),
         ],
       ),
       bottomNavigationBar: CustomBottomNavBar(

@@ -63,9 +63,9 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
         orElse: () => mockHotels[0],
       );
     } else {
-      return myDestination.firstWhere(
+      return danangDestinations.firstWhere(
         (d) => d.id == widget.destinationId,
-        orElse: () => myDestination[0],
+        orElse: () => danangDestinations[0],
       );
     }
   }

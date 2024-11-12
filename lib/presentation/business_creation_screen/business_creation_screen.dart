@@ -320,7 +320,7 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        primary: Colors.blue, // Nền đen
+        backgroundColor: Colors.blue, // Nền đen
       ),
       child: Text(
         label,

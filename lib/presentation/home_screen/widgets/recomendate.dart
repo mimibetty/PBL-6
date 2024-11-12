@@ -56,7 +56,7 @@ class Recomendate extends StatelessWidget {
                       size: 16,
                     ),
                     Text(
-                      destination.location,
+                      destination.address.district,
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.black.withOpacity(0.6),
@@ -71,7 +71,7 @@ class Recomendate extends StatelessWidget {
                       TextSpan(
                         children: [
                           TextSpan(
-                            text: "${destination.rate}",
+                            text: "${destination.rating}",
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -79,7 +79,7 @@ class Recomendate extends StatelessWidget {
                             ),
                           ),
                           TextSpan(
-                            text: " (${destination.review} reviews)",
+                            text: " (${destination.numOfReviews} reviews)",
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
@@ -94,31 +94,31 @@ class Recomendate extends StatelessWidget {
               ],
             ),
           ),
-          Column(
-            children: [
-              const Spacer(),
-              Text.rich(
-                TextSpan(
-                  children: [
-                    TextSpan(
-                      text: "\$${destination.price}",
-                      style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                          color: blueTextColor),
-                    ),
-                    TextSpan(
-                      text: " /Person",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.black.withOpacity(0.6),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          )
+          // Column(
+          //   children: [
+          //     const Spacer(),
+          //     Text.rich(
+          //       TextSpan(
+          //         children: [
+          //           TextSpan(
+          //             text: "\$${destination.priceTop}",
+          //             style: const TextStyle(
+          //                 fontSize: 18,
+          //                 fontWeight: FontWeight.w500,
+          //                 color: blueTextColor),
+          //           ),
+          //           TextSpan(
+          //             text: " /Person",
+          //             style: TextStyle(
+          //               fontSize: 12,
+          //               color: Colors.black.withOpacity(0.6),
+          //             ),
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //   ],
+          // )
         ],
       ),
     );

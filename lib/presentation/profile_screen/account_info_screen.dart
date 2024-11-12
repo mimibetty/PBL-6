@@ -81,7 +81,7 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
                   children: [
                     _buildElevatedButton('Reset', _resetForm),
                     SizedBox(width: 16), // Khoảng cách giữa hai nút
-                    _buildElevatedButton('Create post', () {
+                    _buildElevatedButton('Update', () {
                       if (_formKey.currentState!.validate()) {
                         // Xử lý lưu dữ liệu
                       }
