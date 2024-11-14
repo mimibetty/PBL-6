@@ -29,7 +29,7 @@ class CustomBottomNavBar extends StatelessWidget {
           BottomNavigationBarItem(icon: Icon(Iconsax.home1), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Iconsax.search_normal), label: 'Search'),
           BottomNavigationBarItem(icon: Icon(Icons.domain_add_outlined), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.bookmark_outline), label: 'Post'),
+          BottomNavigationBarItem(icon: Icon(Icons.bookmark_outline), label: 'AI Plan'),
           BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
         ],
         currentIndex: controller.selectedPage.value,
@@ -49,7 +49,7 @@ class CustomBottomNavBar extends StatelessWidget {
               Get.toNamed('/business_creation_screen');
               break;
             case 3:
-              Get.toNamed('/business_post_screen');
+              Get.toNamed('/plan_screen');
               break;
             case 4:
               Get.toNamed('/profile_screen');

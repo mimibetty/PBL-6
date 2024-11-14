@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:get/get.dart';
 import 'package:travelappflutter/presentation/home_screen/models/home_model.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
@@ -61,6 +60,7 @@ Future<void> getDestinationByCityID(int cityID, String cityName) async {
         print('Giá cả: ${destination.priceBottom} - ${destination.priceTop}');
         print('Số lượng đánh giá: ${destination.numOfReviews}');
         print('Đánh giá: ${destination.rating}');
+        print('Ảnh : ${destination.images}');
         print('-------------------------');
       });
     } else {

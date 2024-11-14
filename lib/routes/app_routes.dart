@@ -1,6 +1,8 @@
 import 'package:travelappflutter/presentation/business_creation_screen/binding/business_creation_screen_binding.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/business_creation_screen.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/business_post_screen.dart';
+import 'package:travelappflutter/presentation/create_AI_trip/binding/plan_screen_binding.dart';
+import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_1.dart';
 import 'package:travelappflutter/presentation/home_screen/binding/welcome_binding.dart';
 import 'package:travelappflutter/presentation/home_screen/welcome_screen.dart';
 import 'package:travelappflutter/presentation/splash_screen/splash_screen.dart';
@@ -97,6 +99,9 @@ class AppRoutes {
   static String businessCreationScreen = '/business_creation_screen';
 
   static String businessPostScreen = '/business_post_screen';
+
+  static String planScreen = '/plan_screen';
+
 
   static List<GetPage> pages = [
     GetPage(
@@ -198,13 +203,13 @@ class AppRoutes {
         ViewBinding(),
       ],
     ),
-    // GetPage(
-    //   name: scheduleScreen,
-    //   page: () => ScheduleScreen(),
-    //   bindings: [
-    //     ScheduleBinding(),
-    //   ],
-    // ),
+    GetPage(
+      name: planScreen,
+      page: () => PlanScreen(),
+      bindings: [
+        PlanScreenBinding(),
+      ],
+    ),
     GetPage(
       name: popularPlacesScreen,
       page: () => PopularPlacesScreen(),

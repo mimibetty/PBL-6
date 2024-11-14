@@ -76,9 +76,8 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => ReviewFormPage(
-                    destinationId: destinationId,
-                    modeType: 3,
-                  ), // Truyền destinationId vào
+                      destinationId: destinationId,
+                      modeType: 3,), // Truyền destinationId vào
                 ),
               );
             },
@@ -157,8 +156,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                 image: widget.destination.images!.length - 1 !=
                                         pageView
                                     ? NetworkImage(
-                                        widget
-                                            .destination.images![pageView + 1],
+                                        widget.destination.images![pageView + 1],
                                       )
                                     : NetworkImage(
                                         widget.destination.images![0],
@@ -217,22 +215,12 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Container(
-                                          constraints: BoxConstraints(
-                                            maxWidth: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.6, // Adjust the width
-                                          ),
-                                          child: Text(
-                                            widget.destination.name,
-                                            style: const TextStyle(
-                                              fontSize: 20,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                            maxLines: 2,
+                                        Text(
+                                          widget.destination.name,
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                         const SizedBox(height: 5),
@@ -246,19 +234,12 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                               size: 20,
                                             ),
                                             const SizedBox(width: 5),
-                                            // Container to manage overflow and wrap text
-                                            Expanded(
-                                              child: Text(
-                                                widget.destination.location,
-                                                style: const TextStyle(
-                                                  fontSize: 15,
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                                overflow: TextOverflow
-                                                    .ellipsis, // Adds ellipsis if the text overflows
-                                                maxLines:
-                                                    2, // Allows the text to take up to 2 lines
+                                            Text(
+                                              widget.destination.address.district,
+                                              style: const TextStyle(
+                                                fontSize: 15,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w500,
                                               ),
                                             ),
                                           ],
@@ -378,6 +359,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
           ],
         ),
       ),
+      
     );
   }
 }
