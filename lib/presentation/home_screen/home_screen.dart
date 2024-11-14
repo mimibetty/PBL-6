@@ -58,10 +58,11 @@ Future<void> _fetchDestinations() async {
 
 }
 
-
+// convert Destinations to a list of HotelID (list destination of each city -> list hotel form this destination)
   List<int> getHotelIDs(List<TravelDestination> destinations) {
     return destinations.where((hotel) => hotel.hotelId != null).map((hotel) => hotel.hotelId!).toList();
   }
+  // convert Destinations to a list of RestaurantID (list destination of each city -> list restaurant form this destination)
   List<int> getRestaurantIDs(List<TravelDestination> destinations) {
     return destinations.where((hotel) => hotel.restaurantId != null).map((hotel) => hotel.restaurantId!).toList();
   }
@@ -334,7 +335,10 @@ Future<void> _fetchDestinations() async {
                 Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => RestaurantSearchScreen(),
+                  builder: (context) => RestaurantSearchScreen(
+                     cityNames: widget.cityName!,
+                     restaurantIDs: getRestaurantIDs(homeController.myDestination.value), // Directly fetching hotel IDs here
+                  ),
                 ),
               );
                 break;

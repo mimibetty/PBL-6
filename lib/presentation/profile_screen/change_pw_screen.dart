@@ -68,7 +68,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        primary: Colors.blue,
+        backgroundColor: Colors.blue,
       ),
       child: Text(
         label,
