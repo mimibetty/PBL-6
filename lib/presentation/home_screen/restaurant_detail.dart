@@ -49,12 +49,13 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   Widget _buildWebsiteInfo(String url) {
     return GestureDetector(
       onTap: () async {
-        final Uri uri = Uri.parse(url); // Convert the string URL to a Uri object
-          if (await canLaunchUrl(uri)) {
-            await launchUrl(uri, mode: LaunchMode.externalApplication);
-          } else {
-            throw 'Could not launch $url';
-          }
+        final Uri uri =
+            Uri.parse(url); // Convert the string URL to a Uri object
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        } else {
+          throw 'Could not launch $url';
+        }
       },
       child: RichText(
         text: TextSpan(
@@ -132,13 +133,14 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
           ),
         ),
         actions: [
-             GestureDetector(
+          GestureDetector(
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => ReviewFormPage(
-                      destinationId: widget.restaurant.restaurantId,
-                      modeType: 1,), // Truyền destinationId vào
+                    destinationId: widget.restaurant.restaurantId,
+                    modeType: 1,
+                  ), // Truyền destinationId vào
                 ),
               );
             },
@@ -154,8 +156,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                 Icons.add_comment_rounded, // Biểu tượng thêm bình luận
                 size: 30,
               ),
-            
-          ),
+            ),
           ),
           const SizedBox(width: 10),
         ],
@@ -270,94 +271,84 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                                 ),
                                 const SizedBox(height: 15),
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Expanded(
-                                      // Sử dụng Expanded để cho phép phần location chiếm không gian
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            widget.restaurant.restaurantName,
-                                            style: const TextStyle(
-                                              fontSize: 20,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 5),
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment
-                                                .start, // Đặt biểu tượng ở đầu
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              const Icon(
-                                                Icons.location_on,
-                                                color: Colors.white,
-                                                size: 20,
-                                              ),
-                                              const SizedBox(width: 5),
-                                              Expanded(
-                                                // Sử dụng Expanded để location có thể xuống dòng
-                                                child: Text(
-                                                  widget.restaurant
-                                                      .restaurantLocation,
-                                                  style: const TextStyle(
-                                                    fontSize: 15,
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  maxLines:
-                                                      4, // Giới hạn số dòng
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Icon(
-                                              Icons.star_rounded,
-                                              color: Colors.amber[800],
-                                              size: 25,
-                                            ),
-                                            const SizedBox(width: 5),
-                                            Text(
-                                              widget.restaurant.rating
-                                                  .toString(),
-                                              style: const TextStyle(
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 5),
-                                        Text(
-                                          '(${widget.restaurant.review} reviews)',
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        )
-                                      ],
-                                    )
-                                  ],
-                                ),
+  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  crossAxisAlignment: CrossAxisAlignment.center,
+  children: [
+    Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            widget.restaurant.restaurantName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 20,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 5),
+          Row(
+            children: [
+              const Icon(
+                Icons.location_on,
+                color: Colors.white,
+                size: 20,
+              ),
+              const SizedBox(width: 5),
+              Expanded(
+                child: Text(
+                  widget.restaurant.restaurantLocation,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ),
+    // Rating and review count column on the right side
+    Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Row(
+          children: [
+            Icon(
+              Icons.star_rounded,
+              color: Colors.amber[800],
+              size: 25,
+            ),
+            const SizedBox(width: 5),
+            Text(
+              widget.restaurant.rating.toString(),
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 5),
+        Text(
+          '(${widget.restaurant.review} reviews)',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+          ),
+        ),
+      ],
+    ),
+  ],
+),
+
                               ],
                             ),
                           ),
@@ -424,8 +415,8 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                                   _buildContactInfo("Meal :",
                                       widget.restaurant.cuisines.join(', ')),
                                   const SizedBox(height: 10),
-                                  _buildContactInfo(
-                                      "Open Time :", widget.restaurant.openTime.toString()),
+                                  _buildContactInfo("Open Time :",
+                                      widget.restaurant.openTime.toString()),
                                   const SizedBox(height: 10),
                                 ],
                               ),
@@ -462,7 +453,6 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
           ],
         ),
       ),
-      
     );
   }
 }
