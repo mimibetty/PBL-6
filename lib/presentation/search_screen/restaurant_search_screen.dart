@@ -1,25 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:get/get.dart';
 import 'package:travelappflutter/presentation/home_screen/restaurant_detail.dart';
+import 'package:travelappflutter/presentation/search_screen/controller/restaurant_search_controller.dart';
 import 'package:travelappflutter/presentation/search_screen/models/restaurant_model.dart';
 
 class RestaurantSearchScreen extends StatefulWidget {
+  final List<int> restaurantIDs;
+  final String cityNames;
+
+  const RestaurantSearchScreen({
+    Key? key,
+    required this.restaurantIDs,
+    required this.cityNames,
+  }) : super(key: key);
+
   @override
   _RestaurantSearchScreenState createState() => _RestaurantSearchScreenState();
 }
 
 class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
-  List<Restaurant> filteredRestaurants = [];
-  late List<Restaurant> restaurants;
+  late List<Restaurant> filteredRestaurants = [];
+  late final RestaurantController restaurantController;
 
   @override
   void initState() {
     super.initState();
-    restaurants = restaurantList
-        .where((destination) => destination.rating > 3.5)
+    restaurantController = Get.put(RestaurantController());
+
+    // Fetch data for each restaurant ID
+    for (int restaurantID in widget.restaurantIDs) {
+      restaurantController.fetchRestaurantData(restaurantID.toString());
+    }
+
+    // Set up a listener to filter restaurants when data is updated
+    ever(restaurantController.restaurants, (_) {
+      _filterRestaurants();
+    });
+  }
+
+  // Method to filter restaurants based on certain criteria
+  void _filterRestaurants() {
+    filteredRestaurants = restaurantController.restaurants
+        .where((restaurant) => restaurant.rating > 0.0)
         .toList();
-    filteredRestaurants = restaurants;
+
+    if (mounted) { // Ensure widget is still in the widget tree
+      setState(() {}); // Update UI after filtering
+    }
   }
 
   @override
@@ -45,7 +74,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
               children: [
                 // Tiêu đề "Top Restaurants in Da Nang" nằm một dòng riêng
                 Text(
-                  "Top Restaurants in Da Nang",
+                  "Top Restaurants in ${widget.cityNames}",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -172,7 +201,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
                                   const SizedBox(height: 15),
                                   // Thời gian mở cửa
                                   Text(
-                                    "Time: ${restaurant.time}",
+                                    "Time: ${restaurant.openTime.toString()}",
                                     style: TextStyle(
                                         fontSize: 14, color: Colors.black54),
                                     overflow: TextOverflow.ellipsis,

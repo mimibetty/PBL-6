@@ -2,7 +2,8 @@ class Hotel {
   final int hotelID;
   final String hotelName;
   final String hotelLocation;
-  final int price;
+  //final int price; // Keep price as int for potential calculations
+  final String priceRange; // New field to display the price range as text
   final int age;
   final String openTime;
   final double duration;
@@ -24,7 +25,8 @@ class Hotel {
     required this.hotelID,
     required this.hotelName,
     required this.hotelLocation,
-    required this.price,
+    //required this.price,
+    required this.priceRange,
     required this.age,
     required this.openTime,
     required this.duration,
@@ -43,29 +45,35 @@ class Hotel {
     required this.hotelContact,
   });
 
-  // Tạo phương thức factory từ hai JSON
-  factory Hotel.fromApis(Map<String, dynamic> api1Data, Map<String, dynamic> api2Data) {
+  // Factory constructor from a single JSON object
+  factory Hotel.fromApi(Map<String, dynamic> apiData) {
     return Hotel(
-      hotelID: api1Data['id'],
-      hotelName: api1Data['name'] ?? api2Data['name'],
-      hotelLocation: api2Data['address'] ?? '${api1Data['address']['ward']}, ${api1Data['address']['district']}, ${api1Data['address']['street']}',
-      price: api1Data['price_top'] ?? api2Data['price'] ?? 0,
-      age: api1Data['age'] ?? 0,
-      openTime: api1Data['opentime'] ?? '00:00',
-      duration: api1Data['duration']?.toDouble() ?? 0.0,
-      roomFeatures: (api1Data['hotel']['room_features']?.split(', ') ?? api2Data['features'] ?? []).cast<String>(),
-      propertyAmenities: (api1Data['hotel']['property_amenities']?.split(', ') ?? api2Data['amenities'] ?? []).cast<String>(),
-      roomTypes: (api1Data['hotel']['room_types']?.split(', ') ?? []).cast<String>(),
-      hotelStyles: (api1Data['hotel']['hotel_styles']?.split(', ') ?? []).cast<String>(),
-      hotelLanguages: (api1Data['hotel']['Languages']?.split(', ') ?? []).cast<String>(),
-      star: api1Data['hotel']['hotel_class'] ?? 0,
-      images: (api1Data['images']?.map((img) => img['url'])?.toList() ?? api2Data['imgURL'] ?? []).cast<String>(),
-      about: api1Data['description'] ?? api2Data['description'] ?? '',
-      rating: api2Data['rating']?.toDouble() ?? 0.0,
-      reviewCount: api2Data['numOfReviews'] ?? 0,
-      website: api2Data['website'] ?? 'No website yet',
-      email: api2Data['email'] ?? 'No email yet',
-      hotelContact: api2Data['phone'] ?? 'No phone yet',
+      hotelID: apiData['id'] as int,
+      hotelName: apiData['name'] ?? 'Unknown Hotel',
+      
+      hotelLocation: '${apiData['address']['ward']}, ${apiData['address']['district']}, ${apiData['address']['street']}',
+      priceRange: "From ${apiData['price_bottom']?.toString() ?? '0'} to ${apiData['price_top']?.toString() ?? '0'}",
+      age: apiData['age'] ?? 0,
+      openTime: apiData['opentime'] ?? '00:00',
+      duration: (apiData['duration'] ?? 0).toDouble(),
+
+      roomFeatures: (apiData['hotel']['room_features']?.split(', ') ?? []).cast<String>(),
+      propertyAmenities: (apiData['hotel']['property_amenities']?.split(', ') ?? []).cast<String>(),
+      roomTypes: (apiData['hotel']['room_types']?.split(', ') ?? []).cast<String>(),
+      hotelStyles: (apiData['hotel']['hotel_styles']?.split(', ') ?? []).cast<String>(),
+      hotelLanguages: (apiData['hotel']['Languages']?.split(', ') ?? []).cast<String>(),
+
+      star: apiData['hotel']['hotel_class'] ?? 0,
+
+      images: (apiData['images'] as List<dynamic>).map((img) => img['url'] as String).toList(),
+
+      about: apiData['description'] ?? '',
+      rating: (apiData['rating'] ?? 0).toDouble(),
+      reviewCount: apiData['numOfReviews'] ?? 0,
+
+      website: apiData['hotel']['website'] ?? 'No website available',
+      email: apiData['hotel']['email'] ?? 'No email available',
+      hotelContact: apiData['hotel']['phone'] ?? 'No contact available',
     );
   }
 }
@@ -79,7 +87,7 @@ List<Hotel> mockHotels = [
     rating: 4.2,
     hotelContact: '+84 236 3888 888',
     hotelLocation: 'Bãi Bụt, Thọ Quang, Đà Nẵng',
-    price: 250,
+    priceRange: "250",
     age: 18,
     openTime: "00:00:00",
     duration : 24,
@@ -107,7 +115,7 @@ List<Hotel> mockHotels = [
     rating: 4.8,
     hotelContact: '+84 236 3929 888',
     hotelLocation: '36 Bach Dang, Hai Chau, Đà Nẵng',
-    price: 150,
+    priceRange: "250",
     age: 18,
     openTime: "00:00:00",
     duration : 24,
@@ -134,7 +142,7 @@ List<Hotel> mockHotels = [
     rating: 5,
     hotelContact: '+84 236 3989 999',
     hotelLocation: 'Trường Sa, Hòa Hải, Đà Nẵng',
-    price: 200,
+    priceRange: "250",
     age: 18,
     openTime: "00:00:00",
     duration : 24,

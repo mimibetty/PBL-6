@@ -49,11 +49,12 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   Widget _buildWebsiteInfo(String url) {
     return GestureDetector(
       onTap: () async {
-        if (await canLaunch(url)) {
-          await launch(url);
-        } else {
-          throw 'Could not launch $url';
-        }
+        final Uri uri = Uri.parse(url); // Convert the string URL to a Uri object
+          if (await canLaunchUrl(uri)) {
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+          } else {
+            throw 'Could not launch $url';
+          }
       },
       child: RichText(
         text: TextSpan(
@@ -412,7 +413,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                                       widget.restaurant.cuisines.join(', ')),
                                   const SizedBox(height: 10),
                                   _buildContactInfo(
-                                      "Open Time :", widget.restaurant.time),
+                                      "Open Time :", widget.restaurant.openTime.toString()),
                                   const SizedBox(height: 10),
                                 ],
                               ),

@@ -1,29 +1,30 @@
-import 'dart:math';
 
-Random random = Random();
 class Restaurant {
-  String restaurantName;
-  int restaurantId;
-  String contactNumber;
-  String website;
-  String time;
-  double rating;
-  List<String> cuisines;
-  List<String> meal;
-  List<String> feature;
-  String about;
-  List<String> images;
-  String restaurantLocation;
-  int review;
-  String priceRange;
-  String type;
-  String goodFor;
+  final String restaurantName; 
+  final int restaurantId; 
+  final String contactNumber; 
+  final String website; 
+  final String openTime; 
+  final double duration; 
+  final int age; 
+  final double rating; 
+  final List<String> cuisines; 
+  final List<String> meal; 
+  final List<String> feature; 
+  final String about; 
+  final List<String> images; 
+  final String restaurantLocation; 
+  final int review; 
+  final String priceRange; 
+
   Restaurant({
     required this.restaurantName,
     required this.restaurantId,
     required this.contactNumber,
     required this.website,
-    required this.time,
+    required this.openTime,
+    required this.duration,
+    required this.age,
     required this.rating,
     required this.cuisines,
     required this.meal,
@@ -33,9 +34,35 @@ class Restaurant {
     required this.restaurantLocation,
     required this.review,
     required this.priceRange,
-    required this.type,
-    required this.goodFor
   });
+
+  // Factory constructor to create a Restaurant object from JSON
+  factory Restaurant.fromApi(Map<String, dynamic> apiData) {
+    // Set price range with default values
+    String priceRange = "From ${apiData['price_bottom']?.toString() ?? '0'} to ${apiData['price_top']?.toString() ?? '0'}";
+
+    // Parse location details from "address"
+    String restaurantLocation = '${apiData['address']['ward']}, ${apiData['address']['district']}, ${apiData['address']['street']}';
+
+    return Restaurant(
+      restaurantName: apiData['name'] ?? 'Unknown Restaurant',
+      restaurantId: apiData['restaurant']['id'] ?? 0,
+      contactNumber: apiData['restaurant']['phone'] ?? 'No contact available', 
+      website: apiData['restaurant']['website'] ?? 'No website available', 
+      openTime: apiData['opentime'] ?? '00:00',
+      duration: (apiData['duration'] ?? 0).toDouble(),
+      age: apiData['age'] ?? 0,
+      rating: (apiData['rating'] ?? 0).toDouble(),
+      cuisines: (apiData['restaurant']['cuisine']?.split(', ') ?? []).cast<String>(),
+      meal: (apiData['restaurant']['special_diet']?.split(', ') ?? []).cast<String>(),
+      feature: [], // Placeholder for features, as the JSON does not contain "feature"
+      about: apiData['description'] ?? 'No description available',
+      images: (apiData['images'] as List<dynamic>).map((img) => img['url'] as String).toList(),
+      restaurantLocation: restaurantLocation,
+      review: apiData['numOfReviews'] ?? 0,
+      priceRange: priceRange,
+    );
+  }
 }
 
 List<Restaurant> restaurantList = [
@@ -44,7 +71,9 @@ List<Restaurant> restaurantList = [
     restaurantId: 1,
     contactNumber: "0123456789",
     website: "http://bepcuondanang.com",
-    time: "10:00 AM - 10:00 PM",
+    openTime: "10:00 AM - 10:00 PM",
+    duration: 12.0,
+    age: 18,
     rating: 4.5,
     cuisines: ["Vietnamese", "Asian"],
     meal: ["Lunch", "Dinner"],
@@ -54,22 +83,19 @@ List<Restaurant> restaurantList = [
       "https://haisandathanh.com/uploads/image/images/z3322523752141_01855f72a7e3cc721cfc88e2853aeb2e.jpg",
       "https://media-cdn.tripadvisor.com/media/photo-s/19/5c/1a/c8/excellent-food.jpg",
       "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2d/aa/9b/16/user-review-upload.jpg?w=1100&h=-1&s=1"
-
     ],
-    restaurantLocation: "31-33 Trần Bạch Đằng, Phước Mỹ, Sơn Trà, Đà Nẵng ",
-    review: random.nextInt(300) + 25,
-    priceRange: "7.00\$-30.00\$",
-    type : "Restaurant",
-    goodFor :"Families with children"
-
-
+    restaurantLocation: "31-33 Trần Bạch Đằng, Phước Mỹ, Sơn Trà, Đà Nẵng",
+    review: 25,
+    priceRange: "From 7.00\$ to 30.00\$",
   ),
   Restaurant(
     restaurantName: "La Maison 1888",
     restaurantId: 2,
     contactNumber: "0987654321",
     website: "http://lamaison1888.com",
-    time: "12:00 PM - 11:00 PM",
+    openTime: "12:00 PM - 11:00 PM",
+    duration: 11.0,
+    age: 18,
     rating: 3.9,
     cuisines: ["French", "European"],
     meal: ["Dinner"],
@@ -81,19 +107,17 @@ List<Restaurant> restaurantList = [
       "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/12/0e/fe/4a/sliced-roasted-challan.jpg?w=1100&h=600&s=1",
     ],
     restaurantLocation: "InterContinental Danang Sun Peninsula Resort, Bãi Bắc, Sơn Trà, Đà Nẵng",
-        review: random.nextInt(300) + 25,
-    priceRange: "5.00\$-10.00\$",
-    type:"Restaurant",
-    goodFor : "Large groups"
-
-
+    review: 25,
+    priceRange: "From 5.00\$ to 10.00\$",
   ),
   Restaurant(
     restaurantName: "Nhà Hàng Hải Sản Bé Mặn",
     restaurantId: 3,
     contactNumber: "0912345678",
     website: "http://besanseafood.com",
-    time: "9:00 AM - 10:30 PM",
+    openTime: "9:00 AM - 10:30 PM",
+    duration: 13.5,
+    age: 18,
     rating: 4.2,
     cuisines: ["Seafood", "Vietnamese"],
     meal: ["Lunch", "Dinner"],
@@ -104,20 +128,18 @@ List<Restaurant> restaurantList = [
       "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/18/b0/6b/4c/hai-san-be-man-a.jpg?w=1100&h=-1&s=1",
       "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/18/b0/6b/4a/hai-san-be-man-a.jpg?w=1100&h=-1&s=1",
     ],
-    restaurantLocation: "Lô 8 Võ Nguyên Giáp, Mân Thái, Sơn Trà, Đà Nẵng",    
-    review: random.nextInt(300) + 25,
-    priceRange: "10.00\$-20.00\$",
-    type:"Restaurant",
-    goodFor:"Families with children"
-
-
+    restaurantLocation: "Lô 8 Võ Nguyên Giáp, Mân Thái, Sơn Trà, Đà Nẵng",
+    review: 25,
+    priceRange: "From 10.00\$ to 20.00\$",
   ),
   Restaurant(
     restaurantName: "Nhà Hàng Madame Lân",
     restaurantId: 4,
     contactNumber: "0778889999",
     website: "http://madamelan.com",
-    time: "8:00 AM - 11:00 PM",
+    openTime: "8:00 AM - 11:00 PM",
+    duration: 15.0,
+    age: 18,
     rating: 4.6,
     cuisines: ["Vietnamese"],
     meal: ["Breakfast", "Lunch", "Dinner"],
@@ -129,21 +151,18 @@ List<Restaurant> restaurantList = [
       "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2d/07/9a/5c/caption.jpg?w=1400&h=-1&s=1",
     ],
     restaurantLocation: "04 Bạch Đằng, Thạch Thang, Hải Châu, Đà Nẵng",
-        review: random.nextInt(300) + 25,
-    priceRange: "20.00\$-35.00\$",
-    type:"Coffee & Tea, Restaurant",
-    goodFor:"Kids"
-
-
-
+    review: 25,
+    priceRange: "From 20.00\$ to 35.00\$",
   ),
   Restaurant(
     restaurantName: "Sky 21 Bar & Bistro",
     restaurantId: 5,
     contactNumber: "0901234567",
     website: "http://sky21danang.com",
-    time: "5:00 PM - 2:00 AM",
-    rating: 5,
+    openTime: "5:00 PM - 2:00 AM",
+    duration: 9.0,
+    age: 21,
+    rating: 5.0,
     cuisines: ["International", "Cocktails"],
     meal: ["Dinner", "Drinks"],
     feature: ["Rooftop Bar", "Live Music"],
@@ -153,12 +172,10 @@ List<Restaurant> restaurantList = [
       "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/23/be/ff/23/come-for-the-food-stay.jpg?w=1400&h=-1&s=1",
       "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/10/9f/4c/f2/sky21bar-belle-maison.jpg?w=2000&h=-1&s=1",
     ],
-    restaurantLocation: "Belle Maison Parosand Danang, 216 Võ Nguyên Giáp, Phước Mỹ, Sơn Trà, Đà Nẵng ",
-        review: random.nextInt(300) + 25,
-    priceRange: "30.00\$-40.00\$",
-    type:"Bar & Pubs",
-    goodFor:"Romantic"
-
-
+    restaurantLocation: "Belle Maison Parosand Danang, 216 Võ Nguyên Giáp, Phước Mỹ, Sơn Trà, Đà Nẵng",
+    review: 25,
+    priceRange: "From 30.00\$ to 40.00\$",
   ),
 ];
+
+

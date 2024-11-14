@@ -10,14 +10,16 @@ class HotelDetailScreen extends StatelessWidget {
 
   HotelDetailScreen({super.key,required this.hotel});
 
-  // Hàm mở trang web
-  Future<void> _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
+  // Hàm mở trang web của khách sạn
+Future<void> _launchURL(String url) async {
+  final Uri uri = Uri.parse(url); // Convert the string URL to a Uri object
+  if (await canLaunchUrl(uri)) {
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  } else {
+    throw 'Could not launch $url';
   }
+}
+
 
   // Hàm hiển thị review của khách sạn với thiết kế tối giản và đẹp mắt hơn
   Widget HotelReview(Hotel hotel) {
@@ -284,7 +286,7 @@ class HotelDetailScreen extends StatelessWidget {
                           ),
                         ),
                         TextSpan(
-                          text: "\$${hotel.price}",
+                          text: hotel.priceRange,
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.black54,
@@ -294,6 +296,76 @@ class HotelDetailScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
+                  // Display Open Time
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: "Open Time: ",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        TextSpan(
+                          text: hotel.openTime,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black54,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  // Display Duration
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: "Duration: ",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        TextSpan(
+                          text: hotel.duration.toString(),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black54,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  // Display Age Requirement
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: "Age Requirement: ",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        TextSpan(
+                          text: "${hotel.age}+",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black54,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
 
                   // Hiển thị Website
                   GestureDetector(
@@ -323,7 +395,55 @@ class HotelDetailScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 8),
+
+                  // Hiển thị thông tin Contact
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: "Contact: ",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        TextSpan(
+                          text: hotel.hotelContact,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black54,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  // Hiển thị số sao của Hotel
+                  Row(
+                    children: [
+                      Text(
+                        "Hotel Star: ",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Row(
+                        children: List.generate(
+                          hotel.star,
+                          (index) => Icon(
+                            Icons.star,
+                            color: Colors.amber[600],
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 15),
 
                   // Hiển thị Features
                   Text(
@@ -337,7 +457,7 @@ class HotelDetailScreen extends StatelessWidget {
                         .map((feature) => Chip(label: Text(feature)))
                         .toList(),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
 
                   // Hiển thị Amenities
                   Text(
@@ -350,9 +470,7 @@ class HotelDetailScreen extends StatelessWidget {
                         .map((amenity) => Chip(label: Text(amenity)))
                         .toList(),
                   ),
-                  const SizedBox(height: 20),
-
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   
                   // Hiển thị Hotel Style
                   Text(
@@ -365,7 +483,7 @@ class HotelDetailScreen extends StatelessWidget {
                         .map((style) => Chip(label: Text(style)))
                         .toList(),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   
                   // Hiển thị Hotel Language
                   Text(

@@ -13,16 +13,16 @@ Future<void> fetchDestinationsByTopic(String topic) async {
     // Determine API URL based on topic
     switch (topic) {
         case 'Culture':
-            apiUrl = 'https://example.com/api/topic1/destinations';
+            apiUrl = 'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/by_tags?tag_ids=1';
             break;
         case 'Shopping':
-            apiUrl = 'https://example.com/api/topic2/destinations';
+            apiUrl = 'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/by_tags?tag_ids=2';
             break;
         case 'Must-see Attractions':
-            apiUrl = 'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/?sort_by_reviews=true&get_rating=true';
+            apiUrl = 'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/by_tags?tag_ids=3';
             break;
         default:
-            apiUrl = 'https://example.com/api/default/destinations';
+            apiUrl = 'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/by_tags?tag_ids=4';
     }
 
     try {
