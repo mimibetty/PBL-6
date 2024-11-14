@@ -64,7 +64,7 @@ Future<void> _fetchDestinations() async {
   }
   // convert Destinations to a list of RestaurantID (list destination of each city -> list restaurant form this destination)
   List<int> getRestaurantIDs(List<TravelDestination> destinations) {
-    return destinations.where((hotel) => hotel.restaurantId != null).map((hotel) => hotel.restaurantId!).toList();
+    return destinations.where((restaurant) => restaurant.restaurantId != null).map((restaurant) => restaurant.restaurantId!).toList();
   }
 
 @override

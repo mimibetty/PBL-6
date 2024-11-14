@@ -44,8 +44,6 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
     ever(hotelController.hotels, (_) {
       _filterHotels();
     });
-
-    print(filteredHotels);
   }
   @override
   void dispose() {

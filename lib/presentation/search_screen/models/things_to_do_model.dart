@@ -1,0 +1,90 @@
+class ThingsToDoModel {
+  final String name;
+  final int id;
+  final int priceBottom;
+  final int priceTop;
+  final DateTime dateCreate;
+  final int age;
+  final String openTime;
+  final double duration;
+  final String description;
+  final List<Tag> tags;
+  final Address address;
+  final List<String> images;
+
+  ThingsToDoModel({
+    required this.name,
+    required this.id,
+    required this.priceBottom,
+    required this.priceTop,
+    required this.dateCreate,
+    required this.age,
+    required this.openTime,
+    required this.duration,
+    required this.description,
+    required this.tags,
+    required this.address,
+    required this.images,
+  });
+
+  // Factory constructor to create a ThingsToDoModel object from JSON
+  factory ThingsToDoModel.fromApi(Map<String, dynamic> apiData) {
+    // Parse address
+    Address address = Address(
+      district: apiData['address']['district'],
+      street: apiData['address']['street'],
+      ward: apiData['address']['ward'],
+      cityId: apiData['address']['city_id'],
+      id: apiData['address']['id'],
+    );
+
+    // Parse tags
+    List<Tag> tags = (apiData['tags'] as List<dynamic>)
+        .map((tag) => Tag(name: tag['name'], id: tag['id']))
+        .toList();
+
+    // Parse images
+    List<String> images = (apiData['images'] as List<dynamic>)
+        .map((img) => img['url'] as String)
+        .toList();
+
+    return ThingsToDoModel(
+      name: apiData['name'] ?? 'Unknown Place',
+      id: apiData['id'] ?? 0,
+      priceBottom: apiData['price_bottom'] ?? 0,
+      priceTop: apiData['price_top'] ?? 0,
+      dateCreate: DateTime.parse(apiData['date_create'] ?? DateTime.now().toIso8601String()),
+      age: apiData['age'] ?? 0,
+      openTime: apiData['opentime'] ?? '00:00',
+      duration: (apiData['duration'] ?? 0).toDouble(),
+      description: apiData['description'] ?? 'No description available',
+      tags: tags,
+      address: address,
+      images: images,
+    );
+  }
+}
+
+// Supporting classes
+class Tag {
+  final String name;
+  final int id;
+
+  Tag({required this.name, required this.id});
+}
+
+class Address {
+  final String district;
+  final String street;
+  final String ward;
+  final int cityId;
+  final int id;
+
+  Address({
+    required this.district,
+    required this.street,
+    required this.ward,
+    required this.cityId,
+    required this.id,
+  });
+}

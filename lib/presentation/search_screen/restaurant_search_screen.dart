@@ -28,11 +28,19 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
   void initState() {
     super.initState();
     restaurantController = Get.put(RestaurantController());
-
     // Fetch data for each restaurant ID
     for (int restaurantID in widget.restaurantIDs) {
       restaurantController.fetchRestaurantData(restaurantID.toString());
     }
+  // Method to filter restaurants based on certain criteria
+  void _filterRestaurants() {
+    filteredRestaurants = restaurantController.restaurants
+        .where((restaurant) => restaurant.rating > 0.0 && restaurant.review > 0)
+        .toList();
+    if (mounted) { // Ensure widget is still in the widget tree
+      setState(() {}); // Update UI after filtering
+    }
+  }
 
     // Set up a listener to filter restaurants when data is updated
     ever(restaurantController.restaurants, (_) {
@@ -40,15 +48,11 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
     });
   }
 
-  // Method to filter restaurants based on certain criteria
-  void _filterRestaurants() {
-    filteredRestaurants = restaurantController.restaurants
-        .where((restaurant) => restaurant.rating > 0.0)
-        .toList();
-
-    if (mounted) { // Ensure widget is still in the widget tree
-      setState(() {}); // Update UI after filtering
-    }
+  @override
+  void dispose() {
+    Get.delete<RestaurantController>(); // Hủy lắng nghe controller khi widget bị hủy
+    print('disposed');
+    super.dispose();
   }
 
   @override
@@ -87,6 +91,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
                     children: [
                       TextSpan(
                         text:
+
                             "${filteredRestaurants.length}", // Số lượng in đậm
                         style: TextStyle(
                           fontSize: 16,

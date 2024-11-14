@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/welcome_controller.dart';
-import 'package:travelappflutter/presentation/home_screen/models/cities_model.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/home_screen/place_detail.dart';
 import 'package:travelappflutter/presentation/home_screen/widgets/popular_place.dart';
 import 'package:travelappflutter/presentation/home_screen/widgets/recomendate.dart';
 import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
-import 'package:travelappflutter/routes/app_routes.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ThingToDoScreen extends StatefulWidget {
