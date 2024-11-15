@@ -24,7 +24,7 @@ dependencies:
   flutter_bloc: ^8.0.0  # Phiên bản mới nhất
   flutter_form_builder: ^8.0.0
   curved_navigation_bar: ^1.0.6
-
+  get_storage: ^2.0.3
 
 
 dev_dependencies: 

@@ -7,6 +7,7 @@ import 'package:travelappflutter/presentation/home_screen/controller/topic_contr
 import 'package:travelappflutter/presentation/home_screen/controller/welcome_controller.dart';
 import 'package:travelappflutter/presentation/home_screen/place_detail.dart';
 import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
+import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
 import 'package:travelappflutter/presentation/search_screen/hotel_search_screen.dart';
 import 'package:travelappflutter/presentation/search_screen/restaurant_search_screen.dart';
 import 'package:travelappflutter/presentation/search_screen/thing_to_do_screen.dart';
@@ -37,6 +38,8 @@ class HomeScreen extends StatefulWidget {
 class _TravelHomeScreenState extends State<HomeScreen> {
   final HomeController homeController = Get.put(HomeController());
   final TopicController topicController = Get.put(TopicController()); // Khởi tạo controller
+  final ProfileController profileController = Get.put(ProfileController());
+
   // Gọi hàm lọc dựa trên `Topic`
   void filterDestinationsByTopic(String topic) {
     topicController.fetchDestinationsByTopic(topic); // Gọi API cho từng `Topic`
@@ -58,14 +61,31 @@ Future<void> _fetchDestinations() async {
 
 }
 
-// convert Destinations to a list of HotelID (list destination of each city -> list hotel form this destination)
-  List<int> getHotelIDs(List<TravelDestination> destinations) {
-    return destinations.where((hotel) => hotel.hotelId != null).map((hotel) => hotel.hotelId!).toList();
-  }
-  // convert Destinations to a list of RestaurantID (list destination of each city -> list restaurant form this destination)
-  List<int> getRestaurantIDs(List<TravelDestination> destinations) {
-    return destinations.where((restaurant) => restaurant.restaurantId != null).map((restaurant) => restaurant.restaurantId!).toList();
-  }
+
+// Chuyển đổi danh sách điểm đến thành danh sách hotelId
+List<int> getHotelIDs(List<TravelDestination> destinations) {
+  return destinations
+      .where((destination) => destination.hotelId != null)
+      .map((destination) => destination.hotelId!)
+      .toList();
+}
+
+// Chuyển đổi danh sách điểm đến thành danh sách restaurantId
+List<int> getRestaurantIDs(List<TravelDestination> destinations) {
+  return destinations
+      .where((destination) => destination.restaurantId != null)
+      .map((destination) => destination.restaurantId!)
+      .toList();
+}
+
+// Chuyển đổi danh sách điểm đến thành danh sách TravelDestination nếu cả hotelId và restaurantId đều null
+List<TravelDestination> getThingsToDoDestinations(List<TravelDestination> destinations) {
+  return destinations
+      .where((destination) =>
+          destination.hotelId == null && destination.restaurantId == null)
+      .toList();
+}
+
 
 @override
   Widget build(BuildContext context) {
@@ -316,7 +336,9 @@ Future<void> _fetchDestinations() async {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ThingToDoScreen(destinations: danangDestinations,),
+                    builder: (context) => ThingToDoScreen(
+                      cityNames: widget.cityName!,
+                      destinations: getThingsToDoDestinations(homeController.myDestination.value),),
                   ),
                 );
                 break;

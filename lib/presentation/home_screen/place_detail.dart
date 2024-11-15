@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
-import 'package:travelappflutter/routes/app_routes.dart';
 import '../review_widget/models/review_widget_model.dart';
 import '../review_widget/widgets/create_review.dart';
 

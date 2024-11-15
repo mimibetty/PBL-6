@@ -11,6 +11,8 @@ class ThingsToDoModel {
   final List<Tag> tags;
   final Address address;
   final List<String> images;
+  final double rating;
+  final int numOfReviews;
 
   ThingsToDoModel({
     required this.name,
@@ -25,6 +27,8 @@ class ThingsToDoModel {
     required this.tags,
     required this.address,
     required this.images,
+    required this.rating,
+    required this.numOfReviews,
   });
 
   // Factory constructor to create a ThingsToDoModel object from JSON
@@ -61,6 +65,8 @@ class ThingsToDoModel {
       tags: tags,
       address: address,
       images: images,
+      rating: (apiData['rating'] ?? 0).toDouble(),
+      numOfReviews: apiData['numOfReviews'] ?? 0,
     );
   }
 }
@@ -70,7 +76,18 @@ class Tag {
   final String name;
   final int id;
 
-  Tag({required this.name, required this.id});
+  Tag({
+    required this.name,
+    required this.id,
+  });
+
+  // Factory constructor to create a Tag object from JSON
+  factory Tag.fromJson(Map<String, dynamic> json) {
+    return Tag(
+      name: json['name'] ?? 'Unknown', // Gán giá trị mặc định nếu 'name' bị thiếu
+      id: json['id'] ?? 0, // Gán giá trị mặc định nếu 'id' bị thiếu
+    );
+  }
 }
 
 class Address {
