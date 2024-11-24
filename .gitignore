@@ -10,3 +10,4 @@ node_modules/
 app/travel-image/*
 app/alembic/
 app/alembic.ini
+map/
