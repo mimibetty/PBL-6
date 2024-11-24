@@ -8,8 +8,9 @@
 - Ứng dụng vào địa điểm cho từng destination
 - Phát triển thêm để hoàn thiện chức năng map cho tạo chuyến đi bằng AI - hiển thị nhiều marker trên 1 map (hiện tại đang lỗi marker)
 
+# Step 1: install requirement
 
-# Run the backend
+# Step 2: cd back + Run the backend
 
 
 ```
@@ -18,7 +19,7 @@ uvicorn main:app --reload --port 8000
 ```
 
 
-# Run the frontend
+# Step 3: cd front + Run the frontend
 ```
 npm run serve
 
