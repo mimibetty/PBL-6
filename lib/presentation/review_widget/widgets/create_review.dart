@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:travelappflutter/presentation/common_views/image_picker_widget.dart';
 import 'package:travelappflutter/presentation/common_views/selected_chip_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
+import 'package:travelappflutter/presentation/home_screen/models/tour_model.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
@@ -62,10 +63,16 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
         (h) => h.hotelID == widget.destinationId,
         orElse: () => mockHotels[0],
       );
-    } else {
+    } else if (widget.modeType == 3) {
       return danangDestinations.firstWhere(
         (d) => d.id == widget.destinationId,
         orElse: () => danangDestinations[0],
+      );
+    }
+      else {
+      return mockTours.firstWhere(
+        (d) => d.id == widget.destinationId,
+        orElse: () => mockTours[0],
       );
     }
   }

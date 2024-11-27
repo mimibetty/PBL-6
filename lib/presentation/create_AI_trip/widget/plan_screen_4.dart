@@ -1,6 +1,6 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
+import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_5.dart';
 
 class PlanScreen4 extends StatefulWidget {
   @override
@@ -28,12 +28,10 @@ class _PlanScreen4State extends State<PlanScreen4> {
               'Choose one:',
               style: TextStyle(
                 fontSize: 18,
-                // fontWeight: FontWeight.bold,
               ),
             ),
             SizedBox(height: 20),
 
-            // Sử dụng GridView để tạo lưới 2x2
             GridView.count(
               shrinkWrap: true, // Điều chỉnh kích thước của GridView
               crossAxisCount: 2, // 2 cột
@@ -47,13 +45,6 @@ class _PlanScreen4State extends State<PlanScreen4> {
               ],
             ),
             SizedBox(height: 20),
-
-            // Hiển thị lựa chọn đã chọn của người dùng
-            // if (_selectedOption.isNotEmpty)
-            //   Text(
-            //     'You selected: $_selectedOption',
-            //     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            //   ),
           ],
         ),
       ),
@@ -62,41 +53,50 @@ class _PlanScreen4State extends State<PlanScreen4> {
 
   // Widget để xây dựng mỗi lựa chọn với biểu tượng và văn bản
   Widget _buildChoiceOption(IconData icon, String label) {
-  return GestureDetector(
-    onTap: () {
-      setState(() {
-        _selectedOption = label; // Cập nhật lựa chọn khi người dùng chọn
-      });
-      print('Selected: $label');
-    },
-    child: Container(
-      decoration: BoxDecoration(
-        color: Colors.grey.shade200, // Màu nền cho ô
-        borderRadius: BorderRadius.circular(15), // Bo tròn góc
-        border: Border.all(color: Colors.blue, width: 2), // Viền màu xanh
-      ),
-      padding: EdgeInsets.all(20),
-      height: 120,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Căn icon và text ở hai đầu
-        children: [
-          // Căn icon trái
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Icon(icon, size: 50, color: Colors.blue),
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedOption = label; // Cập nhật lựa chọn khi người dùng chọn
+        });
+        print('Selected: $label');
+        
+        // Điều hướng đến màn hình tiếp theo khi chọn một ô
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PlanScreen5(),
           ),
-          // Căn chữ giữa và nằm ở dưới
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Text(
-              label,
-              textAlign: TextAlign.center, // Căn giữa chữ
-              style: TextStyle(fontSize: 16, color: Colors.black),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.grey.shade200, // Màu nền cho ô
+          borderRadius: BorderRadius.circular(15), // Bo tròn góc
+          border: Border.all(color: Colors.blue, width: 2), // Viền màu xanh
+        ),
+        padding: EdgeInsets.all(20),
+        height: 120,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween, // Căn icon và text ở hai đầu
+          children: [
+            // Căn icon trái
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Icon(icon, size: 50, color: Colors.blue),
             ),
-          ),
-        ],
+            // Căn chữ giữa và nằm ở dưới
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Text(
+                label,
+                textAlign: TextAlign.center, // Căn giữa chữ
+                style: TextStyle(fontSize: 16, color: Colors.black),
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
-}
+
