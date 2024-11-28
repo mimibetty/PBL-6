@@ -4,8 +4,7 @@ import 'package:travelappflutter/presentation/common_views/circle_rating_widget_
 import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
 
 class ReviewWidget extends StatelessWidget {
-  final List<ReviewWidgetModel> reviews;
-
+  final List<ReviewModel> reviews;
   const ReviewWidget({Key? key, required this.reviews}) : super(key: key);
 
   @override
@@ -23,7 +22,7 @@ class ReviewWidget extends StatelessWidget {
             itemBuilder: (context, index) {
               final review = reviews[index];
               String formattedDate = DateFormat('dd MMM yyyy')
-                  .format(review.dateCreated); // Định dạng ngày
+                  .format(DateTime.parse(review.dateCreated)); // Định dạng ngày
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
                 color: const Color(0xFFF1F3F5),
@@ -45,7 +44,7 @@ class ReviewWidget extends StatelessWidget {
                                 backgroundColor: const Color(0xFF1B1B1B),
                                 radius: 20,
                                 child: Text(
-                                  review.context[0].toUpperCase(),
+                                  review.content[0].toUpperCase(),
                                   style: const TextStyle(
                                       color: Colors.white, fontSize: 20),
                                 ),
@@ -84,13 +83,13 @@ class ReviewWidget extends StatelessWidget {
                       CircleRatingWidget(rating: review.rating, size: 15),
                       const SizedBox(height: 10),
                       //Hiển thị travelTime và whoGoWith ở dòng tiếp theo
-                      Text(
-                        '${review.travelTime} * ${review.companions}',
-                        style: const TextStyle(
-                          fontSize: 15,
-                          color: Colors.black,
-                        ),
-                      ),
+                      // Text(
+                      //   '${review.travelTime} * ${review.companions}',
+                      //   style: const TextStyle(
+                      //     fontSize: 15,
+                      //     color: Colors.black,
+                      //   ),
+                      // ),
                       const SizedBox(height: 5),
                       Text(
                         review.title,
@@ -102,7 +101,7 @@ class ReviewWidget extends StatelessWidget {
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        review.context,
+                        review.content,
                         style: const TextStyle(
                           fontSize: 16,
                           color: Color(0xFF1B1B1B),

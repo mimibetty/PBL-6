@@ -23,7 +23,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
 
   PageController pageController = PageController();
   int pageView = 0;
-  List<ReviewWidgetModel> allReviews = mockReviews;
+  List<ReviewModel> allReviews = mockReviews;
 
   Widget _buildContactInfo(String label, String value) {
     return RichText(
@@ -96,7 +96,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<ReviewWidgetModel> filteredReviews = allReviews
+    List<ReviewModel> filteredReviews = allReviews
         .where(
             (review) => review.destinationId == widget.restaurant.restaurantId)
         .toList();

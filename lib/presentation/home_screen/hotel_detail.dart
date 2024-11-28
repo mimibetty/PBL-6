@@ -24,7 +24,7 @@ Future<void> _launchURL(String url) async {
   // Hàm hiển thị review của khách sạn với thiết kế tối giản và đẹp mắt hơn
   Widget HotelReview(Hotel hotel) {
     // Lọc review dựa trên hotelId
-    final List<ReviewWidgetModel> reviews = mockReviews
+    final List<ReviewModel> reviews = mockReviews
         .where((review) => review.destinationId == hotel.hotelID)
         .toList();
 
@@ -66,7 +66,7 @@ Future<void> _launchURL(String url) async {
                         CircleAvatar(
                           backgroundColor: Colors.blueGrey[100],
                           child: Text(
-                            review.context[0].toUpperCase(),
+                            review.content[0].toUpperCase(),
                             style: const TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold),
@@ -77,13 +77,13 @@ Future<void> _launchURL(String url) async {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              review.userId,
+                              review.userId.toString(),
                               style: const TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${review.dateCreated.toLocal()}'.split(' ')[0],
+                              '${DateTime.parse(review.dateCreated).toLocal()}'.split(' ')[0],
                               style: const TextStyle(
                                   fontSize: 12, color: Colors.grey),
                             ),
@@ -108,7 +108,7 @@ Future<void> _launchURL(String url) async {
                     const SizedBox(height: 8),
                     // Nội dung review
                     Text(
-                      review.context,
+                      review.content,
                       style:
                           const TextStyle(fontSize: 14, color: Colors.black87),
                     ),

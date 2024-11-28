@@ -1,63 +1,53 @@
-import 'dart:io';
+import 'dart:convert';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
+import 'dart:developer';
+
 
 class ReviewWidgetController extends GetxController {
-  var destinationId = 0.obs;
-  var modeType = 0.obs; // 0 for normal, 1 for special, etc. (consider using an enum)
-  var rating = 0.0.obs;
-  var selectedMonthYear = ''.obs;
-  var selectedPurpose = ''.obs;
-  var selectedCompanions = <String>[].obs;
-  var reviewText = ''.obs;
-  var reviewTitle = ''.obs;
-  var selectedImages = <File>[].obs;
+  // Reactive variables to manage reviews and loading state
+  RxList<ReviewModel> reviews = <ReviewModel>[].obs;
+  RxBool isLoading = false.obs;
 
-  void setReviewData({
-    required int destinationId,
-    // required int type,
-    required double rating,
-    required String context,
-    required String monthYear,
-    required String purpose,
-    required List<String> companions,
-    required String text,
-    required String title,
-    required List<File> images,                     
-  }) {
-    if (rating < 0 || rating > 5) {
-      throw ArgumentError("Rating must be between 0 and 5.");
+  // API endpoint
+  final String apiBaseUrl =
+      'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/review/';
+
+  /// Fetch reviews for a specific destination ID
+  Future<void> fetchReviewsByDestinationID(int destinationId) async {
+    isLoading.value = true;
+
+    try {
+      // Construct API URL with destination_id as a query parameter
+      final Uri url = Uri.parse('$apiBaseUrl?destination_id=$destinationId');
+      log('Fetching reviews from: $url');
+
+      // Make GET request
+      final response = await http.get(url);
+
+      // Handle successful response
+      if (response.statusCode == 200) {
+        final List<dynamic> responseData =
+            json.decode(utf8.decode(response.bodyBytes));
+
+        // Parse JSON to ReviewModel and update state
+        reviews.value = responseData
+            .map((reviewData) => ReviewModel.fromJson(reviewData))
+            .toList();
+
+        log('Reviews fetched successfully: ${reviews.length}');
+      } else {
+        // Handle API errors
+        log('Failed to fetch reviews. Status code: ${response.statusCode}');
+        Get.snackbar('Error', 'Failed to load reviews');
+      }
+    } catch (e) {
+      // Handle exceptions
+      log('Error while fetching reviews: $e');
+      Get.snackbar('Error', 'An error occurred: $e');
+    } finally {
+      isLoading.value = false;
     }
-
-    this.destinationId.value = destinationId;
-    // modeType.value = type;
-    this.rating.value = rating;
-    selectedMonthYear.value = monthYear;
-    selectedPurpose.value = purpose;
-    selectedCompanions.assignAll(companions);
-    reviewText.value = text;
-    reviewTitle.value = title;
-    selectedImages.assignAll(images);
   }
-
-  /// Resets all review data to initial state.
-  void resetData() {
-    rating.value = 0.0;
-    selectedMonthYear.value = '';
-    selectedPurpose.value = '';
-    selectedCompanions.clear();
-    reviewText.value = '';
-    reviewTitle.value = '';
-    selectedImages.clear();
-  }
-
-  // Getter methods for encapsulation
-  int get getDestinationId => destinationId.value;
-  int get getModeType => modeType.value;
-  double get getRating => rating.value;
-  String get getSelectedMonthYear => selectedMonthYear.value;
-  String get getSelectedPurpose => selectedPurpose.value;
-  List<String> get getSelectedCompanions => selectedCompanions.toList();
-  String get getReviewText => reviewText.value;
-  String get getReviewTitle => reviewTitle.value;
-  List<File> get getSelectedImages => selectedImages.toList();
 }

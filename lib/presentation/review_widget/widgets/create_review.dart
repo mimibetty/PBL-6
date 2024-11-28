@@ -235,21 +235,16 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                 TextButton(
                   onPressed: () {
                     // Create a new review instance
-                    ReviewWidgetModel newReview = ReviewWidgetModel(
+                    ReviewModel newReview = ReviewModel(
                       destinationId: widget.destinationId,
                       title: reviewTitle,
-                      context: reviewText,
+                      content: reviewText,
                       rating: _rating,
-                      travelTime: selectedMonthYear ?? '',
-                      purpose: selectedPurpose,
-                      images: selectedImages
-                          .map((file) => file.path)
-                          .toList(), // Convert File to String
-                      companions: selectedCompanions,
+                      images: selectedImages.map((file) => file.path).toList(), // Convert File to String
+                      companion: selectedCompanions,
                       dateCreated: DateTime.now(),
-                      reviewId:
-                          '1', // Consider using a unique ID generator for reviewId
-                      userId: '1', // Consider using the actual user's ID
+                      reviewId: Uuid().v4(), // Generate a unique ID for reviewId
+                      userId: getCurrentUserId(), // Replace with the actual method to get the user's ID
                     );
 
                     // Get an instance of ReviewWidgetController
@@ -266,7 +261,7 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                       controller.setReviewData(
                         destinationId: newReview.destinationId,
                         rating: newReview.rating,
-                        context: newReview.context,
+                        context: newReview.content,
                         monthYear: newReview.travelTime,
                         purpose: newReview.purpose,
                         companions: newReview.companions,

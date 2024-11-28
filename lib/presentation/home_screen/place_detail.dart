@@ -22,19 +22,19 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
 
   PageController pageController = PageController();
   int pageView = 0;
-  List<ReviewWidgetModel> allReviews =
+  List<ReviewModel> allReviews =
       mockReviews; // Sử dụng mockReviews đã tạo trước đó
 
   @override
   Widget build(BuildContext context) {
     final destinationId = widget.destination.id;
-    List<ReviewWidgetModel> filteredReviews = allReviews
+    List<ReviewModel> filteredReviews = allReviews
         .where((review) => review.destinationId == widget.destination.id)
         .toList();
 
     for (var review in filteredReviews) {
       print(
-          'ID: ${review.destinationId}, Name: ${review.context}'); // In ra ID và Name
+          'ID: ${review.destinationId}, Name: ${review.content}'); // In ra ID và Name
     }
     return Scaffold(
       backgroundColor: kBackgroundColor,
