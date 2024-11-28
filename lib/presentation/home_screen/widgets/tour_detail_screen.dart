@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
+import 'package:travelappflutter/presentation/home_screen/models/tour_model.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
+import 'package:travelappflutter/presentation/home_screen/widgets/tour_overview_screen.dart';
+import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
+import 'package:travelappflutter/presentation/review_widget/widgets/create_review.dart';
+import 'package:travelappflutter/presentation/review_widget/widgets/other_info_widget.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
-import '../review_widget/models/review_widget_model.dart';
-import '../review_widget/widgets/create_review.dart';
+import 'package:travelappflutter/routes/app_routes.dart';
 
-class PlaceDetailScreen extends StatefulWidget {
-  final TravelDestination destination;
-  const PlaceDetailScreen({super.key, required this.destination});
+class TourDetailScreen extends StatefulWidget {
+  final Tour tour;
+  const TourDetailScreen({super.key, required this.tour});
 
   @override
-  State<PlaceDetailScreen> createState() => _PlaceDetailScreenState();
+  State<TourDetailScreen> createState() => _TourDetailScreenState();
 }
 
-class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
+class _TourDetailScreenState extends State<TourDetailScreen> {
   @override
   void initState() {
     super.initState();
@@ -27,9 +33,9 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final destinationId = widget.destination.id;
+    final destinationId = widget.tour.id;
     List<ReviewWidgetModel> filteredReviews = allReviews
-        .where((review) => review.destinationId == widget.destination.id)
+        .where((review) => review.destinationId == widget.tour.id)
         .toList();
 
     for (var review in filteredReviews) {
@@ -74,7 +80,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                 MaterialPageRoute(
                   builder: (context) => ReviewFormPage(
                     destinationId: destinationId,
-                    modeType: 3,
+                    modeType: 4,
                   ), // Truyền destinationId vào
                 ),
               );
@@ -126,9 +132,9 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                         });
                       },
                       children: List.generate(
-                        widget.destination.images!.length,
+                        widget.tour.images!.length,
                         (index) => Image.network(
-                          widget.destination.images![index],
+                          widget.tour.images![index],
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -151,14 +157,12 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                               ),
                               borderRadius: BorderRadius.circular(15),
                               image: DecorationImage(
-                                image: widget.destination.images!.length - 1 !=
-                                        pageView
+                                image: widget.tour.images.length - 1 != pageView
                                     ? NetworkImage(
-                                        widget
-                                            .destination.images![pageView + 1],
+                                        widget.tour.images[pageView + 1],
                                       )
                                     : NetworkImage(
-                                        widget.destination.images![0],
+                                        widget.tour.images[0],
                                       ),
                                 fit: BoxFit.cover,
                               ),
@@ -174,7 +178,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: List.generate(
-                                    widget.destination.images!.length,
+                                    widget.tour.images!.length,
                                     (index) => GestureDetector(
                                       onTap: () {
                                         if (pageController.hasClients) {
@@ -216,7 +220,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            widget.destination.name,
+                                            widget.tour.name,
                                             style: const TextStyle(
                                               fontSize: 16,
                                               color: Colors.white,
@@ -238,8 +242,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                               const SizedBox(width: 5),
                                               Expanded(
                                                 child: Text(
-                                                  widget.destination.address
-                                                      .district,
+                                                  widget.tour.location,
                                                   style: const TextStyle(
                                                     color: Colors.white,
                                                     fontSize: 14,
@@ -263,7 +266,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                         ),
                                         const SizedBox(width: 5),
                                         Text(
-                                          widget.destination.rating.toString(),
+                                          widget.tour.rating.toString(),
                                           style: const TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.bold,
@@ -287,7 +290,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
             const SizedBox(height: 10),
             Expanded(
               child: DefaultTabController(
-                length: 2, // Số lượng tab
+                length: 3, // Số lượng tab
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -305,18 +308,35 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                         tabs: [
                           Tab(
                             child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal:
-                                      4.0), // Tăng chiều cao của tab Overview
-                              child: Text('Overview'),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4.0),
+                              child: Text(
+                                'Overview',
+                                style: const TextStyle(
+                                    fontSize: 12.0), // Giảm kích thước chữ
+                              ),
                             ),
                           ),
                           Tab(
                             child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  vertical:
-                                      8.0), // Chiều cao bình thường cho tab Review
-                              child: Text('Review'),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4.0),
+                              child: Text(
+                                'Other info',
+                                style: const TextStyle(
+                                    fontSize: 12.0), // Giảm kích thước chữ
+                              ),
+                            ),
+                          ),
+                          Tab(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Text(
+                                'Review',
+                                style: const TextStyle(
+                                    fontSize: 12.0), // Giảm kích thước chữ
+                              ),
                             ),
                           ),
                         ],
@@ -325,22 +345,36 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                     Expanded(
                       child: TabBarView(
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Text(
-                              widget.destination.description,
-                              maxLines: 3,
-                              style: const TextStyle(
-                                color: Colors.black54,
-                                fontSize: 14,
-                                height: 1.5,
+                          SingleChildScrollView(
+                            child: Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Hiển thị mô tả tour
+                                  Text(
+                                    widget.tour.about,
+                                    maxLines: 3,
+                                    overflow: TextOverflow
+                                        .ellipsis, // Cắt văn bản nếu vượt quá 3 dòng
+                                    style: const TextStyle(
+                                      color: Colors.black54,
+                                      fontSize: 14,
+                                      height: 1.5,
+                                    ),
+                                  ),
+
+                                  // TourOverviewWidget hiển thị chi tiết tour
+                                  TourOverviewWidget(),
+                                ],
                               ),
                             ),
                           ),
+                          //truyen interface của tour vào
+                          TourOptionsScreen(),
                           ReviewWidget(
-                            reviews:
-                                filteredReviews, // Pass the filtered reviews list
-                          ), // Chỉ có 2 widget con, do đó loại bỏ Center
+                            reviews: filteredReviews,
+                          ),
                         ],
                       ),
                     )

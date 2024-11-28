@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
+import 'package:travelappflutter/presentation/home_screen/controller/welcome_controller.dart';
+import 'package:travelappflutter/presentation/home_screen/models/cities_model.dart';
+import 'package:travelappflutter/presentation/home_screen/models/tour_model.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/home_screen/place_detail.dart';
 import 'package:travelappflutter/presentation/home_screen/widgets/popular_place.dart';
 import 'package:travelappflutter/presentation/home_screen/widgets/recomendate.dart';
+import 'package:travelappflutter/presentation/home_screen/widgets/tour.dart';
+import 'package:travelappflutter/presentation/home_screen/widgets/tour_detail_screen.dart';
 import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:travelappflutter/presentation/search_screen/controller/things_to_do_controller.dart';
@@ -52,15 +57,10 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
   Widget build(BuildContext context) {
     // tạm thời bỏ trống, xử lý sau :
     List<TravelDestination> popularDestinations = widget.destinations.toList();
-    List<TravelDestination> recommendDestinations = widget.destinations.toList();
-
-    // List<TravelDestination> popularDestinations = widget.destinations
-    //     .where((destination) => destination.category == 'popular')
-    //     .toList();
-
-    // List<TravelDestination> recommendDestinations = widget.destinations
-    //     .where((destination) => destination.category == 'recommend')
-    //     .toList();
+    List<TravelDestination> recommendDestinations =
+        widget.destinations.toList();
+    final List<Tour> daNangTours =
+        mockTours.where((tour) => tour.location == "Đà Nẵng").toList();
 
     return Scaffold(
       backgroundColor: kBackgroundColor,
@@ -281,6 +281,62 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
               ),
             ),
           ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Tours",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
+                ),
+                Text(
+                  "See all",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: blueTextColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Căn giữa các phần tử trong Row
+              mainAxisSize: MainAxisSize
+                  .min, // Đảm bảo Row không chiếm toàn bộ chiều ngang
+              children: List.generate(
+                daNangTours.length,
+                (index) => Padding(
+                  padding: const EdgeInsets.only(
+                      bottom: 15, right: 10), // Căn lề phải giữa các phần tử
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => TourDetailScreen(
+                            tour: daNangTours[index],
+                          ),
+                        ),
+                      );
+                    },
+                    child: TourWidget(
+                      tour: daNangTours[index],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          )
         ],
       ),
       bottomNavigationBar: CustomBottomNavBar(controller: HomeController()),
