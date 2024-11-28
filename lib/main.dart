@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
 import 'core/app_export.dart';

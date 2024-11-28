@@ -11,11 +11,11 @@ class CustomBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Access ProfileController to get the role directly without re-instantiation
     final profileController = Get.find<ProfileController>();
     print("Role: " + profileController.profileModelObj.value.role);
+
     return Obx(() => Material(
-          borderRadius: BorderRadius.only(
+          borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20.0),
             topRight: Radius.circular(20.0),
           ),
@@ -34,16 +34,17 @@ class CustomBottomNavBar extends StatelessWidget {
                   icon: Icon(Iconsax.home1), label: 'Home'),
               const BottomNavigationBarItem(
                   icon: Icon(Iconsax.search_normal), label: 'Search'),
-              const BottomNavigationBarItem(
-                  icon: Icon(Icons.domain_add_outlined),
-                  label: 'Destination'),
+              // Dynamic icon and label based on role
               BottomNavigationBarItem(
-                icon: const Icon(Icons.bookmark_outline),
-                // Show "AI Trip" or "Business" based on the role in ProfileController
-                label: profileController.profileModelObj.value.role == 'business'
-                    ? 'Business'
-                    : 'AI Trip',
+                icon: profileController.profileModelObj.value.role == 'guest'
+                    ? const Icon(Icons.computer) // Icon for AI Trip
+                    : const Icon(Icons.domain_add_outlined), // Icon for Destination
+                label: profileController.profileModelObj.value.role == 'guest'
+                    ? 'AI Trip'
+                    : 'Destination',
               ),
+              const BottomNavigationBarItem(
+                  icon: Icon(Icons.bookmark_outline), label: 'Forum'),
               const BottomNavigationBarItem(
                   icon: Icon(Icons.person_outline), label: 'Profile'),
             ],
@@ -51,7 +52,7 @@ class CustomBottomNavBar extends StatelessWidget {
             onTap: (index) {
               controller.changePage(index);
 
-              // Navigate based on selected index and role
+              // Handle navigation based on selected index and role
               switch (index) {
                 case 0:
                   Get.toNamed('/welcome_screen');
@@ -60,12 +61,14 @@ class CustomBottomNavBar extends StatelessWidget {
                   Get.toNamed('/search_screen');
                   break;
                 case 2:
-                  Get.toNamed('/business_creation_screen');
+                  if (profileController.profileModelObj.value.role == 'guest') {
+                    Get.toNamed('/plan_screen'); // Navigate to AI Trip
+                  } else {
+                    Get.toNamed('/business_creation_screen'); // Navigate to Destination
+                  }
                   break;
                 case 3:
-                  Get.toNamed(profileController.profileModelObj.value.role == 'business'
-                      ? '/business_screen'
-                      : '/plan_screen');
+                  Get.toNamed('/saved_screen');
                   break;
                 case 4:
                   Get.toNamed('/profile_screen');

@@ -14,16 +14,7 @@ class ProfileController extends GetxController {
     email: '',
     role: '',
     status: '',
-    name: '',
-    contactNumber: '',
-    description: '',
-    imageUrl: '',
-    address: Address(
-      street: '',
-      district: '',
-      ward: '',
-      cityId: 0,
-    ),
+    userInfo: UserInfo.empty()
   ).obs;
 
   // Sử dụng citiesMap để lưu các cặp (cityId: cityName)
@@ -52,101 +43,100 @@ class ProfileController extends GetxController {
 
 
   // Khi nhận dữ liệu từ fetchUserProfile, thiết lập selectedCityId
+RxBool isProfileReady = false.obs; // Thêm trạng thái theo dõi hoàn thành
+
 Future<void> fetchUserProfile() async {
-    isLoading.value = true;
-    String? accessToken = storage.read('accessToken');
-    if (accessToken == null) {
-      Get.snackbar('Error', 'Access token not found. Please log in again.');
-      isLoading.value = false;
-      return;
-    }
+  isLoading.value = true;
+  isProfileReady.value = false; // Đặt trạng thái chưa sẵn sàng
 
-    try {
-      final response = await http.get(
-        Uri.parse('https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/current-user'),
-        headers: {
-          'Authorization': 'Bearer $accessToken',
-          'Content-Type': 'application/json',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final responseData = json.decode(utf8.decode(response.bodyBytes));
-        profileModelObj.value = ProfileModel.fromJson(responseData);
-
-        // Fetch city name based on cityId
-        fetchCityName(profileModelObj.value.address.cityId);
-      } else {
-        print('Failed to load profile: ${response.statusCode}');
-        Get.snackbar('Error', 'Failed to load profile information');
-      }
-    } catch (e) {
-      print('Exception caught: $e');
-      Get.snackbar('Error', 'Something went wrong: $e');
-    } finally {
-      isLoading.value = false;
-    }
+  String? accessToken = storage.read('accessToken');
+  if (accessToken == null) {
+    Get.snackbar('Error', 'Access token not found. Please log in again.');
+    isLoading.value = false;
+    return;
   }
-    // Fetch city data và lưu vào citiesMap
-    Future<void> fetchCities() async {
-      isCitiesLoading.value = true;
-      try {
-        final response = await http.get(
-          Uri.parse('https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/city/'),
-        );
 
-        if (response.statusCode == 200) {
-          final cities = json.decode(utf8.decode(response.bodyBytes)) as List;
-          // Only save the 'id' and 'name' in citiesMap
-          citiesMap = {
-            for (var city in cities) city['id'] as int: city['name'] as String,
-          };
-        } else {
-          print('Failed to load cities: ${response.statusCode}');
-        }
-      } catch (e) {
-        print('Error fetching cities: $e');
-      } finally {
-        isCitiesLoading.value = false;
-      }
+  try {
+    // Đảm bảo fetchCities trước khi tiếp tục
+    await fetchCities();
+
+    final response = await http.get(
+      Uri.parse('https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/current-user'),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(utf8.decode(response.bodyBytes));
+      print('JSON Input to Model: $responseData');
+      profileModelObj.value = ProfileModel.fromJson(responseData);
+
+      // Đồng bộ selectedCityId với cityId từ userInfo
+      selectedCityId.value = profileModelObj.value.userInfo?.address.cityId;
+      isProfileReady.value = true; // Đặt trạng thái hoàn thành
+    } else {
+      print('Failed to load profile: ${response.statusCode}');
+      Get.snackbar('Error', 'Failed to load profile information');
     }
-
-  Future<void> fetchCityName(int cityId) async {
-    try {
-      final response = await http.get(
-        Uri.parse('https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/city/$cityId'),
-      );
-
-      if (response.statusCode == 200) {
-        final cityData = json.decode(utf8.decode(response.bodyBytes));
-        cityName.value = cityData['name'] ?? '';
-        print("City name: ${cityName.value}");
-      } else {
-        print('Failed to fetch city name: ${response.statusCode}');
-        Get.snackbar('Error', 'Failed to fetch city name');
-      }
-    } catch (e) {
-      print('Error fetching city name: $e');
-      Get.snackbar('Error', 'Something went wrong: $e');
-    }
+  } catch (e) {
+    print('Exception caught: $e');
+    Get.snackbar('Error', 'Something went wrong: $e');
+  } finally {
+    isLoading.value = false;
   }
+}
+
+
+Future<void> fetchCities() async {
+  if (citiesMap.isNotEmpty) return; // Nếu đã có dữ liệu thì không cần gọi API
+
+  isCitiesLoading.value = true;
+  try {
+    final response = await http.get(
+      Uri.parse('https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/city/'),
+    );
+
+    if (response.statusCode == 200) {
+      final cities = json.decode(utf8.decode(response.bodyBytes)) as List;
+      citiesMap = {
+        for (var city in cities) city['id'] as int: city['name'] as String,
+      };
+    } else {
+      print('Failed to load cities: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Error fetching cities: $e');
+  } finally {
+    isCitiesLoading.value = false;
+  }
+}
 
   // Method to parse address from formatted string "Street, Ward, District"
-  void updateAddressFromString(String addressInput) {
-    final parts = addressInput.split(',').map((e) => e.trim()).toList();
-    if (parts.length == 3) {
-      profileModelObj.value = profileModelObj.value.copyWith(
-        address: Address(
-          street: parts[0],
-          ward: parts[1],
-          district: parts[2],
-          cityId: profileModelObj.value.address.cityId, // retain the existing cityId
-        ),
-      );
-    } else {
-      Get.snackbar('Error', 'Please enter address in the format "Street, Ward, District"');
-    }
+void updateAddressFromString(String addressInput) {
+  final parts = addressInput.split(',').map((e) => e.trim()).toList();
+  if (parts.length == 3) {
+    // Lấy thông tin userInfo hiện tại
+    final currentUserInfo = profileModelObj.value.userInfo ?? UserInfo.empty();
+
+    // Cập nhật address
+    final updatedAddress = currentUserInfo.address.copyWith(
+      street: parts[0],
+      ward: parts[1],
+      district: parts[2],
+    );
+
+    // Cập nhật userInfo với address mới
+    final updatedUserInfo = currentUserInfo.copyWith(address: updatedAddress);
+
+    // Cập nhật ProfileModel với userInfo mới
+    profileModelObj.value = profileModelObj.value.copyWith(userInfo: updatedUserInfo);
+  } else {
+    Get.snackbar('Error', 'Please enter address in the format "Street, Ward, District"');
   }
+}
+
 
 
   // Update user info via API
@@ -162,13 +152,13 @@ Future<void> fetchUserProfile() async {
     try {
       // Tạo URL với các query parameters từ các trường dữ liệu khác
       final uri = Uri.parse(
-          'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/userInfo/${profileModelObj.value.id - 3}'
-          '?description=${Uri.encodeComponent(profileModelObj.value.description ?? '')}'
-          '&phone_number=${Uri.encodeComponent(profileModelObj.value.contactNumber ?? '')}'
-          '&district=${Uri.encodeComponent(profileModelObj.value.address.district ?? '')}'
-          '&street=${Uri.encodeComponent(profileModelObj.value.address.street ?? '')}'
-          '&ward=${Uri.encodeComponent(profileModelObj.value.address.ward ?? '')}'
-          '&city_id=${profileModelObj.value.address.cityId}');
+          'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/userInfo/${profileModelObj.value.userInfo?.id}'
+          '?description=${Uri.encodeComponent(profileModelObj.value.userInfo?.description ?? '')}'
+          '&phone_number=${Uri.encodeComponent(profileModelObj.value.userInfo?.phoneNumber ?? '')}'
+          '&district=${Uri.encodeComponent(profileModelObj.value.userInfo?.address.district ?? '')}'
+          '&street=${Uri.encodeComponent(profileModelObj.value.userInfo?.address.street ?? '')}'
+          '&ward=${Uri.encodeComponent(profileModelObj.value.userInfo?.address.ward ?? '')}'
+          '&city_id=${profileModelObj.value.userInfo?.address.cityId}');
       // Print the full URI with parameters
       print('Request URI: $uri');
 

@@ -4,11 +4,7 @@ class ProfileModel {
   final String email;
   final String role;
   final String status;
-  final String name;
-  final String contactNumber;
-  final Address address; // Now uses Address model
-  final String description;
-  final String? imageUrl;
+  final UserInfo? userInfo; // Allows nullable UserInfo
 
   ProfileModel({
     required this.id,
@@ -16,11 +12,7 @@ class ProfileModel {
     required this.email,
     required this.role,
     required this.status,
-    required this.name,
-    required this.contactNumber,
-    required this.address,
-    required this.description,
-    this.imageUrl,
+    this.userInfo,
   });
 
   // copyWith method
@@ -30,11 +22,7 @@ class ProfileModel {
     String? email,
     String? role,
     String? status,
-    String? name,
-    String? contactNumber,
-    Address? address,
-    String? description,
-    String? imageUrl,
+    UserInfo? userInfo,
   }) {
     return ProfileModel(
       id: id ?? this.id,
@@ -42,18 +30,13 @@ class ProfileModel {
       email: email ?? this.email,
       role: role ?? this.role,
       status: status ?? this.status,
-      name: name ?? this.name,
-      contactNumber: contactNumber ?? this.contactNumber,
-      address: address ?? this.address,
-      description: description ?? this.description,
-      imageUrl: imageUrl ?? this.imageUrl,
+      userInfo: userInfo ?? this.userInfo,
     );
   }
 
   // Factory to create ProfileModel from JSON
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
-    final userInfo = json['user_info'] ?? {};
-    final addressJson = userInfo['address'] ?? {};
+    final userInfoJson = json['user_info'];
 
     return ProfileModel(
       id: json['id'] ?? 0,
@@ -61,16 +44,67 @@ class ProfileModel {
       email: json['email'] ?? '',
       role: json['role'] ?? '',
       status: json['status'] ?? '',
-      name: json['username'] ?? '',
-      contactNumber: userInfo['phone_number'] ?? '',
-      address: Address.fromJson(addressJson),
-      description: userInfo['description'] ?? '',
-      imageUrl: userInfo['image'] != null ? userInfo['image']['url'] : null,
+      userInfo: userInfoJson != null
+          ? UserInfo.fromJson(userInfoJson)
+          : UserInfo.empty(), // Use default empty UserInfo
     );
   }
 }
 
+class UserInfo {
+  final int id;
+  final String description;
+  final String phoneNumber;
+  final String? imageUrl;
+  final Address address;
 
+  UserInfo({
+    required this.id,
+    required this.description,
+    required this.phoneNumber,
+    this.imageUrl,
+    required this.address,
+  });
+
+  // copyWith method
+  UserInfo copyWith({
+    int? id,
+    String? description,
+    String? phoneNumber,
+    String? imageUrl,
+    Address? address,
+  }) {
+    return UserInfo(
+      id: id ?? this.id,
+      description: description ?? this.description,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      imageUrl: imageUrl ?? this.imageUrl,
+      address: address ?? this.address,
+    );
+  }
+
+  // Factory to create UserInfo from JSON
+  factory UserInfo.fromJson(Map<String, dynamic> json) {
+    return UserInfo(
+      id: json['id'] ?? 0,
+      description: json['description'] ?? '',
+      phoneNumber: json['phone_number'] ?? '',
+      imageUrl: json['image']?['url'], // Safe navigation
+      address: Address.fromJson(json['address'] ?? {}),
+    );
+  }
+
+  // Default empty UserInfo
+  factory UserInfo.empty() {
+    return UserInfo(
+      id: 0,
+      description: '',
+      phoneNumber: '',
+      imageUrl: null,
+      address: Address.empty(),
+    );
+  }
+}
 
 class Address {
   final String street;
@@ -85,7 +119,7 @@ class Address {
     required this.cityId,
   });
 
-  // Phương thức copyWith
+  // copyWith method
   Address copyWith({
     String? street,
     String? district,
@@ -100,7 +134,7 @@ class Address {
     );
   }
 
-  // Factory để tạo Address từ JSON
+  // Factory to create Address from JSON
   factory Address.fromJson(Map<String, dynamic> json) {
     return Address(
       street: json['street'] ?? '',
@@ -110,9 +144,20 @@ class Address {
     );
   }
 
-  // Phương thức để trả về chuỗi địa chỉ có định dạng nếu cần thiết
+  // Default empty Address
+  factory Address.empty() {
+    return Address(
+      street: '',
+      district: '',
+      ward: '',
+      cityId: 0,
+    );
+  }
+
+  // Method to format the address as a string
   String formattedAddress() {
-    return [street, district, ward].where((element) => element.isNotEmpty).join(', ');
+    return [street, district, ward]
+        .where((element) => element.isNotEmpty)
+        .join(', ');
   }
 }
-
