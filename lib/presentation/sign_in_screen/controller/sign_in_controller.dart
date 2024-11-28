@@ -1,3 +1,5 @@
+import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
+
 import '/core/app_export.dart';
 import 'package:travelappflutter/presentation/sign_in_screen/models/sign_in_model.dart';
 import 'package:flutter/material.dart';
@@ -87,9 +89,17 @@ class SignInController extends GetxController {
   }
 
   // Phương thức đăng xuất và xóa dữ liệu
-  Future<void> logout() async {
-    storage.remove('accessToken');
-    accessToken.value = '';
-    Get.offAllNamed(AppRoutes.signInScreen); // Điều hướng đến màn hình đăng nhập
-  }
+Future<void> logout() async {
+  // Xóa token và dữ liệu lưu trữ
+  storage.remove('accessToken');
+  accessToken.value = '';
+
+  // Reset ProfileController
+  final profileController = Get.find<ProfileController>();
+  profileController.resetProfile();
+
+  // Điều hướng về màn hình đăng nhập
+  Get.offAllNamed(AppRoutes.signInScreen);
+}
+
 }

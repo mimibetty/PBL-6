@@ -71,7 +71,7 @@ class Recomendate extends StatelessWidget {
                       TextSpan(
                         children: [
                           TextSpan(
-                            text: "${destination.rating}",
+                            text: "${destination.rating.toStringAsFixed(1)}",
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,

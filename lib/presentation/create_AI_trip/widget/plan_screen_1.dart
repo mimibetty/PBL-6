@@ -32,7 +32,7 @@ class _PlanScreenState extends State<PlanScreen> {
                     Stack(
                       children: [
                         Image.network(
-                          'https://www.quangbinhtravel.vn/wp-content/uploads/2021/08/cau-vang-da-nang.jpg',
+                          'https://nucuoimekong.com/wp-content/uploads/cau-ban-tay-da-nang-1.jpg',
                           height: 200,
                           width: double.infinity,
                           fit: BoxFit.cover,

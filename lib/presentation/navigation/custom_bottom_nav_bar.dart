@@ -12,6 +12,10 @@ class CustomBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final profileController = Get.find<ProfileController>();
+    // Gọi fetchUserProfile nếu dữ liệu chưa sẵn sàng
+    if (!profileController.isProfileReady.value) {
+      profileController.fetchUserProfile();
+    }
     print("Role: " + profileController.profileModelObj.value.role);
 
     return Obx(() => Material(

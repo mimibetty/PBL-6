@@ -348,6 +348,7 @@ List<TravelDestination> getThingsToDoDestinations(List<TravelDestination> destin
                   MaterialPageRoute(
                     builder: (context) => HotelSearchScreen(
                       cityNames: widget.cityName!,
+                      cityID: widget.cityID!,
                      hotelIDs: getHotelIDs(homeController.myDestination.value), // Directly fetching hotel IDs here
                     ),
                   ),

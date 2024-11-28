@@ -263,7 +263,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                         ),
                                         const SizedBox(width: 5),
                                         Text(
-                                          widget.destination.rating.toString(),
+                                          widget.destination.rating.toStringAsFixed(1).toString(),
                                           style: const TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.bold,

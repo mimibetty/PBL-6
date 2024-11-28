@@ -8,11 +8,13 @@ import 'package:travelappflutter/presentation/search_screen/models/hotel_model.d
 class HotelSearchScreen extends StatefulWidget {
   final List<int> hotelIDs;
   final String cityNames;
+  final int cityID;
 
   const HotelSearchScreen({
     Key? key,
     required this.hotelIDs,
     required this.cityNames,
+    required this.cityID,
   }) : super(key: key);
 
   @override
@@ -23,7 +25,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
   late List<Hotel> filteredHotels = []; // Changed to late initialization
   late final HotelController hotelController;
-
+  String selectedSortOption = "Rating";
   @override
   void initState() {
     super.initState();
@@ -121,7 +123,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                     ),
                   ),
                   DropdownButton<String>(
-                    value: "Rating",
+                    value: selectedSortOption, // Gắn giá trị biến trạng thái
                     items: <String>[
                       'Rating',
                       'Name',
@@ -133,7 +135,12 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                       );
                     }).toList(),
                     onChanged: (String? newValue) {
-                      _sortHotels(newValue);
+                      if (newValue != null) {
+                        setState(() {
+                          selectedSortOption = newValue; // Cập nhật giá trị được chọn
+                        });
+                        _sortHotels(newValue); // Gọi hàm sort
+                      }
                     },
                   ),
                 ],
@@ -216,7 +223,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                                         ),
                                       const SizedBox(width: 8),
                                       Text(
-                                        "${hotel.rating.toString()} ★",
+                                        "${hotel.rating.toStringAsFixed(1)} ★", // Làm tròn đến 1 chữ số
                                         style: TextStyle(
                                             fontSize: 14, color: Colors.grey),
                                       ),
@@ -321,7 +328,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                   onPressed: () {
                     if (_formKey.currentState!.saveAndValidate()) {
                       var selectedFilters = _formKey.currentState!.value;
-                      _applyFilters(selectedFilters);
+                      _applyFilters(selectedFilters); // Gọi hàm áp dụng bộ lọc
                       Navigator.pop(context);
                     }
                   },
@@ -351,27 +358,41 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
     );
   }
 
-  void _applyFilters(Map<String, dynamic> filters) {
-    // setState(() {
-    //   filteredHotels = hotels.where((hotel) {
-    //     bool matchesPrice = filters['price'] != null &&
-    //         filters['price'].any((price) => hotel.price == price);
-    //     // Logic for other filters
-    //     return matchesPrice;
-    //   }).toList();
-    // });
+void _applyFilters(Map<String, dynamic> filters) {
+  // Thu thập các giá trị đã chọn từ filters
+  List<String> selectedFilters = [];
+
+  // Gộp các giá trị từ từng nhóm checkbox
+  if (filters['price'] != null) {
+    selectedFilters.addAll((filters['price'] as List<dynamic>).map((e) => 'Price: $e').toList());
+  }
+  if (filters['amenities'] != null) {
+    selectedFilters.addAll((filters['amenities'] as List<dynamic>).map((e) => 'Amenity: $e').toList());
+  }
+  if (filters['hotel_star'] != null) {
+    selectedFilters.addAll((filters['hotel_star'] as List<dynamic>).map((e) => 'Star: $e').toList());
   }
 
+  // Chuyển đổi danh sách thành một chuỗi
+  String filterString = selectedFilters.join(', ');
+  // Gửi chuỗi đến Controller
+ hotelController.filterHotels(filterString, widget.cityID);
+  // Cập nhật giao diện
+  setState(() {});
+}
+
+
   void _sortHotels(String? newValue) {
-    // setState(() {
-    //   if (newValue == "Rating") {
-    //     filteredHotels.sort((a, b) => b.rating.compareTo(a.rating));
-    //   } else if (newValue == "Name") {
-    //     filteredHotels.sort(
-    //         (a, b) => a.hotelName.compareTo(b.hotelName));
-    //   } else if (newValue == "Review Count") {
-    //     filteredHotels.sort((a, b) => b.reviewCount.compareTo(a.reviewCount));
-    //   }
-    // });
+    if (newValue == null) return;
+
+    // Gọi trực tiếp sortHotels từ controller
+    hotelController.sortHotels(newValue, ascending: false);
+
+    // Cập nhật danh sách filteredHotels sau khi sắp xếp
+    filteredHotels = hotelController.hotels.toList();
+    // Làm mới giao diện
+    if (mounted) {
+      setState(() {});
+    }
   }
 }

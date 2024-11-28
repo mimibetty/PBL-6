@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
-import 'package:travelappflutter/presentation/home_screen/controller/welcome_controller.dart';
-import 'package:travelappflutter/presentation/home_screen/models/cities_model.dart';
 import 'package:travelappflutter/presentation/home_screen/models/tour_model.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/home_screen/place_detail.dart';

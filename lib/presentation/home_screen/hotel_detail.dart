@@ -242,7 +242,7 @@ Future<void> _launchURL(String url) async {
                         ),
                       const SizedBox(width: 20),
                       Text(
-                        "${hotel.rating.toString()} ★",
+                        "${hotel.rating.toStringAsFixed(1)} ★",
                         style: TextStyle(fontSize: 15, color: Colors.grey),
                       ),
                     ],

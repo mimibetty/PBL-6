@@ -205,5 +205,24 @@ void updateAddressFromString(String addressInput) {
       isLoading.value = false;
     }
   }
+  void resetProfile() {
+    // Reset ProfileModel về giá trị mặc định
+    profileModelObj.value = ProfileModel(
+      id: 0, // ID mặc định
+      username: '', // Xóa tên đăng nhập
+      email: '', // Xóa email
+      role: '', // Xóa role
+      status: '', // Xóa trạng thái
+      userInfo: UserInfo.empty(), // Đặt UserInfo về trạng thái mặc định
+    );
+
+    // Reset các biến liên quan
+    selectedCityId.value = null; // Xóa CityId đã chọn
+    cityName.value = null; // Xóa tên thành phố
+    citiesMap.clear(); // Xóa toàn bộ dữ liệu thành phố
+
+    print("Profile reset to default values.");
+  }
+
 
 }

@@ -34,6 +34,7 @@ class RestaurantController extends GetxController {
       isLoading.value = false;
     }
   }
+  
 
   @override
   void onReady() {
