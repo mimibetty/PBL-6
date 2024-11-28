@@ -9,6 +9,7 @@ class Business {
   final int reviewCount;
   final List<String> businessUnits;
   final List<String>type;
+  final String logoUrl;
   
   Business({
     required this.id,
@@ -21,6 +22,7 @@ class Business {
     required this.reviewCount,
     required this.businessUnits,
     required this.type,
+    required this.logoUrl,
   });
 }
   
@@ -39,7 +41,8 @@ final List<Business> mockBusinessDatabase = [
     ],
     rating: 4.5,
     reviewCount: 150,
-    businessUnits:['1,2,3','101,102,103']
+    businessUnits:['1,2,3','101,102,103'],
+    logoUrl: "https://inkythuatso.com/uploads/thumbnails/800/2021/10/logo-vinfast-inkythuatso-21-11-22-46.jpg",
     ),
   
   Business(
@@ -54,6 +57,7 @@ final List<Business> mockBusinessDatabase = [
     ],
     rating: 4.2,
     type:['Hotel','Restaurant','Thing to do'],
+    logoUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_3oNME3dOzDakJ-vgAQa2eS5ifAmL2zHi6g&s",
 
     reviewCount: 85,
     businessUnits:['2', '102,104'],

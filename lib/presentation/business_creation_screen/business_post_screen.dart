@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax/iconsax.dart';
-import 'package:travelappflutter/presentation/business_creation_screen/business_list_screen.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/models/business_model.dart';
+import 'package:travelappflutter/presentation/business_dashboard/business_dashboard.dart';
 
 class BusinessPostScreen extends StatefulWidget {
   final Business business;
@@ -13,6 +13,8 @@ class BusinessPostScreen extends StatefulWidget {
 }
 
 class _BusinessPostScreenState extends State<BusinessPostScreen> {
+  int _currentImageIndex = 0; // Biến để quản lý chỉ báo vị trí
+
   @override
   void initState() {
     super.initState();
@@ -22,86 +24,39 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: headerParts(context),
-      body: Padding(
+      appBar: _buildAppBar(context),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              widget.business.name,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text('Địa chỉ: ${widget.business.address}',
-                style: TextStyle(fontSize: 16)),
-            SizedBox(height: 8),
-            Text('Số điện thoại: ${widget.business.phoneNumber}',
-                style: TextStyle(fontSize: 16)),
-            SizedBox(height: 8),
-            Text(
-              'Mô tả: ${widget.business.description}',
-              style: TextStyle(fontSize: 16),
-            ),
-            SizedBox(height: 16),
-            Expanded(
-              child: ListView.builder(
-                itemCount: widget.business.images.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 6,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      clipBehavior: Clip.hardEdge,
-                      child: Image.network(
-                        widget.business.images[index],
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Center(
-                            child: CircularProgressIndicator(
-                                value: loadingProgress.expectedTotalBytes !=
-                                        null
-                                    ? loadingProgress.cumulativeBytesLoaded /
-                                        (loadingProgress.expectedTotalBytes ??
-                                            1)
-                                    : null),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) {
-                          return Center(
-                              child: Icon(Icons.error, color: Colors.red));
-                        },
-                        fit: BoxFit.cover, // Đảm bảo hình ảnh vừa khung
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
+            _buildBusinessHeader(),
+            const SizedBox(height: 20),
+            _buildBusinessDetails(),
+            const SizedBox(height: 20),
+            _buildImagesSlider(),
           ],
         ),
       ),
     );
   }
 
-  AppBar headerParts(BuildContext context) {
+  AppBar _buildAppBar(BuildContext context) {
     return AppBar(
-      elevation: 0,
-      backgroundColor: Colors.grey[200],
-      title:
-          Text("Business Details Page", style: TextStyle(color: Colors.black)),
+      elevation: 2,
+      backgroundColor: Colors.white,
+      title: Text(
+        "Business Details",
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      centerTitle: true,
       actions: [
         PopupMenuButton<String>(
-          icon: const Icon(Icons.menu, color: Colors.black, size: 30),
+          icon: const Icon(Icons.menu, color: Colors.black),
           onSelected: (value) {
             switch (value) {
               case 'Things to do':
@@ -115,98 +70,178 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
                 break;
             }
           },
-          color: Colors.white,
-          itemBuilder: (BuildContext context) {
+          itemBuilder: (context) {
             return [
-              const PopupMenuItem<String>(
-                value: 'Things to do',
-                child:
-                    Text('Things to do', style: TextStyle(color: Colors.black)),
-              ),
-              const PopupMenuItem<String>(
-                value: 'Hotels',
-                child: Text('Hotels', style: TextStyle(color: Colors.black)),
-              ),
-              const PopupMenuItem<String>(
-                value: 'Restaurants',
-                child:
-                    Text('Restaurants', style: TextStyle(color: Colors.black)),
-              ),
+              _buildPopupMenuItem('Things to do'),
+              _buildPopupMenuItem('Hotels'),
+              _buildPopupMenuItem('Restaurants'),
             ];
           },
         ),
-        const SizedBox(width: 15),
+      ],
+    );
+  }
+
+  PopupMenuItem<String> _buildPopupMenuItem(String text) {
+    return PopupMenuItem(
+      value: text,
+      child: Text(
+        text,
+        style: const TextStyle(color: Colors.black),
+      ),
+    );
+  }
+
+  Widget _buildBusinessHeader() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ClipOval(
+          child: Image.network(
+            widget.business.logoUrl,
+            width: 80, // Gấp đôi radius để phù hợp
+            height: 80,
+            fit: BoxFit.cover, // Đảm bảo hình ảnh vừa khung
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
+                width: 80,
+                height: 80,
+                color: Colors.grey[200],
+                child: const Icon(Icons.business, size: 40, color: Colors.grey),
+              );
+            },
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.business.name,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                widget.business.address,
+                style: const TextStyle(fontSize: 16, color: Colors.black54),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBusinessDetails() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildDetailRow(Icons.phone, widget.business.phoneNumber),
+            const SizedBox(height: 8),
+            _buildDetailRow(Icons.info, widget.business.description),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(IconData icon, String text) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.blue, size: 20),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(fontSize: 16, color: Colors.black87),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildImagesSlider() {
+    if (widget.business.images.isEmpty) {
+      return Center(
+        child: Column(
+          children: [
+            Icon(Icons.image_not_supported, size: 50, color: Colors.grey),
+            const SizedBox(height: 10),
+            const Text(
+              'No Images Available',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        CarouselSlider.builder(
+          itemCount: widget.business.images.length,
+          options: CarouselOptions(
+            height: 200.0,
+            autoPlay: true,
+            enlargeCenterPage: true,
+            aspectRatio: 16 / 9,
+            viewportFraction: 0.8,
+            onPageChanged: (index, reason) {
+              setState(() {
+                _currentImageIndex = index;
+              });
+            },
+          ),
+          itemBuilder: (context, index, realIndex) {
+            return ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                widget.business.images[index],
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  color: Colors.grey[200],
+                  child: const Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
+                ),
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: widget.business.images.map((image) {
+            int index = widget.business.images.indexOf(image);
+            return Container(
+              width: 8.0,
+              height: 8.0,
+              margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: _currentImageIndex == index ? Colors.blue : Colors.grey,
+              ),
+            );
+          }).toList(),
+        ),
       ],
     );
   }
 
   void _navigateToFilteredBusinesses(BuildContext context, String type) {
-    List<String> businessUnits = widget.business.businessUnits;
-
-    // In ra giá trị của businessUnits để kiểm tra
-    print('Business Units: $businessUnits');
-
-    // Kiểm tra xem businessUnits có phải là danh sách chứa các chuỗi ID hay không
-    List<int> hotelIds = businessUnits.length > 0
-        ? businessUnits[0]
-            .split(',')
-            .map((id) => int.tryParse(id) ?? 0)
-            .toList()
-        : [];
-
-    List<int> restaurantIds = businessUnits.length > 1
-        ? businessUnits[1]
-            .split(',')
-            .map((id) => int.tryParse(id) ?? 0)
-            .toList()
-        : [];
-
-    List<int> thingsToDoIds = businessUnits.length > 2
-        ? businessUnits[2]
-            .split(',')
-            .map((id) => int.tryParse(id) ?? 0)
-            .toList()
-        : [];
-
-    // Kiểm tra kết quả
-    print('Hotel IDs: $hotelIds');
-    print('Restaurant IDs: $restaurantIds');
-    print('Things to Do IDs: $thingsToDoIds');
-
-    // Lọc doanh nghiệp dựa trên loại
-    List<Business> filteredBusinesses;
-
-    switch (type) {
-      case 'Restaurants':
-        filteredBusinesses = mockBusinessDatabase.where((business) {
-          return restaurantIds.contains(int.parse(business.id)); // Lọc theo ID
-        }).toList();
-        break;
-
-      case 'Hotels':
-        filteredBusinesses = mockBusinessDatabase.where((business) {
-          return hotelIds.contains(int.parse(business.id)); // Lọc theo ID
-        }).toList();
-        break;
-
-      case 'Things to do':
-        filteredBusinesses = mockBusinessDatabase.where((business) {
-          return thingsToDoIds.contains(int.parse(business.id)); // Lọc theo ID
-        }).toList();
-        break;
-
-      default:
-        filteredBusinesses = []; // Trường hợp không xác định
-        break;
-    }
-
-    // Chuyển đến màn hình danh sách doanh nghiệp
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>
-            BusinessListScreen(filteredBusinesses: filteredBusinesses),
-      ),
-    );
+     Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DashboardScreen(),
+          ),
+        );
   }
 }

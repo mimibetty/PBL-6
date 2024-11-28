@@ -218,7 +218,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
                                         ),
                                       const SizedBox(width: 8),
                                       Text(
-                                        "${hotel.rating.toString()} ★",
+                                        "${hotel.rating.toStringAsFixed(1)} ★",
                                         style: TextStyle(
                                             fontSize: 14, color: Colors.grey),
                                       ),

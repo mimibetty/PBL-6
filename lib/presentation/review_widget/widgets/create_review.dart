@@ -153,21 +153,21 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
               },
             ),
             SizedBox(height: 16),
-            DropdownButton<String>(
-              hint: Text('When did you go?'),
-              value: selectedMonthYear,
-              items: monthYearList.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  selectedMonthYear = newValue;
-                });
-              },
-            ),
+            // DropdownButton<String>(
+            //   hint: Text('When did you go?'),
+            //   value: selectedMonthYear,
+            //   items: monthYearList.map((String value) {
+            //     return DropdownMenuItem<String>(
+            //       value: value,
+            //       child: Text(value),
+            //     );
+            //   }).toList(),
+            //   onChanged: (String? newValue) {
+            //     setState(() {
+            //       selectedMonthYear = newValue;
+            //     });
+            //   },
+            // ),
             SizedBox(height: 16),
             Text('Who did you go with ?',
                 style: TextStyle(fontSize: 17)),
@@ -181,21 +181,21 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
               },
             ),
             SizedBox(height: 16),
-            DropdownButton<String>(
-              hint: Text('What were you here for?'),
-              value: selectedPurpose.isNotEmpty ? selectedPurpose : null,
-              items: <String>['Business', 'Leisure'].map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  selectedPurpose = newValue ?? '';
-                });
-              },
-            ),
+            // DropdownButton<String>(
+            //   hint: Text('What were you here for?'),
+            //   value: selectedPurpose.isNotEmpty ? selectedPurpose : null,
+            //   items: <String>['Business', 'Leisure'].map((String value) {
+            //     return DropdownMenuItem<String>(
+            //       value: value,
+            //       child: Text(value),
+            //     );
+            //   }).toList(),
+            //   onChanged: (String? newValue) {
+            //     setState(() {
+            //       selectedPurpose = newValue ?? '';
+            //     });
+            //   },
+            // ),
             SizedBox(height: 16),
             TextField(
               controller: _contextController,
@@ -267,7 +267,7 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                         destinationId: newReview.destinationId,
                         rating: newReview.rating,
                         context: newReview.context,
-                        monthYear: newReview.travelTime,
+                        // monthYear: newReview.travelTime,
                         purpose: newReview.purpose,
                         companions: newReview.companions,
                         text: newReview

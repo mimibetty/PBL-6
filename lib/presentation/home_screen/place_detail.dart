@@ -104,7 +104,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
         child: Column(
           children: [
             Container(
-              height: MediaQuery.of(context).size.height * 0.5,
+              height: MediaQuery.of(context).size.height * 0.3,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
                 color: Colors.white,
@@ -266,7 +266,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                         ),
                                         const SizedBox(width: 5),
                                         Text(
-                                          widget.destination.rating.toString(),
+                                          widget.destination.rating.toStringAsFixed(1),
                                           style: const TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.bold,

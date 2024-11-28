@@ -223,7 +223,7 @@ class PopularPlace extends StatelessWidget {
                             ),
                             const SizedBox(width: 5),
                             Text(
-                              destination.rating.toString(),
+                              destination.rating.toStringAsFixed(1),
                               style: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,

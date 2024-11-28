@@ -17,7 +17,6 @@ class ReviewWidgetController extends GetxController {
     // required int type,
     required double rating,
     required String context,
-    required String monthYear,
     required String purpose,
     required List<String> companions,
     required String text,
@@ -31,7 +30,7 @@ class ReviewWidgetController extends GetxController {
     this.destinationId.value = destinationId;
     // modeType.value = type;
     this.rating.value = rating;
-    selectedMonthYear.value = monthYear;
+    // selectedMonthYear.value = monthYear;
     selectedPurpose.value = purpose;
     selectedCompanions.assignAll(companions);
     reviewText.value = text;

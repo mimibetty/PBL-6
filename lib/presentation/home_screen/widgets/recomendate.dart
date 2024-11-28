@@ -71,7 +71,8 @@ class Recomendate extends StatelessWidget {
                       TextSpan(
                         children: [
                           TextSpan(
-                            text: "${destination.rating}",
+                            text:
+                                "${destination.rating.toStringAsFixed(1)}", // Làm tròn đến 1 chữ số thập phân
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
