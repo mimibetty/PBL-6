@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:travelappflutter/core/app_export.dart';
+import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/create_review.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -7,7 +9,7 @@ import 'package:travelappflutter/presentation/search_screen/models/hotel_model.d
 
 class HotelDetailScreen extends StatelessWidget {
   final Hotel hotel;
-
+  final ReviewWidgetController controller = Get.put(ReviewWidgetController());
   HotelDetailScreen({super.key,required this.hotel});
 
   // Hàm mở trang web của khách sạn
@@ -24,9 +26,8 @@ Future<void> _launchURL(String url) async {
   // Hàm hiển thị review của khách sạn với thiết kế tối giản và đẹp mắt hơn
   Widget HotelReview(Hotel hotel) {
     // Lọc review dựa trên hotelId
-    final List<ReviewModel> reviews = mockReviews
-        .where((review) => review.destinationId == hotel.hotelID)
-        .toList();
+    controller.fetchReviewsByDestinationID(hotel.hotelID);
+    final List<ReviewModel> reviews = controller.reviews;
 
     return reviews.isEmpty
         ? const Center(
@@ -175,7 +176,10 @@ Future<void> _launchURL(String url) async {
                 MaterialPageRoute(
                   builder: (context) => ReviewFormPage(
                       destinationId: hotel.hotelID,
-                      modeType: 2,),
+                      destinationName: hotel.hotelName,
+                      destinationAddress: hotel.hotelLocation,
+                      destinationImageURL: hotel.images.first
+                    ),
                 ),
               );
             },

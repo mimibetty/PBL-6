@@ -8,11 +8,13 @@ import 'package:travelappflutter/presentation/search_screen/models/restaurant_mo
 class RestaurantSearchScreen extends StatefulWidget {
   final List<int> restaurantIDs;
   final String cityNames;
+  final int cityID;
 
   const RestaurantSearchScreen({
     Key? key,
     required this.restaurantIDs,
     required this.cityNames,
+    required this.cityID,
   }) : super(key: key);
 
   @override
@@ -236,7 +238,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
                                         ),
                                       const SizedBox(width: 8),
                                       Text(
-                                        "${restaurant.rating.toString()} ★",
+                                        "${restaurant.rating.toStringAsFixed(1).toString()} ★",
                                         style: TextStyle(
                                             fontSize: 14, color: Colors.grey),
                                       ),
@@ -310,13 +312,13 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 16),
-                  _buildCheckboxGroup('Establishment Type', 'types', [
-                    'Restaurant',
-                    'Coffee & Tea',
-                    'Bar & Pubs',
-                    'Dessert',
-                    'Bakeries',
-                    'Delivery Only',
+                  _buildCheckboxGroup('Special Diets', 'special_diets', [
+                    'Vegan',
+                    'Gluten-Free',
+                    'Dairy-Free',
+                    'Diabetic-Friendly',
+                    'Halal',
+                    'Low-Carb',
                   ]),
                   _buildCheckboxGroup('Meals', 'meals', [
                     'Breakfast',
@@ -324,43 +326,48 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
                     'Lunch',
                     'Dinner',
                   ]),
-                  _buildCheckboxGroup('Price', 'price', [
-                    'Cheap Eats',
-                    'Mid-range',
-                    'Fine Dining',
-                  ]),
+                  // _buildCheckboxGroup('Price', 'price', [
+                  //   'Cheap Eats',
+                  //   'Mid-range',
+                  //   'Fine Dining',
+                  // ]),
                   _buildCheckboxGroup('Cuisines', 'cuisines', [
                     'Vietnamese',
-                    'Asian',
-                    'Seafood',
-                    'Deli',
+                    'East Asian', // Đông Á
+                    'South Asian', // Nam Á
+                    'European', // Châu Âu
+                    'African', // Châu Phi
+                    'American', // Châu Mỹ
                   ]),
-                  _buildCheckboxGroup('Dishes', 'dishes', [
-                    'Beef',
-                    'Fish',
-                    'Salad',
-                    'Noodle',
-                  ]),
+                  // _buildCheckboxGroup('Dishes', 'dishes', [
+                  //   'Beef',
+                  //   'Fish',
+                  //   'Salad',
+                  //   'Noodle',
+                  // ]),
                   _buildCheckboxGroup('Features', 'features', [
-                    'Seating',
+                    'Parking',
                     'Reservation',
                     'Free Wifi',
                     'Serves Alcohol',
-                  ]),
-                  _buildCheckboxGroup('Good for', 'good_for', [
-                    'Families with children',
-                    'Large groups',
-                    'Kids',
-                    'Romantic',
-                  ]),
-                  _buildCheckboxGroup('Other', 'other', [
-                    'Open Now',
-                  ]),
+                    'Outdoor Seating',
+                    'Live Music',
+                  ]), 
+                  // _buildCheckboxGroup('Good for', 'good_for', [
+                  //   'Families with children',
+                  //   'Large groups',
+                  //   'Kids',
+                  //   'Romantic',
+                  // ]),
+                  // _buildCheckboxGroup('Other', 'other', [
+                  //   'Open Now',
+                  // ]),
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.saveAndValidate()) {
                         var selectedFilters = _formKey.currentState!.value;
+                        print(selectedFilters);
                         _applyFilters(selectedFilters);
                         Navigator.pop(context);
                       }
@@ -392,30 +399,42 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
   }
 
   // Áp dụng bộ lọc
-  void _applyFilters(Map<String, dynamic> filters) {
-    // setState(() {
-    //   filteredRestaurants = restaurants.where((restaurant) {
-    //     bool matchesType = filters['types'] != null &&
-    //         filters['types'].any((type) => restaurant.type == type);
-    //     bool matchesPrice = filters['price'] != null &&
-    //         filters['price'].any((price) => restaurant.price == price);
-    //     // Các logic lọc khác
-    //     return matchesType && matchesPrice;
-    //   }).toList();
-    // });
+void _applyFilters(Map<String, dynamic> filters) {
+  // Thu thập các giá trị đã chọn từ filters
+  List<String> selectedFilters = [];
+  // Gộp các giá trị từ từng nhóm checkbox
+  if (filters['special_diets'] != null) {
+    selectedFilters.addAll((filters['special_diets'] as List<dynamic>).map((e) => 'Special_Diets: $e').toList());
   }
+  if (filters['meals'] != null) {
+    selectedFilters.addAll((filters['meals'] as List<dynamic>).map((e) => 'Meals: $e').toList());
+  }
+  if (filters['cuisines'] != null) {
+    selectedFilters.addAll((filters['cuisines'] as List<dynamic>).map((e) => 'Cuisines: $e').toList());
+  }
+  if (filters['features'] != null) {
+    selectedFilters.addAll((filters['features'] as List<dynamic>).map((e) => 'Features: $e').toList());
+  }
+  // Chuyển đổi danh sách thành một chuỗi
+  String filterString = selectedFilters.join(', ');
+  // Gửi chuỗi lọc đến Controller (thay thế với Controller của bạn)
+  restaurantController.filterRestaurants(filterString,widget.cityID);
+  // Cập nhật giao diện (trong trường hợp cần tái tạo giao diện)
+  setState(() {});
+}
 
   // Hàm sắp xếp
   void _sortRestaurants(String? newValue) {
-    // setState(() {
-    //   if (newValue == "Rating") {
-    //     filteredRestaurants.sort((a, b) => b.rating.compareTo(a.rating));
-    //   } else if (newValue == "Name") {
-    //     filteredRestaurants.sort(
-    //         (a, b) => a.restaurantName.compareTo(b.restaurantName));
-    //   } else if (newValue == "Review Count") {
-    //     filteredRestaurants.sort((a, b) => b.review.compareTo(a.review));
-    //   }
-    // });
+    if (newValue == null) return;
+
+    // Gọi trực tiếp sortHotels từ controller
+    restaurantController.sortRestaurants(newValue, ascending: false);
+
+    // Cập nhật danh sách filteredHotels sau khi sắp xếp
+    filteredRestaurants = restaurantController.restaurants.toList();
+    // Làm mới giao diện
+    if (mounted) {
+      setState(() {});
+    }
   }
 }

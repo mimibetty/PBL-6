@@ -364,10 +364,10 @@ void _applyFilters(Map<String, dynamic> filters) {
 
   // Gộp các giá trị từ từng nhóm checkbox
   if (filters['price'] != null) {
-    selectedFilters.addAll((filters['price'] as List<dynamic>).map((e) => 'Price: $e').toList());
+    selectedFilters.addAll((filters['price'] as List<dynamic>).map((e) => 'Price_Range: $e').toList());
   }
   if (filters['amenities'] != null) {
-    selectedFilters.addAll((filters['amenities'] as List<dynamic>).map((e) => 'Amenity: $e').toList());
+    selectedFilters.addAll((filters['amenities'] as List<dynamic>).map((e) => 'Amenities: $e').toList());
   }
   if (filters['hotel_star'] != null) {
     selectedFilters.addAll((filters['hotel_star'] as List<dynamic>).map((e) => 'Star: $e').toList());

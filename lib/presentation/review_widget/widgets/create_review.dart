@@ -2,23 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:io';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:intl/intl.dart';
 import 'package:travelappflutter/presentation/common_views/image_picker_widget.dart';
 import 'package:travelappflutter/presentation/common_views/selected_chip_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
-import 'package:travelappflutter/presentation/home_screen/models/tour_model.dart';
-import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
-import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
-import 'package:travelappflutter/presentation/search_screen/models/hotel_model.dart';
-import 'package:travelappflutter/presentation/search_screen/models/restaurant_model.dart';
 
 class ReviewFormPage extends StatefulWidget {
   final int destinationId;
-  final int modeType;
+  final String destinationName;
+  final String destinationImageURL;
+  final String destinationAddress;
 
   ReviewFormPage(
-      {Key? key, required this.destinationId, required this.modeType})
+      {Key? key, required this.destinationId, required this.destinationName, required this.destinationImageURL, required this.destinationAddress})
       : super(key: key);
 
   @override
@@ -26,66 +22,51 @@ class ReviewFormPage extends StatefulWidget {
 }
 
 class _ReviewFormPageState extends State<ReviewFormPage> {
+  // Create a new review instance with the data
+  final controller = Get.put(ReviewWidgetController());
+
   final TextEditingController _contextController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
 
   final FocusNode _focusNode = FocusNode();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  //final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   double _rating = 0;
   List<File> selectedImages = [];
-  List<String> monthYearList = [];
-
+  //List<String> monthYearList = [];
+  List<String> languageOptions = [
+    'Korean',
+    'Japanese',
+    'English',
+    'Vietnamese',
+    'Thai',
+    'Chinese',
+    'French',
+  ];
   // Các biến để lưu giá trị
-  String? selectedMonthYear;
-  String selectedPurpose = '';
+  //String? selectedMonthYear;
+  //String selectedPurpose = '';
   List<String> selectedCompanions = [];
+   String selectedLanguage = 'English'; // Biến lưu trữ ngôn ngữ đã chọn
   String reviewText = '';
   String reviewTitle = '';
 
-  late final destination = _getDestination();
 
   @override
   void initState() {
     super.initState();
-    _generateMonthYearList();
+    //_generateMonthYearList();
   }
 
-  // Hàm lấy destination dựa vào modeType
-  _getDestination() {
-    if (widget.modeType == 1) {
-      return restaurantList.firstWhere(
-        (r) => r.restaurantId == widget.destinationId,
-        orElse: () => restaurantList[0],
-      );
-    } else if (widget.modeType == 2) {
-      return mockHotels.firstWhere(
-        (h) => h.hotelID == widget.destinationId,
-        orElse: () => mockHotels[0],
-      );
-    } else if (widget.modeType == 3) {
-      return danangDestinations.firstWhere(
-        (d) => d.id == widget.destinationId,
-        orElse: () => danangDestinations[0],
-      );
-    }
-      else {
-      return mockTours.firstWhere(
-        (d) => d.id == widget.destinationId,
-        orElse: () => mockTours[0],
-      );
-    }
-  }
+  // void _generateMonthYearList() {
+  //   DateTime now = DateTime.now();
+  //   DateFormat formatter = DateFormat('MMMM/yyyy');
 
-  void _generateMonthYearList() {
-    DateTime now = DateTime.now();
-    DateFormat formatter = DateFormat('MMMM/yyyy');
-
-    for (int i = 0; i < 12; i++) {
-      DateTime month = DateTime(now.year, now.month - i, 1);
-      monthYearList.add(formatter.format(month));
-    }
-  }
+  //   for (int i = 0; i < 12; i++) {
+  //     DateTime month = DateTime(now.year, now.month - i, 1);
+  //     monthYearList.add(formatter.format(month));
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -115,19 +96,13 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
               child: Column(
                 children: [
                   Image.network(
-                    destination.images != null && destination.images!.isNotEmpty
-                        ? destination.images![0]
-                        : 'https://example.com/default_image.jpg',
+                    widget.destinationImageURL,
                     fit: BoxFit.cover,
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      widget.modeType == 1
-                          ? '${destination.restaurantName}\n${destination.restaurantLocation}'
-                          : widget.modeType == 2
-                              ? '${destination.hotelName ?? destination.name}\n${destination.hotelLocation ?? destination.location}'
-                              : '${destination.name}\n${destination.location}',
+                      '${widget.destinationName}\n${widget.destinationAddress}',  // Nối tên với địa chỉ
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -153,21 +128,40 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
               },
             ),
             SizedBox(height: 16),
+            // DropdownButton<String>(
+            //   hint: Text('When did you go?'),
+            //   value: selectedMonthYear,
+            //   items: monthYearList.map((String value) {
+            //     return DropdownMenuItem<String>(
+            //       value: value,
+            //       child: Text(value),
+            //     );
+            //   }).toList(),
+            //   onChanged: (String? newValue) {
+            //     setState(() {
+            //       selectedMonthYear = newValue;
+            //     });
+            //   },
+            // ),
+            SizedBox(height: 16),
+            Text('Select your language', style: TextStyle(fontSize: 17)),
+            SizedBox(height: 10),
             DropdownButton<String>(
-              hint: Text('When did you go?'),
-              value: selectedMonthYear,
-              items: monthYearList.map((String value) {
+              value: selectedLanguage,
+              isExpanded: true,
+              items: languageOptions.map((String language) {
                 return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
+                  value: language,
+                  child: Text(language),
                 );
               }).toList(),
               onChanged: (String? newValue) {
                 setState(() {
-                  selectedMonthYear = newValue;
+                  selectedLanguage = newValue ?? 'English'; // Cập nhật ngôn ngữ đã chọn
                 });
               },
             ),
+
             SizedBox(height: 16),
             Text('Who did you go with ?',
                 style: TextStyle(fontSize: 17)),
@@ -181,21 +175,21 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
               },
             ),
             SizedBox(height: 16),
-            DropdownButton<String>(
-              hint: Text('What were you here for?'),
-              value: selectedPurpose.isNotEmpty ? selectedPurpose : null,
-              items: <String>['Business', 'Leisure'].map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  selectedPurpose = newValue ?? '';
-                });
-              },
-            ),
+            // DropdownButton<String>(
+            //   hint: Text('What were you here for?'),
+            //   value: selectedPurpose.isNotEmpty ? selectedPurpose : null,
+            //   items: <String>['Business', 'Leisure'].map((String value) {
+            //     return DropdownMenuItem<String>(
+            //       value: value,
+            //       child: Text(value),
+            //     );
+            //   }).toList(),
+            //   onChanged: (String? newValue) {
+            //     setState(() {
+            //       selectedPurpose = newValue ?? '';
+            //     });
+            //   },
+            // ),
             SizedBox(height: 16),
             TextField(
               controller: _contextController,
@@ -234,43 +228,18 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
               children: [
                 TextButton(
                   onPressed: () {
-                    // Create a new review instance
-                    ReviewModel newReview = ReviewModel(
-                      destinationId: widget.destinationId,
-                      title: reviewTitle,
-                      content: reviewText,
-                      rating: _rating,
-                      images: selectedImages.map((file) => file.path).toList(), // Convert File to String
-                      companion: selectedCompanions,
-                      dateCreated: DateTime.now(),
-                      reviewId: Uuid().v4(), // Generate a unique ID for reviewId
-                      userId: getCurrentUserId(), // Replace with the actual method to get the user's ID
-                    );
-
-                    // Get an instance of ReviewWidgetController
-                    final controller = Get.find<ReviewWidgetController>();
-
                     // Submit the review
                     try {
-                      // Safely map the List<String>? to List<File>
-                      List<File> imageFiles = newReview.images
-                              ?.map((imagePath) => File(imagePath))
-                              .toList() ??
-                          [];
-
-                      controller.setReviewData(
-                        destinationId: newReview.destinationId,
-                        rating: newReview.rating,
-                        context: newReview.content,
-                        monthYear: newReview.travelTime,
-                        purpose: newReview.purpose,
-                        companions: newReview.companions,
-                        text: newReview
-                            .context, // Ensure this aligns with your logic
-                        title: newReview.title,
-                        images: imageFiles, // Pass the List<File>
-                      );
-
+                      // Call the createReview function to submit the review  
+                        controller.setReviewData(
+                          title: reviewTitle, // Pass title
+                          content: reviewText, // Pass content
+                          rating: _rating, // Pass rating
+                          companion: selectedCompanions.join(', '), // Pass companion(s)
+                          destinationId: widget.destinationId.toString(), // Pass destination ID (converted to string)
+                          userId: '1', // Pass user ID (replace with actual user ID)
+                          images: selectedImages, // Pass selected images
+                        );
                       // Provide feedback to the user
                       Get.snackbar(
                         'Success',
@@ -315,8 +284,8 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                       _contextController.clear();
                       _titleController.clear();
                       _rating = 0;
-                      selectedMonthYear = null;
-                      selectedPurpose = '';
+                      //selectedMonthYear = null;
+                      //selectedPurpose = '';
                       selectedCompanions.clear();
                       selectedImages.clear();
                     });
@@ -355,3 +324,4 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
     );
   }
 }
+

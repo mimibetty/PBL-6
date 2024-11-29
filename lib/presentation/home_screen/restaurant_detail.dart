@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
+import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
 import 'package:travelappflutter/presentation/search_screen/models/restaurant_model.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,15 +17,14 @@ class RestaurantDetailScreen extends StatefulWidget {
 }
 
 class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
+  final ReviewWidgetController controller = Get.put(ReviewWidgetController());
   @override
   void initState() {
     super.initState();
-    allReviews = mockReviews;
   }
 
   PageController pageController = PageController();
   int pageView = 0;
-  List<ReviewModel> allReviews = mockReviews;
 
   Widget _buildContactInfo(String label, String value) {
     return RichText(
@@ -96,10 +97,8 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<ReviewModel> filteredReviews = allReviews
-        .where(
-            (review) => review.destinationId == widget.restaurant.restaurantId)
-        .toList();
+    controller.fetchReviewsByDestinationID(widget.restaurant.restaurantId);
+    final List<ReviewModel> reviews = controller.reviews;
 
     return Scaffold(
       backgroundColor: kBackgroundColor,
@@ -139,7 +138,9 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                 MaterialPageRoute(
                   builder: (context) => ReviewFormPage(
                     destinationId: widget.restaurant.restaurantId,
-                    modeType: 1,
+                    destinationName: widget.restaurant.restaurantName,
+                    destinationAddress: widget.restaurant.restaurantLocation,
+                    destinationImageURL: widget.restaurant.images.first,
                   ), // Truyền destinationId vào
                 ),
               );
@@ -327,7 +328,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
             ),
             const SizedBox(width: 5),
             Text(
-              widget.restaurant.rating.toString(),
+              widget.restaurant.rating.toStringAsFixed(1).toString(),
               style: const TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
@@ -413,7 +414,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                                       widget.restaurant.feature.join(', ')),
                                   const SizedBox(height: 10),
                                   _buildContactInfo("Meal :",
-                                      widget.restaurant.cuisines.join(', ')),
+                                      widget.restaurant.meal.join(', ')),
                                   const SizedBox(height: 10),
                                   _buildContactInfo("Open Time :",
                                       widget.restaurant.openTime.toString()),
@@ -424,7 +425,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                           ),
 
                           // Review Tab
-                          ReviewWidget(reviews: filteredReviews),
+                          ReviewWidget(reviews: reviews),
                           // Contact Tab
                           Padding(
                             padding: const EdgeInsets.all(10),

@@ -1,4 +1,3 @@
-
 class Restaurant {
   final String restaurantName; 
   final int restaurantId; 
@@ -44,6 +43,13 @@ class Restaurant {
     // Parse location details from "address"
     String restaurantLocation = '${apiData['address']['ward']}, ${apiData['address']['district']}, ${apiData['address']['street']}';
 
+    // Check for image URLs and provide a default image if any URL is empty or null
+    List<String> images = (apiData['images'] as List<dynamic>).map((img) {
+      String imageUrl = img['url'] as String? ?? '';
+      // Use default image if the URL is empty
+      return imageUrl.isEmpty ? 'https://experienceleaguecommunities.adobe.com/t5/image/serverpage/image-id/34749i7C7BB1DB5E28E527?v=v2' : imageUrl;
+    }).toList();
+
     return Restaurant(
       restaurantName: apiData['name'] ?? 'Unknown Restaurant',
       restaurantId: apiData['restaurant']['id'] ?? 0,
@@ -55,15 +61,16 @@ class Restaurant {
       rating: (apiData['rating'] ?? 0).toDouble(),
       cuisines: (apiData['restaurant']['cuisine']?.split(', ') ?? []).cast<String>(),
       meal: (apiData['restaurant']['special_diet']?.split(', ') ?? []).cast<String>(),
-      feature: [], // Placeholder for features, as the JSON does not contain "feature"
+      feature: (apiData['restaurant']['feature']?.split(', ') ?? []).cast<String>(),
       about: apiData['description'] ?? 'No description available',
-      images: (apiData['images'] as List<dynamic>).map((img) => img['url'] as String).toList(),
+      images: images,
       restaurantLocation: restaurantLocation,
       review: apiData['numOfReviews'] ?? 0,
       priceRange: priceRange,
     );
   }
 }
+
 
 List<Restaurant> restaurantList = [
   Restaurant(

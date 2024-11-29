@@ -48,27 +48,36 @@ class ThingsToDoController extends GetxController {
 
   // Phương thức để lấy tất cả các ThingsToDo khi không lọc theo tag
   Future<void> fetchAllThingsToDo() async {
-    isLoading.value = true;
-    selectedTagId.value = 0; // Đặt lại selectedTagId về 0 khi tải toàn bộ
-    try {
-      final response = await http.get(Uri.parse('$apiUrl/destination/?is_popular=true&get_rating=true'));
-      if (response.statusCode == 200) {
-        List<dynamic> apiData = json.decode(response.body);
-        thingsToDoList.value = apiData.map((data) => TravelDestination.fromJson(data)).toList();
-      } else {
-        print("Failed to load all things to do: ${response.statusCode}");
+  isLoading.value = true;
+  selectedTagId.value = 0; // Đặt lại selectedTagId về 0 khi tải toàn bộ
+  try {
+    final response = await http.get(Uri.parse('$apiUrl/destination/?is_popular=true&get_rating=true'));
+    
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}'); // In ra dữ liệu nhận được từ API
+
+    if (response.statusCode == 200) {
+      List<dynamic> apiData = json.decode(response.body);
+      if (apiData.isEmpty) {
+        print("No data found for things to do.");
       }
-    } catch (e) {
-      print("Error fetching all things to do: $e");
-    } finally {
-      isLoading.value = false;
+      thingsToDoList.value = apiData.map((data) => TravelDestination.fromJson(data)).toList();
+      print('Number of things to do: ${thingsToDoList.length}');
+    } else {
+      print("Failed to load all things to do: ${response.statusCode}");
     }
+  } catch (e) {
+    print("Error fetching all things to do: $e");
+  } finally {
+    isLoading.value = false;
   }
+}
+
 
   // Phương thức để làm mới danh sách ThingsToDo dựa trên tag đã chọn
   void refreshThingsToDo() {
     if (selectedTagId.value == 0) {
-      fetchAllThingsToDo();
+      //fetchAllThingsToDo();
     } else {
       fetchThingsToDoByTag(selectedTagId.value);
     }
@@ -78,6 +87,6 @@ class ThingsToDoController extends GetxController {
   void onInit() {
     super.onInit();
     fetchTags(); // Lấy danh sách tag khi khởi tạo controller
-    fetchAllThingsToDo(); // Tải toàn bộ ThingsToDo mặc định khi khởi tạo
+    //fetchAllThingsToDo(); // Tải toàn bộ ThingsToDo mặc định khi khởi tạo
   }
 }

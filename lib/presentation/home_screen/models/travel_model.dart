@@ -38,8 +38,11 @@ class TravelDestination {
   });
 
   factory TravelDestination.fromJson(Map<String, dynamic> json) {
+    // Default image URL if none exists
+    const String defaultImageUrl = 'https://experienceleaguecommunities.adobe.com/t5/image/serverpage/image-id/34749i7C7BB1DB5E28E527?v=v2';
+
     return TravelDestination(
-      name: json['name'] ?? 'Unknown Destination', // Giá trị mặc định nếu `name` null
+      name: json['name'] ?? 'Unknown Destination', // Default if `name` is null
       address: Address.fromJson(json['address'] ?? {}),
       priceBottom: json['price_bottom'] ?? 0,
       priceTop: json['price_top'] ?? 0,
@@ -52,14 +55,16 @@ class TravelDestination {
       hotelId: json['hotel_id'] ?? null,
       restaurantId: json['restaurant_id'] ?? null,
       images: json['images'] != null 
-          ? List<String>.from(json['images'].map((image) => image['url'] ?? ''))
-          : [], // Kiểm tra `images` null và cung cấp danh sách rỗng
-      rating: (json['rating'] ?? 0).toDouble(), // Kiểm tra null và chuyển thành double
+          ? List<String>.from(
+              json['images'].map((image) => image['url'] ?? defaultImageUrl)
+            )
+          : [defaultImageUrl], // Return default image URL if `images` is null or empty
+      rating: (json['rating'] ?? 0).toDouble(),
       numOfReviews: json['numOfReviews'] ?? 0,
       location: json['district'] != null && json['district']['city_name'] != null
           ? '${json['district']['city_name']}'
-          : 'Unknown Location', // Kết hợp district với nameCity
-      description: json['description'] ?? 'No description available', // Description
+          : 'Unknown Location',
+      description: json['description'] ?? 'No description available',
     );
   }
 }

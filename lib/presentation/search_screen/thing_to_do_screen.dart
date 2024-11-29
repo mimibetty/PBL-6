@@ -51,6 +51,14 @@ Widget experienceButton(String label, int count, IconData icon) {
 
 class _ThingToDoScreenState extends State<ThingToDoScreen> {
   final ThingsToDoController thingsToDoController = Get.put(ThingsToDoController());
+  
+  @override
+  void initState() {
+    super.initState();
+    // thingsToDoController.fetchTags();
+    // thingsToDoController.fetchAllThingsToDo();
+    }
+
   @override
   Widget build(BuildContext context) {
     // tạm thời bỏ trống, xử lý sau :

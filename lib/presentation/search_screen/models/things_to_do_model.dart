@@ -47,10 +47,14 @@ class ThingsToDoModel {
         .map((tag) => Tag(name: tag['name'], id: tag['id']))
         .toList();
 
-    // Parse images
-    List<String> images = (apiData['images'] as List<dynamic>)
-        .map((img) => img['url'] as String)
-        .toList();
+    // Parse images and provide a default image if the URL is empty or null
+    List<String> images = (apiData['images'] as List<dynamic>).map((img) {
+      String imageUrl = img['url'] as String? ?? '';
+      // Use default image if the URL is empty
+      return imageUrl.isEmpty
+          ? 'https://experienceleaguecommunities.adobe.com/t5/image/serverpage/image-id/34749i7C7BB1DB5E28E527?v=v2'
+          : imageUrl;
+    }).toList();
 
     return ThingsToDoModel(
       name: apiData['name'] ?? 'Unknown Place',

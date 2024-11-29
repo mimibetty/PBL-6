@@ -76,7 +76,9 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
                 MaterialPageRoute(
                   builder: (context) => ReviewFormPage(
                     destinationId: destinationId,
-                    modeType: 4,
+                    destinationName: widget.tour.name,
+                    destinationImageURL: widget.tour.images[0],
+                    destinationAddress: widget.tour.location,
                   ), // Truyền destinationId vào
                 ),
               );

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
+import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
-import '../review_widget/models/review_widget_model.dart';
 import '../review_widget/widgets/create_review.dart';
 
 class PlaceDetailScreen extends StatefulWidget {
@@ -13,29 +14,30 @@ class PlaceDetailScreen extends StatefulWidget {
   State<PlaceDetailScreen> createState() => _PlaceDetailScreenState();
 }
 
-class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
+class _PlaceDetailScreenState extends State<PlaceDetailScreen> { 
+  final ReviewWidgetController controller = Get.put(ReviewWidgetController());
   @override
   void initState() {
     super.initState();
-    allReviews = mockReviews; // Khởi tạo trong initState
+    // Gọi hàm fetchReviewsByDestinationID khi màn hình được xây dựng
+    controller.fetchReviewsByDestinationID(widget.destination.id);
   }
 
   PageController pageController = PageController();
   int pageView = 0;
-  List<ReviewModel> allReviews =
-      mockReviews; // Sử dụng mockReviews đã tạo trước đó
+  // List<ReviewModel> allReviews =
+  //     mockReviews; // Sử dụng mockReviews đã tạo trước đó
 
   @override
   Widget build(BuildContext context) {
     final destinationId = widget.destination.id;
-    List<ReviewModel> filteredReviews = allReviews
-        .where((review) => review.destinationId == widget.destination.id)
-        .toList();
-
-    for (var review in filteredReviews) {
-      print(
-          'ID: ${review.destinationId}, Name: ${review.content}'); // In ra ID và Name
-    }
+    // List<ReviewModel> filteredReviews = allReviews
+    //     .where((review) => review.destinationId == widget.destination.id)
+    //     .toList();
+    // for (var review in filteredReviews) {
+    //   print(
+    //       'ID: ${review.destinationId}, Name: ${review.content}'); // In ra ID và Name
+    // }
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
@@ -74,8 +76,10 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                 MaterialPageRoute(
                   builder: (context) => ReviewFormPage(
                     destinationId: destinationId,
-                    modeType: 3,
-                  ), // Truyền destinationId vào
+                    destinationName: widget.destination.name,
+                    destinationAddress: '${widget.destination.address.street}, ${widget.destination.address.ward}, ${widget.destination.address.district}',
+                    destinationImageURL: widget.destination.images[0],
+                  ), 
                 ),
               );
             },
@@ -339,7 +343,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                           ),
                           ReviewWidget(
                             reviews:
-                                filteredReviews, // Pass the filtered reviews list
+                                controller.reviews, // Pass the filtered reviews list
                           ), // Chỉ có 2 widget con, do đó loại bỏ Center
                         ],
                       ),

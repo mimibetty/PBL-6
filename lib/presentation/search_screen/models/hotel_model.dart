@@ -2,8 +2,7 @@ class Hotel {
   final int hotelID;
   final String hotelName;
   final String hotelLocation;
-  //final int price; // Keep price as int for potential calculations
-  final String priceRange; // New field to display the price range as text
+  final String priceRange;
   final int age;
   final String openTime;
   final double duration;
@@ -21,11 +20,13 @@ class Hotel {
   final String email;
   final String hotelContact;
 
+  // URL ảnh mặc định
+  static const String defaultImageUrl = 'https://experienceleaguecommunities.adobe.com/t5/image/serverpage/image-id/34749i7C7BB1DB5E28E527?v=v2';
+
   Hotel({
     required this.hotelID,
     required this.hotelName,
     required this.hotelLocation,
-    //required this.price,
     required this.priceRange,
     required this.age,
     required this.openTime,
@@ -45,32 +46,31 @@ class Hotel {
     required this.hotelContact,
   });
 
-  // Factory constructor from a single JSON object
   factory Hotel.fromApi(Map<String, dynamic> apiData) {
+    // Kiểm tra và thay thế ảnh rỗng bằng ảnh mặc định
+    List<String> imageUrls = (apiData['images'] as List<dynamic>)
+        .map((img) => img['url'] as String)
+        .map((url) => url.isEmpty ? defaultImageUrl : url) // Thay thế ảnh rỗng
+        .toList();
+
     return Hotel(
       hotelID: apiData['id'] as int,
       hotelName: apiData['name'] ?? 'Unknown Hotel',
-      
       hotelLocation: '${apiData['address']['ward']}, ${apiData['address']['district']}, ${apiData['address']['street']}',
       priceRange: "From ${apiData['price_bottom']?.toString() ?? '0'} to ${apiData['price_top']?.toString() ?? '0'}",
       age: apiData['age'] ?? 0,
       openTime: apiData['opentime'] ?? '00:00',
       duration: (apiData['duration'] ?? 0).toDouble(),
-
       roomFeatures: (apiData['hotel']['room_features']?.split(', ') ?? []).cast<String>(),
       propertyAmenities: (apiData['hotel']['property_amenities']?.split(', ') ?? []).cast<String>(),
       roomTypes: (apiData['hotel']['room_types']?.split(', ') ?? []).cast<String>(),
       hotelStyles: (apiData['hotel']['hotel_styles']?.split(', ') ?? []).cast<String>(),
       hotelLanguages: (apiData['hotel']['Languages']?.split(', ') ?? []).cast<String>(),
-
       star: apiData['hotel']['hotel_class'] ?? 0,
-
-      images: (apiData['images'] as List<dynamic>).map((img) => img['url'] as String).toList(),
-
+      images: imageUrls,
       about: apiData['description'] ?? '',
       rating: (apiData['rating'] ?? 0).toDouble(),
       reviewCount: apiData['numOfReviews'] ?? 0,
-
       website: apiData['hotel']['website'] ?? 'No website available',
       email: apiData['hotel']['email'] ?? 'No email available',
       hotelContact: apiData['hotel']['phone'] ?? 'No contact available',

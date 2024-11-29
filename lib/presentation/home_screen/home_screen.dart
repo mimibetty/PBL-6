@@ -360,6 +360,7 @@ List<TravelDestination> getThingsToDoDestinations(List<TravelDestination> destin
                 MaterialPageRoute(
                   builder: (context) => RestaurantSearchScreen(
                      cityNames: widget.cityName!,
+                     cityID: widget.cityID!,
                      restaurantIDs: getRestaurantIDs(homeController.myDestination.value), // Directly fetching hotel IDs here
                   ),
                 ),
