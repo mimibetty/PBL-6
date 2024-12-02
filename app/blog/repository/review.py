@@ -37,12 +37,22 @@ def get_by_id(id: int, db: Session):
                             detail=f"Error retrieving review: {str(e)}")
 
 def get_reviews_of_destination_by_destinationId(destination_id: int, db: Session):
+
     try:
         reviews = db.query(models.Review).filter(models.Review.destination_id == destination_id).all()  # Chờ truy vấn
         return reviews
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error retrieving reviews: {str(e)}")
+def get_reviews_userId(user_id: int, db: Session):
+    try:
+        reviews = db.query(models.Review).filter(models.Review.user_id == user_id).all()  # Chờ truy vấn
+        return reviews
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail=f"Error retrieving reviews: {str(e)}")
+
+
 def get_reviews_of_user_in_1_destination_by_userId_and_destinationID(destination_id: int, user_id: int, db: Session):
     try:
         # Truy vấn chỉ các review có destination_id và user_id tương ứng

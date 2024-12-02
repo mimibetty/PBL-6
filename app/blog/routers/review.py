@@ -96,7 +96,7 @@ def get_by_id(
     return schemas.ShowReview.from_orm(rv)
 
 @router.get("/", 
-            description= "Fill destination_id : get all review about 1 destination; Fill both user_id and destination_id: get all review of 1 user about 1 destination")
+            description= "Fill destination_id : get all review about 1 destination; Fill user_id : get all review of 1 user; Fill both user_id and destination_id: get all review of 1 user about 1 destination")
 def get_reviews(
     destination_id: int = None,
     user_id: int = None,
@@ -104,20 +104,22 @@ def get_reviews(
     companion: str = None,
     db: Session = Depends(get_db)
 ):
-
     if destination_id:
         if user_id:
+            print(user_id)
             reviews = review.get_reviews_of_user_in_1_destination_by_userId_and_destinationID(destination_id, user_id, db)
         else:
             reviews = review.get_reviews_of_destination_by_destinationId(destination_id, db)
-        
-        results = []
-        for item in reviews:
-            if (language is None or item.language == language) and (companion is None or item.companion == companion):
-                results.append(item)
+    else:
+        if user_id:
+            reviews = review.get_reviews_userId(user_id= user_id, db=db)
 
-        return [schemas.ShowReview.from_orm(rv).dict() for rv in results]
-                
+    results = []
+    for item in reviews:
+        if (language is None or item.language == language) and (companion is None or item.companion == companion):
+            results.append(item)
 
-    raise HTTPException(status_code=400, detail="You must provide destination_id, or both user_id and destination_id.")
+    return [schemas.ShowReview.from_orm(rv).dict() for rv in results]
+            
+
 
