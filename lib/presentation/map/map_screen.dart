@@ -1,115 +1,417 @@
 import 'dart:convert';
-import 'dart:typed_data';
+import 'dart:math';
+import 'dart:async'; // ignore: unnecessary_import
+import 'dart:core';
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // Để sử dụng rootBundle
+import 'package:flutter/widgets.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'dart:typed_data';
 
-class AddressMapWidget extends StatefulWidget {
-  final String address; // Địa chỉ đầu vào
+class MapScreen extends StatefulWidget {
+  final double latitude;
 
-  AddressMapWidget({required this.address});
+  final double longitude;
+  const MapScreen({
+    Key? key,
+    required this.latitude,
+    required this.longitude,
+  }) : super(key: key);
 
   @override
-  _AddressMapWidgetState createState() => _AddressMapWidgetState();
+  State<MapScreen> createState() => _MapScreenState();
 }
 
-class _AddressMapWidgetState extends State<AddressMapWidget> {
+class _MapScreenState extends State<MapScreen> {
   MaplibreMapController? mapController;
-  LatLng? _location; // Tọa độ vị trí
-  bool isMarkerAdded = false; // Flag to track if marker has been added
+
+  LatLng? _currentPosition;
+  LatLng? _destinationPoint;
+  PolylinePoints polylinePoints = PolylinePoints();
+  Symbol? _currentMarker;
+  OverlayEntry? _popupOverlayEntry;
+  String api_key = 'ArPlUISaEBAdJFTABi9dcNGcue8WQ4cOAuGcNoBE';
+  String map_tiles_key = 'tLyW2vk0aY3yfQLu8ZPy986mAgaW8igMYufv3BLY';
 
   @override
   void initState() {
     super.initState();
-    _getCoordinatesFromAddress(widget.address); // Lấy tọa độ từ địa chỉ
+    _getCurrentLocation();
   }
 
-  Future<void> _getCoordinatesFromAddress(String address) async {
-    final String url =
-        'https://nominatim.openstreetmap.org/search?q=${Uri.encodeComponent(address)}&format=json&limit=1';
-
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (data.isNotEmpty) {
-          final lat = double.parse(data[0]['lat']);
-          final lon = double.parse(data[0]['lon']);
-          setState(() {
-            _location = LatLng(lat, lon);
-          });
-        } else {
-          print('No results found for address: $address');
-        }
-      } else {
-        print('Failed to fetch coordinates: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error fetching coordinates: $e');
-    }
+  Future<void> _getCurrentLocation() async {
+    setState(() {
+      _currentPosition = LatLng(widget.latitude, widget.longitude);
+    });
   }
 
-  Future<void> _loadImageAndAddMarker(String assetPath) async {
-    try {
-      // Đọc ảnh từ assets
-      final ByteData data = await rootBundle.load(assetPath);
-      final bytes = data.buffer.asUint8List();
-
-      // Đăng ký ảnh vào Maplibre
-      await mapController!.addImage("marker_icon", bytes);
-
-      // Thêm marker vào bản đồ
-      mapController!.addSymbol(
-        SymbolOptions(
-          geometry: _location!,
-          iconImage: "marker_icon", // Tên hình ảnh đã đăng ký
-          iconSize: 0.05, // Tùy chỉnh kích thước nếu cần
-        ),
-      );
-      setState(() {
-        isMarkerAdded = true;
-      });
-      print("Marker added at: $_location");
-    } catch (e) {
-      print("Error loading image for marker: $e");
-    }
-  }
-
-  void _onMapCreated(MaplibreMapController controller) {
+  void _onMapCreated(MaplibreMapController controller) async {
     mapController = controller;
+    _loadMarkerImage();
+    _loadMarkerEndImage();
+    _addMarkerAtDestinationPoint();
+  }
 
-    if (_location != null) {
-      if (!isMarkerAdded) {
-        // Gọi phương thức để tải và thêm marker từ assets
-        _loadImageAndAddMarker('assets/images/marker.png');
-      } else {
-        print("Marker is already added.");
+  Future<void> _loadMarkerImage() async {
+    final ByteData bytes = await rootBundle.load('assets/images/location.png');
+    mapController?.addImage('location', bytes.buffer.asUint8List());
+  }
+
+  Future<void> _loadMarkerEndImage() async {
+    final ByteData bytes =
+        await rootBundle.load('assets/images/locationEnd.png');
+    mapController?.addImage('locationEnd', bytes.buffer.asUint8List());
+  }
+
+  void _onStyleLoadedCallback() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text("Style loaded :)"),
+        backgroundColor: Theme.of(context).primaryColor,
+        duration: const Duration(seconds: 1),
+      ),
+    );
+    if (_currentPosition != null) {
+      _addMarkerAtCurrentPosition();
+    }
+  }
+
+  void _addMarkerAtCurrentPosition() async {
+    if (mapController == null) {
+      print("Map controller is not initialized");
+      return;
+    }
+    print('in trong addMarkerCurrentPost: ${widget.latitude}');
+
+    try {
+      mapController?.addSymbol(SymbolOptions(
+        geometry: LatLng(widget.latitude, widget.longitude),
+        iconImage: 'location',
+        iconSize: 0.1,
+        zIndex: 1, // Ensure marker is above circle
+      ));
+      print(
+          "Initial marker added at (${widget.latitude}, ${widget.longitude})");
+    } catch (e) {
+      print("Error adding initial marker: $e");
+    }
+  }
+
+  void _addMarkerAtDestinationPoint() async {
+    if (mapController == null) {
+      print("Map controller is not initialized");
+      return;
+    }
+
+    if (_destinationPoint == null) {
+      print("Destination point is not set");
+      return;
+    }
+
+    try {
+      // Xóa marker hiện tại nếu có
+      if (_currentMarker != null) {
+        await mapController!.removeSymbol(_currentMarker!);
       }
+
+      // Add a marker with a title
+      _currentMarker = await mapController!.addSymbol(SymbolOptions(
+        geometry: _destinationPoint!,
+        iconImage: 'locationEnd', // Ensure this matches the loaded image name
+        iconSize: 0.1,
+        draggable: true,
+      ));
+
+      mapController!.onSymbolTapped.add((symbol) {
+        _onMarkerTapped(symbol);
+      });
+
+      print("Marker added at ($_destinationPoint)");
+
+      mapController!.onFeatureDrag.add((
+        value, {
+        required LatLng current,
+        required LatLng delta,
+        required DragEventType eventType,
+        required LatLng origin,
+        required Point<double> point,
+      }) {
+        print("5656565656($origin)"); // Đây để log ra location khi draggable
+      });
 
       // Di chuyển camera đến vị trí mới
-      mapController!.animateCamera(
-        CameraUpdate.newLatLngZoom(_location!, 16.0),
-      );
-    } else {
-      print("Marker location is null");
+      mapController!.animateCamera(CameraUpdate.newLatLng(_destinationPoint!));
+    } catch (e) {
+      print("Error adding marker: $e");
     }
+  }
+
+  void _onMarkerDragEnd(LatLng newPosition) {
+    print(
+        "Marker dragged to: ${newPosition.latitude}, ${newPosition.longitude}");
+    setState(() {
+      _destinationPoint = newPosition; // Cập nhật vị trí mới
+    });
+  }
+
+  void _onMarkerTapped(Symbol symbol) async {
+    if (mapController == null) return;
+
+    // Remove previous overlay if any
+    _popupOverlayEntry?.remove();
+
+    // Convert LatLng to screen coordinates
+    LatLng markerLatLng = symbol.options.geometry!;
+    Point<num> screenPosition =
+        await mapController!.toScreenLocation(markerLatLng);
+
+    // Create a new overlay entry
+    _popupOverlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        left: screenPosition.x.toDouble() -
+            50, // Adjust based on the width of the popup
+        top: screenPosition.y.toDouble() -
+            80, // Adjust based on the height of the popup
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            padding: EdgeInsets.all(8.0),
+            color: Colors.white,
+            child: Text(
+              symbol.options.textField ?? 'No Title',
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // Insert the overlay into the overlay stack
+    Overlay.of(context)!.insert(_popupOverlayEntry!);
+
+    // Add a handler to close the popup when tapping on another symbol
+    mapController!.onSymbolTapped.add((tappedSymbol) {
+      if (tappedSymbol != symbol) {
+        _popupOverlayEntry?.remove();
+      }
+    });
+  }
+
+  final TextEditingController _searchController = TextEditingController();
+  String mainText = "";
+  String secondText = "";
+  List<dynamic> places = [];
+  var details = {};
+  bool isShow = false;
+  bool isHidden = true;
+
+  Future<void> fetchData(String input) async {
+    try {
+      final url = Uri.parse(
+          'https://rsapi.goong.io/Place/AutoComplete?location=21.013715429594125%2C%20105.79829597455202&input=$input&api_key=$api_key');
+      // print('url $url');
+      var response = await http.get(url);
+      final jsonResponse = jsonDecode(response.body);
+      print(jsonResponse);
+      setState(() {
+        final jsonResponse = jsonDecode(response.body);
+        places = jsonResponse['predictions'] as List<dynamic>;
+        print('url $url, size: ${places.length}');
+        // _circleAnnotationManager?.deleteAll();
+        isShow = true;
+        isHidden = true;
+      });
+    } catch (e) {
+      // ignore: avoid_print
+      print('$e');
+    }
+  }
+
+  Future<void> fetchDataDirection() async {
+    if (_currentPosition != null && _destinationPoint != null) {
+      final url = Uri.parse(
+          'https://rsapi.goong.io/Direction?origin=${_currentPosition!.latitude},${_currentPosition!.longitude}&destination=${_destinationPoint!.latitude},${_destinationPoint!.longitude}&vehicle=bike&api_key=$api_key');
+
+      var response = await http.get(url);
+      final jsonResponse = jsonDecode(response.body);
+      var route = jsonResponse['routes'][0]['overview_polyline']['points'];
+
+      List<PointLatLng> result = polylinePoints.decodePolyline(route);
+      List<List<double>> coordinates =
+          result.map((point) => [point.longitude, point.latitude]).toList();
+      _drawLine(coordinates);
+    }
+  }
+
+  void _drawLine(List<List<double>> coordinates) {
+    mapController?.removeLayer("line_layer");
+    mapController?.removeSource("line_source");
+    final geoJsonData = {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": coordinates,
+          },
+        },
+      ],
+    };
+
+    mapController?.addSource(
+      "line_source",
+      GeojsonSourceProperties(
+        data: geoJsonData,
+      ),
+    );
+
+    mapController?.addLineLayer(
+      "line_source",
+      "line_layer",
+      LineLayerProperties(
+        lineColor: "#0000FF", // Màu xanh dưới dạng chuỗi
+        lineWidth: 10,
+        lineCap: "round",
+        lineJoin: "round",
+      ),
+    );
+  }
+
+  Widget _buildListView() {
+    return ListView.separated(
+      itemCount: places.length,
+      shrinkWrap: true,
+      separatorBuilder: (BuildContext context, int index) =>
+          const Divider(height: 1),
+      itemBuilder: (context, index) {
+        final coordinate = places[index];
+        return ListTile(
+          title: Text(
+            coordinate['description'],
+            style: const TextStyle(
+              fontSize: 16, // Đặt kích thước chữ bạn muốn ở đây
+              fontWeight: FontWeight.w400,
+              color: Colors.black,
+            ),
+          ),
+          onTap: () async {
+            final url = Uri.parse(
+                'https://rsapi.goong.io/place/detail?place_id=${coordinate['place_id']}&api_key=$api_key');
+            final response = await http.get(url);
+            final jsonResponse = jsonDecode(response.body);
+            setState(() {
+              _destinationPoint = LatLng(
+                  jsonResponse['result']['geometry']['location']['lat'],
+                  jsonResponse['result']['geometry']['location']['lng']);
+              isShow = false;
+              isHidden = true;
+              _addMarkerAtDestinationPoint();
+            });
+          },
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _location == null
-          ? Center(child: CircularProgressIndicator()) // Đang tải tọa độ
-          : MaplibreMap(
+      body: Stack(
+        children: [
+          SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+            child: MapLibreMap(
               onMapCreated: _onMapCreated,
-              styleString:
-                  'https://api.maptiler.com/maps/streets/style.json?key=mifAEyncYQK8WekHDLK9', // Thêm kiểu bản đồ
+              onStyleLoadedCallback: _onStyleLoadedCallback,
               initialCameraPosition: CameraPosition(
-                target: _location!, // Chuyển camera tới tọa độ
-                zoom: 16.0, // Mức độ zoom
+                target: LatLng(
+                    widget.latitude,
+                    widget
+                        .longitude), // Vị trí ban đầu của bản đồ (Cái này sẽ bắt vị trí hiện tại của bạn)
+                zoom: 14.0,
               ),
+              styleString:
+                  'https://tiles.goong.io/assets/goong_map_web.json?api_key=$map_tiles_key', // URL của style
+              attributionButtonPosition: null,
             ),
+          ),
+          Container(
+            height: 70,
+            alignment: Alignment.topLeft,
+            margin: const EdgeInsets.fromLTRB(5, 10, 5, 10),
+            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+            decoration: BoxDecoration(color: Colors.grey[200]),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.only(left: 4),
+                        decoration: const BoxDecoration(color: Colors.white),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.location_on_outlined,
+                              color: Colors.blue,
+                              size: 20,
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 4, right: 8),
+                                child: TextField(
+                                  controller: _searchController,
+                                  onChanged: (String text) {
+                                    print("onChanged: $text");
+                                    fetchData(text);
+                                    isHidden = true;
+                                  },
+                                  decoration: const InputDecoration(
+                                    hintText: "Nhập địa điểm",
+                                    border: InputBorder.none,
+                                    hintStyle: TextStyle(
+                                        color: Colors.black54, fontSize: 16),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                // Thực hiện hành động dẫn đường ở đây
+                                fetchDataDirection();
+                                print("Dẫn đường");
+                              },
+                              child: const Text(
+                                "Dẫn đường",
+                                style: TextStyle(color: Colors.blue),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (isShow == true)
+            Container(
+              margin: const EdgeInsets.fromLTRB(5, 70, 5, 0),
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+              decoration: const BoxDecoration(color: Colors.white),
+              child: _buildListView(),
+            ),
+        ],
+      ),
     );
   }
 }

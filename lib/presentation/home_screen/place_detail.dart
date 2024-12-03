@@ -354,14 +354,14 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                       height:
                                           10), // Khoảng cách giữa mô tả và bản đồ
                                   // Bản đồ
-                                  Container(
-                                    height:
-                                        250, // Set a fixed height for the map
-                                    child: AddressMapWidget(
-                                      address:
-                                          '496, Đường Ngô Quyền, Phường An Hải Bắc, Quận Sơn Trà, Thành Phố Đà Nẵng',
-                                    ),
-                                  ),
+                                  // Container(
+                                  //   height:
+                                  //       250, // Set a fixed height for the map
+                                  //   child: MapScreen(
+                                  //     initialLocation:
+                                  //         '910A Ngô Quyền, An Hải Bắc, Sơn Trà, Đà Nẵng',
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                             ),

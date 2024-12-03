@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/models/business_model.dart';
 import 'package:travelappflutter/presentation/business_dashboard/business_dashboard.dart';
+import 'package:travelappflutter/presentation/map/map_screen.dart';
 
 class BusinessPostScreen extends StatefulWidget {
   final Business business;
@@ -93,46 +94,62 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
   }
 
   Widget _buildBusinessHeader() {
-    return Row(
+    return Column(
+      // Sử dụng Column thay vì Row
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ClipOval(
-          child: Image.network(
-            widget.business.logoUrl,
-            width: 80, // Gấp đôi radius để phù hợp
-            height: 80,
-            fit: BoxFit.cover, // Đảm bảo hình ảnh vừa khung
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
-                width: 80,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipOval(
+              child: Image.network(
+                widget.business.logoUrl,
+                width: 80, // Gấp đôi radius để phù hợp
                 height: 80,
-                color: Colors.grey[200],
-                child: const Icon(Icons.business, size: 40, color: Colors.grey),
-              );
-            },
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.business.name,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
+                fit: BoxFit.cover, // Đảm bảo hình ảnh vừa khung
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    width: 80,
+                    height: 80,
+                    color: Colors.grey[200],
+                    child: const Icon(Icons.business,
+                        size: 40, color: Colors.grey),
+                  );
+                },
               ),
-              const SizedBox(height: 8),
-              Text(
-                widget.business.address,
-                style: const TextStyle(fontSize: 16, color: Colors.black54),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.business.name,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    widget.business.address,
+                    style: const TextStyle(fontSize: 16, color: Colors.black54),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
+        const SizedBox(height: 16), // Thêm khoảng cách giữa header và bản đồ
+        Container(
+          height: 250,
+          child: MapScreen(
+            latitude: 16.071321889412893, // Example latitude for Da Nang, Vietnam
+            longitude:
+                 108.23018478185537, // Example longitude for Da Nang, Vietnam
+          ),
+        )
       ],
     );
   }
@@ -210,7 +227,8 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Container(
                   color: Colors.grey[200],
-                  child: const Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
+                  child: const Icon(Icons.image_not_supported,
+                      size: 40, color: Colors.grey),
                 ),
               ),
             );
@@ -224,7 +242,8 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
             return Container(
               width: 8.0,
               height: 8.0,
-              margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+              margin:
+                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: _currentImageIndex == index ? Colors.blue : Colors.grey,
@@ -237,11 +256,11 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
   }
 
   void _navigateToFilteredBusinesses(BuildContext context, String type) {
-     Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DashboardScreen(),
-          ),
-        );
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DashboardScreen(),
+      ),
+    );
   }
 }
