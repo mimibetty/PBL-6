@@ -58,6 +58,8 @@
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>We need your location to show the best services near you.</string>
 	<key>NSAppTransportSecurity</key>
+
+
 <dict>
     <key>NSAllowsArbitraryLoads</key>
     <true/>

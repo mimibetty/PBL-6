@@ -83,7 +83,7 @@ class ProfileScreen extends StatelessWidget {
             trailing: Icon(Icons.chevron_right),
           ),
           Divider(),
-
+          
           // Sign Out
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 20.0),

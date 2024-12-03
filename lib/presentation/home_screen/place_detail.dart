@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
+import 'package:travelappflutter/presentation/map/map_screen.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
 import 'package:travelappflutter/routes/app_routes.dart';
 import '../review_widget/models/review_widget_model.dart';
@@ -266,7 +267,8 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                         ),
                                         const SizedBox(width: 5),
                                         Text(
-                                          widget.destination.rating.toStringAsFixed(1),
+                                          widget.destination.rating
+                                              .toStringAsFixed(1),
                                           style: const TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.bold,
@@ -328,25 +330,51 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                     Expanded(
                       child: TabBarView(
                         children: [
+                          // Tab Overview
                           Padding(
                             padding: const EdgeInsets.all(10),
-                            child: Text(
-                              widget.destination.description,
-                              maxLines: 3,
-                              style: const TextStyle(
-                                color: Colors.black54,
-                                fontSize: 14,
-                                height: 1.5,
+                            child: SingleChildScrollView(
+                              // Wrap the entire column in SingleChildScrollView
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Mô tả địa điểm
+                                  Text(
+                                    widget.destination.description,
+                                    maxLines: 3,
+                                    overflow: TextOverflow
+                                        .ellipsis, // Ensures text is truncated if too long
+                                    style: const TextStyle(
+                                      color: Colors.black54,
+                                      fontSize: 14,
+                                      height: 1.5,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                      height:
+                                          10), // Khoảng cách giữa mô tả và bản đồ
+                                  // Bản đồ
+                                  Container(
+                                    height:
+                                        250, // Set a fixed height for the map
+                                    child: AddressMapWidget(
+                                      address:
+                                          '496, Đường Ngô Quyền, Phường An Hải Bắc, Quận Sơn Trà, Thành Phố Đà Nẵng',
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
+
+                          // Tab Review
                           ReviewWidget(
                             reviews:
                                 filteredReviews, // Pass the filtered reviews list
-                          ), // Chỉ có 2 widget con, do đó loại bỏ Center
+                          ),
                         ],
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),

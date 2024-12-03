@@ -97,7 +97,7 @@ List<ReviewWidgetModel> mockReviews = [
     ],
     title: 'Amazing Experience!', // Thêm tiêu đề cho review
     images: [
-      "https://duthuyendanang.com/wp-content/uploads/2021/08/cau-rong-da-nang-a-1024x664.jpg",
+      // "https://duthuyendanang.com/wp-content/uploads/2021/08/cau-rong-da-nang-a-1024x664.jpg",
       "https://danangbest.com/upload_content/cau-rong-da-nang-4.webp",
     ],
     purpose: 'Leisure',
