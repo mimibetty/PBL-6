@@ -105,7 +105,7 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
         child: Column(
           children: [
             Container(
-              height: MediaQuery.of(context).size.height * 0.5,
+              height: MediaQuery.of(context).size.height * 0.3,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
                 color: Colors.white,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
+import 'package:travelappflutter/presentation/map/map_screen.dart';
 import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
 import '../review_widget/widgets/create_review.dart';
@@ -105,7 +106,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
         child: Column(
           children: [
             Container(
-              height: MediaQuery.of(context).size.height * 0.5,
+              height: MediaQuery.of(context).size.height * 0.3,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
                 color: Colors.white,
@@ -329,25 +330,51 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                     Expanded(
                       child: TabBarView(
                         children: [
+                          // Tab Overview
                           Padding(
                             padding: const EdgeInsets.all(10),
-                            child: Text(
-                              widget.destination.description,
-                              maxLines: 3,
-                              style: const TextStyle(
-                                color: Colors.black54,
-                                fontSize: 14,
-                                height: 1.5,
+                            child: SingleChildScrollView(
+                              // Wrap the entire column in SingleChildScrollView
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Mô tả địa điểm
+                                  Text(
+                                    widget.destination.description,
+                                    maxLines: 3,
+                                    overflow: TextOverflow
+                                        .ellipsis, // Ensures text is truncated if too long
+                                    style: const TextStyle(
+                                      color: Colors.black54,
+                                      fontSize: 14,
+                                      height: 1.5,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                      height:
+                                          10), // Khoảng cách giữa mô tả và bản đồ
+                                  // Bản đồ
+                                  // Container(
+                                  //   height:
+                                  //       250, // Set a fixed height for the map
+                                  //   child: MapScreen(
+                                  //     initialLocation:
+                                  //         '910A Ngô Quyền, An Hải Bắc, Sơn Trà, Đà Nẵng',
+                                  //   ),
+                                  // ),
+                                ],
                               ),
                             ),
                           ),
+
+                          // Tab Review
                           ReviewWidget(
                             reviews:
                                 controller.reviews, // Pass the filtered reviews list
                           ), // Chỉ có 2 widget con, do đó loại bỏ Center
                         ],
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),

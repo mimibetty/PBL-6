@@ -256,7 +256,16 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
                   SizedBox(height: 16.0),
                   _buildTextInput('Special Diets', (value) => meal = value),
                   SizedBox(height: 16.0),
+
                   PriceRangeSlider(onPriceRangeChanged: _updatePriceRange),
+                  StarRatingWidget(
+                    onRatingUpdate: (rating) {
+                      setState(() {
+                        starRating =
+                            rating.toString(); // Cập nhật giá trị đánh giá
+                      });
+                    },
+                  ),
                 ] else if (selectedBusinessType == 'thing_to_do') ...[
                   _buildTextInput('Overview', (value) => overview = value),
                   SizedBox(height: 16.0),
