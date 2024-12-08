@@ -1,139 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:travelappflutter/presentation/common_views/geocoding_service.dart';
+import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
+import 'package:travelappflutter/presentation/map/map_screen.dart';
 import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/create_review.dart';
+import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:travelappflutter/presentation/search_screen/models/hotel_model.dart';
 
-class HotelDetailScreen extends StatelessWidget {
+class HotelDetailScreen extends StatefulWidget {
   final Hotel hotel;
 
-  HotelDetailScreen({super.key,required this.hotel});
+  HotelDetailScreen({super.key, required this.hotel});
 
-  // Hàm mở trang web của khách sạn
-Future<void> _launchURL(String url) async {
-  final Uri uri = Uri.parse(url); // Convert the string URL to a Uri object
-  if (await canLaunchUrl(uri)) {
-    await launchUrl(uri, mode: LaunchMode.externalApplication);
-  } else {
-    throw 'Could not launch $url';
-  }
+  @override
+  _HotelDetailScreenState createState() => _HotelDetailScreenState();
 }
 
-
-  // Hàm hiển thị review của khách sạn với thiết kế tối giản và đẹp mắt hơn
-  Widget HotelReview(Hotel hotel) {
-    // Lọc review dựa trên hotelId
-    final List<ReviewWidgetModel> reviews = mockReviews
-        .where((review) => review.destinationId == hotel.hotelID)
+class _HotelDetailScreenState extends State<HotelDetailScreen> {
+  late List<ReviewWidgetModel> filteredReviews;
+  bool isLiked = false;
+  double? _latitude; // Lưu trữ vĩ độ
+  double? _longitude; // Lưu trữ kinh độ
+  String _address = '91 Trung Kính, Trung Hòa, Cầu Giấy, Hà Nội';
+  @override
+  void initState() {
+    super.initState();
+    filteredReviews = mockReviews
+        .where((review) => review.destinationId == widget.hotel.hotelID)
         .toList();
+    _getCoordinates();
+  }
+  void _getCoordinates() async {
+    if (_address.isNotEmpty) {
+      var coordinates =
+          await GeocodingService.getCoordinatesFromAddress(_address);
 
-    return reviews.isEmpty
-        ? const Center(
-            child: Text(
-              'No Reviews Yet',
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey),
-            ),
-          )
-        : Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: reviews.map((review) {
-              return Container(
-                margin:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.2),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Tên người review và ngày
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: Colors.blueGrey[100],
-                          child: Text(
-                            review.context[0].toUpperCase(),
-                            style: const TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              review.userId,
-                              style: const TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              '${review.dateCreated.toLocal()}'.split(' ')[0],
-                              style: const TextStyle(
-                                  fontSize: 12, color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    // Đánh giá sao
-                    Row(
-                      children: List.generate(
-                        5,
-                        (index) => Icon(
-                          index < review.rating
-                              ? Icons.star
-                              : Icons.star_border,
-                          color: Colors.amber[600],
-                          size: 16,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    // Nội dung review
-                    Text(
-                      review.context,
-                      style:
-                          const TextStyle(fontSize: 14, color: Colors.black87),
-                    ),
-                    const SizedBox(height: 10),
-                    // Số lượt like
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '${review.likeCount} Likes',
-                          style:
-                              const TextStyle(fontSize: 12, color: Colors.grey),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.thumb_up_alt_outlined,
-                              color: Colors.blueGrey, size: 18),
-                          onPressed: () {},
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
-          );
+      if (coordinates != null) {
+        setState(() {
+          _latitude = coordinates['latitude'];
+          _longitude = coordinates['longitude'];
+        });
+        if (_latitude != null && _longitude != null) {
+          print("IN ra: Latitude = $_latitude, Longitude = $_longitude");
+        } else {
+          print("Latitude hoặc Longitude chưa có giá trị.");
+        }
+      } else {
+        print("Couldn't get coordinates.");
+      }
+    }
+  }
+  Future<void> _launchURL(String url) async {
+    final Uri uri = Uri.parse(url); // Convert the string URL to a Uri object
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   @override
@@ -169,13 +94,25 @@ Future<void> _launchURL(String url) async {
           ),
         ),
         actions: [
+          HeartIconWidget(
+            isLiked: isLiked,
+            onDoubleTap: () {
+              setState(() {
+                isLiked = !isLiked; // Thay đổi trạng thái nút tim
+              });
+            },
+          ),
+          const SizedBox(
+            width: 10,
+          ),
           GestureDetector(
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => ReviewFormPage(
-                      destinationId: hotel.hotelID,
-                      modeType: 2,),
+                    destinationId: widget.hotel.hotelID,
+                    modeType: 2,
+                  ),
                 ),
               );
             },
@@ -208,7 +145,7 @@ Future<void> _launchURL(String url) async {
                 viewportFraction: 1.0,
                 enlargeCenterPage: false,
               ),
-              items: hotel.images.map((imageUrl) {
+              items: widget.hotel.images.map((imageUrl) {
                 return Image.network(
                   imageUrl,
                   fit: BoxFit.cover,
@@ -222,7 +159,7 @@ Future<void> _launchURL(String url) async {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    hotel.hotelName,
+                    widget.hotel.hotelName,
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
@@ -232,17 +169,18 @@ Future<void> _launchURL(String url) async {
                         Icon(
                           Icons.circle,
                           size: 25,
-                          color: i <= hotel.rating.floor()
+                          color: i <= widget.hotel.rating.floor()
                               ? Color(0xFF13357B)
-                              : (i == hotel.rating.floor() + 1 &&
-                                      hotel.rating - hotel.rating.floor() >=
+                              : (i == widget.hotel.rating.floor() + 1 &&
+                                      widget.hotel.rating -
+                                              widget.hotel.rating.floor() >=
                                           0.5)
                                   ? Color(0xFF13357B).withOpacity(0.5)
                                   : Colors.grey,
                         ),
                       const SizedBox(width: 20),
                       Text(
-                        "${hotel.rating.toString()} ★",
+                        "${widget.hotel.rating.toString()} ★",
                         style: TextStyle(fontSize: 15, color: Colors.grey),
                       ),
                     ],
@@ -262,7 +200,7 @@ Future<void> _launchURL(String url) async {
                           ),
                         ),
                         TextSpan(
-                          text: hotel.hotelLocation,
+                          text: widget.hotel.hotelLocation,
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.black54,
@@ -286,7 +224,7 @@ Future<void> _launchURL(String url) async {
                           ),
                         ),
                         TextSpan(
-                          text: hotel.priceRange,
+                          text: widget.hotel.priceRange,
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.black54,
@@ -309,7 +247,7 @@ Future<void> _launchURL(String url) async {
                           ),
                         ),
                         TextSpan(
-                          text: hotel.openTime,
+                          text: widget.hotel.openTime,
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.black54,
@@ -332,7 +270,7 @@ Future<void> _launchURL(String url) async {
                           ),
                         ),
                         TextSpan(
-                          text: hotel.duration.toString(),
+                          text: widget.hotel.duration.toString(),
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.black54,
@@ -355,7 +293,7 @@ Future<void> _launchURL(String url) async {
                           ),
                         ),
                         TextSpan(
-                          text: "${hotel.age}+",
+                          text: "${widget.hotel.age}+",
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.black54,
@@ -366,11 +304,10 @@ Future<void> _launchURL(String url) async {
                   ),
                   const SizedBox(height: 8),
 
-
                   // Hiển thị Website
                   GestureDetector(
                     onTap: () {
-                      _launchURL(hotel.website);
+                      _launchURL(widget.hotel.website);
                     },
                     child: RichText(
                       text: TextSpan(
@@ -384,7 +321,7 @@ Future<void> _launchURL(String url) async {
                             ),
                           ),
                           TextSpan(
-                            text: hotel.website,
+                            text: widget.hotel.website,
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.blue,
@@ -410,7 +347,7 @@ Future<void> _launchURL(String url) async {
                           ),
                         ),
                         TextSpan(
-                          text: hotel.hotelContact,
+                          text: widget.hotel.hotelContact,
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.black54,
@@ -433,7 +370,7 @@ Future<void> _launchURL(String url) async {
                       ),
                       Row(
                         children: List.generate(
-                          hotel.star,
+                          widget.hotel.star,
                           (index) => Icon(
                             Icons.star,
                             color: Colors.amber[600],
@@ -452,8 +389,7 @@ Future<void> _launchURL(String url) async {
                   ),
                   Wrap(
                     spacing: 4,
-                    children: hotel.roomFeatures
-
+                    children: widget.hotel.roomFeatures
                         .map((feature) => Chip(label: Text(feature)))
                         .toList(),
                   ),
@@ -466,12 +402,12 @@ Future<void> _launchURL(String url) async {
                   ),
                   Wrap(
                     spacing: 4,
-                    children: hotel.propertyAmenities
+                    children: widget.hotel.propertyAmenities
                         .map((amenity) => Chip(label: Text(amenity)))
                         .toList(),
                   ),
                   const SizedBox(height: 12),
-                  
+
                   // Hiển thị Hotel Style
                   Text(
                     "Hotel Style",
@@ -479,12 +415,12 @@ Future<void> _launchURL(String url) async {
                   ),
                   Wrap(
                     spacing: 4,
-                    children: hotel.hotelStyles
+                    children: widget.hotel.hotelStyles
                         .map((style) => Chip(label: Text(style)))
                         .toList(),
                   ),
                   const SizedBox(height: 12),
-                  
+
                   // Hiển thị Hotel Language
                   Text(
                     "Hotel Language",
@@ -492,7 +428,7 @@ Future<void> _launchURL(String url) async {
                   ),
                   Wrap(
                     spacing: 4,
-                    children: hotel.hotelLanguages
+                    children: widget.hotel.hotelLanguages
                         .map((language) => Chip(label: Text(language)))
                         .toList(),
                   ),
@@ -503,15 +439,37 @@ Future<void> _launchURL(String url) async {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
-                  Text(hotel.about),
+                  Text(widget.hotel.about),
                   const SizedBox(height: 20),
-
+                  //Map
+                   Text(
+                    "Map",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 20,),
+                  _latitude != null && _longitude != null
+                      ? Container(
+                          height: 250,
+                          child: MapScreen(
+                            latitude: _latitude!,
+                            longitude: _longitude!,
+                          ),
+                        )
+                      : Center(child: CircularProgressIndicator()),
                   // Hiển thị Reviews
                   Text(
                     "Reviews",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  HotelReview(hotel), // Gọi hàm HotelReview để hiển thị review
+                  Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: SingleChildScrollView(
+                      child: ReviewWidget(
+                        reviews:
+                            filteredReviews, // Truyền danh sách reviews đã lọc
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

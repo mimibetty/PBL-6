@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:travelappflutter/presentation/common_views/geocoding_service.dart';
+import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
+import 'package:travelappflutter/presentation/map/map_screen.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
 import 'package:travelappflutter/presentation/search_screen/models/restaurant_model.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,15 +18,40 @@ class RestaurantDetailScreen extends StatefulWidget {
 }
 
 class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
+  double? _latitude; // Lưu trữ vĩ độ
+  double? _longitude; // Lưu trữ kinh độ
+  String _address = '91 Trung Kính, Trung Hòa, Cầu Giấy, Hà Nội';
   @override
   void initState() {
     super.initState();
     allReviews = mockReviews;
+    _getCoordinates();
   }
 
+  bool isLiked = false;
   PageController pageController = PageController();
   int pageView = 0;
   List<ReviewWidgetModel> allReviews = mockReviews;
+  void _getCoordinates() async {
+    if (_address.isNotEmpty) {
+      var coordinates =
+          await GeocodingService.getCoordinatesFromAddress(_address);
+
+      if (coordinates != null) {
+        setState(() {
+          _latitude = coordinates['latitude'];
+          _longitude = coordinates['longitude'];
+        });
+        if (_latitude != null && _longitude != null) {
+          print("IN ra: Latitude = $_latitude, Longitude = $_longitude");
+        } else {
+          print("Latitude hoặc Longitude chưa có giá trị.");
+        }
+      } else {
+        print("Couldn't get coordinates.");
+      }
+    }
+  }
 
   Widget _buildContactInfo(String label, String value) {
     return RichText(
@@ -133,6 +161,15 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
           ),
         ),
         actions: [
+          HeartIconWidget(
+            isLiked: isLiked,
+            onDoubleTap: () {
+              setState(() {
+                isLiked = !isLiked; // Thay đổi trạng thái nút tim
+              });
+            },
+          ),
+          const SizedBox(width: 10),
           GestureDetector(
             onTap: () {
               Navigator.of(context).push(
@@ -271,84 +308,89 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                                 ),
                                 const SizedBox(height: 15),
                                 Row(
-  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  crossAxisAlignment: CrossAxisAlignment.center,
-  children: [
-    Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            widget.restaurant.restaurantName,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 20,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 5),
-          Row(
-            children: [
-              const Icon(
-                Icons.location_on,
-                color: Colors.white,
-                size: 20,
-              ),
-              const SizedBox(width: 5),
-              Expanded(
-                child: Text(
-                  widget.restaurant.restaurantLocation,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    ),
-    // Rating and review count column on the right side
-    Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Row(
-          children: [
-            Icon(
-              Icons.star_rounded,
-              color: Colors.amber[800],
-              size: 25,
-            ),
-            const SizedBox(width: 5),
-            Text(
-              widget.restaurant.rating.toString(),
-              style: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 5),
-        Text(
-          '(${widget.restaurant.review} reviews)',
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-          ),
-        ),
-      ],
-    ),
-  ],
-),
-
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            widget.restaurant.restaurantName,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontSize: 20,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 5),
+                                          Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.location_on,
+                                                color: Colors.white,
+                                                size: 20,
+                                              ),
+                                              const SizedBox(width: 5),
+                                              Expanded(
+                                                child: Text(
+                                                  widget.restaurant
+                                                      .restaurantLocation,
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                    fontSize: 15,
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    // Rating and review count column on the right side
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.star_rounded,
+                                              color: Colors.amber[800],
+                                              size: 25,
+                                            ),
+                                            const SizedBox(width: 5),
+                                            Text(
+                                              widget.restaurant.rating
+                                                  .toString(),
+                                              style: const TextStyle(
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 5),
+                                        Text(
+                                          '(${widget.restaurant.review} reviews)',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
                           ),
@@ -417,14 +459,33 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                                   const SizedBox(height: 10),
                                   _buildContactInfo("Open Time :",
                                       widget.restaurant.openTime.toString()),
-                                  const SizedBox(height: 10),
+                                  const SizedBox(height: 30),
+                                  _buildContactInfo("The area :", ""),
+                                  const SizedBox(height: 30),
+                                  _latitude != null && _longitude != null
+                                      ? Container(
+                                          height: 250,
+                                          child: MapScreen(
+                                            latitude: _latitude!,
+                                            longitude: _longitude!,
+                                          ),
+                                        )
+                                      : Center(
+                                          child: CircularProgressIndicator()),
                                 ],
                               ),
                             ),
                           ),
 
-                          // Review Tab
-                          ReviewWidget(reviews: filteredReviews),
+                          Padding(
+                            padding: const EdgeInsets.all(15),
+                            child: SingleChildScrollView(
+                              child: ReviewWidget(
+                                reviews:
+                                    filteredReviews, // Truyền danh sách reviews đã lọc
+                              ),
+                            ),
+                          ),
                           // Contact Tab
                           Padding(
                             padding: const EdgeInsets.all(10),

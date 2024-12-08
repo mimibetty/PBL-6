@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/models/business_model.dart';
 import 'package:travelappflutter/presentation/business_dashboard/business_dashboard.dart';
+import 'package:travelappflutter/presentation/common_views/geocoding_service.dart';
 import 'package:travelappflutter/presentation/map/map_screen.dart';
 
 class BusinessPostScreen extends StatefulWidget {
@@ -15,11 +16,37 @@ class BusinessPostScreen extends StatefulWidget {
 
 class _BusinessPostScreenState extends State<BusinessPostScreen> {
   int _currentImageIndex = 0; // Biến để quản lý chỉ báo vị trí
+  String _address = '91 Trung Kính, Trung Hòa, Cầu Giấy, Hà Nội';
+
+
+  double? _latitude; // Lưu trữ vĩ độ
+  double? _longitude; // Lưu trữ kinh độ
 
   @override
   void initState() {
     super.initState();
-    print(widget.business.id);
+    _getCoordinates(); // Fetch coordinates after init
+  }
+
+  void _getCoordinates() async {
+    if (_address.isNotEmpty) {
+      var coordinates =
+          await GeocodingService.getCoordinatesFromAddress(_address);
+
+      if (coordinates != null) {
+        setState(() {
+          _latitude = coordinates['latitude'];
+          _longitude = coordinates['longitude'];
+        });
+        if (_latitude != null && _longitude != null) {
+          print("IN ra: Latitude = $_latitude, Longitude = $_longitude");
+        } else {
+          print("Latitude hoặc Longitude chưa có giá trị.");
+        }
+      } else {
+        print("Couldn't get coordinates.");
+      }
+    }
   }
 
   @override
@@ -95,7 +122,6 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
 
   Widget _buildBusinessHeader() {
     return Column(
-      // Sử dụng Column thay vì Row
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
@@ -104,9 +130,9 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
             ClipOval(
               child: Image.network(
                 widget.business.logoUrl,
-                width: 80, // Gấp đôi radius để phù hợp
+                width: 80,
                 height: 80,
-                fit: BoxFit.cover, // Đảm bảo hình ảnh vừa khung
+                fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
                     width: 80,
@@ -142,14 +168,17 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
           ],
         ),
         const SizedBox(height: 16), // Thêm khoảng cách giữa header và bản đồ
-        Container(
-          height: 250,
-          child: MapScreen(
-            latitude: 16.071321889412893, // Example latitude for Da Nang, Vietnam
-            longitude:
-                 108.23018478185537, // Example longitude for Da Nang, Vietnam
-          ),
-        )
+        _latitude != null && _longitude != null
+            ? Container(
+                height: 250,
+                child: MapScreen(
+                  latitude: 21.0137443130001,
+                  longitude:105.798346108,
+                ),
+              )
+            : Center(
+                child:
+                    CircularProgressIndicator()), // Show loading until coordinates are available
       ],
     );
   }

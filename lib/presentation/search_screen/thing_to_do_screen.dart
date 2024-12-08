@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:travelappflutter/presentation/common_views/selectable_icon_button_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/welcome_controller.dart';
@@ -145,80 +146,27 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
               ),
             ),
           ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.only(bottom: 20.0),
-            child: Row(
-              children: List.generate(
-                9, // Tổng số button
-                (index) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Handle button press here
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 10),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          [
-                            Icons.sunny,
-                            Icons.access_time,
-                            Icons.park,
-                            Icons.diamond,
-                            Icons.sunny_snowing,
-                            Icons.shopping_cart,
-                            Icons.nightlight_round,
-                            Icons.directions_walk,
-                            Icons.history
-                          ][index],
-                          size: 24,
-                          color: Colors.black, // Đặt màu icon là đen
-                        ),
-                        const SizedBox(
-                            height: 8), // Khoảng cách giữa icon và text
-                        Text(
-                          [
-                            "Day Trips",
-                            "Half-day Tours",
-                            "Theme Parks",
-                            "Private & Luxury",
-                            "Full-day Tours",
-                            "Shopping Malls",
-                            "Night Tours",
-                            "Walking Tours",
-                            "Historical Tours"
-                          ][index],
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.black, // Màu chữ đen
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(
-                            height: 4), // Khoảng cách giữa text và số
-                        Text(
-                          '(${(index + 1) * 5})', // Hiển thị số lượng giả định
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.black, // Màu chữ đen
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+        
+          Padding(
+  padding: const EdgeInsets.all(16.0), // Padding cho toàn bộ widget
+  child: SelectableIconButtonWidget(
+    buttonData: [
+      {'icon': Icons.sunny, 'label': 'Day Trips', 'count': '5'},
+      {'icon': Icons.access_time, 'label': 'Half-day Tours', 'count': '10'},
+      {'icon': Icons.park, 'label': 'Theme Parks', 'count': '15'},
+      {'icon': Icons.diamond, 'label': 'Private & Luxury', 'count': '12'},
+      {'icon': Icons.sunny_snowing, 'label': 'Full-day Tours', 'count': '8'},
+      {'icon': Icons.shopping_cart, 'label': 'Shopping Malls', 'count': '25'},
+      {'icon': Icons.nightlight_round, 'label': 'Night Tours', 'count': '3'},
+      {'icon': Icons.directions_walk, 'label': 'Walking Tours', 'count': '7'},
+      {'icon': Icons.history, 'label': 'Historical Tours', 'count': '20'},
+    ],
+    onSelectionChanged: (index) {
+      print('Button index selected: $index');
+    },
+  ),
+),
+
           const SizedBox(height: 15),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
