@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:travelappflutter/presentation/common_views/selectable_icon_button_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
 import 'package:travelappflutter/presentation/home_screen/models/tour_model.dart';
@@ -63,8 +61,19 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, IconData> tagIcons = {
+      'Day Trips': Icons.sunny,
+      'Half-day Tours': Icons.access_time,
+      'Theme Parks': Icons.park,
+      'Private & Luxury': Icons.diamond,
+      'Full-day Tours': Icons.sunny_snowing,
+      'Shopping Malls': Icons.shopping_cart,
+      'Night Tours': Icons.nightlight_round,
+      'Walking Tours': Icons.directions_walk,
+      'Historical Tours': Icons.history,
+    };
     // tạm thời bỏ trống, xử lý sau :
-    List<TravelDestination> popularDestinations = widget.destinations.toList();
+    // List<TravelDestination> popularDestinations = widget.destinations.toList();
     List<TravelDestination> recommendDestinations =
         widget.destinations.toList();
     final List<Tour> daNangTours =
@@ -143,6 +152,7 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
               ),
             ),
           ),
+          
           // Thay thế phần button tag
           Obx(() {
             return SingleChildScrollView(
@@ -151,6 +161,8 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
               child: Row(
                 children: thingsToDoController.tags.map((tag) {
                   final bool isSelected = thingsToDoController.selectedTagId.value == tag.id;
+                  final IconData tagIcon = tagIcons[tag.name] ?? Icons.category; // Default to Icons.category
+
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: OutlinedButton(
@@ -169,7 +181,7 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            Icons.category, // Biểu tượng cho mỗi tag
+                            tagIcon, // Dynamically set the icon
                             size: 24,
                             color: isSelected ? Colors.white : Colors.black,
                           ),
@@ -185,7 +197,7 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '(10)', // Số lượng giả định
+                            '(10)', // Placeholder for count
                             style: TextStyle(
                               fontSize: 12,
                               color: isSelected ? Colors.white70 : Colors.grey,

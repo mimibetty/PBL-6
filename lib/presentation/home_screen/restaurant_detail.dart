@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/common_views/geocoding_service.dart';
 import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/map/map_screen.dart';
+import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
 import 'package:travelappflutter/presentation/search_screen/models/restaurant_model.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -32,7 +34,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   bool isLiked = false;
   PageController pageController = PageController();
   int pageView = 0;
-  List<ReviewWidgetModel> allReviews = mockReviews;
+  List<ReviewModel> allReviews = mockReviews;
   void _getCoordinates() async {
     if (_address.isNotEmpty) {
       var coordinates =

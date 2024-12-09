@@ -12,7 +12,7 @@ import 'package:travelappflutter/presentation/home_screen/widgets/recomendate_ci
 import 'package:travelappflutter/presentation/home_screen/widgets/topic.dart';
 import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
 import 'package:iconsax/iconsax.dart';
-import './models/travel_model.dart'; // add this package first for icon
+//import './models/travel_model.dart'; // add this package first for icon
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});

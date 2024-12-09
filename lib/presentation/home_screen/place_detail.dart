@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:travelappflutter/presentation/common_views/geocoding_service.dart';
 import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/map/map_screen.dart';
 import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
+import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
 import '../review_widget/widgets/create_review.dart';
 
@@ -34,7 +34,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
 
   PageController pageController = PageController();
   int pageView = 0;
-  List<ReviewWidgetModel> allReviews =
+  List<ReviewModel> allReviews =
       mockReviews; // Sử dụng mockReviews đã tạo trước đó
   bool isLiked = false; // Trạng thái nút tim
   void _getCoordinates() async {
