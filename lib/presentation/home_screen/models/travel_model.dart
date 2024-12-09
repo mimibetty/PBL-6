@@ -54,11 +54,12 @@ class TravelDestination {
       cityId: json['city_id'] ?? 0,
       hotelId: json['hotel_id'] ?? null,
       restaurantId: json['restaurant_id'] ?? null,
-      images: json['images'] != null 
+      images: json['images'] != null && json['images'].isNotEmpty 
           ? List<String>.from(
               json['images'].map((image) => image['url'] ?? defaultImageUrl)
             )
-          : [defaultImageUrl], // Return default image URL if `images` is null or empty
+          : [defaultImageUrl], // Use default image if `images` is empty
+
       rating: (json['rating'] ?? 0).toDouble(),
       numOfReviews: json['numOfReviews'] ?? 0,
       location: json['district'] != null && json['district']['city_name'] != null
