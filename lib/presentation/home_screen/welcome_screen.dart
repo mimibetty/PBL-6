@@ -25,6 +25,7 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
   int selectedPage = 0;
   bool showCarousel = true; // Biến để theo dõi hiển thị CarouselSlider
   String currentCity = "Loading..."; // Biến để lưu trữ thành phố hiện tại
+  bool showAllCities = false; // Mặc định chỉ hiển thị 5 thành phố
 
   List<Topic> topics = TopicModel.getTopics(); // Get topics list
 
@@ -32,13 +33,17 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
   // List<TravelDestination> daNangDestinations = danangDestinations
   //     .where((element) => element.location == "Da Nang , Viet Nam")
   //     .toList(); // need fix (change to controller get popular destinations)
-  // // tạm thời chưa làm, bỏ trống 
+  // // tạm thời chưa làm, bỏ trống
   // List<TravelDestination> popularDestinations = danangDestinations;
   // List<TravelDestination> recommendDestinations = danangDestinations;
   // // List<TravelDestination> popular =
   // //     danangDestinations.where((element) => element.category == "popular").toList();
 
-
+  void toggleShowAllCities() {
+    setState(() {
+      showAllCities = !showAllCities;
+    });
+  }
 
   // Hàm lấy tọa độ GPS hiện tại
   Future<Position> getCurrentLocation() async {
@@ -104,7 +109,6 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
   }
 
   @override
-
   void initState() {
     super.initState();
     _updateCurrentLocation(); // Lấy vị trí hiện tại khi khởi tạo
@@ -116,7 +120,7 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-  final WelcomeController welcomeController = Get.find<WelcomeController>();
+    final WelcomeController welcomeController = Get.find<WelcomeController>();
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: headerParts(),
@@ -136,13 +140,13 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
                     color: Colors.black,
                   ),
                 ),
-                Text(
-                  "See all",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: blueTextColor,
-                  ),
-                )
+                // Text(
+                //   "See all",
+                //   style: TextStyle(
+                //     fontSize: 14,
+                //     color: blueTextColor,
+                //   ),
+                // )
               ],
             ),
           ),
@@ -163,13 +167,11 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) =>
-                              HomeScreen(
-                                cityID: 0,
-                                cityName: '',
-                                tag : topics[index].name,
-                                show:false
-                          ),
+                          builder: (_) => HomeScreen(
+                              cityID: 0,
+                              cityName: '',
+                              tag: topics[index].name,
+                              show: false),
                         ),
                       );
                     },
@@ -194,64 +196,89 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
                     color: Colors.black,
                   ),
                 ),
-                Text(
-                  "See all",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: blueTextColor,
-                  ),
-                )
+                // Text(
+                //   "See all",
+                //   style: TextStyle(
+                //     fontSize: 14,
+                //     color: blueTextColor,
+                //   ),
+                // )
               ],
             ),
           ),
           const SizedBox(height: 20),
-        // Sử dụng Obx để quan sát myCities và cập nhật danh sách khi có thay đổi
-        Obx(() {
-          List<CityModel> popularCities = welcomeController.myCities.value
-              .where((city) => 
-                  city.name == "Hà Nội" || 
-                  city.name == "TP Hồ Chí Minh" || 
-                  city.name == "Đà Nẵng" || 
-                  city.name == "Huế" || 
-                  city.name == "Hải Phòng" || 
-                  city.name == "Cần Thơ")
-              .toList();
-          return SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: Column(
-              children: List.generate(
-                popularCities.length,
-                (index) => Padding(
-                  padding: const EdgeInsets.only(bottom: 15),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => HomeScreen(
-                            cityID : popularCities[index].id,
-                            cityName : popularCities[index].name,
-                            tag : null,
-                            //destinations: daNangDestinations,
-                            show: true,
+          // Sử dụng Obx để quan sát myCities và cập nhật danh sách khi có thay đổi
+          Obx(() {
+            List<CityModel> popularCities = welcomeController.myCities.value
+                .where((city) =>
+                    city.name == "Hà Nội" ||
+                    city.name == "TP Hồ Chí Minh" ||
+                    city.name == "Đà Nẵng" ||
+                    city.name == "Huế" ||
+                    city.name == "Hải Phòng" ||
+                    city.name == "Cần Thơ")
+                .toList();
+
+            // Nếu không show all, chỉ lấy tối đa 5 thành phố
+            List<CityModel> displayedCities =
+                showAllCities ? popularCities : popularCities.take(5).toList();
+
+            return Column(
+              children: [
+                SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Column(
+                    children: List.generate(
+                      displayedCities.length,
+                      (index) => Padding(
+                        padding: const EdgeInsets.only(bottom: 15),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => HomeScreen(
+                                  cityID: displayedCities[index].id,
+                                  cityName: displayedCities[index].name,
+                                  tag: null,
+                                  show: true,
+                                ),
+                              ),
+                            );
+                          },
+                          child: RecomendateCity(
+                            myCities: displayedCities[index],
                           ),
                         ),
-                      );
-                    },
-                    child: RecomendateCity(
-                      myCities: popularCities[index],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
-          );
-        }),
-      ],
-    ),
-    bottomNavigationBar: CustomBottomNavBar(controller: HomeController()),
-  );
-}
+                // Nút "See All"
+                GestureDetector(
+                  onTap: toggleShowAllCities, // Gọi hàm toggle trạng thái
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    child: Text(
+                      showAllCities
+                          ? "See Less"
+                          : "See All", // Đổi text tùy trạng thái
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: blueTextColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }),
+        ],
+      ),
+      bottomNavigationBar: CustomBottomNavBar(controller: HomeController()),
+    );
+  }
 
   AppBar headerParts() {
     return AppBar(

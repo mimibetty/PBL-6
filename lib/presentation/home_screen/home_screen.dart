@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:travelappflutter/presentation/common_views/see_all_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/topic_controller.dart';
@@ -30,7 +31,6 @@ class HomeScreen extends StatefulWidget {
     this.show = true,
   });
 
-
   @override
   State<HomeScreen> createState() => _TravelHomeScreenState();
 }
@@ -50,16 +50,16 @@ class _TravelHomeScreenState extends State<HomeScreen> {
     super.initState();
     _fetchDestinations(); // Fetch destinations based on parameters
   }
-Future<void> _fetchDestinations() async {
-  if (widget.tag != null) {
-    await topicController.fetchDestinationsByTopic(widget.tag!);
-    homeController.myDestination.value = topicController.destinations.value;
 
-  } else if (widget.cityID != null || widget.cityName != null) {
-    await homeController.getDestinationByCityID(widget.cityID!, widget.cityName!);
+  Future<void> _fetchDestinations() async {
+    if (widget.tag != null) {
+      await topicController.fetchDestinationsByTopic(widget.tag!);
+      homeController.myDestination.value = topicController.destinations.value;
+    } else if (widget.cityID != null || widget.cityName != null) {
+      await homeController.getDestinationByCityID(
+          widget.cityID!, widget.cityName!);
+    }
   }
-
-}
 
 
 // Chuyển đổi danh sách điểm đến thành danh sách hotelId
@@ -87,15 +87,17 @@ List<TravelDestination> getThingsToDoDestinations(List<TravelDestination> destin
 }
 
 
-@override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: headerParts(),
       body: Obx(() {
         // tạm thời để trống, xử lý sau
-        List<TravelDestination> popularDestinations = homeController.myDestination.value.toList();
-        List<TravelDestination> recommendDestinations = homeController.myDestination.value.toList();
+        List<TravelDestination> popularDestinations =
+            homeController.myDestination.value.toList();
+        List<TravelDestination> recommendDestinations =
+            homeController.myDestination.value.toList();
 
         // List<TravelDestination> popularDestinations = homeController.myDestination.value
         //     .where((destination) => destination.category == 'popular')
@@ -115,19 +117,21 @@ List<TravelDestination> getThingsToDoDestinations(List<TravelDestination> destin
         //       .expand((city) => city.images!.cast<String>()),
         // ];
         // các địa điểm từ `myDestination` thỏa mãn điều kiện
-          var destinations = homeController.myDestination.value
-              .where((destination) =>
-                  destination.address.district.contains(widget.cityName!))
-              .toList();
-          // các thành phố từ `myCities` thỏa mãn điều kiện
-          var cities = Get.find<WelcomeController>().myCities.value
-              .where((city) => city.name.contains(widget.cityName!))
-              .toList();
-          // Sau khi in, tạo `allImages` như trước:
-          List<String> allImages = [
-            ...destinations.expand((destination) => destination.images ?? []),
-            ...cities.expand((city) => city.images.map((image) => image.url)),
-          ];
+        var destinations = homeController.myDestination.value
+            .where((destination) =>
+                destination.address.district.contains(widget.cityName!))
+            .toList();
+        // các thành phố từ `myCities` thỏa mãn điều kiện
+        var cities = Get.find<WelcomeController>()
+            .myCities
+            .value
+            .where((city) => city.name.contains(widget.cityName!))
+            .toList();
+        // Sau khi in, tạo `allImages` như trước:
+        List<String> allImages = [
+          ...destinations.expand((destination) => destination.images ?? []),
+          ...cities.expand((city) => city.images.map((image) => image.url)),
+        ];
 
         return ListView(
           children: [
@@ -178,29 +182,46 @@ List<TravelDestination> getThingsToDoDestinations(List<TravelDestination> destin
               const SizedBox(height: 20),
             ],
             // Section for Popular places
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "Popular place",
+                  const Text(
+                    "Popular Places",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
                       color: Colors.black,
                     ),
                   ),
-                  Text(
-                    "See all",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: blueTextColor,
+                  TextButton(
+                    onPressed: popularDestinations.isNotEmpty
+                        ? () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => SeeAllScreen(
+                                  title: "Popular Places",
+                                  destinations: popularDestinations,
+                                 
+                                ),
+                              ),
+                            );
+                          }
+                        : null, // Vô hiệu hóa nếu không có dữ liệu
+                    child: const Text(
+                      "See all",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: blueTextColor,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
+
             const SizedBox(height: 15),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -230,12 +251,12 @@ List<TravelDestination> getThingsToDoDestinations(List<TravelDestination> destin
               ),
             ),
             // Section for Recommendations
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     "Recommendation for you",
                     style: TextStyle(
                       fontSize: 20,
@@ -243,16 +264,33 @@ List<TravelDestination> getThingsToDoDestinations(List<TravelDestination> destin
                       color: Colors.black,
                     ),
                   ),
-                  Text(
-                    "See all",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: blueTextColor,
+                  TextButton(
+                    onPressed: recommendDestinations.isNotEmpty
+                        ? () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => SeeAllScreen(
+                                  title: "Recommended for You",
+                                  destinations: recommendDestinations,
+                                 
+                                ),
+                              ),
+                            );
+                          }
+                        : null, // Vô hiệu hóa nếu danh sách rỗng
+                    child: const Text(
+                      "See all",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: blueTextColor,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
+
             const SizedBox(height: 20),
             SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -291,7 +329,7 @@ List<TravelDestination> getThingsToDoDestinations(List<TravelDestination> destin
     return AppBar(
       elevation: 0,
       backgroundColor: Colors.grey[200], // Thay đổi màu nền sáng hơn
-      leadingWidth: 500,//Tránh overflow
+      leadingWidth: 500, //Tránh overflow
       leading: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(

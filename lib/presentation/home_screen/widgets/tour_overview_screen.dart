@@ -37,7 +37,7 @@ class TourOverviewWidget extends StatelessWidget {
 
   Widget _buildAboutSection() {
     final List<String> aboutDetails = [
-      "Ages 1-99, max of 12 per group",
+      "Ages:1-99, max of 12 per group",
       "Duration: 9h",
       "Start time: Check availability",
       "Mobile ticket",

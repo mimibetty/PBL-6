@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:travelappflutter/core/app_export.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:travelappflutter/presentation/common_views/geocoding_service.dart';
+import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/map/map_screen.dart';
@@ -18,16 +21,42 @@ class PlaceDetailScreen extends StatefulWidget {
 class _PlaceDetailScreenState extends State<PlaceDetailScreen> { 
   final ReviewWidgetController controller = Get.put(ReviewWidgetController());
   @override
+  double? _latitude; // Lưu trữ vĩ độ
+  double? _longitude; // Lưu trữ kinh độ
+  String _address = '91 Trung Kính, Trung Hòa, Cầu Giấy, Hà Nội';
+
   void initState() {
     super.initState();
     // Gọi hàm fetchReviewsByDestinationID khi màn hình được xây dựng
     controller.fetchReviewsByDestinationID(widget.destination.id);
+    _getCoordinates();
   }
 
   PageController pageController = PageController();
   int pageView = 0;
-  // List<ReviewModel> allReviews =
-  //     mockReviews; // Sử dụng mockReviews đã tạo trước đó
+  List<ReviewWidgetModel> allReviews =
+      mockReviews; // Sử dụng mockReviews đã tạo trước đó
+  bool isLiked = false; // Trạng thái nút tim
+  void _getCoordinates() async {
+    if (_address.isNotEmpty) {
+      var coordinates =
+          await GeocodingService.getCoordinatesFromAddress(_address);
+
+      if (coordinates != null) {
+        setState(() {
+          _latitude = coordinates['latitude'];
+          _longitude = coordinates['longitude'];
+        });
+        if (_latitude != null && _longitude != null) {
+          print("IN ra: Latitude = $_latitude, Longitude = $_longitude");
+        } else {
+          print("Latitude hoặc Longitude chưa có giá trị.");
+        }
+      } else {
+        print("Couldn't get coordinates.");
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +100,15 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
           ),
         ),
         actions: [
+          HeartIconWidget(
+            isLiked: isLiked,
+            onDoubleTap: () {
+              setState(() {
+                isLiked = !isLiked; // Thay đổi trạng thái nút tim
+              });
+            },
+          ),
+          const SizedBox(width: 10),
           GestureDetector(
             onTap: () {
               Navigator.of(context).push(
@@ -132,9 +170,14 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                       },
                       children: List.generate(
                         widget.destination.images!.length,
-                        (index) => Image.network(
-                          widget.destination.images![index],
-                          fit: BoxFit.cover,
+                        (index) => GestureDetector(
+                          onDoubleTap: () {
+                            setState(() {});
+                          },
+                          child: Image.network(
+                            widget.destination.images![index],
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                     ),
@@ -350,28 +393,50 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                       height: 1.5,
                                     ),
                                   ),
-                                  const SizedBox(
-                                      height:
-                                          10), // Khoảng cách giữa mô tả và bản đồ
-                                  // Bản đồ
-                                  // Container(
-                                  //   height:
-                                  //       250, // Set a fixed height for the map
-                                  //   child: MapScreen(
-                                  //     initialLocation:
-                                  //         '910A Ngô Quyền, An Hải Bắc, Sơn Trà, Đà Nẵng',
-                                  //   ),
-                                  // ),
+                                  const SizedBox(height: 10),
+                                  _buildAboutSection(),
+                                  Text(
+                                    "Map",
+                                    overflow: TextOverflow
+                                        .ellipsis, // Ensures text is truncated if too long
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 18,
+                                      height: 1.5,
+                                      fontWeight: FontWeight
+                                          .bold, // Add a valid fontWeight value
+                                    ),
+                                  ),
+
+                                  SizedBox(
+                                    height: 30,
+                                  ),
+                                  //Bản đồ
+                                  _latitude != null && _longitude != null
+                                      ? Container(
+                                          height: 250,
+                                          child: MapScreen(
+                                            latitude: _latitude!,
+                                            longitude: _longitude!,
+                                          ),
+                                        )
+                                      : Center(
+                                          child: CircularProgressIndicator()),
                                 ],
                               ),
                             ),
                           ),
 
                           // Tab Review
-                          ReviewWidget(
-                            reviews:
-                                controller.reviews, // Pass the filtered reviews list
-                          ), // Chỉ có 2 widget con, do đó loại bỏ Center
+                          Padding(
+                            padding: const EdgeInsets.all(15),
+                            child: SingleChildScrollView(
+                              child: ReviewWidget(
+                                reviews:
+                                    controller.reviews, // Truyền danh sách reviews đã lọc
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -381,6 +446,55 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildAboutSection() {
+    final List<String> aboutLabels = [
+      "Ages :",
+      "Duration :",
+      "Start time :",
+      "Mobile ticket :",
+      "Live guide :",
+    ];
+
+    final List<String> aboutDetails = [
+      "1-99, max of 12 per group",
+      "9h",
+      "Check availability",
+      "Yes",
+      "English",
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.all(0.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: List.generate(aboutLabels.length, (index) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Row(
+              children: [
+                Text(
+                  aboutLabels[index], // Label
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  aboutDetails[index], // Content to be dynamically filled
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.black54,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }

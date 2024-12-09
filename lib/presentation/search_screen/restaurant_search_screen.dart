@@ -214,7 +214,9 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
                                   ),
+
                                   const SizedBox(height: 15),
+                                  
                                   // Đánh giá và số lượng review
                                   Row(
                                     children: [

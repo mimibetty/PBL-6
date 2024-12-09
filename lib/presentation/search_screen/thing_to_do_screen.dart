@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:travelappflutter/core/app_export.dart';
+import 'package:get/get.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:travelappflutter/presentation/common_views/selectable_icon_button_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
 import 'package:travelappflutter/presentation/home_screen/models/tour_model.dart';
