@@ -5,7 +5,6 @@ import 'package:travelappflutter/presentation/common_views/geocoding_service.dar
 import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
 import 'package:travelappflutter/presentation/map/map_screen.dart';
 import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
-import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/create_review.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -13,7 +12,6 @@ import 'package:travelappflutter/presentation/search_screen/models/hotel_model.d
 
 class HotelDetailScreen extends StatefulWidget {
   final Hotel hotel;
-  final ReviewWidgetController controller = Get.put(ReviewWidgetController());
   HotelDetailScreen({super.key,required this.hotel});
 
 
@@ -22,34 +20,20 @@ class HotelDetailScreen extends StatefulWidget {
 }
 
 class _HotelDetailScreenState extends State<HotelDetailScreen> {
-  late List<ReviewModel> filteredReviews;
+  final ReviewWidgetController controller = Get.put(ReviewWidgetController());
   bool isLiked = false;
   double? _latitude; // Lưu trữ vĩ độ
   double? _longitude; // Lưu trữ kinh độ
   String _address = '91 Trung Kính, Trung Hòa, Cầu Giấy, Hà Nội';
 
 
-@override
-  void initState() {
-    super.initState();
-
-    // Initialize filteredReviews as an empty list
-    filteredReviews = [];
-
-    // Fetch coordinates for the address
-    _getCoordinates();
-
-    // Fetch reviews for the current hotel
-    widget.controller.fetchReviewsByDestinationID(widget.hotel.hotelID);
-
-    // Listen for updates to the reviews
-    widget.controller.reviews.listen((reviews) {
-      setState(() {
-        filteredReviews = reviews;
-      });
-    });
-  }
-
+  @override
+    void initState() {
+      super.initState();
+      controller.fetchReviewsByDestinationID(widget.hotel.destinationID);
+      // Fetch coordinates for the address
+      _getCoordinates();
+    }
 
   void _getCoordinates() async {
     if (_address.isNotEmpty) {
@@ -485,10 +469,15 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                   Padding(
                     padding: const EdgeInsets.all(15),
                     child: SingleChildScrollView(
-                      child: ReviewWidget(
-                        reviews:
-                            filteredReviews, // Truyền danh sách reviews đã lọc
-                      ),
+                      child:
+                      // Tab Review
+                      Obx(() {
+                        if (controller.isLoading.value) {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                        print("Controller Reviews: ${controller.reviews}");
+                        return ReviewWidget(reviews: controller.reviews);
+                      }),
                     ),
                   ),
                 ],

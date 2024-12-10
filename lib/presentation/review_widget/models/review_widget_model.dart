@@ -7,7 +7,7 @@ class ReviewModel {
   String companion;
   int id;
   int userId;
-  int destinationId;
+  int? destinationId; // Có thể null
   int likeCount; // Thêm trường likeCount
   List<ReviewImage> images;
 
@@ -20,31 +20,32 @@ class ReviewModel {
     required this.companion,
     required this.id,
     required this.userId,
-    required this.destinationId,
-    required this.likeCount, // Thêm trường likeCount
+    this.destinationId, // Có thể null
+    required this.likeCount,
     required this.images,
   });
 
-  // Factory method to create a Review object from JSON
+  // Factory method để tạo ReviewModel từ JSON
   factory ReviewModel.fromJson(Map<String, dynamic> json) {
     return ReviewModel(
-      title: json['title'],
-      content: json['content'],
-      rating: (json['rating'] as num).toDouble(),
-      language: json['language'],
-      dateCreated: json['date_create'],
-      companion: json['companion'],
-      id: json['id'],
-      userId: json['user_id'],
-      destinationId: json['destination_id'],
-      likeCount: json['like_count'] ?? 0, // Giá trị mặc định nếu không có
-      images: (json['images'] as List<dynamic>)
-          .map((image) => ReviewImage.fromJson(image))
-          .toList(),
+      title: json['title'] ?? 'No Title',
+      content: json['content'] ?? 'No Content',
+      rating: (json['rating'] ?? 0).toDouble(),
+      language: json['language'] ?? 'Unknown',
+      dateCreated: json['date_create'] ?? DateTime.now().toIso8601String(),
+      companion: json['companion'] ?? 'Unknown',
+      id: json['id'] ?? 0,
+      userId: json['user_id'] ?? 0,
+      destinationId: json['destination_id'], // Null nếu không có
+      likeCount: json['like_count'] ?? 0, // Mặc định là 0
+      images: (json['images'] as List<dynamic>?)
+              ?.map((image) => ReviewImage.fromJson(image))
+              .toList() ??
+          [], // Trả về danh sách rỗng nếu `images` là null
     );
   }
 
-  // Convert a Review object to JSON
+  // Convert một ReviewModel sang JSON
   Map<String, dynamic> toJson() {
     return {
       'title': title,
@@ -56,12 +57,11 @@ class ReviewModel {
       'id': id,
       'user_id': userId,
       'destination_id': destinationId,
-      'like_count': likeCount, // Thêm trường likeCount
+      'like_count': likeCount,
       'images': images.map((image) => image.toJson()).toList(),
     };
   }
 }
-
 
 class ReviewImage {
   int id;
@@ -74,16 +74,16 @@ class ReviewImage {
     required this.blobName,
   });
 
-  // Factory method to create a ReviewImage object from JSON
+  // Factory method để tạo ReviewImage từ JSON
   factory ReviewImage.fromJson(Map<String, dynamic> json) {
     return ReviewImage(
-      id: json['id'],
-      url: json['url'],
-      blobName: json['blob_name'],
+      id: json['id'] ?? 0,
+      url: json['url'] ?? 'https://default-image-url.com/default.jpg', // URL mặc định
+      blobName: json['blob_name'] ?? 'No Blob Name',
     );
   }
 
-  // Convert a ReviewImage object to JSON
+  // Convert một ReviewImage sang JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,

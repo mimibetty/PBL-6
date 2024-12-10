@@ -23,7 +23,7 @@ class ReviewFormPage extends StatefulWidget {
 
 class _ReviewFormPageState extends State<ReviewFormPage> {
   // Create a new review instance with the data
-  final controller = Get.put(ReviewWidgetController());
+  final controller = Get.find<ReviewWidgetController>();
 
   final TextEditingController _contextController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();

@@ -6,7 +6,6 @@ import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/map/map_screen.dart';
 import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
-import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
 import '../review_widget/widgets/create_review.dart';
 
@@ -25,17 +24,16 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   double? _longitude; // Lưu trữ kinh độ
   String _address = '91 Trung Kính, Trung Hòa, Cầu Giấy, Hà Nội';
 
+  @override
   void initState() {
     super.initState();
-    // Gọi hàm fetchReviewsByDestinationID khi màn hình được xây dựng
     controller.fetchReviewsByDestinationID(widget.destination.id);
     _getCoordinates();
   }
 
+
   PageController pageController = PageController();
   int pageView = 0;
-  List<ReviewModel> allReviews =
-      mockReviews; // Sử dụng mockReviews đã tạo trước đó
   bool isLiked = false; // Trạng thái nút tim
   void _getCoordinates() async {
     if (_address.isNotEmpty) {
@@ -61,13 +59,6 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final destinationId = widget.destination.id;
-    // List<ReviewModel> filteredReviews = allReviews
-    //     .where((review) => review.destinationId == widget.destination.id)
-    //     .toList();
-    // for (var review in filteredReviews) {
-    //   print(
-    //       'ID: ${review.destinationId}, Name: ${review.content}'); // In ra ID và Name
-    // }
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
@@ -431,10 +422,14 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                           Padding(
                             padding: const EdgeInsets.all(15),
                             child: SingleChildScrollView(
-                              child: ReviewWidget(
-                                reviews:
-                                    controller.reviews, // Truyền danh sách reviews đã lọc
-                              ),
+                              child: 
+                              // Tab Review
+                              Obx(() {
+                                if (controller.isLoading.value) {
+                                  return Center(child: CircularProgressIndicator());
+                                }
+                                return ReviewWidget(reviews: controller.reviews);
+                              }),
                             ),
                           ),
                         ],

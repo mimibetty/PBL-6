@@ -8,7 +8,6 @@ import 'package:travelappflutter/presentation/review_widget/controller/review_wi
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
 import 'package:travelappflutter/presentation/search_screen/models/restaurant_model.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../review_widget/models/review_widget_model.dart';
 import '../review_widget/widgets/create_review.dart';
 
 class RestaurantDetailScreen extends StatefulWidget {
@@ -24,17 +23,18 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   double? _latitude; // Lưu trữ vĩ độ
   double? _longitude; // Lưu trữ kinh độ
   String _address = '91 Trung Kính, Trung Hòa, Cầu Giấy, Hà Nội';
+
   @override
   void initState() {
     super.initState();
-    allReviews = mockReviews;
+    controller.fetchReviewsByDestinationID(widget.restaurant.destinationID);
     _getCoordinates();
   }
 
   bool isLiked = false;
   PageController pageController = PageController();
   int pageView = 0;
-  List<ReviewModel> allReviews = mockReviews;
+
   void _getCoordinates() async {
     if (_address.isNotEmpty) {
       var coordinates =
@@ -127,8 +127,6 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    controller.fetchReviewsByDestinationID(widget.restaurant.restaurantId);
-    final List<ReviewModel> reviews = controller.reviews;
 
     return Scaffold(
       backgroundColor: kBackgroundColor,
@@ -176,7 +174,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => ReviewFormPage(
-                    destinationId: widget.restaurant.restaurantId,
+                    destinationId: widget.restaurant.restaurantID,
                     destinationName: widget.restaurant.restaurantName,
                     destinationAddress: widget.restaurant.restaurantLocation,
                     destinationImageURL: widget.restaurant.images.first,
@@ -483,9 +481,14 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                           Padding(
                             padding: const EdgeInsets.all(15),
                             child: SingleChildScrollView(
-                              child: ReviewWidget(
-                                reviews:reviews, // Truyền danh sách reviews đã lọc
-                              ),
+                              child: 
+                              // Tab Review
+                              Obx(() {
+                                if (controller.isLoading.value) {
+                                  return Center(child: CircularProgressIndicator());
+                                }
+                                return ReviewWidget(reviews: controller.reviews);
+                              }),
                             ),
                           ),
                           // Contact Tab

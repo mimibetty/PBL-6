@@ -104,7 +104,7 @@ class ReviewWidgetController extends GetxController {
   /// Fetch reviews for a specific destination ID
   Future<void> fetchReviewsByDestinationID(int destinationId) async {
     isLoading.value = true;
-
+    reviews.clear(); // Xóa dữ liệu cũ trước khi gọi API
     try {
       final Uri url = Uri.parse('$apiBaseUrl?destination_id=$destinationId');
       final response = await http.get(url);
@@ -112,16 +112,23 @@ class ReviewWidgetController extends GetxController {
       if (response.statusCode == 200) {
         final List<dynamic> responseData =
             json.decode(utf8.decode(response.bodyBytes));
-        reviews.value = responseData
+        final fetchedReviews = responseData
             .map((reviewData) => ReviewModel.fromJson(reviewData))
             .toList();
+
+        // Kiểm tra trước khi cập nhật trạng thái
+        if (Get.isRegistered<ReviewWidgetController>()) {
+          reviews.value = fetchedReviews;
+        }
       } else {
         Get.snackbar('Error', 'Failed to load reviews');
       }
     } catch (e) {
       Get.snackbar('Error', 'An error occurred: $e');
     } finally {
-      isLoading.value = false;
+      if (Get.isRegistered<ReviewWidgetController>()) {
+        isLoading.value = false;
+      }
     }
   }
 }
