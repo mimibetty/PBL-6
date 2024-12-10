@@ -487,7 +487,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                                 if (controller.isLoading.value) {
                                   return Center(child: CircularProgressIndicator());
                                 }
-                                return ReviewWidget(reviews: controller.reviews);
+                                return ReviewWidget(destinationId: widget.restaurant.destinationID, reviews: controller.reviews);
                               }),
                             ),
                           ),

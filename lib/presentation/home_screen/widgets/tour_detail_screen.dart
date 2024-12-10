@@ -371,6 +371,7 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
                           //truyen interface của tour vào
                           TourOptionsScreen(),
                           ReviewWidget(
+                            destinationId: widget.tour.id,
                             reviews: filteredReviews,
                           ),
                         ],

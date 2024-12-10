@@ -476,7 +476,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                           return Center(child: CircularProgressIndicator());
                         }
                         print("Controller Reviews: ${controller.reviews}");
-                        return ReviewWidget(reviews: controller.reviews);
+                        return ReviewWidget(destinationId: widget.hotel.destinationID ,reviews: controller.reviews);
                       }),
                     ),
                   ),

@@ -428,7 +428,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                 if (controller.isLoading.value) {
                                   return Center(child: CircularProgressIndicator());
                                 }
-                                return ReviewWidget(reviews: controller.reviews);
+                                return ReviewWidget(destinationId: widget.destination.id,reviews: controller.reviews);
                               }),
                             ),
                           ),

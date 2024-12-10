@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Để định dạng ngày
+import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/common_views/circle_rating_widget_view.dart';
 import 'package:travelappflutter/presentation/common_views/horizontal_rating_bar.dart';
 import 'package:travelappflutter/presentation/common_views/selected_chip_widget.dart';
+import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
 
 class ReviewWidget extends StatelessWidget {
+  final int destinationId;
   final List<ReviewModel> reviews;
-  const ReviewWidget({Key? key, required this.reviews}) : super(key: key);
+  const ReviewWidget({Key? key, required this.destinationId, required this.reviews}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +113,7 @@ class ReviewWidget extends StatelessWidget {
           const SizedBox(height: 10),
           SelectableChipWidget(
             labels: [
-              'French village',
+              'All reviews',
               'Cable car',
               'Bana hill',
               'Our tour guide',
@@ -266,8 +269,8 @@ class ReviewWidget extends StatelessWidget {
 
     // Các lựa chọn cố định
     final List<int> ratings = [1, 2, 3, 4, 5];
-    final List<String> timesOfYear = ['Spring', 'Summer', 'Autumn', 'Winter'];
-    final List<String> typesOfVisit = ['Family', 'Couple', 'Friends', 'Solo'];
+    final List<String> timesOfYear = ['Mar-May', 'Jun-Aug', 'Sep-Nov', 'Dec-Feb'];
+    final List<String> typesOfVisit = ['Families', 'Couples', 'Friends', 'Solo','Business'];
 
     showDialog(
       context: context,
@@ -386,9 +389,17 @@ class ReviewWidget extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
+                    print("Reviews:  ${reviews.length}");
                     // Áp dụng bộ lọc
-                    _applyFilters(selectedRating, selectedTimeOfYear,
-                        selectedTypeOfVisit);
+                    // Gọi applyFilter từ Controller khi bấm Apply
+                    Get.find<ReviewWidgetController>().applyFilter(
+                      destinationId: destinationId,
+                      selectedRating: selectedRating?.toInt(),
+                      selectedSeason: selectedTimeOfYear,
+                      selectedCompanion: selectedTypeOfVisit,
+                    );
+                    print("selected rating : ${selectedRating}  selectedTimeOfYear : ${selectedTimeOfYear} selectedTypeOfVisit : ${selectedTypeOfVisit}");
+
                     Navigator.of(context).pop();
                   },
                   style: ElevatedButton.styleFrom(
@@ -404,17 +415,5 @@ class ReviewWidget extends StatelessWidget {
         );
       },
     );
-  }
-
-  void _applyFilters(int? rating, String? timeOfYear, String? typeOfVisit) {
-    List<ReviewModel> filteredReviews = reviews.where((review) {
-      bool matchesRating = rating == null || review.rating.toInt() == rating;
-      bool matchesTimeOfYear =
-          timeOfYear == null || review.dateCreated.contains(timeOfYear);
-      bool matchesTypeOfVisit =
-          typeOfVisit == null || review.companion.contains(typeOfVisit);
-
-      return matchesRating && matchesTimeOfYear && matchesTypeOfVisit;
-    }).toList();
   }
 }
