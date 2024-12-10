@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/common_views/geocoding_service.dart';
 import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
 import 'package:travelappflutter/presentation/map/map_screen.dart';
-import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
+import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/create_review.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -11,27 +12,29 @@ import 'package:travelappflutter/presentation/search_screen/models/hotel_model.d
 
 class HotelDetailScreen extends StatefulWidget {
   final Hotel hotel;
+  HotelDetailScreen({super.key,required this.hotel});
 
-  HotelDetailScreen({super.key, required this.hotel});
 
   @override
   _HotelDetailScreenState createState() => _HotelDetailScreenState();
 }
 
 class _HotelDetailScreenState extends State<HotelDetailScreen> {
-  late List<ReviewWidgetModel> filteredReviews;
+  final ReviewWidgetController controller = Get.put(ReviewWidgetController());
   bool isLiked = false;
   double? _latitude; // Lưu trữ vĩ độ
   double? _longitude; // Lưu trữ kinh độ
   String _address = '91 Trung Kính, Trung Hòa, Cầu Giấy, Hà Nội';
+
+
   @override
-  void initState() {
-    super.initState();
-    filteredReviews = mockReviews
-        .where((review) => review.destinationId == widget.hotel.hotelID)
-        .toList();
-    _getCoordinates();
-  }
+    void initState() {
+      super.initState();
+      controller.fetchReviewsByDestinationID(widget.hotel.destinationID);
+      // Fetch coordinates for the address
+      _getCoordinates();
+    }
+
   void _getCoordinates() async {
     if (_address.isNotEmpty) {
       var coordinates =
@@ -110,9 +113,11 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => ReviewFormPage(
-                    destinationId: widget.hotel.hotelID,
-                    modeType: 2,
-                  ),
+                      destinationId: widget.hotel.hotelID,
+                      destinationName: widget.hotel.hotelName,
+                      destinationAddress: widget.hotel.hotelLocation,
+                      destinationImageURL: widget.hotel.images.first
+                    ),
                 ),
               );
             },
@@ -180,7 +185,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                         ),
                       const SizedBox(width: 20),
                       Text(
-                        "${widget.hotel.rating.toString()} ★",
+                        "${widget.hotel.rating.toStringAsFixed(1)} ★",
                         style: TextStyle(fontSize: 15, color: Colors.grey),
                       ),
                     ],
@@ -464,10 +469,15 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                   Padding(
                     padding: const EdgeInsets.all(15),
                     child: SingleChildScrollView(
-                      child: ReviewWidget(
-                        reviews:
-                            filteredReviews, // Truyền danh sách reviews đã lọc
-                      ),
+                      child:
+                      // Tab Review
+                      Obx(() {
+                        if (controller.isLoading.value) {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                        print("Controller Reviews: ${controller.reviews}");
+                        return ReviewWidget(destinationId: widget.hotel.destinationID ,reviews: controller.reviews);
+                      }),
                     ),
                   ),
                 ],

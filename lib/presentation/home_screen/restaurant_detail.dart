@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/common_views/geocoding_service.dart';
 import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/map/map_screen.dart';
+import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
 import 'package:travelappflutter/presentation/search_screen/models/restaurant_model.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../review_widget/models/review_widget_model.dart';
 import '../review_widget/widgets/create_review.dart';
 
 class RestaurantDetailScreen extends StatefulWidget {
@@ -18,20 +19,22 @@ class RestaurantDetailScreen extends StatefulWidget {
 }
 
 class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
+  final ReviewWidgetController controller = Get.put(ReviewWidgetController());
   double? _latitude; // Lưu trữ vĩ độ
   double? _longitude; // Lưu trữ kinh độ
   String _address = '91 Trung Kính, Trung Hòa, Cầu Giấy, Hà Nội';
+
   @override
   void initState() {
     super.initState();
-    allReviews = mockReviews;
+    controller.fetchReviewsByDestinationID(widget.restaurant.destinationID);
     _getCoordinates();
   }
 
   bool isLiked = false;
   PageController pageController = PageController();
   int pageView = 0;
-  List<ReviewWidgetModel> allReviews = mockReviews;
+
   void _getCoordinates() async {
     if (_address.isNotEmpty) {
       var coordinates =
@@ -124,10 +127,6 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<ReviewWidgetModel> filteredReviews = allReviews
-        .where(
-            (review) => review.destinationId == widget.restaurant.restaurantId)
-        .toList();
 
     return Scaffold(
       backgroundColor: kBackgroundColor,
@@ -175,8 +174,10 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => ReviewFormPage(
-                    destinationId: widget.restaurant.restaurantId,
-                    modeType: 1,
+                    destinationId: widget.restaurant.restaurantID,
+                    destinationName: widget.restaurant.restaurantName,
+                    destinationAddress: widget.restaurant.restaurantLocation,
+                    destinationImageURL: widget.restaurant.images.first,
                   ), // Truyền destinationId vào
                 ),
               );
@@ -370,7 +371,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                                             const SizedBox(width: 5),
                                             Text(
                                               widget.restaurant.rating
-                                                  .toString(),
+                                                  .toStringAsFixed(1).toString(),
                                               style: const TextStyle(
                                                 fontSize: 17,
                                                 fontWeight: FontWeight.bold,
@@ -455,7 +456,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                                       widget.restaurant.feature.join(', ')),
                                   const SizedBox(height: 10),
                                   _buildContactInfo("Meal :",
-                                      widget.restaurant.cuisines.join(', ')),
+                                      widget.restaurant.meal.join(', ')),
                                   const SizedBox(height: 10),
                                   _buildContactInfo("Open Time :",
                                       widget.restaurant.openTime.toString()),
@@ -480,10 +481,14 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                           Padding(
                             padding: const EdgeInsets.all(15),
                             child: SingleChildScrollView(
-                              child: ReviewWidget(
-                                reviews:
-                                    filteredReviews, // Truyền danh sách reviews đã lọc
-                              ),
+                              child: 
+                              // Tab Review
+                              Obx(() {
+                                if (controller.isLoading.value) {
+                                  return Center(child: CircularProgressIndicator());
+                                }
+                                return ReviewWidget(destinationId: widget.restaurant.destinationID, reviews: controller.reviews);
+                              }),
                             ),
                           ),
                           // Contact Tab

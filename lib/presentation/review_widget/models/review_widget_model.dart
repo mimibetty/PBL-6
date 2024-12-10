@@ -1,142 +1,148 @@
-class ReviewWidgetModel {
-  final String reviewId; // Mã định danh của review
-  final String userId; // Mã định danh của người dùng
-  final int destinationId; // Mã định danh của địa điểm
-  final String context; // Nội dung của review
-  final double rating; // Đánh giá (từ 1 đến 5)
-  final DateTime dateCreated; // Ngày tạo review
-  int likeCount; // Số lượng lượt thích
-  final String travelTime; // Thời gian đi
-  final List<String> companions; // Ai đi cùng
-  final String title;
-  final List<String>? images;
-  final String purpose;
-  // final int modeType;
+class ReviewModel {
+  String title;
+  String content;
+  double rating;
+  String language;
+  String dateCreated;
+  String companion;
+  int id;
+  int userId;
+  int? destinationId; // Có thể null
+  int likeCount; // Thêm trường likeCount
+  List<ReviewImage> images;
 
-  ReviewWidgetModel({
-    required this.reviewId,
-    required this.userId,
-    required this.destinationId,
-    required this.context,
-    required this.rating,
-    required this.dateCreated,
-    required this.purpose,
-    this.likeCount = 0,
-    required this.travelTime,
-    required this.companions,
+  ReviewModel({
     required this.title,
-    this.images = const [],
-
-    // required this.modeType,
+    required this.content,
+    required this.rating,
+    required this.language,
+    required this.dateCreated,
+    required this.companion,
+    required this.id,
+    required this.userId,
+    this.destinationId, // Có thể null
+    required this.likeCount,
+    required this.images,
   });
 
-  // Phương thức tăng lượt thích
-  void increaseLikeCount() {
-    likeCount += 1;
-  }
-
-  // Phương thức giảm lượt thích
-  void decreaseLikeCount() {
-    if (likeCount > 0) {
-      likeCount -= 1;
-    }
-  }
-
-  factory ReviewWidgetModel.fromJson(Map<String, dynamic> json) {
-    return ReviewWidgetModel(
-      reviewId: json['reviewId'],
-      userId: json['userId'],
-      destinationId: json['destinationId'],
-      context: json['context'],
-      rating: json['rating'].toDouble(), // Đảm bảo rating là double
-      dateCreated: DateTime.parse(json['dateCreated']),
-      likeCount: json['likeCount'] ?? 0,
-      travelTime: json['travelTime'] ?? '',
-      companions: json['whoGoWith'] ?? '',
-      title: json['title'] ?? '',
-      images: json['images'] ?? '', // Thêm trường title
-      purpose: json['purpose'] ?? '',
-      // modeType: json['modeTypoe']?? '',
+  // Factory method để tạo ReviewModel từ JSON
+  factory ReviewModel.fromJson(Map<String, dynamic> json) {
+    return ReviewModel(
+      title: json['title'] ?? 'No Title',
+      content: json['content'] ?? 'No Content',
+      rating: (json['rating'] ?? 0).toDouble(),
+      language: json['language'] ?? 'Unknown',
+      dateCreated: json['date_create'] ?? DateTime.now().toIso8601String(),
+      companion: json['companion'] ?? 'Unknown',
+      id: json['id'] ?? 0,
+      userId: json['user_id'] ?? 0,
+      destinationId: json['destination_id'], // Null nếu không có
+      likeCount: json['like_count'] ?? 0, // Mặc định là 0
+      images: (json['images'] as List<dynamic>?)
+              ?.map((image) => ReviewImage.fromJson(image))
+              .toList() ??
+          [], // Trả về danh sách rỗng nếu `images` là null
     );
   }
 
+  // Convert một ReviewModel sang JSON
   Map<String, dynamic> toJson() {
     return {
-      'reviewId': reviewId,
-      'userId': userId,
-      'destinationId': destinationId,
-      'context': context,
-      'rating': rating,
-      'dateCreated': dateCreated.toIso8601String(),
-      'likeCount': likeCount,
-      'travelTime': travelTime,
-      'companions': companions,
       'title': title,
-      'images': images,
-      'purpose': purpose,
-      // 'modeType':modeType,
+      'content': content,
+      'rating': rating,
+      'language': language,
+      'date_create': dateCreated,
+      'companion': companion,
+      'id': id,
+      'user_id': userId,
+      'destination_id': destinationId,
+      'like_count': likeCount,
+      'images': images.map((image) => image.toJson()).toList(),
     };
   }
 }
 
-// Dữ liệu giả lập cho các review
-List<ReviewWidgetModel> mockReviews = [
-  ReviewWidgetModel(
-    reviewId: '1',
-    userId: 'user01',
-    destinationId: 1,
-    context:
-        'Great place! Highly recommended for tourism and family. I\'ll come back next time.',
-    rating: 4.6,
-    dateCreated: DateTime.now(),
-    likeCount: 10,
-    travelTime: 'September/2024',
-    companions: [
-      'Family'
-          'Friends'
-    ],
-    title: 'Amazing Experience!', // Thêm tiêu đề cho review
-    images: [
-      // "https://duthuyendanang.com/wp-content/uploads/2021/08/cau-rong-da-nang-a-1024x664.jpg",
-      "https://danangbest.com/upload_content/cau-rong-da-nang-4.webp",
-    ],
-    purpose: 'Leisure',
-    // modeType:1,
+class ReviewImage {
+  int id;
+  String url;
+  String blobName;
+
+  ReviewImage({
+    required this.id,
+    required this.url,
+    required this.blobName,
+  });
+
+  // Factory method để tạo ReviewImage từ JSON
+  factory ReviewImage.fromJson(Map<String, dynamic> json) {
+    return ReviewImage(
+      id: json['id'] ?? 0,
+      url: json['url'] ?? 'https://default-image-url.com/default.jpg', // URL mặc định
+      blobName: json['blob_name'] ?? 'No Blob Name',
+    );
+  }
+
+  // Convert một ReviewImage sang JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'url': url,
+      'blob_name': blobName,
+    };
+  }
+}
+
+final List<ReviewModel> mockReviews = [
+  ReviewModel(
+    title: "Review 1 for Destination 2",
+    content: "This is review 1 for Destination 2.",
+    rating: 1.5,
+    language: "english",
+    dateCreated: "2024-11-13",
+    companion: "Solo",
+    id: 6,
+    userId: 5,
+    destinationId: 6,
+    likeCount: 10, // Ví dụ giá trị cụ thể
+    images: [], // No images for this review
   ),
-  ReviewWidgetModel(
-    reviewId: '2',
-    userId: 'user02',
-    destinationId: 2,
-    context: 'Beautiful views and great service.',
-    rating: 5.0,
-    dateCreated: DateTime.now(),
-    likeCount: 15,
-    travelTime: 'August/2024',
-    companions: ['Friends'],
-    title: 'Unforgettable Trip!',
+  ReviewModel(
+    title: "좋은",
+    content: "호텔은 꽤 괜찮습니다",
+    rating: 4.5,
+    language: "Korean",
+    dateCreated: "2024-11-27",
+    companion: "Solo",
+    id: 130,
+    userId: 70,
+    destinationId: 6,
+    likeCount: 25, // Ví dụ giá trị cụ thể
     images: [
-      'https://ngocanhtravel.vn/wp-content/uploads/2022/06/bai-bien-my-khe-da-nang-min.jpg',
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSDdZGDD0FF1USQuM1HacAqUWT34p6uJdwtNeDx9jNtNOMrsWFwVQwa6i6pqAO60-xflg&usqp=CAU',
+      ReviewImage(
+        id: 279,
+        url: "https://tripstoragepbl6.blob.core.windows.net/travel-image/reviews/279.png",
+        blobName: "reviews/279.png",
+      ),
     ],
-    purpose: 'Business',
-    // modeType: 1,
   ),
-  ReviewWidgetModel(
-    reviewId: '3',
-    userId: 'user03',
-    destinationId: 2,
-    context: 'Not bad, but the food was mediocre.',
-    rating: 3.0,
-    dateCreated: DateTime.now(),
-    likeCount: 7,
-    travelTime: 'October/2024',
-    companions: ['Solo'],
-    title: 'Average Experience',
+  ReviewModel(
+    title: "糟糕的酒店",
+    content: "食物不好，房间不好，空调坏了",
+    rating: 2.0,
+    language: "Chinese",
+    dateCreated: "2024-11-27",
+    companion: "Family",
+    id: 131,
+    userId: 67,
+    destinationId: 6,
+    likeCount: 0, // Giá trị mặc định
     images: [
-      'https://dichvuthuexedanang.com/wp-content/uploads/2019/08/bien-my-khe-da-nang2-min.jpeg',
-      'https://danangxanh.net/data/images/bien-my-khe.jpg',
+      ReviewImage(
+        id: 280,
+        url: "https://tripstoragepbl6.blob.core.windows.net/travel-image/reviews/280.png",
+        blobName: "reviews/280.png",
+      ),
     ],
-    purpose: 'Leisure',
-    // modeType: 1,
   ),
 ];

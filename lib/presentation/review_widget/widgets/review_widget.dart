@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Để định dạng ngày
+import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/common_views/circle_rating_widget_view.dart';
 import 'package:travelappflutter/presentation/common_views/horizontal_rating_bar.dart';
 import 'package:travelappflutter/presentation/common_views/selected_chip_widget.dart';
+import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
 
 class ReviewWidget extends StatelessWidget {
-  final List<ReviewWidgetModel> reviews;
-
-  const ReviewWidget({Key? key, required this.reviews}) : super(key: key);
+  final int destinationId;
+  final List<ReviewModel> reviews;
+  const ReviewWidget({Key? key, required this.destinationId, required this.reviews}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +113,7 @@ class ReviewWidget extends StatelessWidget {
           const SizedBox(height: 10),
           SelectableChipWidget(
             labels: [
-              'French village',
+              'All reviews',
               'Cable car',
               'Bana hill',
               'Our tour guide',
@@ -134,8 +136,8 @@ class ReviewWidget extends StatelessWidget {
             // Đảm bảo danh sách review không gây overflow
             Column(
               children: reviews.map((review) {
-                String formattedDate = DateFormat('dd MMM yyyy')
-                    .format(review.dateCreated); // Định dạng ngày
+                DateTime date = DateTime.parse(review.dateCreated);
+                String formattedDate = DateFormat('dd MMM yyyy').format(date); // Định dạng ngày
                 return Card(
                   margin:
                       const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
@@ -157,7 +159,7 @@ class ReviewWidget extends StatelessWidget {
                                   backgroundColor: const Color(0xFF1B1B1B),
                                   radius: 20,
                                   child: Text(
-                                    review.context[0].toUpperCase(),
+                                    review.content[0].toUpperCase(),
                                     style: const TextStyle(
                                         color: Colors.white, fontSize: 20),
                                   ),
@@ -193,7 +195,7 @@ class ReviewWidget extends StatelessWidget {
                         CircleRatingWidget(rating: review.rating, size: 15),
                         const SizedBox(height: 10),
                         Text(
-                          '${review.travelTime} * ${review.companions}',
+                          '${review.dateCreated} * ${review.companion}',
                           style: const TextStyle(
                               fontSize: 15, color: Colors.black),
                         ),
@@ -207,7 +209,7 @@ class ReviewWidget extends StatelessWidget {
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          review.context,
+                          review.content,
                           style: const TextStyle(
                               fontSize: 16, color: Color(0xFF1B1B1B)),
                         ),
@@ -225,11 +227,11 @@ class ReviewWidget extends StatelessWidget {
                           Wrap(
                             spacing: 8,
                             runSpacing: 8,
-                            children: review.images!.map((imageUrl) {
+                            children: review.images.map((image) {
                               return ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
                                 child: Image.network(
-                                  imageUrl,
+                                  image.url,
                                   height: 80,
                                   width: 80,
                                   fit: BoxFit.cover,
@@ -267,8 +269,8 @@ class ReviewWidget extends StatelessWidget {
 
     // Các lựa chọn cố định
     final List<int> ratings = [1, 2, 3, 4, 5];
-    final List<String> timesOfYear = ['Spring', 'Summer', 'Autumn', 'Winter'];
-    final List<String> typesOfVisit = ['Family', 'Couple', 'Friends', 'Solo'];
+    final List<String> timesOfYear = ['Mar-May', 'Jun-Aug', 'Sep-Nov', 'Dec-Feb'];
+    final List<String> typesOfVisit = ['Families', 'Couples', 'Friends', 'Solo','Business'];
 
     showDialog(
       context: context,
@@ -387,9 +389,17 @@ class ReviewWidget extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
+                    print("Reviews:  ${reviews.length}");
                     // Áp dụng bộ lọc
-                    _applyFilters(selectedRating, selectedTimeOfYear,
-                        selectedTypeOfVisit);
+                    // Gọi applyFilter từ Controller khi bấm Apply
+                    Get.find<ReviewWidgetController>().applyFilter(
+                      destinationId: destinationId,
+                      selectedRating: selectedRating?.toInt(),
+                      selectedSeason: selectedTimeOfYear,
+                      selectedCompanion: selectedTypeOfVisit,
+                    );
+                    print("selected rating : ${selectedRating}  selectedTimeOfYear : ${selectedTimeOfYear} selectedTypeOfVisit : ${selectedTypeOfVisit}");
+
                     Navigator.of(context).pop();
                   },
                   style: ElevatedButton.styleFrom(
@@ -405,17 +415,5 @@ class ReviewWidget extends StatelessWidget {
         );
       },
     );
-  }
-
-  void _applyFilters(int? rating, String? timeOfYear, String? typeOfVisit) {
-    List<ReviewWidgetModel> filteredReviews = reviews.where((review) {
-      bool matchesRating = rating == null || review.rating.toInt() == rating;
-      bool matchesTimeOfYear =
-          timeOfYear == null || review.travelTime.contains(timeOfYear);
-      bool matchesTypeOfVisit =
-          typeOfVisit == null || review.companions.contains(typeOfVisit);
-
-      return matchesRating && matchesTimeOfYear && matchesTypeOfVisit;
-    }).toList();
   }
 }

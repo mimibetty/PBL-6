@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:get/get.dart';
+import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
 import 'package:travelappflutter/presentation/home_screen/models/home_model.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:http/http.dart' as http;
@@ -7,6 +8,7 @@ import 'package:http/http.dart' as http;
 class HomeController extends GetxController {
   Rx<HomeModel> homeModelObj = HomeModel().obs;
   var selectedPage = 0.obs;
+  var role = ''.obs; // Observable to store user role
   Rx<List<TravelDestination>> myDestination = Rx<List<TravelDestination>>([]);
 
   void changePage(int index) {
@@ -21,7 +23,6 @@ class HomeController extends GetxController {
     var initialPage = Get.arguments != null ? Get.arguments['selectedPage'] ?? 0 : 0;
     selectedPage.value = initialPage;
   }
-
   @override
   void onReady() {
     super.onReady();

@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/models/tour_model.dart';
-import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/home_screen/widgets/tour_overview_screen.dart';
 import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/create_review.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/other_info_widget.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
-import 'package:travelappflutter/routes/app_routes.dart';
 
 class TourDetailScreen extends StatefulWidget {
   final Tour tour;
@@ -28,19 +24,19 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
 
   PageController pageController = PageController();
   int pageView = 0;
-  List<ReviewWidgetModel> allReviews =
+  List<ReviewModel> allReviews =
       mockReviews; // Sử dụng mockReviews đã tạo trước đó
 
   @override
   Widget build(BuildContext context) {
     final destinationId = widget.tour.id;
-    List<ReviewWidgetModel> filteredReviews = allReviews
+    List<ReviewModel> filteredReviews = allReviews
         .where((review) => review.destinationId == widget.tour.id)
         .toList();
 
     for (var review in filteredReviews) {
       print(
-          'ID: ${review.destinationId}, Name: ${review.context}'); // In ra ID và Name
+          'ID: ${review.destinationId}, Name: ${review.content}'); // In ra ID và Name
     }
     return Scaffold(
       backgroundColor: kBackgroundColor,
@@ -80,7 +76,9 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
                 MaterialPageRoute(
                   builder: (context) => ReviewFormPage(
                     destinationId: destinationId,
-                    modeType: 4,
+                    destinationName: widget.tour.name,
+                    destinationImageURL: widget.tour.images[0],
+                    destinationAddress: widget.tour.location,
                   ), // Truyền destinationId vào
                 ),
               );
@@ -373,6 +371,7 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
                           //truyen interface của tour vào
                           TourOptionsScreen(),
                           ReviewWidget(
+                            destinationId: widget.tour.id,
                             reviews: filteredReviews,
                           ),
                         ],

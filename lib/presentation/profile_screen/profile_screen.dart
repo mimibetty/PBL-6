@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
 import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
 import 'package:travelappflutter/presentation/profile_screen/preferences_screen.dart';
+import 'package:travelappflutter/presentation/sign_in_screen/controller/sign_in_controller.dart';
 
 import '../sign_in_screen/sign_in_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
-  void _signOut(BuildContext context) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => SignInScreen()),
-    );
+  void _signOut(BuildContext context) async {
+    // Gọi hàm logout từ ProfileController
+    final signInController = Get.find<SignInController>();
+    await signInController.logout();
+
+    // Điều hướng tới màn hình đăng nhập
+    Get.offAll(() => SignInScreen());
   }
   @override
   Widget build(BuildContext context) {

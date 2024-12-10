@@ -24,7 +24,7 @@ dependencies:
   flutter_form_builder: ^8.0.0
   curved_navigation_bar: ^1.0.6
   fl_chart: ^0.69.2
-  google_maps_flutter: ^2.5.3
+  # google_maps_flutter: ^2.5.3
   cupertino_icons: ^1.0.6
   maplibre_gl: ^0.20.0
   dio: ^5.1.2
@@ -34,7 +34,7 @@ dependencies:
   http: ^1.2.1
   flutter_polyline_points: ^2.1.0
   polyline_codec: ^0.1.6
-
+  get_storage: ^2.0.3
 
 
 

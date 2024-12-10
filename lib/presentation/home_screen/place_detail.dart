@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:travelappflutter/presentation/common_views/geocoding_service.dart';
 import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/map/map_screen.dart';
+import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
-import 'package:travelappflutter/routes/app_routes.dart';
-import '../review_widget/models/review_widget_model.dart';
 import '../review_widget/widgets/create_review.dart';
 
 class PlaceDetailScreen extends StatefulWidget {
@@ -19,22 +17,23 @@ class PlaceDetailScreen extends StatefulWidget {
   State<PlaceDetailScreen> createState() => _PlaceDetailScreenState();
 }
 
-class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
+class _PlaceDetailScreenState extends State<PlaceDetailScreen> { 
+  final ReviewWidgetController controller = Get.put(ReviewWidgetController());
   @override
   double? _latitude; // Lưu trữ vĩ độ
   double? _longitude; // Lưu trữ kinh độ
   String _address = '91 Trung Kính, Trung Hòa, Cầu Giấy, Hà Nội';
 
+  @override
   void initState() {
     super.initState();
-    allReviews = mockReviews; // Khởi tạo trong initState
+    controller.fetchReviewsByDestinationID(widget.destination.id);
     _getCoordinates();
   }
 
+
   PageController pageController = PageController();
   int pageView = 0;
-  List<ReviewWidgetModel> allReviews =
-      mockReviews; // Sử dụng mockReviews đã tạo trước đó
   bool isLiked = false; // Trạng thái nút tim
   void _getCoordinates() async {
     if (_address.isNotEmpty) {
@@ -60,14 +59,6 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final destinationId = widget.destination.id;
-    List<ReviewWidgetModel> filteredReviews = allReviews
-        .where((review) => review.destinationId == widget.destination.id)
-        .toList();
-
-    for (var review in filteredReviews) {
-      print(
-          'ID: ${review.destinationId}, Name: ${review.context}'); // In ra ID và Name
-    }
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
@@ -115,8 +106,10 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                 MaterialPageRoute(
                   builder: (context) => ReviewFormPage(
                     destinationId: destinationId,
-                    modeType: 3,
-                  ), // Truyền destinationId vào
+                    destinationName: widget.destination.name,
+                    destinationAddress: '${widget.destination.address.street}, ${widget.destination.address.ward}, ${widget.destination.address.district}',
+                    destinationImageURL: widget.destination.images[0],
+                  ), 
                 ),
               );
             },
@@ -309,8 +302,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                         ),
                                         const SizedBox(width: 5),
                                         Text(
-                                          widget.destination.rating
-                                              .toStringAsFixed(1),
+                                          widget.destination.rating.toStringAsFixed(1).toString(),
                                           style: const TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.bold,
@@ -430,10 +422,14 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                           Padding(
                             padding: const EdgeInsets.all(15),
                             child: SingleChildScrollView(
-                              child: ReviewWidget(
-                                reviews:
-                                    filteredReviews, // Truyền danh sách reviews đã lọc
-                              ),
+                              child: 
+                              // Tab Review
+                              Obx(() {
+                                if (controller.isLoading.value) {
+                                  return Center(child: CircularProgressIndicator());
+                                }
+                                return ReviewWidget(destinationId: widget.destination.id,reviews: controller.reviews);
+                              }),
                             ),
                           ),
                         ],

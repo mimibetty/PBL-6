@@ -113,8 +113,8 @@ class _PlanScreen5State extends State<PlanScreen5> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue, 
-                  foregroundColor: Colors.white,
+                  foregroundColor: Colors.white, 
+                  backgroundColor: Colors.blue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),

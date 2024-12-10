@@ -1,25 +1,26 @@
-
 class Restaurant {
-  final String restaurantName; 
-  final int restaurantId; 
-  final String contactNumber; 
-  final String website; 
-  final String openTime; 
-  final double duration; 
-  final int age; 
-  final double rating; 
-  final List<String> cuisines; 
-  final List<String> meal; 
-  final List<String> feature; 
-  final String about; 
-  final List<String> images; 
-  final String restaurantLocation; 
-  final int review; 
-  final String priceRange; 
+  final String restaurantName;
+  final int destinationID;  // Changed to destinationId
+  final int restaurantID; 
+  final String contactNumber;
+  final String website;
+  final String openTime;
+  final double duration;
+  final int age;
+  final double rating;
+  final List<String> cuisines;
+  final List<String> meal;
+  final List<String> feature;
+  final String about;
+  final List<String> images;
+  final String restaurantLocation;
+  final int review;
+  final String priceRange;
 
   Restaurant({
     required this.restaurantName,
-    required this.restaurantId,
+    required this.destinationID,  // Now destinationId
+    required this.restaurantID,
     required this.contactNumber,
     required this.website,
     required this.openTime,
@@ -44,9 +45,16 @@ class Restaurant {
     // Parse location details from "address"
     String restaurantLocation = '${apiData['address']['ward']}, ${apiData['address']['district']}, ${apiData['address']['street']}';
 
+    // Check for image URLs and provide a default image if any URL is empty or null
+    List<String> images = (apiData['images'] as List<dynamic>).map((img) {
+      String imageUrl = img['url'] as String? ?? '';
+      return imageUrl.isEmpty ? 'https://example.com/default_image.jpg' : imageUrl;
+    }).toList();
+
     return Restaurant(
       restaurantName: apiData['name'] ?? 'Unknown Restaurant',
-      restaurantId: apiData['restaurant']['id'] ?? 0,
+      destinationID: apiData['id'] ?? 0,  // Use id as destinationId
+      restaurantID: apiData['restaurant_id'] ?? 0,
       contactNumber: apiData['restaurant']['phone'] ?? 'No contact available', 
       website: apiData['restaurant']['website'] ?? 'No website available', 
       openTime: apiData['opentime'] ?? '00:00',
@@ -55,9 +63,9 @@ class Restaurant {
       rating: (apiData['rating'] ?? 0).toDouble(),
       cuisines: (apiData['restaurant']['cuisine']?.split(', ') ?? []).cast<String>(),
       meal: (apiData['restaurant']['special_diet']?.split(', ') ?? []).cast<String>(),
-      feature: [], // Placeholder for features, as the JSON does not contain "feature"
+      feature: (apiData['restaurant']['feature']?.split(', ') ?? []).cast<String>(),
       about: apiData['description'] ?? 'No description available',
-      images: (apiData['images'] as List<dynamic>).map((img) => img['url'] as String).toList(),
+      images: images,
       restaurantLocation: restaurantLocation,
       review: apiData['numOfReviews'] ?? 0,
       priceRange: priceRange,
@@ -68,7 +76,8 @@ class Restaurant {
 List<Restaurant> restaurantList = [
   Restaurant(
     restaurantName: "Bếp Cuốn Đà Nẵng",
-    restaurantId: 1,
+    restaurantID: 1,
+    destinationID: 1,
     contactNumber: "0123456789",
     website: "http://bepcuondanang.com",
     openTime: "10:00 AM - 10:00 PM",
@@ -90,7 +99,8 @@ List<Restaurant> restaurantList = [
   ),
   Restaurant(
     restaurantName: "La Maison 1888",
-    restaurantId: 2,
+    restaurantID: 2,
+    destinationID: 2,
     contactNumber: "0987654321",
     website: "http://lamaison1888.com",
     openTime: "12:00 PM - 11:00 PM",
@@ -112,7 +122,8 @@ List<Restaurant> restaurantList = [
   ),
   Restaurant(
     restaurantName: "Nhà Hàng Hải Sản Bé Mặn",
-    restaurantId: 3,
+    restaurantID: 3,
+    destinationID: 3,
     contactNumber: "0912345678",
     website: "http://besanseafood.com",
     openTime: "9:00 AM - 10:30 PM",
@@ -134,7 +145,8 @@ List<Restaurant> restaurantList = [
   ),
   Restaurant(
     restaurantName: "Nhà Hàng Madame Lân",
-    restaurantId: 4,
+    restaurantID: 4,
+    destinationID: 4,
     contactNumber: "0778889999",
     website: "http://madamelan.com",
     openTime: "8:00 AM - 11:00 PM",
@@ -156,7 +168,8 @@ List<Restaurant> restaurantList = [
   ),
   Restaurant(
     restaurantName: "Sky 21 Bar & Bistro",
-    restaurantId: 5,
+    restaurantID: 5,
+    destinationID: 5,
     contactNumber: "0901234567",
     website: "http://sky21danang.com",
     openTime: "5:00 PM - 2:00 AM",

@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:travelappflutter/presentation/common_views/selectable_icon_button_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
-import 'package:travelappflutter/presentation/home_screen/controller/welcome_controller.dart';
-import 'package:travelappflutter/presentation/home_screen/models/cities_model.dart';
 import 'package:travelappflutter/presentation/home_screen/models/tour_model.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/home_screen/place_detail.dart';
@@ -14,13 +10,15 @@ import 'package:travelappflutter/presentation/home_screen/widgets/recomendate.da
 import 'package:travelappflutter/presentation/home_screen/widgets/tour.dart';
 import 'package:travelappflutter/presentation/home_screen/widgets/tour_detail_screen.dart';
 import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
-import 'package:travelappflutter/routes/app_routes.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:travelappflutter/presentation/search_screen/controller/things_to_do_controller.dart';
 
 class ThingToDoScreen extends StatefulWidget {
   final List<TravelDestination> destinations;
+  final String cityNames;
 
-  const ThingToDoScreen({super.key, required this.destinations});
+  const ThingToDoScreen({super.key, required this.destinations,required this.cityNames});
+
   @override
   State<ThingToDoScreen> createState() => _ThingToDoScreenState();
 }
@@ -52,26 +50,34 @@ Widget experienceButton(String label, int count, IconData icon) {
 }
 
 class _ThingToDoScreenState extends State<ThingToDoScreen> {
+  final ThingsToDoController thingsToDoController = Get.put(ThingsToDoController());
+  
+  @override
+  void initState() {
+    super.initState();
+    // thingsToDoController.fetchTags();
+    // thingsToDoController.fetchAllThingsToDo();
+    }
+
   @override
   Widget build(BuildContext context) {
+    final Map<String, IconData> tagIcons = {
+      'Day Trips': Icons.sunny,
+      'Half-day Tours': Icons.access_time,
+      'Theme Parks': Icons.park,
+      'Private & Luxury': Icons.diamond,
+      'Full-day Tours': Icons.sunny_snowing,
+      'Shopping Malls': Icons.shopping_cart,
+      'Night Tours': Icons.nightlight_round,
+      'Walking Tours': Icons.directions_walk,
+      'Historical Tours': Icons.history,
+    };
     // tạm thời bỏ trống, xử lý sau :
-    List<TravelDestination> popularDestinations = widget.destinations.toList();
+    // List<TravelDestination> popularDestinations = widget.destinations.toList();
     List<TravelDestination> recommendDestinations =
         widget.destinations.toList();
     final List<Tour> daNangTours =
         mockTours.where((tour) => tour.location == "Đà Nẵng").toList();
-
-    List<String> allImages = [
-      ...widget.destinations
-          .where((destination) =>
-              destination.location.toLowerCase().contains("da nang"))
-          .expand((destination) => destination.images ?? []),
-      ...Get.find<WelcomeController>()
-          .myCities
-          .value
-          .where((city) => city.name.toLowerCase().contains("da nang"))
-          .expand((city) => city.images.cast<String>() ?? []),
-    ];
 
     return Scaffold(
       backgroundColor: kBackgroundColor,
@@ -100,9 +106,9 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
-                        "Thing to Do in Da Nang",
+                        "Things to Do in ${widget.cityNames}",
                         style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
@@ -146,55 +152,105 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
               ),
             ),
           ),
-        
-          Padding(
-  padding: const EdgeInsets.all(16.0), // Padding cho toàn bộ widget
-  child: SelectableIconButtonWidget(
-    buttonData: [
-      {'icon': Icons.sunny, 'label': 'Day Trips', 'count': '5'},
-      {'icon': Icons.access_time, 'label': 'Half-day Tours', 'count': '10'},
-      {'icon': Icons.park, 'label': 'Theme Parks', 'count': '15'},
-      {'icon': Icons.diamond, 'label': 'Private & Luxury', 'count': '12'},
-      {'icon': Icons.sunny_snowing, 'label': 'Full-day Tours', 'count': '8'},
-      {'icon': Icons.shopping_cart, 'label': 'Shopping Malls', 'count': '25'},
-      {'icon': Icons.nightlight_round, 'label': 'Night Tours', 'count': '3'},
-      {'icon': Icons.directions_walk, 'label': 'Walking Tours', 'count': '7'},
-      {'icon': Icons.history, 'label': 'Historical Tours', 'count': '20'},
-    ],
-    onSelectionChanged: (index) {
-      print('Button index selected: $index');
-    },
-  ),
-),
+          
+          // Thay thế phần button tag
+          Obx(() {
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.only(bottom: 20.0),
+              child: Row(
+                children: thingsToDoController.tags.map((tag) {
+                  final bool isSelected = thingsToDoController.selectedTagId.value == tag.id;
+                  final IconData tagIcon = tagIcons[tag.name] ?? Icons.category; // Default to Icons.category
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: OutlinedButton(
+                      onPressed: () {
+                        thingsToDoController.fetchThingsToDoByTag(tag.id);
+                      },
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: isSelected ? Colors.black : Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        side: BorderSide(color: isSelected ? Colors.white : Colors.black, width: 1.5),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            tagIcon, // Dynamically set the icon
+                            size: 24,
+                            color: isSelected ? Colors.white : Colors.black,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            tag.name,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: isSelected ? Colors.white : Colors.black,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '(10)', // Placeholder for count
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isSelected ? Colors.white70 : Colors.grey,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            );
+          }),
 
           const SizedBox(height: 15),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.only(bottom: 40),
-            child: Row(
-              children: List.generate(
-                popularDestinations.length,
-                (index) => Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => PlaceDetailScreen(
-                            destination: popularDestinations[index],
+          // Hiển thị danh sách điểm đến tương ứng khi nhấn tag
+          Obx(() {
+            if (thingsToDoController.isLoading.value) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (thingsToDoController.thingsToDoList.isEmpty) {
+              return const Center(child: Text("No activities found."));
+            }
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.only(bottom: 40),
+              child: Row(
+                children: List.generate(
+                  thingsToDoController.thingsToDoList.length,
+                  (index) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => PlaceDetailScreen(
+                              destination: thingsToDoController.thingsToDoList[index],
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                    child: PopularPlace(
-                      destination: popularDestinations[index],
+                        );
+                      },
+                      child: PopularPlace(
+                        destination: thingsToDoController.thingsToDoList[index],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ),
+            );
+          }),
+
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 15),
             child: Row(

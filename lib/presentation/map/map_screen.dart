@@ -2,9 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:async'; // ignore: unnecessary_import
 import 'dart:core';
-import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
