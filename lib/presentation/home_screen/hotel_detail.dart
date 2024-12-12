@@ -31,6 +31,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
     void initState() {
       super.initState();
       controller.fetchReviewsByDestinationID(widget.hotel.destinationID);
+      controller.fetchRatingDistribution(widget.hotel.destinationID);
       // Fetch coordinates for the address
       _getCoordinates();
     }
@@ -475,8 +476,9 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                         if (controller.isLoading.value) {
                           return Center(child: CircularProgressIndicator());
                         }
-                        print("Controller Reviews: ${controller.reviews}");
-                        return ReviewWidget(destinationId: widget.hotel.destinationID ,reviews: controller.reviews);
+                        return ReviewWidget(destinationId: widget.hotel.destinationID ,
+                                            reviews: controller.reviews, 
+                                            ratingCounts: controller.ratingCounts);
                       }),
                     ),
                   ),

@@ -17,7 +17,7 @@ class ThingsToDoController extends GetxController {
     try {
       final response = await http.get(Uri.parse('$apiUrl/tag/'));
       if (response.statusCode == 200) {
-        List<dynamic> apiTags = json.decode(response.body);
+        List<dynamic> apiTags = json.decode(utf8.decode(response.bodyBytes));
         tags.value = apiTags.map((tag) => Tag.fromJson(tag)).toList();
       } else {
         print("Failed to load tags: ${response.statusCode}");
@@ -34,7 +34,7 @@ class ThingsToDoController extends GetxController {
     try {
       final response = await http.get(Uri.parse('$apiUrl/destination/by_tags?tag_ids=$tagId'));
       if (response.statusCode == 200) {
-        List<dynamic> apiData = json.decode(response.body);
+        List<dynamic> apiData = json.decode(utf8.decode(response.bodyBytes));
         thingsToDoList.value = apiData.map((data) => TravelDestination.fromJson(data)).toList();
       } else {
         print("Failed to load things to do by tag: ${response.statusCode}");
@@ -57,7 +57,7 @@ class ThingsToDoController extends GetxController {
     print('Response body: ${response.body}'); // In ra dữ liệu nhận được từ API
 
     if (response.statusCode == 200) {
-      List<dynamic> apiData = json.decode(response.body);
+      List<dynamic> apiData = json.decode(utf8.decode(response.bodyBytes));
       if (apiData.isEmpty) {
         print("No data found for things to do.");
       }

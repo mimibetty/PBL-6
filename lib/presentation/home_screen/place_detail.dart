@@ -28,6 +28,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   void initState() {
     super.initState();
     controller.fetchReviewsByDestinationID(widget.destination.id);
+    controller.fetchRatingDistribution(widget.destination.id);
     _getCoordinates();
   }
 
@@ -428,7 +429,9 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                 if (controller.isLoading.value) {
                                   return Center(child: CircularProgressIndicator());
                                 }
-                                return ReviewWidget(destinationId: widget.destination.id,reviews: controller.reviews);
+                                return ReviewWidget(destinationId: widget.destination.id,
+                                                    reviews: controller.reviews,
+                                                    ratingCounts: controller.ratingCounts);
                               }),
                             ),
                           ),
