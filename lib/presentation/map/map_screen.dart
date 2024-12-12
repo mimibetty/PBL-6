@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'dart:typed_data';
+import 'package:url_launcher/url_launcher.dart';
 
 class MapScreen extends StatefulWidget {
   final double latitude;
@@ -78,26 +79,64 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  void _addMarkerAtCurrentPosition() async {
-    if (mapController == null) {
-      print("Map controller is not initialized");
-      return;
-    }
-    print('in trong addMarkerCurrentPost: ${widget.latitude}');
+  // void _addMarkerAtCurrentPosition() async {
+  //   if (mapController == null) {
+  //     print("Map controller is not initialized");
+  //     return;
+  //   }
+  //   print('in trong addMarkerCurrentPost: ${widget.latitude}');
 
-    try {
-      mapController?.addSymbol(SymbolOptions(
-        geometry: LatLng(widget.latitude, widget.longitude),
-        iconImage: 'location',
-        iconSize: 0.1,
-        zIndex: 1, // Ensure marker is above circle
-      ));
-      print(
-          "Initial marker added at (${widget.latitude}, ${widget.longitude})");
-    } catch (e) {
-      print("Error adding initial marker: $e");
-    }
+  //   try {
+  //     mapController?.addSymbol(SymbolOptions(
+  //       geometry: LatLng(widget.latitude, widget.longitude),
+  //       iconImage: 'location',
+  //       iconSize: 0.1,
+  //       zIndex: 1, // Ensure marker is above circle
+  //     ));
+  //     print(
+  //         "Initial marker added at (${widget.latitude}, ${widget.longitude})");
+  //   } catch (e) {
+  //     print("Error adding initial marker: $e");
+  //   }
+  // }
+
+void _addMarkerAtCurrentPosition() async {
+  if (mapController == null) {
+    print("Map controller is not initialized");
+    return;
   }
+  print('in trong addMarkerCurrentPost: ${widget.latitude}');
+
+  try {
+    // Add the marker with a click listener
+    final symbol = await mapController?.addSymbol(SymbolOptions(
+      geometry: LatLng(widget.latitude, widget.longitude),
+      iconImage: 'location',
+      iconSize: 0.1,
+      zIndex: 1, // Ensure marker is above circle
+    ));
+
+    if (symbol != null) {
+      // Handle double-click event
+      mapController?.onSymbolTapped.add((Symbol tappedSymbol) async {
+        if (tappedSymbol.id == symbol.id) {
+          final googleMapsUrl =
+              "https://www.google.com/maps?q=${widget.latitude},${widget.longitude}";
+          if (await canLaunch(googleMapsUrl)) {
+            await launch(googleMapsUrl);
+          } else {
+            print("Could not launch $googleMapsUrl");
+          }
+        }
+      });
+    }
+
+    print(
+        "Initial marker added at (${widget.latitude}, ${widget.longitude})");
+  } catch (e) {
+    print("Error adding initial marker: $e");
+  }
+}
 
   void _addMarkerAtDestinationPoint() async {
     if (mapController == null) {

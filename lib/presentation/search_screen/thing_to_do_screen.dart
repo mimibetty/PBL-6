@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:travelappflutter/presentation/common_views/selectable_icon_button_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
 import 'package:travelappflutter/presentation/home_screen/models/tour_model.dart';
@@ -17,7 +18,8 @@ class ThingToDoScreen extends StatefulWidget {
   final List<TravelDestination> destinations;
   final String cityNames;
 
-  const ThingToDoScreen({super.key, required this.destinations,required this.cityNames});
+  const ThingToDoScreen(
+      {super.key, required this.destinations, required this.cityNames});
 
   @override
   State<ThingToDoScreen> createState() => _ThingToDoScreenState();
@@ -50,29 +52,18 @@ Widget experienceButton(String label, int count, IconData icon) {
 }
 
 class _ThingToDoScreenState extends State<ThingToDoScreen> {
-  final ThingsToDoController thingsToDoController = Get.put(ThingsToDoController());
-  
+  final ThingsToDoController thingsToDoController =
+      Get.put(ThingsToDoController());
+
   @override
   void initState() {
     super.initState();
     // thingsToDoController.fetchTags();
     // thingsToDoController.fetchAllThingsToDo();
-    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, IconData> tagIcons = {
-      'Day Trips': Icons.sunny,
-      'Half-day Tours': Icons.access_time,
-      'Theme Parks': Icons.park,
-      'Private & Luxury': Icons.diamond,
-      'Full-day Tours': Icons.sunny_snowing,
-      'Shopping Malls': Icons.shopping_cart,
-      'Night Tours': Icons.nightlight_round,
-      'Walking Tours': Icons.directions_walk,
-      'Historical Tours': Icons.history,
-    };
-    // tạm thời bỏ trống, xử lý sau :
     // List<TravelDestination> popularDestinations = widget.destinations.toList();
     List<TravelDestination> recommendDestinations =
         widget.destinations.toList();
@@ -152,66 +143,22 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
               ),
             ),
           ),
-          
-          // Thay thế phần button tag
-          Obx(() {
-            return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.only(bottom: 20.0),
-              child: Row(
-                children: thingsToDoController.tags.map((tag) {
-                  final bool isSelected = thingsToDoController.selectedTagId.value == tag.id;
-                  final IconData tagIcon = tagIcons[tag.name] ?? Icons.category; // Default to Icons.category
-
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: OutlinedButton(
-                      onPressed: () {
-                        thingsToDoController.fetchThingsToDoByTag(tag.id);
-                      },
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor: isSelected ? Colors.black : Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                        side: BorderSide(color: isSelected ? Colors.white : Colors.black, width: 1.5),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            tagIcon, // Dynamically set the icon
-                            size: 24,
-                            color: isSelected ? Colors.white : Colors.black,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            tag.name,
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: isSelected ? Colors.white : Colors.black,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '(10)', // Placeholder for count
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: isSelected ? Colors.white70 : Colors.grey,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-            );
-          }),
+          SelectableIconButtonWidget(
+            buttonData: thingsToDoController.tags
+                .map((tag) => {
+                      'label': tag.name,
+                      'icon': _getIconForTag(
+                          tag.name), // Trả về IconData thay vì Icon
+                    })
+                .toList(),
+            onSelectionChanged: (selectedTag) {
+              // Khi người dùng chọn tag, load dữ liệu tương ứng
+              final selectedTagId = thingsToDoController.tags
+                  .firstWhere((tag) => tag.name == selectedTag)
+                  .id;
+              thingsToDoController.fetchThingsToDoByTag(selectedTagId);
+            },
+          ),
 
           const SizedBox(height: 15),
           // Hiển thị danh sách điểm đến tương ứng khi nhấn tag
@@ -236,7 +183,8 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
                           context,
                           MaterialPageRoute(
                             builder: (_) => PlaceDetailScreen(
-                              destination: thingsToDoController.thingsToDoList[index],
+                              destination:
+                                  thingsToDoController.thingsToDoList[index],
                             ),
                           ),
                         );
@@ -430,5 +378,34 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
         const SizedBox(width: 15),
       ],
     );
+  }
+}
+
+IconData _getIconForTag(String tagName) {
+  switch (tagName) {
+    case 'Food & Drink':
+      return Icons.restaurant;
+    case 'Cultural Heritage':
+      return Icons.museum;
+    case 'Historic Sites':
+      return Icons.history;
+    case 'Theaters & Art Galleries':
+      return Icons.theater_comedy;
+    case 'Natural & Wildlife':
+      return Icons.nature;
+    case 'Private & Luxury':
+      return Icons.security;
+    case 'Nightlife':
+      return Icons.nightlife;
+    case 'Landmarks':
+      return Icons.landscape;
+    case 'Shopping':
+      return Icons.shopping_cart;
+    case 'Outdoor Activities':
+      return Icons.directions_run;
+    case 'General':
+      return Icons.language;
+    default:
+      return Icons.tag; // Mặc định là icon tag nếu không tìm thấy tên tương ứng
   }
 }

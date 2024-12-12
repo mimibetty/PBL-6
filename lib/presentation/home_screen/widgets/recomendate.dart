@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 
-class Recomendate extends StatelessWidget {
+class Recomendate extends StatefulWidget {
   final TravelDestination destination;
   const Recomendate({super.key, required this.destination});
+
+  @override
+  _RecomendateState createState() => _RecomendateState();
+}
+
+class _RecomendateState extends State<Recomendate> {
+  bool isLiked = false; // Trạng thái của nút tim
 
   @override
   Widget build(BuildContext context) {
@@ -20,18 +28,36 @@ class Recomendate extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
-            height: 95,
-            width: 110,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              image: DecorationImage(
-                fit: BoxFit.cover,
-                image: NetworkImage(
-                  destination.images![0],
+          // Sử dụng Stack để chồng trái tim lên hình ảnh
+          Stack(
+            children: [
+              Container(
+                height: 95,
+                width: 110,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: NetworkImage(
+                      widget.destination.images![0],
+                    ),
+                  ),
                 ),
               ),
-            ),
+              Positioned(
+                top: 8,
+                right: 8,
+                child: HeartIconWidget(
+                  isLiked: isLiked, // Truyền trạng thái isLiked vào
+                  size: 18,
+                  onDoubleTap: () {
+                    setState(() {
+                      isLiked = !isLiked; // Thay đổi trạng thái nút tim khi double-tap
+                    });
+                  },
+                ),
+              ),
+            ],
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -40,7 +66,7 @@ class Recomendate extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  destination.name,
+                  widget.destination.name,
                   style: const TextStyle(
                     fontSize: 16,
                     color: Colors.black,
@@ -56,7 +82,7 @@ class Recomendate extends StatelessWidget {
                       size: 16,
                     ),
                     Text(
-                      destination.address.district,
+                      widget.destination.address.district,
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.black.withOpacity(0.6),
@@ -71,7 +97,7 @@ class Recomendate extends StatelessWidget {
                       TextSpan(
                         children: [
                           TextSpan(
-                            text: "${destination.rating.toStringAsFixed(1)}",
+                            text: "${widget.destination.rating.toStringAsFixed(1)}",
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -79,7 +105,7 @@ class Recomendate extends StatelessWidget {
                             ),
                           ),
                           TextSpan(
-                            text: " (${destination.numOfReviews} reviews)",
+                            text: " (${widget.destination.numOfReviews} reviews)",
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
@@ -94,31 +120,6 @@ class Recomendate extends StatelessWidget {
               ],
             ),
           ),
-          // Column(
-          //   children: [
-          //     const Spacer(),
-          //     Text.rich(
-          //       TextSpan(
-          //         children: [
-          //           TextSpan(
-          //             text: "\$${destination.priceTop}",
-          //             style: const TextStyle(
-          //                 fontSize: 18,
-          //                 fontWeight: FontWeight.w500,
-          //                 color: blueTextColor),
-          //           ),
-          //           TextSpan(
-          //             text: " /Person",
-          //             style: TextStyle(
-          //               fontSize: 12,
-          //               color: Colors.black.withOpacity(0.6),
-          //             ),
-          //           ),
-          //         ],
-          //       ),
-          //     ),
-          //   ],
-          // )
         ],
       ),
     );
