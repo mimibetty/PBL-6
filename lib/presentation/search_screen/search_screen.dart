@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
-import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/home_screen/place_detail.dart';
-import 'package:travelappflutter/presentation/home_screen/restaurant_detail.dart'
-    as detail;
 import 'package:travelappflutter/presentation/home_screen/widgets/popular_place.dart';
 import 'package:travelappflutter/presentation/home_screen/widgets/recomendate.dart';
 import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
-import 'package:travelappflutter/presentation/search_screen/models/restaurant_model.dart';
-import 'package:travelappflutter/presentation/search_screen/restaurant_search_screen.dart'
-    as search;
-import 'package:travelappflutter/presentation/search_screen/thing_to_do_screen.dart';
+import 'package:travelappflutter/presentation/search_screen/controller/search_controller.dart';
 
 class SearchScreen extends StatefulWidget {
   @override
@@ -22,12 +17,13 @@ class _SearchScreenState extends State<SearchScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
+  final SearchDestinationController searchController = Get.put(SearchDestinationController());
+  
   @override
   void initState() {
-    List<TravelDestination> daNangDestinations = danangDestinations
-        .where((element) => element.location == "Da Nang , Viet Nam")
-        .toList();
     super.initState();
+    // Gọi API khi khởi tạo màn hình
+    searchController.fetchAllDestinations();
     _tabController = TabController(length: 4, vsync: this);
     // _tabController.addListener(() {
     //   if (!_tabController.indexIsChanging) {
@@ -68,20 +64,6 @@ class _SearchScreenState extends State<SearchScreen>
 
   @override
   Widget build(BuildContext context) {
-    // tạm thời chưa làm, để trống 
-    List<TravelDestination> popularDestinations = danangDestinations;
-    List<TravelDestination> recommendDestinations = danangDestinations;
-    // // Lọc danh sách các địa điểm phổ biến và được đề xuất
-    // List<TravelDestination> popularDestinations = danangDestinations
-    //     .where((destination) => destination.category == 'popular')
-    //     .toList();
-    // List<TravelDestination> recommendDestinations = danangDestinations
-    //     .where((destination) => destination.category == 'recommend')
-    //     .toList();
-    List<Restaurant> restaurants =
-        restaurantList // Danh sách cho Special Offers
-            .where((destination) => destination.rating > 3.5)
-            .toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -110,36 +92,60 @@ class _SearchScreenState extends State<SearchScreen>
               child: Column(
                 children: [
                   // Phần tìm kiếm
+                  // Phần tìm kiếm
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Places to go, things to do, hotels...',
-                        suffixIcon: Container(
-                          margin: EdgeInsets.only(right: 8),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              // Add search logic here
-                            },
-                            child: Text("Search",
-                                style: TextStyle(color: Colors.white)),
-                            style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(horizontal: 20),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              backgroundColor: Colors.black,
+                    child: Column(
+                      children: [
+                        TextField(
+                          onChanged: (query) => searchController.onSearchChanged(query), // Gọi debounce trong controller
+                          decoration: InputDecoration(
+                            hintText: 'Places to go, things to do, hotels...',
+                            suffixIcon: IconButton(
+                              icon: Icon(Icons.search, color: Colors.white),
+                              onPressed: () {
+                                // Nếu muốn thêm hành động khi nhấn nút Search
+                              },
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25),
+                              borderSide: BorderSide(color: Colors.grey),
                             ),
                           ),
                         ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                          borderSide: BorderSide(color: Colors.grey),
-                        ),
-                      ),
+                        SizedBox(height: 10),
+                        Obx(() {
+                          if (searchController.isLoading.value) {
+                            return CircularProgressIndicator(); // Hiển thị spinner khi đang tải
+                          }
+
+                          if (searchController.searchResults.isEmpty) {
+                            return Text('No results found.', style: TextStyle(color: Colors.grey));
+                          }
+
+                          return SizedBox(
+                            height: 200, // Giới hạn chiều cao để cuộn
+                            child: ListView.builder(
+                              itemCount: searchController.searchResults.length,
+                              itemBuilder: (context, index) {
+                                final item = searchController.searchResults[index];
+
+                                return ListTile(
+                                  title: Text(item['name']),
+                                  subtitle: Text(item['type'] == 'city' ? "City" : "Destination"),
+                                  onTap: () {
+                                    searchController.handleResultClick(item, context); // Xử lý khi click vào kết quả
+                                  },
+                                );
+                              },
+                            ),
+                          );
+                        }),
+                      ],
                     ),
                   ),
-                  SizedBox(height: 40),
+
+                  SizedBox(height: 25),
                   // Vùng hiển thị ảnh
                   Container(
                     width: MediaQuery.of(context).size.width,
@@ -177,33 +183,45 @@ class _SearchScreenState extends State<SearchScreen>
                   ),
                   const SizedBox(height: 15),
                   // Hiển thị các địa điểm phổ biến
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.only(bottom: 40),
-                    child: Row(
-                      children: List.generate(
-                        popularDestinations.length,
-                        (index) => Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => PlaceDetailScreen(
-                                    destination: popularDestinations[index],
+                  // Destination Spotlight Section
+                  Obx(() {
+                    if (searchController.isLoading.value) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (searchController.spotlightDestinations.isEmpty) {
+                      return const Center(
+                        child: Text("No destinations found."),
+                      );
+                    }
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.only(bottom: 40),
+                      child: Row(
+                        children: List.generate(
+                          searchController.spotlightDestinations.length,
+                          (index) => Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 15),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => PlaceDetailScreen(
+                                      destination: searchController.spotlightDestinations[index],
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                            child: PopularPlace(
-                              destination: popularDestinations[index],
+                                );
+                              },
+                              child: PopularPlace(
+                                destination: searchController.spotlightDestinations[index],
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
+                    );
+                  }),
 
                   const SizedBox(height: 20),
                   // Section for Recommended Places
@@ -232,35 +250,47 @@ class _SearchScreenState extends State<SearchScreen>
                   ),
                   const SizedBox(height: 15),
                   // Hiển thị các địa điểm được đề xuất
-                  SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: Column(
-                      children: List.generate(
-                        recommendDestinations.length,
-                        (index) => Padding(
-                          padding: const EdgeInsets.only(bottom: 15),
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => PlaceDetailScreen(
-                                    destination: recommendDestinations[index],
+                  // More to Explore Section
+                  Obx(() {
+                    // Kiểm tra trạng thái danh sách
+                    if (searchController.isLoading.value) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (searchController.moreExploreDestinations.isEmpty) {
+                      return const Center(
+                        child: Text("Không có địa điểm để hiển thị."),
+                      );
+                    }
+
+                    // Nếu có dữ liệu, hiển thị danh sách
+                    return SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: Column(
+                        children: List.generate(
+                          searchController.moreExploreDestinations.length,
+                          (index) => Padding(
+                            padding: const EdgeInsets.only(bottom: 15),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => PlaceDetailScreen(
+                                      destination: searchController.moreExploreDestinations[index],
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                            child: Recomendate(
-                              destination: recommendDestinations[index],
+                                );
+                              },
+                              child: Recomendate(
+                                destination: searchController.moreExploreDestinations[index],
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-
-                  // Thêm một phần mới cho Special Offers
-                  // Hiển thị các nhà hàng đặc biệt từ danh sách restaurant
+                    );
+                  }),
                   const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -286,134 +316,176 @@ class _SearchScreenState extends State<SearchScreen>
                     ),
                   ),
                   const SizedBox(height: 15),
-// Hiển thị các nhà hàng với ảnh từ cơ sở dữ liệu
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.only(bottom: 40),
-                    child: Row(
-                      children: List.generate(
-                        restaurants.length, // Sử dụng danh sách nhà hàng
-                        (index) => Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => detail.RestaurantDetailScreen(
-                                    // Thay vì destination, dùng nhà hàng
-                                    restaurant: restaurants[
-                                        index], // Chuyển restaurant vào PlaceDetailScreen
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Column(
-                              children: [
-                                // Hiển thị ảnh nhà hàng
-                                Container(
-                                  width: 200, // Kích thước ảnh
-                                  height: 150,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    image: DecorationImage(
-                                      image: NetworkImage(
-                                          restaurants[index].images[0]),
-                                      fit: BoxFit.cover,
+
+                  // Thêm một phần mới cho Special Offers
+                  // Hiển thị các Destination Recommend từ API
+                  Obx(() {
+                    if (searchController.searchRecommendations.isEmpty) {
+                      return const Center(
+                        child: Text("No recommendations found."),
+                      );
+                    }
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.only(bottom: 40),
+                      child: Row(
+                        children: List.generate(
+                          searchController.searchRecommendations.length, // Sử dụng danh sách gợi ý
+                          (index) => Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 15),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => PlaceDetailScreen(
+                                      // Chuyển search recommendation vào PlaceDetailScreen
+                                      destination: searchController.searchRecommendations[index],
                                     ),
                                   ),
-                                ),
-                                const SizedBox(height: 10),
-
-                                // Hiển thị tên nhà hàng
-                                Text(
-                                  restaurants[index].restaurantName,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black,
-                                  ),
-                                ),
-
-                                const SizedBox(height: 5),
-
-                                // Hiển thị rating với 5 ô tròn và số bài review
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    for (int i = 1; i <= 5; i++)
-                                      Icon(
-                                        Icons.circle,
-                                        size: 12,
-                                        color: i <=
-                                                restaurants[index]
-                                                    .rating
-                                                    .floor()
-                                            ? Color(
-                                                0xFF13357B) // Màu chính: 13357B
-                                            : (i ==
-                                                        restaurants[index]
-                                                                .rating
-                                                                .floor() +
-                                                            1 &&
-                                                    restaurants[index].rating -
-                                                            restaurants[index]
-                                                                .rating
-                                                                .floor() >=
-                                                        0.5)
-                                                ? Color(0xFF13357B).withOpacity(
-                                                    0.5) // Màu nửa cho rating lẻ
-                                                : Colors
-                                                    .grey, // Màu xám cho phần còn lại
+                                );
+                              },
+                              child: Column(
+                                children: [
+                                  // Hiển thị ảnh recommendation destination
+                                  Container(
+                                    width: 200, // Kích thước ảnh
+                                    height: 150,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      image: DecorationImage(
+                                        image: NetworkImage(
+                                            searchController.searchRecommendations[index].images.isNotEmpty
+                                                ? searchController.searchRecommendations[index].images[0]
+                                                : 'https://via.placeholder.com/200x150'), // Placeholder nếu không có ảnh
+                                        fit: BoxFit.cover,
                                       ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      "${restaurants[index].rating.toString()} ★",
-                                      style: TextStyle(
-                                          fontSize: 14, color: Colors.grey),
                                     ),
-                                    const SizedBox(width: 5),
-                                    Text(
-                                      "(${restaurants[index].review} reviews)", // Số lượng reviews từ restaurant.review
-                                      style: TextStyle(
-                                          fontSize: 14, color: Colors.grey),
+                                  ),
+                                  const SizedBox(height: 10),
+
+                                  // Hiển thị tên recommendation destination
+                                  Text(
+                                    searchController.searchRecommendations[index].name,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black,
                                     ),
-                                  ],
-                                ),
+                                  ),
 
-                                const SizedBox(height: 5),
+                                  const SizedBox(height: 5),
 
-                                // Hiển thị các features (tính năng) của nhà hàng
-                                Wrap(
-                                  spacing: 4,
-                                  children: restaurants[index]
-                                      .feature
-                                      .map((feature) => Container(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 6, vertical: 3),
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  Colors.black.withOpacity(0.1),
-                                              borderRadius:
-                                                  BorderRadius.circular(15),
-                                            ),
-                                            child: Text(
-                                              feature,
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.black87,
-                                              ),
-                                            ),
-                                          ))
-                                      .toList(),
-                                ),
-                              ],
+                                  // Hiển thị rating với 5 ô tròn và số bài review
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      for (int i = 1; i <= 5; i++)
+                                        Icon(
+                                          Icons.circle,
+                                          size: 12,
+                                          color: i <=
+                                                  searchController
+                                                      .searchRecommendations[index].rating
+                                                      .floor()
+                                              ? const Color(0xFF13357B) // Màu chính: 13357B
+                                              : (i ==
+                                                          searchController
+                                                                  .searchRecommendations[index]
+                                                                  .rating
+                                                                  .floor() +
+                                                              1 &&
+                                                      searchController
+                                                              .searchRecommendations[index]
+                                                              .rating -
+                                                          searchController
+                                                              .searchRecommendations[index]
+                                                              .rating
+                                                              .floor() >=
+                                                          0.5)
+                                                  ? const Color(0xFF13357B).withOpacity(
+                                                      0.5) // Màu nửa cho rating lẻ
+                                                  : Colors.grey, // Màu xám cho phần còn lại
+                                        ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        "${searchController.searchRecommendations[index].rating.toStringAsFixed(1)} ★",
+                                        style:
+                                            const TextStyle(fontSize: 14, color: Colors.grey),
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        "(${searchController.searchRecommendations[index].numOfReviews} reviews)", // Số lượng reviews từ reviewCount
+                                        style:
+                                            const TextStyle(fontSize: 14, color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
+
+                                  const SizedBox(height: 5),
+
+                               // Hiển thị các features (opentime, age, price_bottom-price_top)
+                              Wrap(
+                                spacing: 4,
+                                children: [
+                                  // Hiển thị thời gian mở cửa
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    child: Text(
+                                      "Open: ${searchController.searchRecommendations[index].openTime}",
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+
+                                  // // Hiển thị độ tuổi
+                                  // Container(
+                                  //   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                  //   decoration: BoxDecoration(
+                                  //     color: Colors.black.withOpacity(0.1),
+                                  //     borderRadius: BorderRadius.circular(15),
+                                  //   ),
+                                  //   child: Text(
+                                  //     "Age: ${searchController.searchRecommendations[index].age}",
+                                  //     style: const TextStyle(
+                                  //       fontSize: 12,
+                                  //       color: Colors.black87,
+                                  //     ),
+                                  //   ),
+                                  // ),
+
+                                  // Hiển thị giá (price_bottom-price_top)
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    child: Text(
+                                      "Price: ${searchController.searchRecommendations[index].priceBottom} - ${searchController.searchRecommendations[index].priceTop} \$",
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
+                    );
+                  }),
 
                   SizedBox(height: 20),
                 ],
