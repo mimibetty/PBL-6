@@ -13,3 +13,34 @@ app/alembic.ini
 
 myenv/*
 myenv
+
+
+
+# Rasa specific files
+/.rasa/
+/models/
+__pycache__/
+*.pyc
+
+# Virtual environment
+/rasa_env/
+/venv/
+/env/
+
+# IDE specific files
+.idea/
+.vscode/
+
+# Log files
+*.log
+
+# Cache files
+*.db
+*.sqlite
+*.sqlite3
+
+# Model files
+*.tar.gz
+
+# Other
+.DS_Store
