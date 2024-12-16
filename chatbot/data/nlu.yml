@@ -1,0 +1,21 @@
+# data/nlu.yml
+version: "3.1"
+nlu:
+- intent: greet
+  examples: |
+    - hi
+    - hello
+    - xin chào
+    - chào bạn
+    - hey
+
+- intent: choose_city
+  examples: |
+    - tôi muốn đi [đà nẵng](city)
+    - cho tôi xem [hà nội](city)
+    - tôi đang tìm địa điểm ở [đà nẵng](city)
+    - giới thiệu cho tôi về [hà nội](city)
+    - [đà nẵng](city)
+    - [hà nội](city)
+    - [da nang](city)
+    - [ha noi](city)

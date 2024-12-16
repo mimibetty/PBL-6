@@ -1,0 +1,9 @@
+{
+  "lookup": {
+    "eJyLrq6NBQAEOAGx": "action_listen",
+    "eJyLrq7VUaguKEoti09MLsnMz7NSqIYw4vMSc1OtFKCcnMziktQ8oNrS4tQioJrMPCC3xEohvSg1taS2NhYA6dwbhQ==": "utter_greet",
+    "eJyLrq7VUaguKEoti09MLsnMz7NSqIYw4vMSc1OtFKCcnMziktQ8oNrS4tQioJrMPCC3xEohvSg1taSWgBmlJSWpRfEQpbhMiAUAQvc0lw==": "action_listen",
+    "eJydjkEKwzAMBL+iB4TQXv0VY0wwSyJI7WIphWL89yikpdBLoTetdhjJtz5Qu1c84pSUS3bUziHm6QZHr7CyKLKxm6Aaw9miOporoP2HY1NFjSf6n+H7C1mLikGJ9enIX8dL+JhNy8qw3h99GOh9Ky2lCOKx7T3sFZBelg==": "action_get_destinations",
+    "eJytjkEKAjEMRa+SAwyi215lKKXUzxgYW2kygpS5uymjCG4UcZefPN7P2NaB2qXiGmJSLtlR24aQ4xmOHmFmUWRjF0E1hrNFdTRVQNcPjkUVNWzob4b3L2QuKgYl1puj8bDb+5fZtKwMu4/97gd6dqVTKYLQt182TtBwhCjn2LP8qdvfATAtjLo=": "action_listen"
+  }
+}
