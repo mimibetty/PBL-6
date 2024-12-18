@@ -131,6 +131,17 @@ def get_by_id(
 ):
     rv = review.get_by_id(review_id, db)
     return schemas.ShowReview.from_orm(rv)
+@router.get("/language/")
+def get_language():
+    return {
+        'Korean',
+        'Japanese',
+        'English',
+        'Vienamese',
+        'Thai',
+        'Chinese',
+        'French'
+    }
 
 @router.get("/", 
             description=(
@@ -169,10 +180,15 @@ def get_reviews(
         reviews = review.get_reviews_userId(user_id=user_id, db=db)
 
     # Filter reviews based on language and companion if provided
+    # results = []
+    # for item in reviews:
+    #     if (language is None or item.language == language) and (companion is None or item.companion == companion):
+    #         results.append(item)
+
     results = []
     for item in reviews:
-        if (language is None or item.language == language) and (companion is None or item.companion == companion):
+        if (language is None or item.language.lower() == language.lower()) and \
+        (companion is None or item.companion.lower() == companion.lower()):
             results.append(item)
-
     return [schemas.ShowReview.from_orm(review) for review in results]
     # return results  # Return the filtered results
