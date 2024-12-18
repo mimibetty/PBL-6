@@ -170,26 +170,25 @@ def get_destination(
     user_id: int = None,
     is_popular: bool = False,
     get_rating: bool = False,
+    limit: int = 50,
+    min_reviews: int = 0,
     db: Session = Depends(get_db),
     # _ = Depends(authorize_action(action_name='SHOW_DESTINATION')),
 ):
-    results = []
-
-    if user_id: 
-        results = destination.get_by_userID(user_id=user_id, db=db)
-
-    else:
-        results = destination.get_all(db)
-    
-    if city_id:
-        results = destination.get_by_city_id(city_id, db)
-
-    # Nếu không có id hay city_id, lấy tất cả destinations
-
-    # Nếu cần sắp xếp theo đánh giá
     if is_popular:
-        results = destination.sorting_by_ratings_and_quantity_of_reviews(destinations=results, db=db)
+        dests = destination.get_top_destinations(db, limit, min_reviews)
+    
+    # Lọc kết quả dựa trên user_id và city_id
+    results = []
+    for dest in dests:
+        if (user_id is None or dest.user_id == user_id) and (city_id is None or dest.address.city_id == city_id):
+            results.append(dest)
+    
+    return results
 
+
+
+    return results
     # Chuyển đổi các kết quả sang định dạng mong muốn
     final_results = []
     for dest in results:

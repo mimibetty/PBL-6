@@ -413,7 +413,7 @@ def update_all_destination_ratings(db: Session):
             detail=f"Error updating all destination ratings: {str(e)}"
         )
 
-def get_top_destinations(db: Session, limit: int = 10, min_reviews: int = 3):
+def get_top_destinations(db: Session, limit: int = 10, min_reviews: int = 0):
     try:
         return db.query(models.Destination).filter(
             models.Destination.review_count >= min_reviews
