@@ -26,7 +26,7 @@ class User(Base):
     tours = relationship("Tour", back_populates="user")
     likes = relationship("UserDestinationLike", back_populates="user")
 
-# Bảng Hành Động
+# Bảng Hành Động1
 class Action(Base):
     __tablename__ = 'action'
     
@@ -77,8 +77,8 @@ class Destination(Base):
     __tablename__ = 'destination'
     
     id = Column(Integer, primary_key=True, index=True)
-    description = Column(String(200), default='Description')
-    name = Column(String(50), default='Unnamed Destination')
+    description = Column(String(2000), default='Description')
+    name = Column(String(255), default='Unnamed Destination')
     price_bottom = Column(Integer, nullable=True, default=0)  
     price_top = Column(Integer, nullable=True, default=0)  
     date_create = Column(Date, nullable=True, default=None)  
@@ -136,7 +136,7 @@ class City(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(50), default='Unnamed Destination')
-    description = Column(String(50), default='No Description')
+    description = Column(String(2000), default='No Description')
     
     # Foreign Key
     user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
@@ -153,7 +153,7 @@ class Address(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     district = Column(String(100), nullable=True)
-    street = Column(String(100), nullable=True)
+    street = Column(String(255), nullable=True)
     ward = Column(String(100), nullable=True)
 
     city_id = Column(Integer, ForeignKey('city.id')) 

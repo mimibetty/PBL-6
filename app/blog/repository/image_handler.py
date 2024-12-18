@@ -180,62 +180,85 @@ class ImageHandler:
         return file_location  # Trả về đường dẫn tệp hoặc URL
 
     @staticmethod
-    async def crawl_image(db: Session, city = None, destination = None):
+    async def crawl_image_for_dest(db: Session, destination):
+        from blog.repository import image
+                
+        from blog import models
+        from blog import schemas
+                
+        google_crawler = ImageHandler()
+        obj = destination
+
+        
+        download_imgs = google_crawler.crawl(keyword=f'Du lịch {obj.name}', max_num=3)
+        
+        for img_link in download_imgs:
+            img_file_name = google_crawler.download_url(img_url=img_link, file_name="download1.png")
+
+            # Đọc tệp hình ảnh từ máy
+            with open(img_file_name, "rb") as img_file:
+                img_data = img_file.read()  # Đọc nội dung tệp
+
+            # Tạo một SpooledTemporaryFile
+            temp_file = SpooledTemporaryFile()
+            temp_file.write(img_data)
+            temp_file.seek(0)  # Đặt lại vị trí con trỏ về đầu tệp
+
+            # Tạo một đối tượng UploadFile từ SpooledTemporaryFile
+            upload_file = UploadFile(
+                filename="download1.png",
+                file=temp_file
+            )
+
+            sc_image = schemas.Image(
+                destination_id=obj.id
+            )
+            
+            # Gọi hàm create_image với đối tượng UploadFile
+            await image.create_image(db, request=sc_image, image=upload_file)
+
+        
+        
+    @staticmethod
+    async def crawl_image(db: Session, city = None):
             
         # from app.blog import models
         from blog.repository import image
                 
         from blog import models
         from blog import schemas
-
-
         
         google_crawler = ImageHandler()
-        if city:
-            obj = city
-            
-            
-            
-            download_imgs = google_crawler.crawl(keyword=f'Du lịch {obj.name}', max_num=3)
-            
-            for img_link in download_imgs:
-                img_file_name = google_crawler.download_url(img_url=img_link, file_name="download1.png")
+        obj = city
+        
+        download_imgs = google_crawler.crawl(keyword=f'Du lịch {obj.name}', max_num=3)
+        
+        for img_link in download_imgs:
+            img_file_name = google_crawler.download_url(img_url=img_link, file_name="download1.png")
 
-                # Đọc tệp hình ảnh từ máy
-                with open(img_file_name, "rb") as img_file:
-                    img_data = img_file.read()  # Đọc nội dung tệp
+            # Đọc tệp hình ảnh từ máy
+            with open(img_file_name, "rb") as img_file:
+                img_data = img_file.read()  # Đọc nội dung tệp
 
-                # Tạo một SpooledTemporaryFile
-                temp_file = SpooledTemporaryFile()
-                temp_file.write(img_data)
-                temp_file.seek(0)  # Đặt lại vị trí con trỏ về đầu tệp
+            # Tạo một SpooledTemporaryFile
+            temp_file = SpooledTemporaryFile()
+            temp_file.write(img_data)
+            temp_file.seek(0)  # Đặt lại vị trí con trỏ về đầu tệp
 
-                # Tạo một đối tượng UploadFile từ SpooledTemporaryFile
-                upload_file = UploadFile(
-                    filename="download1.png",
-                    file=temp_file
-                )
+            # Tạo một đối tượng UploadFile từ SpooledTemporaryFile
+            upload_file = UploadFile(
+                filename="download1.png",
+                file=temp_file
+            )
 
-                sc_image = schemas.Image(
-                    city_id=obj.id
-                )
-                
-                # Gọi hàm create_image với đối tượng UploadFile
-                await image.create_image(db, request=sc_image, image=upload_file)
+            sc_image = schemas.Image(
+                city_id=obj.id
+            )
+            
+            # Gọi hàm create_image với đối tượng UploadFile
+            await image.create_image(db, request=sc_image, image=upload_file)
+
     
-        else:
-            obj = destination
-            
-            download_imgs = google_crawler.crawl(keyword=f'Du lịch {obj.name}', max_num=3)
-            
-            for img_link in download_imgs:
-                
-                img_file_name = google_crawler.download_url(img_url=img_link, file_name=f"download.png")
-
-                sc_image = schemas.Image(
-                    destination_id = obj.id
-                )
-                await image.create_image(db, request=sc_image, image=img_file_name)
         
     
     async def fake_db_destination(self, db: Session, destination=None, fake_dir ="travel-image/destinations/fake/"):

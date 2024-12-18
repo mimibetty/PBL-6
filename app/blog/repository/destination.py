@@ -236,12 +236,20 @@ def update_by_id(id: int, request: schemas.Destination, db: Session):
 async def delete_by_id(id: int, db: Session):
     try:
         destination = db.query(models.Destination).filter(models.Destination.id == id).first()  # Chờ truy vấn
-        for img in destination.images:
-            await image.delete_image(db=db, id=img.id)
+        if destination.images:
+            for img in destination.images:
+                await image.delete_image(db=db, id=img.id)
         if not destination:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"destination with the id {id} is not available")
-
+        if destination.address:
+            db.delete(destination.address)
+        if destination.hotel:
+            db.delete(destination.hotel)
+        if destination.restaurant:
+            db.delete(destination.restaurant)
+            
+            
         db.delete(destination)  # Chờ xóa đối tượng
         db.commit()  # Chờ hoàn tất việc commit
         return {"detail": "destination deleted successfully"}

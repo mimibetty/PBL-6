@@ -77,3 +77,10 @@ def search_by_name(db: Session, text: str):
     except Exception as e:
         db.rollback()
         print(f"Error detail: {e}")
+
+def get_id_by_name(db: Session,name: str):
+    try:
+        city = db.query(models.City.id).filter(models.City.name.ilike(f"%{name}%")).first()
+        return city
+    except Exception as e:
+        print(f"Error detail: {e}")

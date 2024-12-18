@@ -21,7 +21,6 @@ def get_all_tags(db: Session):
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error retrieving tags: {str(e.detail)}")
-
 def get_tag_by_id(id: int, db: Session):
     try:
         tag = db.query(models.Tag).filter(models.Tag.id == id).first()
@@ -32,6 +31,17 @@ def get_tag_by_id(id: int, db: Session):
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error retrieving tag: {str(e.detail)}")
+def get_id_by_name(name: int, db: Session):
+    try:
+        tag = db.query(models.Tag.id).filter(models.Tag.name == name).first()
+        if not tag:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail=f"Tag with id {name} not found")
+        return tag.id
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail=f"Error retrieving tag: {str(e.detail)}")
+
 
 def update_tag(id: int, request: schemas.Tag, db: Session):
     try:

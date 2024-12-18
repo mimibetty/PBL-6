@@ -151,7 +151,7 @@ class Hotel(BaseModel):
     property_amenities: Optional[str]
     room_features: Optional[str]
     room_types: Optional[str]
-    hotel_class: int
+    hotel_class: Optional[int]
     hotel_styles: Optional[str]
     languages: Optional[str]
     phone: Optional[str]
