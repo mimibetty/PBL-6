@@ -112,7 +112,7 @@ class TravelPlanner:
             for j in range(self.m):
                 if value(x[i,j]) == 1:
                     clusters[j].append(i)
-        
+        # i check it ok at here
         print("Các nhóm:" , clusters)
         # Tối ưu lộ trình trong từng cluster
         cluster_routes = {}
@@ -128,6 +128,7 @@ class TravelPlanner:
                 min_dist, route = self.optimize_cluster_route(cluster_distances_matrix)
                 print("check min dist")
                 print(min_dist)
+                # i check it is not ok at here, route is lack 1 location
                 print("check route")
                 print(route)
 
@@ -143,55 +144,59 @@ class TravelPlanner:
         return self.optimize_daily_route(distances)
         
     def optimize_daily_route(self, distances):
+        """
+        Optimize the route for a single cluster using dynamic programming (Held-Karp algorithm).
+        Ensures that all locations are included and the route forms a complete cycle.
+        
+        Args:
+            distances (list of list of float): A symmetric distance matrix.
+            
+        Returns:
+            tuple: (minimum total distance, optimal route as a list of indices)
+        """
         n = len(distances)
         dp = {}
-        
-        def solve(mask, end):
+        parent = {}
+
+        def solve(mask, last):
             if mask == (1 << n) - 1:
-                return 0
-            if (mask, end) in dp:
-                return dp[(mask, end)]
-            ans = float('inf')
+                return distances[last][0]  # Return to start
+            if (mask, last) in dp:
+                return dp[(mask, last)]
+            
+            min_cost = float('inf')
             for next_point in range(n):
                 if not (mask & (1 << next_point)):
                     new_mask = mask | (1 << next_point)
-                    current_cost = distances[end][next_point] + solve(new_mask, next_point)
-                    ans = min(ans, current_cost)
-            dp[(mask, end)] = ans
-            return ans
-        
-        def get_path(mask, end):
-            if mask == (1 << n) - 1:
-                return [end]
-            path = [end]
-            current_mask = mask
-            current_end = end
-            while current_mask != (1 << n) - 1:
-                min_cost = float('inf')
-                next_point = None
-                for next_p in range(n):
-                    if not (current_mask & (1 << next_p)):
-                        new_mask = current_mask | (1 << next_p)
-                        cost = distances[current_end][next_p] + dp.get((new_mask, next_p), float('inf'))
-                        if cost < min_cost:
-                            min_cost = cost
-                            next_point = next_p
+                    cost = distances[last][next_point] + solve(new_mask, next_point)
+                    if cost < min_cost:
+                        min_cost = cost
+                        parent[(mask, last)] = next_point
+            dp[(mask, last)] = min_cost
+            return min_cost
+
+        def get_path():
+            mask = 1  # Starting with the first node
+            last = 0
+            path = [last]
+            while mask != (1 << n) - 1:
+                next_point = parent.get((mask, last))
                 if next_point is None:
-                    break
+                    break  # No path found
                 path.append(next_point)
-                current_mask |= (1 << next_point)
-                current_end = next_point
+                mask |= (1 << next_point)
+                last = next_point
+            path.append(0)  # Return to start
             return path
+
+        # Start the recursion with the first node as the starting point
+        min_cost = solve(1, 0)
+        path = get_path()
+
+        # Verify that all points are included
+        if len(path) != n + 1:
+            print("Warning: The computed path does not include all locations.")
         
-        min_cost = float('inf')
-        best_start = 0
-        for start in range(n):
-            cost = solve(1 << start, start)
-            if cost < min_cost:
-                min_cost = cost
-                best_start = start
-                
-        path = get_path(1 << best_start, best_start)
         return min_cost, path
     
     # Hàm hỗ trợ in kết quả, địa điểm được mã hóa thành chữ cái đơn giản
