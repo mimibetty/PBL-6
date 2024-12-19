@@ -147,7 +147,7 @@ async def update_destination_by_id(
     
     return schemas.ShowDestination.from_orm(new_dest)
 
-@router.get("/{id}")
+@router.get("/{id}", response_model=schemas.Destination)
 def get_destination_by_id(
     id: int = None,    
     db: Session = Depends(get_db)
@@ -155,41 +155,52 @@ def get_destination_by_id(
     dest = destination.get_by_id(id, db)
     if not dest:
         return {"error": "Destination not found"}
-    result = schemas.ShowDestination.from_orm(dest).dict()
-    rating_info = destination.get_ratings_and_reviews_number_of_destinationID(dest.id, db)
-    result.update({
-        "rating": rating_info["ratings"],
-        "numOfReviews": rating_info["numberOfReviews"]
-    })
-    return result
+    
+    
+    # result = schemas.ShowDestination.from_orm(dest).dict()
+    # rating_info = destination.get_ratings_and_reviews_number_of_destinationID(dest.id, db)
+    # result.update({
+    #     "rating": rating_info["ratings"],
+    #     "numOfReviews": rating_info["numberOfReviews"]
+    # })
+    return dest
 
 
-@router.get("/")
+@router.get("/",response_model=List[schemas.Destination], 
+    description=(
+        "## This endpoint allows you to retrieve destinations based on the following criteria:\n\n"
+        "- **Fill `user_id`**: Get all destinations of 1 user;\n"
+        "- **Fill `destination_id`**: Get all destinations about 1 destination;\n"
+        "- **Fill both `user_id` and `destination_id`**: Get all destinations of 1 user about 1 destination;\n\n"
+        "- **`min_reviews`**: filter dest with review_count >= min_review\n\n"
+        "- **`limit`**: get l destination to filter city_id and user_id. \n\n "
+        "`!!!WARNING:` Remember get limit first then filter. Limit is not the number it return. \n\n"
+        "- **Example**: limit = 50 -> get top 50 dests -> filter by user_id, city_id -> return 20 dests"
+        
+        
+        
+    ))
 def get_destination(
     city_id: int = None,
     user_id: int = None,
-    is_popular: bool = False,
-    get_rating: bool = False,
+    limit: int = 50,
+    min_reviews: int = 0,
     db: Session = Depends(get_db),
     # _ = Depends(authorize_action(action_name='SHOW_DESTINATION')),
 ):
-    results = []
-
-    if user_id: 
-        results = destination.get_by_userID(user_id=user_id, db=db)
-
-    else:
-        results = destination.get_all(db)
+    dests = destination.get_top_destinations(db, limit, min_reviews)
     
-    if city_id:
-        results = destination.get_by_city_id(city_id, db)
+    # Lọc kết quả dựa trên user_id và city_id
+    results = []
+    for dest in dests:
+        if (user_id is None or dest.user_id == user_id) and (city_id is None or dest.address.city_id == city_id):
+            results.append(dest)
+    
+    return results
 
-    # Nếu không có id hay city_id, lấy tất cả destinations
 
-    # Nếu cần sắp xếp theo đánh giá
-    if is_popular:
-        results = destination.sorting_by_ratings_and_quantity_of_reviews(destinations=results, db=db)
 
+    return results
     # Chuyển đổi các kết quả sang định dạng mong muốn
     final_results = []
     for dest in results:
