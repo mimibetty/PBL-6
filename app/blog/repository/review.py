@@ -195,25 +195,6 @@ async def delete_by_id(id: int, db: Session):
             detail=f"Error deleting review: {str(e)}"
         )
 
-# async def delete_by_id(id: int, db: Session):
-#     try:
-#         review = db.query(models.Review).filter(models.Review.id == id).first()  # Chờ truy vấn
-#         for img in review.images:
-#             await image.delete_image(db=db, id=img.id)
-#         if not review:
-#             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-#                                 detail=f"review with the id {id} is not available")
-#         destination_id = review.destination_id
-
-#         db.delete(review)  # Chờ xóa đối tượng
-#         db.commit()  # Chờ hoàn tất việc commit
-#         destination.update_destination_rating(db, destination_id)
-
-#         return {"detail": "review deleted successfully"}
-#     except Exception as e:
-#         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-#                             detail=f"Error deleting review: {str(e)}")
-    
 async def add_images_to_review(db: Session, images: list[UploadFile], review_id: int):
     local_filenames = []
     imageHandler = ImageHandler()

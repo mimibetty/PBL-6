@@ -1,4 +1,4 @@
-from datetime import date, time
+from datetime import date, datetime, time
 from typing import List, Optional
 from fastapi import APIRouter, Body, HTTPException, Path, Query, UploadFile
 from .. import database, schemas, models
@@ -47,3 +47,11 @@ def read_user_counts_by_day(
     return dashboard.get_account_counts_by_day(db=db, year=year, is_business= is_business,month= month)
 
 
+@router.get("/business/stacked_review")
+def get_reviews_count_by_rating(
+    destination_id: int,
+    year: int = datetime.now().year,
+    db: Session = Depends(get_db)
+):
+    result = dashboard.get_reviews_count_by_rating(db=db,  year=year, destination_id=destination_id)
+    return result
