@@ -315,3 +315,11 @@ class UserCountDetail(BaseModel):
     class Config():
         orm_mode = True
 
+class ShowAverageRatingOfCity(BaseModel):
+    city_id: int
+    city_name: str
+    average_rating: float
+    total_review_count: int
+    
+    class Config():
+        orm_mode=True

@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from datetime import datetime
 from sqlalchemy import and_
-
+from blog import schemas
 def get_account_counts_by_month(db: Session, year: int, is_business: bool):
     if is_business == True:
         # Truy vấn số lượng doanh nghiệp theo tháng
@@ -124,3 +124,31 @@ def get_reviews_count_by_rating(db: Session, destination_id: int, year = datetim
                             detail=f"Error retrieve get_reviews_count_by_rating: {str(e)}")
 
     return formatted_result
+
+
+def get_rating_of_all_city(db: Session) -> List[schemas.ShowAverageRatingOfCity]:
+    city_ratings = (
+        db.query(
+            models.City.id.label('city_id'),
+            models.City.name.label('city_name'),
+            func.avg(models.Destination.average_rating).label('average_rating'),
+            func.sum(models.Destination.review_count).label('total_review_count')
+        )
+        .join(models.Address, models.Destination.address_id == models.Address.id)
+        .join(models.City, models.Address.city_id == models.City.id)
+        .filter(models.Destination.review_count > 0)
+        .group_by(models.City.id)
+        .all()
+    )
+
+    # Prepare the results in a list of dictionaries
+    result_list = []
+    for city in city_ratings:
+        result_list.append({
+            'city_id': city.city_id,
+            'city_name': city.city_name,
+            'average_rating': city.average_rating if city.average_rating is not None else 0,
+            'total_review_count': city.total_review_count if city.total_review_count is not None else 0
+        })
+
+    return result_list

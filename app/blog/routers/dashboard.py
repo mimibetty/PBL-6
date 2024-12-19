@@ -27,7 +27,7 @@ def search_by_name_of_destination_and_city(
     }
 
     return results
-@router.get("/usercounts/by_month/{year}", response_model=List[schemas.UserCountByMonth],
+@router.get("/admin/usercounts/by_month/{year}", response_model=List[schemas.UserCountByMonth],
     description=(
         "### Retrieve user counts by month for a given year.\n\n"
         "- **Parameters**:\n"
@@ -54,7 +54,7 @@ def read_user_counts_by_month(
 ):
     return dashboard.get_account_counts_by_month(db=db, year=year, is_business= is_business)
 
-@router.get("/usercounts/by_day/{month}/{year}", response_model=List[schemas.UserCountDetail],
+@router.get("/admin/usercounts/by_day/{month}/{year}", response_model=List[schemas.UserCountDetail],
     description=(
         "### Retrieve user counts by day for a given month and year.\n\n"
         "- **Parameters**:\n"
@@ -106,3 +106,31 @@ def get_reviews_count_by_rating(
     result = dashboard.get_reviews_count_by_rating(db=db,  year=year, destination_id=destination_id)
     return result
 
+@router.get("/admin/rating_of_cities", response_model=List[schemas.ShowAverageRatingOfCity]
+    ,description=(
+        "### Retrieve Average Ratings and Total Review Counts for Cities\n"
+        "- **Purpose**: This endpoint aggregates the average ratings and total review counts for all cities.\n\n"
+        "- **Response Structure**: Each city will return the following fields:\n\n"
+        '  - **city_id**: Unique identifier for the city.\n'
+        '  - **city_name**: Name of the city.\n'
+        '  - **average_rating**: Average rating of all destinations in the city (defaults to 0 if no ratings exist).\n'
+        '  - **total_review_count**: Total number of reviews for all destinations in the city (defaults to 0 if no reviews exist).\n\n'
+        "- **Example Response**:\n\n"
+        "[{\n"
+        '  "city_id": 1,\n'
+        '  "city_name": "Da Nang",\n'
+        '  "average_rating": 0.27,\n'
+        '  "total_review_count": 16\n'
+        "}\n\n"
+        "{\n"
+        '  "city_id": 1,\n'
+        '  "city_name": "Ho Chi Minh",\n'
+        '  "average_rating": 0.3,\n'
+        '  "total_review_count": 3\n'
+        "}\n\n"
+        "- **Note**: The data is aggregated from the Destination and Address tables."
+))
+def get_rating_of_all_city(
+    db: Session = Depends(get_db)
+):
+    return dashboard.get_rating_of_all_city(db=db)
