@@ -164,19 +164,29 @@ def get_destination_by_id(
     return result
 
 
-@router.get("/")
+@router.get("/",response_model=List[schemas.Destination], 
+    description=(
+        "## This endpoint allows you to retrieve destinations based on the following criteria:\n\n"
+        "- **Fill `user_id`**: Get all destinations of 1 user;\n"
+        "- **Fill `destination_id`**: Get all destinations about 1 destination;\n"
+        "- **Fill both `user_id` and `destination_id`**: Get all destinations of 1 user about 1 destination;\n\n"
+        "- **`min_reviews`**: filter dest with review_count >= min_review\n\n"
+        "- **`limit`**: get l destination to filter city_id and user_id. \n\n "
+        "`!!!WARNING:` Remember get limit first then filter. Limit is not the number it return. \n\n"
+        "- **Example**: limit = 50 -> get top 50 dests -> filter by user_id, city_id -> return 20 dests"
+        
+        
+        
+    ))
 def get_destination(
     city_id: int = None,
     user_id: int = None,
-    is_popular: bool = False,
-    get_rating: bool = False,
     limit: int = 50,
     min_reviews: int = 0,
     db: Session = Depends(get_db),
     # _ = Depends(authorize_action(action_name='SHOW_DESTINATION')),
 ):
-    if is_popular:
-        dests = destination.get_top_destinations(db, limit, min_reviews)
+    dests = destination.get_top_destinations(db, limit, min_reviews)
     
     # Lọc kết quả dựa trên user_id và city_id
     results = []
