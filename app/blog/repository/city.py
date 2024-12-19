@@ -35,6 +35,7 @@ def get_city_by_id(id: int, db: Session):
 def get_all_city(db: Session):
     try:
         cities = db.query(models.City).all()  # Chờ truy vấn
+        print(cities)
         return cities
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to retrieve city info")
@@ -86,3 +87,32 @@ def search_by_name_one(db: Session, text: str):
         db.rollback()
         print(f"Error detail: {e}")
         return None
+    
+
+# def get_all_cityname(db: Session):
+#     try:
+#         print("clmmmm")
+#         city_names = db.query(models.City.name).scalars().all()
+#         if not city_names:  # Kiểm tra nếu không có dữ liệu
+#             return []
+#         return city_names
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"Failed to retrieve city names: {str(e)}"
+#         )
+
+# def get_all_cityname(db: Session):
+#     try:
+#         cities = db.query(models.City).all()  # Chờ truy vấn
+#         print(cities)
+#         return cities.name
+#     except Exception as e:
+#         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to retrieve city info")
+
+def get_all_cityname(db: Session):
+    try:
+        city_names = db.query(models.City).with_entities(models.City.name).all()
+        return [name[0] for name in city_names]
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to retrieve city names")

@@ -4,3 +4,5 @@ ortools
 googlemaps
 win32com
 pprint
+fuzzywuzzy
+unidecode
