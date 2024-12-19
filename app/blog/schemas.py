@@ -330,3 +330,11 @@ class ShowNumDestOfCities(BaseModel):
     number_of_destinations: int       
     class Config():
         orm_mode=True
+
+class ShowBusiMetrics(BaseModel):
+    total_tours: int
+    total_destinations: int
+    average_rating: float
+    
+    class Config():
+        orm_mode=True

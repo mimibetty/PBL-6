@@ -177,3 +177,29 @@ def rating_number_of_destinations_of_cities(db: Session) -> List[schemas.ShowNum
         })
 
     return result_list
+
+def get_total_number_tour_of_user(db: Session, user_id: int) -> int:
+    total_tours = (
+        db.query(func.count(models.Tour.id))
+        .filter(models.Tour.user_id == user_id)
+        .scalar()
+    )
+    return total_tours or 0  # Return 0 if no tours found
+
+
+def get_total_number_dest_of_user(db: Session, user_id: int) -> int:
+    total_destinations = (
+        db.query(func.count(models.Destination.id))
+        .filter(models.Destination.user_id == user_id)
+        .scalar()
+    )
+    return total_destinations or 0  # Return 0 if no destinations found
+
+
+def get_average_rating_all_destination_of_user(db: Session, user_id: int) -> float:
+    average_rating_destinations = (
+        db.query(func.avg(models.Destination.average_rating))
+        .filter(models.Destination.user_id == user_id, models.Destination.average_rating > 0)  # Chỉ tính các đánh giá > 0
+    ).scalar() or 0
+
+    return average_rating_destinations

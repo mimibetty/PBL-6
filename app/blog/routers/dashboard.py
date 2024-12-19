@@ -162,3 +162,16 @@ def rating_number_of_destinations_of_cities(
     db: Session = Depends(get_db)
 ):
     return dashboard.rating_number_of_destinations_of_cities(db=db)
+
+
+@router.get("/business/metrics/{account_id}", response_model=schemas.ShowBusiMetrics)
+def get_business_metrics(account_id: int, db: Session = Depends(get_db)):
+    total_tours = dashboard.get_total_number_tour_of_user(db, account_id)
+    total_destinations = dashboard.get_total_number_dest_of_user(db, account_id)
+    average_rating = dashboard.get_average_rating_all_destination_of_user(db, account_id)
+
+    return {
+        "total_tours": total_tours,
+        "total_destinations": total_destinations,
+        "average_rating": average_rating
+    }
