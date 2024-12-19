@@ -106,7 +106,7 @@ def get_reviews_count_by_rating(
     result = dashboard.get_reviews_count_by_rating(db=db,  year=year, destination_id=destination_id)
     return result
 
-@router.get("/admin/rating_of_cities", response_model=List[schemas.ShowAverageRatingOfCity]
+@router.get("/admin/get_ratings_of_cities", response_model=List[schemas.ShowAverageRatingOfCity]
     ,description=(
         "### Retrieve Average Ratings and Total Review Counts for Cities\n"
         "- **Purpose**: This endpoint aggregates the average ratings and total review counts for all cities.\n\n"
@@ -134,3 +134,31 @@ def get_rating_of_all_city(
     db: Session = Depends(get_db)
 ):
     return dashboard.get_rating_of_all_city(db=db)
+
+
+@router.get("/admin/rate_number_dest_of_cities", response_model=List[schemas.ShowNumDestOfCities],
+    description=(
+        "### Retrieve Number of Destinations for Each City\n"
+        "- **Purpose**: This endpoint provides the total number of destinations for each city.\n\n"
+        "- **Response Structure**: Each city will return the following fields:\n\n"
+        '  - **city_id**: Unique identifier for the city.\n'
+        '  - **city_name**: Name of the city.\n'
+        '  - **number_of_destinations**: Total count of destinations associated with the city.\n\n'
+        "- **Example Response**:\n\n"
+        "[{\n"
+        '  "city_id": 1,\n'
+        '  "city_name": "Da Nang",\n'
+        '  "number_of_destinations": 25\n'
+        "},\n"
+        "{\n"
+        '  "city_id": 2,\n'
+        '  "city_name": "Ho Chi Minh",\n'
+        '  "number_of_destinations": 30\n'
+        "}\n"
+        "]\n\n"
+        "- **Note**: The data is aggregated from the Address and Destination tables."
+    ))
+def rating_number_of_destinations_of_cities(
+    db: Session = Depends(get_db)
+):
+    return dashboard.rating_number_of_destinations_of_cities(db=db)

@@ -152,3 +152,28 @@ def get_rating_of_all_city(db: Session) -> List[schemas.ShowAverageRatingOfCity]
         })
 
     return result_list
+
+def rating_number_of_destinations_of_cities(db: Session) -> List[schemas.ShowNumDestOfCities]:
+    city_destinations = (
+        db.query(
+            models.City.id.label('city_id'),
+            models.City.name.label('city_name'),
+            func.count(models.Destination.id).label('number_of_destinations')
+        )
+        .join(models.Address, models.Destination.address_id == models.Address.id)
+        .join(models.City, models.Address.city_id == models.City.id)
+        .group_by(models.City.id, models.City.name)
+        .order_by(func.count(models.Destination.id).desc())  # Sort by number of destinations in descending order
+        .all()
+    )
+
+    # Prepare the results in a list of dictionaries
+    result_list = []
+    for city in city_destinations:
+        result_list.append({
+            'city_id': city.city_id,
+            'city_name': city.city_name,
+            'number_of_destinations': city.number_of_destinations
+        })
+
+    return result_list

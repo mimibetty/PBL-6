@@ -323,3 +323,10 @@ class ShowAverageRatingOfCity(BaseModel):
     
     class Config():
         orm_mode=True
+        
+class ShowNumDestOfCities(BaseModel):
+    city_id: int
+    city_name: str
+    number_of_destinations: int       
+    class Config():
+        orm_mode=True
