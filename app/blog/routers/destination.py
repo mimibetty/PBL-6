@@ -170,8 +170,8 @@ def get_destination_by_id(
     description=(
         "## This endpoint allows you to retrieve destinations based on the following criteria:\n\n"
         "- **Fill `user_id`**: Get all destinations of 1 user;\n"
-        "- **Fill `destination_id`**: Get all destinations about 1 destination;\n"
-        "- **Fill both `user_id` and `destination_id`**: Get all destinations of 1 user about 1 destination;\n\n"
+        "- **Fill `city_id`**: Get all destinations in 1 city;\n"
+        "- **Fill both `user_id` and `city_id`**: Get all destinations of 1 user in 1 city;\n\n"
         "- **`min_reviews`**: filter dest with review_count >= min_review\n\n"
         "- **`limit`**: get l destination to filter city_id and user_id. \n\n "
         "`!!!WARNING:` Remember get limit first then filter. Limit is not the number it return. \n\n"
