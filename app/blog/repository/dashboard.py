@@ -90,32 +90,37 @@ def get_review_of_dest_by_time(db: Session,
     return total_review
 
 def get_reviews_count_by_rating(db: Session, destination_id: int, year = datetime.now().year):
-    # Khởi tạo một dictionary để lưu trữ số lượng đánh giá theo rating
-    reviews_count = defaultdict(lambda: [0] * 12)
+    try:
+        # Khởi tạo một dictionary để lưu trữ số lượng đánh giá theo rating
+        reviews_count = defaultdict(lambda: [0] * 12)
 
-    # Truy vấn để lấy số lượng đánh giá theo rating cho từng tháng
-    results = db.query(
-        func.extract('month', models.Review.date_create).label('month'),
-        models.Review.rating,
-        func.count(models.Review.id).label('count')
-    ).filter(
-        models.Review.destination_id == destination_id,
-        func.extract('year', models.Review.date_create) == year
-    ).group_by(
-        'month', models.Review.rating
-    ).all()
+        # Truy vấn để lấy số lượng đánh giá theo rating cho từng tháng
+        results = db.query(
+            func.extract('month', models.Review.date_create).label('month'),
+            models.Review.rating,
+            func.count(models.Review.id).label('count')
+        ).filter(
+            models.Review.destination_id == destination_id,
+            func.extract('year', models.Review.date_create) == year
+        ).group_by(
+            'month', models.Review.rating
+        ).all()
+        
+        # Phân loại kết quả vào dictionary
+        for month, rating, count in results:
+            rating = int(rating)  # Chuyển đổi rating thành int
+            reviews_count[rating][month - 1] = count  # month - 1 để có chỉ số từ 0 đến 11
 
-    for res in results:
-        print(res)
-    
-    # Phân loại kết quả vào dictionary
-    for month, rating, count in results:
-        rating = int(rating)  # Chuyển đổi rating thành int
-        reviews_count[rating][month - 1] = count  # month - 1 để có chỉ số từ 0 đến 11
-
-    # Định dạng kết quả
-    formatted_result = {
-        star: reviews_count[star] for star in range(1, 6)  # Giả sử bạn có 5 loại rating từ 1 đến 5
-    }
+        # Định dạng kết quả
+        formatted_result = {
+            star: reviews_count[star] for star in range(1, 6)  # Giả sử bạn có 5 loại rating từ 1 đến 5
+        }
+        
+        for i in formatted_result:
+            print(f"{i}: {formatted_result[i]}")
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail=f"Error retrieve get_reviews_count_by_rating: {str(e)}")
 
     return formatted_result

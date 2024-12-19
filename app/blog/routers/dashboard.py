@@ -47,7 +47,20 @@ def read_user_counts_by_day(
     return dashboard.get_account_counts_by_day(db=db, year=year, is_business= is_business,month= month)
 
 
-@router.get("/business/stacked_review")
+@router.get("/business/stacked_review",
+            description=(
+                "### Get review_count of 1 dest based on: month + review rating\n\n"
+                "- **Example**: destination_id = 6, year = 2024 \n\n"
+                "{ \n\n"
+                ' "1": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],\n\n'
+                ' "2": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\n\n'
+                ' "3": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4],\n\n'
+                ' "4": [0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1],\n\n'
+                ' "5": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],\n\n'
+                "}\n\n"
+                "- **Explain:** tháng 11 có : 1 đánh giá 1 sao, 2 đánh giá 3 sao, 1 đánh giá 5 sao, ... \n\n"
+                "- **Format**: result[s][mth]: tổng reivew s star trong tháng m"
+            ))
 def get_reviews_count_by_rating(
     destination_id: int,
     year: int = datetime.now().year,
@@ -55,3 +68,4 @@ def get_reviews_count_by_rating(
 ):
     result = dashboard.get_reviews_count_by_rating(db=db,  year=year, destination_id=destination_id)
     return result
+
