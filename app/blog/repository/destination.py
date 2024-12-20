@@ -101,6 +101,7 @@ def get_by_userID(user_id: int, db: Session, limit:int =100):
     try:
         destination = (db.query(models.Destination)
                        .filter(models.Destination.user_id == user_id)
+                       .order_by(models.Destination.popularity_score.desc())  # Sắp xếp theo popularity_score từ cao đến thấp
                        .limit(limit)
                        .all()
         )
@@ -156,6 +157,7 @@ def get_by_city_id(city_id: int, db: Session, limit: int = 50):
             db.query(models.Destination)
             .join(models.Address)
             .filter(models.Address.city_id == city_id)
+            .order_by(models.Destination.popularity_score.desc())  # Sắp xếp theo popularity_score từ cao đến thấp
             .limit(limit)  # Thêm giới hạn vào truy vấn
             .all()
         )
