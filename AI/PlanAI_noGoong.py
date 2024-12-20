@@ -112,7 +112,7 @@ class TravelPlanner:
             for j in range(self.m):
                 if value(x[i,j]) == 1:
                     clusters[j].append(i)
-        
+        # i check it ok at here
         print("Các nhóm:" , clusters)
         # Tối ưu lộ trình trong từng cluster
         cluster_routes = {}
@@ -128,6 +128,7 @@ class TravelPlanner:
                 min_dist, route = self.optimize_cluster_route(cluster_distances_matrix)
                 print("check min dist")
                 print(min_dist)
+                # i check it is not ok at here, route is lack 1 location
                 print("check route")
                 print(route)
 

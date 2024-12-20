@@ -1,0 +1,6 @@
+[
+  {
+    "name": "city",
+    "pattern": "(\\bđà\\ nẵng\\b|\\bda\\ nang\\b|\\bdanang\\b|\\bĐà\\ Nẵng\\b|\\bhà\\ nội\\b|\\bha\\ noi\\b|\\bhanoi\\b|\\bHà\\ Nội\\b|\\bhồ\\ chí\\ minh\\b|\\bho\\ chi\\ minh\\b|\\bsài\\ gòn\\b|\\bsai\\ gon\\b|\\bsaigon\\b|\\bSài\\ Gòn\\b|\\bhuế\\b|\\bhue\\b|\\bHuế\\b|\\bnha\\ trang\\b|\\bNha\\ Trang\\b|\\bđà\\ lạt\\b|\\bda\\ lat\\b|\\bdalat\\b|\\bĐà\\ Lạt\\b|\\bvũng\\ tàu\\b|\\bvung\\ tau\\b|\\bVũng\\ Tàu\\b|\\bhội\\ an\\b|\\bhoi\\ an\\b|\\bHội\\ An\\b|\\bcần\\ thơ\\b|\\bcan\\ tho\\b|\\bCần\\ Thơ\\b|\\bphú\\ quốc\\b|\\bphu\\ quoc\\b|\\bPhú\\ Quốc\\b|\\bhạ\\ long\\b|\\bha\\ long\\b|\\bhalong\\b|\\bHạ\\ Long\\b)"
+  }
+]
