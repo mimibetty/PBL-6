@@ -353,7 +353,7 @@ class TravelPlanner:
         return '\n'.join(result)
 
 
-def run_travel_planner(locations, m, centers=None, min_points_per_cluster=4):
+def run_travel_planner(locations, m, centers=None, min_points_per_cluster=2):
     """
     Run the TravelPlanner with given parameters.
 

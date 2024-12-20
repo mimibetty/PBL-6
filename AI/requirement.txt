@@ -2,5 +2,4 @@ geopy
 pulp
 ortools
 googlemaps
-win32com
-pprint
+
