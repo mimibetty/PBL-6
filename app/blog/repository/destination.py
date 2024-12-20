@@ -97,9 +97,13 @@ def create(request, db: Session):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                           detail=f"Error creating destination: {str(e)}")
     
-def get_by_userID(user_id: int, db: Session):
+def get_by_userID(user_id: int, db: Session, limit:int =100):
     try:
-        destination = db.query(models.Destination).filter(models.Destination.user_id == user_id).all()
+        destination = (db.query(models.Destination)
+                       .filter(models.Destination.user_id == user_id)
+                       .limit(limit)
+                       .all()
+        )
         return destination
     except Exception as e:
         db.rollback()
@@ -146,31 +150,34 @@ def get_tags_by_id(id: int, db: Session):
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error retrieving destination: {str(e)}")
-    
-def get_by_city_id(city_id: int, db: Session):
+def get_by_city_id(city_id: int, db: Session, limit: int = 50):
     try:
-        destinations = db.query(models.Destination).join(models.Address).filter(models.Address.city_id == city_id).all()
+        destinations = (
+            db.query(models.Destination)
+            .join(models.Address)
+            .filter(models.Address.city_id == city_id)
+            .limit(limit)  # Thêm giới hạn vào truy vấn
+            .all()
+        )
         
         if not destinations:
             return {"detail": "No destinations found for the specified city ID."}
 
-        results = []
+        # results = []
         
-        for dest in destinations:
-            # Chuyển đổi danh sách các đối tượng Image thành ImageSchema, xử lý trường hợp không có ảnh
-            dest = get_by_id(dest.id, db)
-            
-            results.append(dest)
+        # for dest in destinations:
+        #     # Chuyển đổi danh sách các đối tượng Image thành ImageSchema, xử lý trường hợp không có ảnh
+        #     dest_data = get_by_id(dest.id, db)  # Sửa tên biến để tránh ghi đè
+        #     results.append(dest_data)
 
-        return results
+        return destinations
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error retrieving destinations: {str(e)}")
-
-def get_all(db: Session):
+def get_all(db: Session, limit:int = 100):
     try:
-        destinations = db.query(models.Destination).all()  # Chờ truy vấn
+        destinations = db.query(models.Destination).limit(limit).all()  # Chờ truy vấn
         return destinations
     except Exception as e:
         db.rollback()

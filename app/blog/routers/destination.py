@@ -147,7 +147,16 @@ async def update_destination_by_id(
     
     return schemas.ShowDestination.from_orm(new_dest)
 
-@router.get("/{id}", response_model=schemas.Destination)
+@router.get("/top", response_model=List[schemas.Destination])
+def get_top_destinations(
+    limit: int = 10, 
+    min_reviews: int = 3,
+    db: Session = Depends(get_db)
+):
+    """Get top destinations sorted by popularity score"""
+    return destination.get_top_destinations(db, limit, min_reviews)
+
+@router.get("/{id}", response_model=schemas.ShowDestinationBase)
 def get_destination_by_id(
     id: int = None,    
     db: Session = Depends(get_db)
@@ -166,16 +175,13 @@ def get_destination_by_id(
     return dest
 
 
-@router.get("/",response_model=List[schemas.Destination], 
+@router.get("/",response_model=List[schemas.ShowDestinationBase], 
     description=(
         "## This endpoint allows you to retrieve destinations based on the following criteria:\n\n"
         "- **Fill `user_id`**: Get all destinations of 1 user;\n"
         "- **Fill `city_id`**: Get all destinations in 1 city;\n"
         "- **Fill both `user_id` and `city_id`**: Get all destinations of 1 user in 1 city;\n\n"
-        "- **`min_reviews`**: filter dest with review_count >= min_review\n\n"
         "- **`limit`**: get l destination to filter city_id and user_id. \n\n "
-        "`!!!WARNING:` Remember get limit first then filter. Limit is not the number it return. \n\n"
-        "- **Example**: limit = 50 -> get top 50 dests -> filter by user_id, city_id -> return 20 dests"
         
         
         
@@ -183,37 +189,34 @@ def get_destination_by_id(
 def get_destination(
     city_id: int = None,
     user_id: int = None,
-    limit: int = 50,
-    min_reviews: int = 0,
+    limit: int = 20,
     db: Session = Depends(get_db),
     # _ = Depends(authorize_action(action_name='SHOW_DESTINATION')),
 ):
-    dests = destination.get_top_destinations(db, limit, min_reviews)
-    
+    try:
+        results = []
+        if city_id:
+            dests = destination.get_by_city_id(city_id=city_id, limit=limit, db=db)
+            
+            if user_id:
+                for dest in dests:
+                    if dest.user_id == user_id:
+                        results.append(dest)
+            else:
+                results = dests
+        else:
+            if user_id:
+                results = destination.get_by_userID(user_id=user_id, db=db, limit=limit)
+            else:
+                dests = destination.get_all(db=db, limit=limit)
+                results = dests
+
+        return results
     # Lọc kết quả dựa trên user_id và city_id
-    results = []
-    for dest in dests:
-        if (user_id is None or dest.user_id == user_id) and (city_id is None or dest.address.city_id == city_id):
-            results.append(dest)
-    
-    return results
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=f"Error retrieving destination: {str(e)}")    
 
-
-
-    return results
-    # Chuyển đổi các kết quả sang định dạng mong muốn
-    final_results = []
-    for dest in results:
-        result = schemas.ShowDestination.from_orm(dest).dict()
-        if get_rating:
-            rating_info = destination.get_ratings_and_reviews_number_of_destinationID(dest.id, db)
-            result.update({
-                "rating": rating_info["ratings"],
-                "numOfReviews": rating_info["numberOfReviews"]
-            })
-        final_results.append(result)
-
-    return final_results
 
 
 
@@ -235,14 +238,6 @@ def get_destination_by_id(
 
 
 
-@router.get("/top", response_model=List[schemas.Destination])
-def get_top_destinations(
-    limit: int = 10, 
-    min_reviews: int = 3,
-    db: Session = Depends(get_db)
-):
-    """Get top destinations sorted by popularity score"""
-    return destination.get_top_destinations(db, limit, min_reviews)
 
 @router.get("/by-rating", response_model=List[schemas.Destination])
 def get_destinations_by_rating(
