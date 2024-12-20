@@ -120,7 +120,7 @@ class ActionGetDestinations(Action):
         """Lấy danh sách thành phố từ API và tạo bản không dấu"""
         try:
             response = requests.post("http://127.0.0.1:8000/city/cities-name")
-            print(response)
+            # print(response)
             if response.status_code == 200:
                 cities = response.json()
                 return [
@@ -150,29 +150,34 @@ class ActionGetDestinations(Action):
             if score > highest_score and score >= threshold:
                 highest_score = score
                 best_match = city["original"]
+        print(f"Best match: {best_match}, Score: {highest_score}")
+        # dispatcher.utter_message(text=f"Best match: {best_match}, Score: {highest_score}")
 
         return best_match
 
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-
+        
+        
+        print("this is :     ",tracker.get_slot("city"))
         # Print all identified entities
-        print("All entities:", tracker.latest_message.get('entities'))
+        # print("All entities:", tracker.latest_message.get('entities'))
         
         # Lấy city từ entity
         city = next(tracker.get_latest_entity_values("city"), None)
-        print("Extracted city:", city)
+        print("Extracted city  tttttttttttttt:", city)
 
         # Nếu không có entity city, thử tìm match từ tin nhắn mới nhất
-        if not city:
-            user_message = tracker.latest_message.get('text', '')
-            cities = self.get_cities()
-            if not cities:
-                dispatcher.utter_message(text="Sorry, I couldn't access the city list at the moment.")
-                return []
+        # if not city:
+        user_message = tracker.latest_message.get('text', '')
+        print(user_message)
+        cities = self.get_cities()
+            # if not cities:
+            #     dispatcher.utter_message(text="Sorry, I couldn't access the city list at the moment.")
+            #     return []
             
-            city = self.find_best_match(user_message, cities)
+        city = self.find_best_match(user_message, cities)
 
         if not city:
             dispatcher.utter_message(text="Sorry, I couldn't identify the city. Please try again.")
@@ -181,14 +186,32 @@ class ActionGetDestinations(Action):
         print(f"Matched city: {city}")
 
         try:
+                        # Print all entities from latest message
+            print("All entities:", tracker.latest_message.get('entities'))
+            # Print specific entity values
+            for entity in tracker.latest_message.get('entities', []):
+                print(f"Entity: {entity['entity']}, Value: {entity['value']}")
+            
+            # Print all slots and their values
+            print("All slots:", tracker.slots)
+
+            # Print specific slot
+            print("City slot:", tracker.get_slot('city'))
+
+            # Print all slots in detail
+            for slot_name, slot_value in tracker.slots.items():
+                print(f"Slot {slot_name}: {slot_value}")
+
+
+
             # Encode city parameter
             encoded_city = quote(city)
             url = f"http://127.0.0.1:8000/destination/destinations/by-city/{encoded_city}?limit=5"
-            print(f"Calling API URL: {url}")
+            # print(f"Calling API URL: {url}")
                     
             response = requests.get(url)
-            print(f"API Status Code: {response.status_code}")
-            print(f"API Response: {response.text}")
+            # print(f"API Status Code: {response.status_code}")
+            # print(f"API Response: {response.text}")
             
             if response.status_code != 200:
                 raise Exception(f"API returned status code {response.status_code}")

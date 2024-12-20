@@ -17,6 +17,11 @@ nlu:
     - giới thiệu cho tôi về [huế](city)
     - [đà nẵng](city)
     - [hà nội](city)
+    - [hanoi](city)
+    - [hn](city)
+    - [hanoii](city)
+    - [hồ chí minh](city)
+    - [sài gòn](city)
     - tôi muốn khám phá [nha trang](city)
     - cho tôi biết về [đà lạt](city)
 
