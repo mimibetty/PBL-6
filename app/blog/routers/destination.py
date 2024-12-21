@@ -165,7 +165,7 @@ def get_destination_by_id(
     return dest
 
 
-@router.get("/",response_model=List[schemas.ShowDestination], 
+@router.get("/",response_model=List[schemas.ShowDestinationList], 
     description=(
         "## This endpoint allows you to retrieve destinations based on the following criteria:\n\n"
         "- **Fill `user_id`**: Get all destinations of 1 user;\n"
