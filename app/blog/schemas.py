@@ -339,15 +339,12 @@ class ShowBusiMetrics(BaseModel):
     class Config():
         orm_mode=True
         
-class ShowDestinationBase(Destination):
+class ShowDestinationList(Destination):
     id: int
-    tags: Optional[List[ShowTag]] = None
     address : Optional[ShowAddress]= None
     images: Optional[List[ShowImage]]
     hotel_id: Optional[int] = None
-    hotel: Optional[ShowHotel] = None
     restaurant_id: Optional[int] = None
-    restaurant: Optional[ShowRestaurant] = None
     
     class Config():
         orm_mode = True

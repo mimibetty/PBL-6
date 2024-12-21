@@ -347,9 +347,17 @@ def search_by_name(db: Session,text : str):
         
         
 
-def get_by_tags(db:Session, tag_ids = list[int]):
+def get_by_tags(db:Session, city_id: int, tag_ids = Optional[list[int]]):
     try: 
-        dests = db.query(models.Destination).join(models.DestinationTag).filter(models.DestinationTag.tag_id.in_(tag_ids)).all()
+        query = db.query(models.Destination).join(models.DestinationTag)
+
+        if tag_ids:
+            query = query.filter(models.DestinationTag.tag_id.in_(tag_ids))
+
+        if city_id:
+            query = query.join(models.Address).filter(models.Address.city_id == city_id)
+
+        dests = query.all()  # Thực hiện truy vấn
         return dests
     except Exception as e:
         # Bắt các lỗi khác

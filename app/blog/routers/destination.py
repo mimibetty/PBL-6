@@ -13,24 +13,14 @@ router = APIRouter(
 
 get_db = database.get_db
 
-@router.get("/by_tags")
+@router.get("/by_tags", response_model=List[schemas.ShowDestinationList])
 def get_by_tag_lists(
     tag_ids: list[int] = Query([], description="List of tag IDs"),
+    city_id: int =None,
     db: Session = Depends(get_db)
 ):
-    dests = destination.get_by_tags(db=db, tag_ids = tag_ids)
-    
-    final_results = []
-    for dest in dests:
-        result = schemas.ShowDestination.from_orm(dest).dict()
-        rating_info = destination.get_ratings_and_reviews_number_of_destinationID(dest.id, db)
-        result.update({
-            "rating": rating_info["ratings"],
-            "numOfReviews": rating_info["numberOfReviews"]
-        })
-        final_results.append(result)
-
-    return final_results
+    dests = destination.get_by_tags(db=db, tag_ids = tag_ids, city_id=city_id)
+    return dests    
 
 
 @router.post("/",
@@ -156,7 +146,7 @@ def get_top_destinations(
     """Get top destinations sorted by popularity score"""
     return destination.get_top_destinations(db, limit, min_reviews)
 
-@router.get("/{id}", response_model=schemas.ShowDestinationBase)
+@router.get("/{id}", response_model=schemas.ShowDestinationList)
 def get_destination_by_id(
     id: int = None,    
     db: Session = Depends(get_db)
@@ -175,7 +165,7 @@ def get_destination_by_id(
     return dest
 
 
-@router.get("/",response_model=List[schemas.ShowDestinationBase], 
+@router.get("/",response_model=List[schemas.ShowDestination], 
     description=(
         "## This endpoint allows you to retrieve destinations based on the following criteria:\n\n"
         "- **Fill `user_id`**: Get all destinations of 1 user;\n"
@@ -186,6 +176,7 @@ def get_destination_by_id(
         
         
     ))
+
 def get_destination(
     city_id: int = None,
     user_id: int = None,
