@@ -350,7 +350,6 @@ def search_by_name(db: Session,text : str):
 def get_by_tags(db:Session,  city_id: Optional[int], limit: Optional[int], tag_ids = Optional[list[int]]):
     
     try:
-        import pdb;pdb.set_trace() 
         query = db.query(models.Destination).join(models.DestinationTag)
 
         if tag_ids:
