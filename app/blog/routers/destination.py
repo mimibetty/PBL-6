@@ -17,9 +17,10 @@ get_db = database.get_db
 def get_by_tag_lists(
     tag_ids: list[int] = Query([], description="List of tag IDs"),
     city_id: int =None,
+    limit: int = None,
     db: Session = Depends(get_db)
 ):
-    dests = destination.get_by_tags(db=db, tag_ids = tag_ids, city_id=city_id)
+    dests = destination.get_by_tags(db=db, tag_ids = tag_ids, city_id=city_id, limit=limit)
     return dests    
 
 
