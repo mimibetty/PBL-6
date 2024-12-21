@@ -96,20 +96,24 @@ def create(request, db: Session):
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                           detail=f"Error creating destination: {str(e)}")
-    
-def get_by_userID(user_id: int, db: Session, limit:int =100):
+
+def get_by_userID(user_id: int, db: Session, limit:int = None):
     try:
-        destination = (db.query(models.Destination)
-                       .filter(models.Destination.user_id == user_id)
-                       .order_by(models.Destination.popularity_score.desc())  # Sắp xếp theo popularity_score từ cao đến thấp
-                       .limit(limit)
-                       .all()
+        query = (db.query(models.Destination)
+                .filter(models.Destination.user_id == user_id)
+                .order_by(models.Destination.popularity_score.desc())
         )
-        return destination
+
+        if limit is not None:
+            query = query.limit(limit)
+
+        destinations = query.all()  # Lấy tất cả kết quả
+
+        return destinations
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                            detail=f"Error retrieving destination: {str(e)}")    
+                            detail=f"Error retrieving destination: {str(e)}")
 def get_by_id(id: int, db: Session):
     try:
         destination = db.query(models.Destination).filter(models.Destination.id == id).first()
@@ -151,35 +155,31 @@ def get_tags_by_id(id: int, db: Session):
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error retrieving destination: {str(e)}")
-def get_by_city_id(city_id: int, db: Session, limit: int = 50):
+def get_all(db: Session, limit:int = 100):
     try:
-        destinations = (
-            db.query(models.Destination)
-            .join(models.Address)
-            .filter(models.Address.city_id == city_id)
-            .order_by(models.Destination.popularity_score.desc())  # Sắp xếp theo popularity_score từ cao đến thấp
-            .limit(limit)  # Thêm giới hạn vào truy vấn
-            .all()
-        )
-        
-        if not destinations:
-            return {"detail": "No destinations found for the specified city ID."}
-
-        # results = []
-        
-        # for dest in destinations:
-        #     # Chuyển đổi danh sách các đối tượng Image thành ImageSchema, xử lý trường hợp không có ảnh
-        #     dest_data = get_by_id(dest.id, db)  # Sửa tên biến để tránh ghi đè
-        #     results.append(dest_data)
-
+        destinations = db.query(models.Destination).limit(limit).all()  # Chờ truy vấn
         return destinations
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error retrieving destinations: {str(e)}")
-def get_all(db: Session, limit:int = 100):
+def get_by_city_id(city_id: int, db: Session, limit: Optional[int] = None):
     try:
-        destinations = db.query(models.Destination).limit(limit).all()  # Chờ truy vấn
+        query = (
+            db.query(models.Destination)
+            .join(models.Address)
+            .filter(models.Address.city_id == city_id)
+            .order_by(models.Destination.popularity_score.desc())
+        )
+
+        if limit is not None:
+            query = query.limit(limit)  # Chỉ áp dụng limit nếu nó không phải là None
+
+        destinations = query.all()  # Lấy tất cả kết quả
+
+        if not destinations:
+            return {"detail": "No destinations found for the specified city ID."}
+
         return destinations
     except Exception as e:
         db.rollback()

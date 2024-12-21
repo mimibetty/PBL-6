@@ -189,7 +189,7 @@ def get_destination_by_id(
 def get_destination(
     city_id: int = None,
     user_id: int = None,
-    limit: int = 20,
+    limit: int = None,
     db: Session = Depends(get_db),
     # _ = Depends(authorize_action(action_name='SHOW_DESTINATION')),
 ):
