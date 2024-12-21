@@ -358,6 +358,9 @@ def get_by_tags(db:Session,  city_id: Optional[int], limit: Optional[int], tag_i
         if city_id:
             query = query.join(models.Address).filter(models.Address.city_id == city_id)
 
+        # Thêm phần sắp xếp theo popularity_score giảm dần
+        query = query.order_by(desc(models.Destination.popularity_score))
+        
         if limit:
             query = query.limit(limit)
         dests = query.all()  # Thực hiện truy vấn
