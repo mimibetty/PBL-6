@@ -6,24 +6,48 @@ class SplashScreen extends GetWidget<SplashController> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Scaffold(
-            backgroundColor: ColorConstant.blueA400,
-            body: Container(
-                width: size.width,
-                child: SingleChildScrollView(
-                    child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                      Padding(
-                          padding: getPadding(
-                              left: 50, top: 337, right: 50, bottom: 5),
-                          child: Text("lbl_travenor".tr,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.left,
-                              style: AppStyle.txtGeometric415BTBlackA34
-                                  .copyWith(height: 1.00)))
-                    ])))));
+      child: Scaffold(
+        backgroundColor: Colors.white, // Nền trắng
+        body: Center( // Đặt logo ở giữa
+          child: AnimatedSplashImage(), // Thêm animation vào hình ảnh
+        ),
+      ),
+    );
+  }
+}
+
+class AnimatedSplashImage extends StatefulWidget {
+  @override
+  _AnimatedSplashImageState createState() => _AnimatedSplashImageState();
+}
+
+class _AnimatedSplashImageState extends State<AnimatedSplashImage> {
+  double _opacity = 0.0; // Độ mờ ban đầu
+
+  @override
+  void initState() {
+    super.initState();
+    _startFadeAnimation();
+  }
+
+  void _startFadeAnimation() async {
+    await Future.delayed(const Duration(milliseconds: 200)); // Đợi 300ms
+    setState(() {
+      _opacity = 1.0; // Tăng độ mờ
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedOpacity(
+      duration: const Duration(seconds: 2), // Thời gian hiệu ứng fade-in
+      opacity: _opacity,
+      child: Image.asset(
+        'assets/images/splash_art.png', // Thay bằng đường dẫn hình của bạn
+        width: 200, // Chiều rộng hình
+        height: 200, // Chiều cao hình
+        fit: BoxFit.contain,
+      ),
+    );
   }
 }
