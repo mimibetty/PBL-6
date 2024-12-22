@@ -29,11 +29,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   void initState() {
     super.initState();
     controller.fetchReviewsByDestinationID(widget.destination.id);
-    _address = widget.destination.address;
-
-    String fullAddress = _address.getFullAddress();
-    print("Địa chỉ đầy đủ: $fullAddress");
-
+    controller.fetchRatingDistribution(widget.destination.id);
     _getCoordinates();
   }
 
@@ -445,9 +441,9 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                   return Center(
                                       child: CircularProgressIndicator());
                                 }
-                                return ReviewWidget(
-                                    destinationId: widget.destination.id,
-                                    reviews: controller.reviews);
+                                return ReviewWidget(destinationId: widget.destination.id,
+                                                    reviews: controller.reviews,
+                                                    ratingCounts: controller.ratingCounts);
                               }),
                             ),
                           ),

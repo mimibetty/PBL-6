@@ -178,7 +178,7 @@ final Map<String, String> enUs = {
   "msg_thank_you_for_c": "Thank you for coming! Your or...",
   "lbl_2498": "(2498)",
   "msg_at_friends_tour":
-      "At Friends tours and travel, we customize reliable and trutworthy educational tours to destinations all over the world",
+      "At Friends tours and travel, we customize reliable and trutworthy educational tours to destinations all over Vietnam",
   "lbl_person": "Person",
   "lbl_adom_shafi": "Adom Shafi",
   "lbl_tue_10_56pm": "Tue,10:56pm",

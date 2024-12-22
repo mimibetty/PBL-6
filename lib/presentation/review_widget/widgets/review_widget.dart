@@ -10,13 +10,13 @@ import 'package:travelappflutter/presentation/review_widget/models/review_widget
 class ReviewWidget extends StatelessWidget {
   final int destinationId;
   final List<ReviewModel> reviews;
-  const ReviewWidget({Key? key, required this.destinationId, required this.reviews}) : super(key: key);
+  final Map<int, int> ratingCounts;
+  const ReviewWidget({Key? key, required this.destinationId, required this.reviews,required this.ratingCounts}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
     // Tính toán số lượng review cho từng mức rating
-    Map<int, int> ratingCounts = _calculateRatingCounts();
-
     // Tổng số review
     int totalReviews = reviews.length;
 
@@ -28,6 +28,7 @@ class ReviewWidget extends StatelessWidget {
         children: [
           // Truyền các giá trị vào RatingBarWidget
           RatingBarWidget(
+            rating: calculateAverageRating(reviews),
             fiveStarCount: ratingCounts[5] ?? 0,
             fourStarCount: ratingCounts[4] ?? 0,
             threeStarCount: ratingCounts[3] ?? 0,
@@ -251,15 +252,6 @@ class ReviewWidget extends StatelessWidget {
     );
   }
 
-  // Tính toán số lượng review cho mỗi mức rating (1 - 5 sao)
-  Map<int, int> _calculateRatingCounts() {
-    Map<int, int> counts = {1: 69, 2: 3, 3: 61, 4: 1, 5: 3};
-    for (var review in reviews) {
-      int rating = review.rating.toInt(); // Ép kiểu rating về int
-      counts[rating] = (counts[rating] ?? 0) + 1;
-    }
-    return counts;
-  }
 
   // Hàm mở cửa sổ filter
   void _showFilterDialog(BuildContext context) {
@@ -416,4 +408,18 @@ class ReviewWidget extends StatelessWidget {
       },
     );
   }
+
+  double calculateAverageRating(List<ReviewModel> reviews) {
+    if (reviews.isEmpty) return 0.0; // Nếu không có đánh giá, trả về 0.0
+    
+    // Tính tổng điểm rating
+    double totalRating = reviews.fold(0, (sum, review) => sum + review.rating);
+    
+    // Tính trung bình và làm tròn đến 1 chữ số sau dấu thập phân
+    double averageRating = totalRating / reviews.length;
+    return double.parse(averageRating.toStringAsFixed(1));
+  }
+
 }
+
+

@@ -35,7 +35,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
     }
   void _filterHotels() {
     filteredHotels = hotelController.hotels
-        .where((hotel) => hotel.rating > 0.0 && hotel.reviewCount > 0)
+        .where((hotel) => hotel.rating >= 0.0 && hotel.reviewCount >= 0)
         .toList();
     if (mounted) { // Kiểm tra xem widget có còn trong cây không
       setState(() {}); // Cập nhật giao diện khi hoàn tất lọc

@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 class ReviewWidgetController extends GetxController {
   RxList<ReviewModel> reviews = <ReviewModel>[].obs; // Store reviews
   RxBool isLoading = false.obs;
+  var ratingCounts = <int, int>{}.obs; // Observable map để lưu rating counts
 
   final String apiBaseUrl = 'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/review/';
   final String ratingDistributionUrl = 'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/rating-distribution/';
@@ -150,7 +151,7 @@ class ReviewWidgetController extends GetxController {
   }
 
   /// Fetch rating distribution for a specific destination ID
-  Future<Map<int, int>> fetchRatingDistribution(int destinationId) async {
+  Future<void> fetchRatingDistribution(int destinationId) async {
     try {
       isLoading.value = true;
 
@@ -159,16 +160,15 @@ class ReviewWidgetController extends GetxController {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(utf8.decode(response.bodyBytes));
-
-        // Parse the response into a Map<int, int>
-        return responseData.map((key, value) => MapEntry(int.parse(key), value as int));
+        print('Rating distribution: $responseData');
+        // Gán trực tiếp dữ liệu từ API vào ratingCounts
+        ratingCounts.value =
+            responseData.map((key, value) => MapEntry(int.parse(key), value as int));
       } else {
         Get.snackbar('Error', 'Failed to fetch rating distribution');
-        return {};
       }
     } catch (e) {
       Get.snackbar('Error', 'An error occurred: $e');
-      return {};
     } finally {
       isLoading.value = false;
     }

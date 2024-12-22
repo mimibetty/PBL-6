@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:http/http.dart';
 import 'package:travelappflutter/presentation/common_views/see_all_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
@@ -52,15 +53,20 @@ class _TravelHomeScreenState extends State<HomeScreen> {
     _fetchDestinations(); // Fetch destinations based on parameters
   }
 
-  Future<void> _fetchDestinations() async {
-    if (widget.tag != null) {
-      await topicController.fetchDestinationsByTopic(widget.tag!);
-      homeController.myDestination.value = topicController.destinations.value;
-    } else if (widget.cityID != null || widget.cityName != null) {
-      await homeController.getDestinationByCityID(
-          widget.cityID!, widget.cityName!);
-    }
+Future<void> _fetchDestinations() async {
+  if (widget.tag != null) {
+    // Nếu `tag` không null, lấy dữ liệu theo chủ đề
+    await topicController.fetchDestinationsByTopic(widget.tag!);
+    homeController.myDestination.value = topicController.destinations;
+  } else if (widget.cityID != null && widget.cityName != null) {
+    // Nếu `cityID` và `cityName` không null, gọi cả hai hàm
+    await Future.wait([
+      homeController.getPopularDestinations(widget.cityID!, widget.cityName!),
+      homeController.getRecommendationDestinations(profileController.profileModelObj.value.id,widget.cityID!, widget.cityName!),
+    ]);
   }
+}
+
 
 // Chuyển đổi danh sách điểm đến thành danh sách hotelId
   List<int> getHotelIDs(List<TravelDestination> destinations) {
@@ -93,35 +99,23 @@ class _TravelHomeScreenState extends State<HomeScreen> {
       backgroundColor: kBackgroundColor,
       appBar: headerParts(),
       body: Obx(() {
-        // tạm thời để trống, xử lý sau
-        List<TravelDestination> popularDestinations =
-            homeController.myDestination.value.toList();
-        List<TravelDestination> recommendDestinations =
-            homeController.myDestination.value.toList();
+        List<TravelDestination> popularDestinations;
+        List<TravelDestination> recommendDestinations;
 
-        // List<TravelDestination> popularDestinations = homeController.myDestination.value
-        //     .where((destination) => destination.category == 'popular')
-        //     .toList();
+        if (widget.tag != null) {
+          // Chia đôi danh sách nếu widget.tag != null
+          List<TravelDestination> allDestinations = homeController.myDestination.value.toList();
+          int midIndex = (allDestinations.length / 2).ceil();
 
-        // List<TravelDestination> recommendDestinations = homeController.myDestination.value
-        //     .where((destination) => destination.category == 'recommend')
-        //     .toList();
+          popularDestinations = allDestinations.sublist(0, midIndex); // Nửa đầu danh sách
+          recommendDestinations = allDestinations.sublist(midIndex); // Nửa sau danh sách
+        } else {
+          // Lấy từ controller nếu widget.tag == null
+          popularDestinations = homeController.popularDestinations.value;
+          recommendDestinations = homeController.recommendationDestinations.value;
 
-        // List<String> allImages = [
-        //   ...homeController.myDestination.value
-        //       .where((destination) =>
-        //           destination.location.toLowerCase().contains(widget.cityName!))
-        //       .expand((destination) => destination.images ?? []),
-        //   ...Get.find<WelcomeController>().myCities.value
-        //       .where((city) => city.name.toLowerCase().contains(widget.cityName!))
-        //       .expand((city) => city.images!.cast<String>()),
-        // ];
-        // các địa điểm từ `myDestination` thỏa mãn điều kiện
-        var destinations = homeController.myDestination.value
-            .where((destination) =>
-                destination.address.district.contains(widget.cityName!))
-            .toList();
-        // các thành phố từ `myCities` thỏa mãn điều kiện
+        }
+
         var cities = Get.find<WelcomeController>()
             .myCities
             .value
@@ -129,7 +123,7 @@ class _TravelHomeScreenState extends State<HomeScreen> {
             .toList();
         // Sau khi in, tạo `allImages` như trước:
         List<String> allImages = [
-          ...destinations.expand((destination) => destination.images ?? []),
+          ...homeController.popularDestinations.value.expand((destination) => destination.images),
           ...cities.expand((city) => city.images.map((image) => image.url)),
         ];
 
@@ -324,6 +318,7 @@ class _TravelHomeScreenState extends State<HomeScreen> {
   }
 
   AppBar headerParts() {
+    
     return AppBar(
       elevation: 0,
       backgroundColor: Colors.grey[200], // Thay đổi màu nền sáng hơn
@@ -374,9 +369,9 @@ class _TravelHomeScreenState extends State<HomeScreen> {
                   MaterialPageRoute(
                     builder: (context) => ThingToDoScreen(
                       cityNames: widget.cityName!,
-                      destinations: getThingsToDoDestinations(
-                          homeController.myDestination.value),
-                    ),
+                      destinations: getThingsToDoDestinations(homeController.combineDestinations(homeController.popularDestinations.value, homeController.recommendationDestinations.value)),
+                      cityID: widget.cityID!,
+                    )
                   ),
                 );
                 break;
@@ -387,25 +382,23 @@ class _TravelHomeScreenState extends State<HomeScreen> {
                     builder: (context) => HotelSearchScreen(
                       cityNames: widget.cityName!,
                       cityID: widget.cityID!,
-                      hotelIDs: getHotelIDs(homeController.myDestination
-                          .value), // Directly fetching hotel IDs here
+                      hotelIDs: getHotelIDs(homeController.combineDestinations(homeController.popularDestinations.value, homeController.recommendationDestinations.value)), // Directly fetching hotel IDs here
                     ),
                   ),
                 );
                 break;
               case 'Restaurants':
                 Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => RestaurantSearchScreen(
-                      cityNames: widget.cityName!,
-                      cityID: widget.cityID!,
-                      restaurantIDs: getRestaurantIDs(homeController
-                          .myDestination
-                          .value), // Directly fetching hotel IDs here
-                    ),
+                context,
+                
+                MaterialPageRoute(
+                  builder: (context) => RestaurantSearchScreen(
+                     cityNames: widget.cityName!,
+                     cityID: widget.cityID!,
+                     restaurantIDs: getRestaurantIDs(homeController.combineDestinations(homeController.popularDestinations.value, homeController.recommendationDestinations.value)), // Directly fetching hotel IDs here
                   ),
-                );
+                ),
+              );
                 break;
             }
           },

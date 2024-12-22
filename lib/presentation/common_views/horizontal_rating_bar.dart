@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class RatingBarWidget extends StatelessWidget {
+  final double rating;
   final int fiveStarCount; // Số lượng review cho 5 sao
   final int fourStarCount; // Số lượng review cho 4 sao
   final int threeStarCount; // Số lượng review cho 3 sao
@@ -10,6 +11,7 @@ class RatingBarWidget extends StatelessWidget {
 
   const RatingBarWidget({
     Key? key,
+    required this.rating,
     required this.fiveStarCount,
     required this.fourStarCount,
     required this.threeStarCount,
@@ -35,7 +37,7 @@ class RatingBarWidget extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text('5.0',
+            Text(rating.toString(),
                 style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold)), // Thêm 5.0 ở đầu

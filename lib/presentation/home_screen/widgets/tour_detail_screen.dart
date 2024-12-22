@@ -4,7 +4,7 @@ import 'package:travelappflutter/presentation/home_screen/models/tour_model.dart
 import 'package:travelappflutter/presentation/home_screen/widgets/tour_overview_screen.dart';
 import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/create_review.dart';
-import 'package:travelappflutter/presentation/review_widget/widgets/other_info_widget.dart';
+import 'package:travelappflutter/presentation/home_screen/widgets/other_info_widget.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
 
 class TourDetailScreen extends StatefulWidget {
@@ -370,9 +370,11 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
                           ),
                           //truyen interface của tour vào
                           TourOptionsScreen(),
+                          //controller.fetchRatingDistribution(destinationId),
                           ReviewWidget(
                             destinationId: widget.tour.id,
                             reviews: filteredReviews,
+                            ratingCounts: {1: 1, 2: 2, 3: 3, 4: 4, 5: 5},
                           ),
                         ],
                       ),

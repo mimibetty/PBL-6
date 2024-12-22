@@ -28,6 +28,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   void initState() {
     super.initState();
     controller.fetchReviewsByDestinationID(widget.restaurant.destinationID);
+    controller.fetchRatingDistribution(widget.restaurant.destinationID);
     _getCoordinates();
   }
 
@@ -487,7 +488,9 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                                 if (controller.isLoading.value) {
                                   return Center(child: CircularProgressIndicator());
                                 }
-                                return ReviewWidget(destinationId: widget.restaurant.destinationID, reviews: controller.reviews);
+                                return ReviewWidget(destinationId: widget.restaurant.destinationID, 
+                                                    reviews: controller.reviews,
+                                                    ratingCounts: controller.ratingCounts);
                               }),
                             ),
                           ),

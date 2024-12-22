@@ -17,9 +17,10 @@ import 'package:travelappflutter/presentation/search_screen/controller/things_to
 class ThingToDoScreen extends StatefulWidget {
   final List<TravelDestination> destinations;
   final String cityNames;
+  final int cityID;
 
   const ThingToDoScreen(
-      {super.key, required this.destinations, required this.cityNames});
+      {super.key, required this.destinations, required this.cityNames, required this.cityID});
 
   @override
   State<ThingToDoScreen> createState() => _ThingToDoScreenState();
@@ -58,7 +59,7 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
   @override
   void initState() {
     super.initState();
-    // thingsToDoController.fetchTags();
+    thingsToDoController.fetchTags();
     // thingsToDoController.fetchAllThingsToDo();
   }
 
@@ -156,7 +157,7 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
               final selectedTagId = thingsToDoController.tags
                   .firstWhere((tag) => tag.name == selectedTag)
                   .id;
-              thingsToDoController.fetchThingsToDoByTag(selectedTagId);
+              thingsToDoController.fetchThingsToDoByTag(selectedTagId,widget.cityID);
             },
           ),
 

@@ -60,8 +60,8 @@ class TravelDestination {
             )
           : [defaultImageUrl], // Use default image if `images` is empty
 
-      rating: (json['rating'] ?? 0).toDouble(),
-      numOfReviews: json['numOfReviews'] ?? 0,
+      rating: (json['average_rating'] ?? 0).toDouble(),
+      numOfReviews: json['review_count'] ?? 0,
       location: json['district'] != null && json['district']['city_name'] != null
           ? '${json['district']['city_name']}'
           : 'Unknown Location',
@@ -98,71 +98,3 @@ class Address {
     return '$street, $ward, $district, Da Nang';
   }
 }
-
-
-const descriptionConst =
-    'Travel places offer a wide array of experiences, each with its own unique charm and appeal. From stunning natural landscapes to historic landmarks, there is something for every traveler. Coastal TravelDestinations like tropical beaches invite relaxation with crystal-clear waters, while mountainous regions offer adventurous hiking trails and breathtaking views.';
-
-
-    /////// DATABASE GIẢ TẠM THỜI 
-    ///
-    ///
-   List<TravelDestination> danangDestinations = [
-    TravelDestination(
-      name: 'Bãi biển Mỹ Khê',
-      address: Address(
-        district: 'Quận Sơn Trà',
-        street: 'Lê Đức Thọ',
-        ward: 'Phường An Hải Tây',
-        cityId: 1,
-        id: 1,
-      ),
-      priceBottom: 100000,
-      priceTop: 500000,
-      dateCreate: DateTime(2022, 1, 1),
-      age: 0,
-      openTime: '8:00 - 18:00',
-      duration: 2,
-      id: 1,
-      cityId: 1,
-      hotelId: 1,
-      restaurantId: 1,
-      images: [
-      "https://banahills.sunworld.vn/wp-content/uploads/2018/08/cap-treo-01-1-768x508.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/2/27/Kali_Gandaki_Valley%2C_Road%2C_Mustang%2C_Nepal%2C_Himalaya.jpg",
-      ],
-      rating: 4.5,
-      numOfReviews: 100,
-      location: 'Quận Sơn Trà, Đà Nẵng',
-      description: descriptionConst,
-    ),
-    TravelDestination(
-      name: 'Chùa Linh Ứng',
-      address: Address(
-        district: 'Quận Sơn Trà',
-        street: 'Lê Đức Thọ',
-        ward: 'Phường An Hải Tây',
-        cityId: 1,
-        id: 2,
-      ),
-      priceBottom: 50000,
-      priceTop: 200000,
-      dateCreate: DateTime(2022, 1, 1),
-      age: 0,
-      openTime: '8:00 - 18:00',
-      duration: 1,
-      id: 2,
-      cityId: 1,
-      hotelId: 2,
-      restaurantId: 2,
-      images: [
-      "https://upload.wikimedia.org/wikipedia/commons/0/0c/Han_River_Bridge_Apr08.jpg",
-      "https://halotravel.vn/wp-content/uploads/2021/07/cau-quay-song-han-1.jpg",
-      ],
-      rating: 4.2,
-      numOfReviews: 50,
-      location: 'Quận Sơn Trà, Đà Nẵng',
-      description: descriptionConst,
-    ),
-    // Thêm nhiều điểm đến khác tại Đà Nẵng
-  ];
