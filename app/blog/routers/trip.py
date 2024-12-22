@@ -2,7 +2,7 @@ from typing import List, Dict
 from fastapi import APIRouter, File, HTTPException, Query, UploadFile
 from .. import database, schemas, models
 from sqlalchemy.orm import Session
-from ..repository import tour, image_handler, trip, destination, map, destination
+from ..repository import tour, image_handler, trip, destination, map, destination, trip
 from fastapi import APIRouter, Depends, status
 from pydantic import BaseModel
 
@@ -12,6 +12,30 @@ router = APIRouter(
 )
 
 get_db = database.get_db
+
+
+@router.get("/", response_model=List[schemas.ShowTrip])
+def get_all(
+    db: Session = Depends(get_db)  # Lấy phiên làm việc,
+):
+    return trip.get_all(db=db)
+    
+
+@router.post("/add_destination")
+def create_trip(
+    request: schemas.AddDestToTrip,
+    db: Session = Depends(get_db)  # Lấy phiên làm việc,
+):
+    return trip.add_destination_to_trip(request=request, db=db)
+    
+@router.post("/")
+def create_trip(
+    request: schemas.Trip,
+    db: Session = Depends(get_db)  # Lấy phiên làm việc,
+):
+    return trip.create_trip(request=request, db=db)
+    
+
 
 
 class TripResponse(BaseModel):

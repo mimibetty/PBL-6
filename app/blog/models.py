@@ -111,7 +111,7 @@ class Destination(Base):
     likes = relationship("UserDestinationLike", back_populates="destination")
     
     # Mối quan hệ với TripDestination
-    trip_destinations = relationship("TripDestination", back_populates="trip")
+    trip_destinations = relationship("TripDestination", back_populates="destination")
 
 class Image(Base):
     __tablename__ = 'image'
@@ -326,7 +326,10 @@ class Trip(Base):
     __tablename__ = "trip"
     
     id = Column(Integer, primary_key=True, index=True)
-    date = Column(Date, default=func.current_date())  # Ngày mặc định là ngày hiện tại    length = Column(Integer, default=1)  # Độ dài mặc định là 1 ngày
+    
+    name = Column(String(100), default="Trip")
+    duration = Column(Integer, default= 1) 
+    month_time = Column(Date, default=func.current_date())  # Ngày mặc định là ngày hiện tại    length = Column(Integer, default=1)  # Độ dài mặc định là 1 ngày
     
     user_id = Column(Integer, ForeignKey('user.id'))  # Khóa ngoại đến bảng User
     
@@ -338,11 +341,10 @@ class TripDestination(Base):
     __tablename__ = "trip_destination"
     
     destination_id = Column(Integer, ForeignKey('destination.id'), primary_key=True)  # Khóa ngoại đến bảng Destination
-    trip_id = Column(Integer, ForeignKey('trip.id'), primary_key=True)  # Khóa ngoại đến bảng Trip
-    
+    trip_id = Column(Integer, ForeignKey('trip.id'), primary_key=True)  # Khóa ngoại đến bảng Trip    
     day = Column(Integer, default=1)  # Ngày mặc định là 1
     order = Column(Integer, default=1)  # Thứ tự mặc định là 1
     
     # Mối quan hệ với Trip và Destination
     trip = relationship("Trip", back_populates="trip_destinations")
-    destination = relationship("Destination")  # Nếu cần thêm thông tin từ bảng Destination
+    destination = relationship("Destination", back_populates="trip_destinations")  # Thêm back_populates cho Destination

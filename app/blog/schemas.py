@@ -348,3 +348,24 @@ class ShowDestinationList(Destination):
     
     class Config():
         orm_mode = True
+
+class Trip(BaseModel):
+    name: Optional[str]
+    month_time: Optional[date]
+    duration: Optional[int]
+    user_id: Optional[int]
+    
+class AddDestToTrip(BaseModel):
+    destination_id: int
+    trip_id: int
+    order: int
+    day: int
+    
+    class Config():
+        orm_mode = True
+class ShowTrip(Trip):
+    id: int
+    trip_destinations: Optional[List[AddDestToTrip]]
+
+    class Config():
+        orm_mode = True

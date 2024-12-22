@@ -13,6 +13,49 @@ from ortools.constraint_solver import pywrapcp
 from . import mapService
 limit_point = 3 # Số điểm tối thiểu trong mỗi nhóm để sử dụng dp
 
+
+def get_all(db: Session):
+    try:
+        trips = db.query(models.Trip).all()  # Chờ truy vấn
+        return trips
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create trip with destinations")
+
+def create_trip(request: schemas.Trip, db: Session):
+    try:
+        new_trip = models.Trip(
+            name=request.name,
+            duration=request.duration,
+            month_time=request.month_time,
+            user_id=request.user_id,
+        )
+        
+        db.add(new_trip)
+        db.commit()
+        db.refresh(new_trip)
+        return new_trip
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create trip with destinations")
+
+def add_destination_to_trip(request: schemas.AddDestToTrip, db: Session):
+    try:
+        import pdb;pdb.set_trace()
+        
+        trip_dest = models.TripDestination(
+            destination_id=request.destination_id,
+            trip_id=request.trip_id,
+            day=request.day,
+            order=request.order,
+        )
+        db.add(trip_dest)
+        db.commit()
+        db.refresh(trip_dest)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create trip with destinations")
+
 # def get_coordinate(location: str):
 #     """
 #     Get the (latitude, longitude) coordinates from the location name using geopy.
