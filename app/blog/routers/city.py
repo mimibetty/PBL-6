@@ -38,7 +38,9 @@ async def create_city(
 @router.get("/{id}")
 def get_city_by_id(id: int, db: Session = Depends(get_db)):
     result = city.get_city_by_id(id, db)
+    print("clmmmm", result)
     return schemas.ShowCity.from_orm(result)
+
 @router.get("/", response_model=List[schemas.ShowCity])
 def get_all_city(db: Session = Depends(get_db)):
     cities = city.get_all_city(db)
@@ -78,3 +80,11 @@ async def update_city_by_id(
 @router.delete("/{id}")
 async def delete_city_by_id(id: int, db: Session = Depends(get_db)):
     return await city.delete_city_by_id(id, db)
+
+
+@router.post("/cities-name", response_model=List[str])
+def get_all_citynamess(db: Session = Depends(get_db)):
+    # return ("11111")
+    cities = city.get_all_cityname(db) 
+    print(cities)
+    return cities

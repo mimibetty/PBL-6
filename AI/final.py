@@ -1,100 +1,92 @@
-from typing import List
-from sqlalchemy import func
-from sqlalchemy.orm import Session
-from blog import models, schemas
-from fastapi import HTTPException, status
 import math
 import itertools
 from collections import defaultdict
 from pulp import LpProblem, LpMinimize, LpVariable, lpSum, value, LpStatus
 from geopy.geocoders import Nominatim
-from ortools.constraint_solver import routing_enums_pb2
-from ortools.constraint_solver import pywrapcp
-from . import mapService
-limit_point = 3 # Số điểm tối thiểu trong mỗi nhóm để sử dụng dp
-
-# def get_coordinate(location: str):
-#     """
-#     Get the (latitude, longitude) coordinates from the location name using geopy.
-
-#     Args:
-#         location (str): The name of the location.
-
-#     Returns:
-#         tuple: (latitude, longitude)
-#     """
-#     geolocator = Nominatim(user_agent="my_agent")
-#     try:
-#         location_data = geolocator.geocode(location)
-#         if location_data:
-#             return (location_data.latitude, location_data.longitude)
-#         else:
-#             raise ValueError(f"Không tìm thấy tọa độ cho địa điểm: {location}.")
-#     except Exception as e:
-#         raise Exception(f"Lỗi khi lấy tọa độ cho '{location}': {str(e)}")
 
 
-# def haversine_distance(lat1, lon1, lat2, lon2):
-#     """
-#     Calculate the Haversine distance between two geographic coordinates.
+def get_coordinate(location: str):
+    """
+    Get the (latitude, longitude) coordinates from the location name using geopy.
 
-#     Args:
-#         lat1, lon1, lat2, lon2 (float): Coordinates in decimal degrees.
+    Args:
+        location (str): The name of the location.
 
-#     Returns:
-#         float: Distance in kilometers.
-#     """
-#     R = 6371  # Radius of the Earth in km
-
-#     # Convert degrees to radians
-#     lat1_rad, lon1_rad, lat2_rad, lon2_rad = map(math.radians, [lat1, lon1, lat2, lon2])
-
-#     # Haversine formula
-#     dlat = lat2_rad - lat1_rad
-#     dlon = lon2_rad - lon1_rad
-#     a = math.sin(dlat / 2)**2 + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(dlon / 2)**2
-#     c = 2 * math.asin(math.sqrt(a))
-
-#     return R * c
+    Returns:
+        tuple: (latitude, longitude)
+    """
+    geolocator = Nominatim(user_agent="my_agent")
+    try:
+        location_data = geolocator.geocode(location)
+        if location_data:
+            return (location_data.latitude, location_data.longitude)
+        else:
+            raise ValueError(f"Không tìm thấy tọa độ cho địa điểm: {location}.")
+    except Exception as e:
+        raise Exception(f"Lỗi khi lấy tọa độ cho '{location}': {str(e)}")
 
 
-# def get_distance_of_2_locations(latlong1, latlong2):
-#     """
-#     Get the distance between two coordinates using the Haversine formula.
+def haversine_distance(lat1, lon1, lat2, lon2):
+    """
+    Calculate the Haversine distance between two geographic coordinates.
 
-#     Args:
-#         latlong1, latlong2 (tuple): (latitude, longitude)
+    Args:
+        lat1, lon1, lat2, lon2 (float): Coordinates in decimal degrees.
 
-#     Returns:
-#         float: Distance in kilometers.
-#     """
-#     try:
-#         distance = haversine_distance(latlong1[0], latlong1[1], latlong2[0], latlong2[1])
-#         return distance
-#     except Exception as e:
-#         raise Exception(f"Lỗi khi tính khoảng cách: {str(e)}")
+    Returns:
+        float: Distance in kilometers.
+    """
+    R = 6371  # Radius of the Earth in km
+
+    # Convert degrees to radians
+    lat1_rad, lon1_rad, lat2_rad, lon2_rad = map(math.radians, [lat1, lon1, lat2, lon2])
+
+    # Haversine formula
+    dlat = lat2_rad - lat1_rad
+    dlon = lon2_rad - lon1_rad
+    a = math.sin(dlat / 2)**2 + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(dlon / 2)**2
+    c = 2 * math.asin(math.sqrt(a))
+
+    return R * c
 
 
-# def get_distances_between_all_locations(locations):
-#     """
-#     Generate a symmetric distance matrix for all locations.
+def get_distance_of_2_locations(latlong1, latlong2):
+    """
+    Get the distance between two coordinates using the Haversine formula.
 
-#     Args:
-#         locations (list of tuple): List of (latitude, longitude) coordinates.
+    Args:
+        latlong1, latlong2 (tuple): (latitude, longitude)
 
-#     Returns:
-#         list of list of float: Distance matrix.
-#     """
-#     n = len(locations)
-#     distances = [[0] * n for _ in range(n)]  # Initialize n x n matrix
+    Returns:
+        float: Distance in kilometers.
+    """
+    try:
+        distance = haversine_distance(latlong1[0], latlong1[1], latlong2[0], latlong2[1])
+        return distance
+    except Exception as e:
+        raise Exception(f"Lỗi khi tính khoảng cách: {str(e)}")
 
-#     for i in range(n):
-#         for j in range(i + 1, n):  # Calculate each pair only once
-#             if distances[i][j] == 0:
-#                 distance = get_distance_of_2_locations(locations[i], locations[j])
-#                 distances[i][j] = distance
-#                 distances[j][i] = distance
-#     return distances
+
+def get_distances_between_all_locations(locations):
+    """
+    Generate a symmetric distance matrix for all locations.
+
+    Args:
+        locations (list of tuple): List of (latitude, longitude) coordinates.
+
+    Returns:
+        list of list of float: Distance matrix.
+    """
+    n = len(locations)
+    distances = [[0] * n for _ in range(n)]  # Initialize n x n matrix
+
+    for i in range(n):
+        for j in range(i + 1, n):  # Calculate each pair only once
+            if distances[i][j] == 0:
+                distance = get_distance_of_2_locations(locations[i], locations[j])
+                distances[i][j] = distance
+                distances[j][i] = distance
+    return distances
 
 
 class TravelPlanner:
@@ -116,15 +108,15 @@ class TravelPlanner:
         # Get coordinates for all locations
         self.coordinates = []
         for location in locations:
-            coords = mapService.get_coordinate(location)
+            coords = get_coordinate(location)
             self.coordinates.append(coords)
             print(f"Tọa độ của '{location}': {coords}")
 
         # Build distance matrix
-        self.distances = mapService.get_distances_between_all_locations(self.coordinates)
-        # print("\nMa trận khoảng cách:")
-        # for row in self.distances:
-        #     print(row)
+        self.distances = get_distances_between_all_locations(self.coordinates)
+        print("\nMa trận khoảng cách:")
+        for row in self.distances:
+            print(row)
 
     def plan_trip(self):
         """
@@ -178,18 +170,15 @@ class TravelPlanner:
 
         for cluster_id, points in clusters.items():
             if len(points) > 0:
-                # Choose optimization method based on group size
-                if len(points) <= limit_point:
-                    # Use Dynamic Programming (Held-Karp) for small groups
-                    print(f"\nĐang tối ưu hóa lộ trình cho Nhóm {cluster_id + 1} với {len(points)} điểm (sử dụng DP).")
-                    cluster_distance_matrix = [[self.distances[i][j] for j in points] for i in points]
-                    min_dist, route = self.optimize_cluster_route_dp(cluster_distance_matrix)
-                else:
-                    # Use OR-Tools for large groups
-                    print(f"\nĐang tối ưu hóa lộ trình cho Nhóm {cluster_id + 1} với {len(points)} điểm (sử dụng OR-Tools).")
-                    cluster_distance_matrix = [[self.distances[i][j] for j in points] for i in points]
-                    min_dist, route = self.optimize_cluster_route_ortools(cluster_distance_matrix)
-                
+                # Create a distance matrix for the current cluster
+                cluster_distance_matrix = [[self.distances[i][j] for j in points] for i in points]
+                print(f"\nĐang tối ưu hóa lộ trình cho Nhóm {cluster_id + 1} với các điểm {points}")
+                print("Ma trận khoảng cách nhóm:")
+                for row in cluster_distance_matrix:
+                    print(row)
+
+                # Optimize the route
+                min_dist, route = self.optimize_cluster_route(cluster_distance_matrix)
                 print(f"Khoảng cách tối thiểu cho Nhóm {cluster_id + 1}: {min_dist:.2f} km")
                 print(f"Lộ trình cho Nhóm {cluster_id + 1}: {route}")
 
@@ -201,9 +190,9 @@ class TravelPlanner:
         print("\nTất cả các lộ trình nhóm:", cluster_routes)
         return cluster_routes, cluster_distances
 
-    def optimize_cluster_route_dp(self, distances):
+    def optimize_cluster_route(self, distances):
         """
-        Optimize the route for a single cluster using Dynamic Programming (Held-Karp algorithm).
+        Optimize the route for a single cluster.
 
         Args:
             distances (list of list of float): Distance matrix for the cluster.
@@ -211,9 +200,22 @@ class TravelPlanner:
         Returns:
             tuple: (minimum total distance, optimal route as a list of indices)
         """
+        return self.optimize_daily_route(distances)
+
+    def optimize_daily_route(self, distances):
+        """
+        Optimize the route for a single cluster using dynamic programming (Held-Karp algorithm).
+        Ensures that all locations are included and the route forms a complete cycle.
+
+        Args:
+            distances (list of list of float): A symmetric distance matrix.
+
+        Returns:
+            tuple: (minimum total distance, optimal route as a list of indices)
+        """
         n = len(distances)
-        dp = {}
-        parent = {}
+        dp = {}      # Dictionary to store the minimum cost to reach a subset ending at a point
+        parent = {}  # Dictionary to store the parent of each state for path reconstruction
 
         def solve(mask, last):
             """
@@ -239,9 +241,9 @@ class TravelPlanner:
             """
             Reconstruct the optimal path from the parent pointers.
             """
-            mask = 1  # Starting with the first node (index 0)
-            last = 0
-            path = [last]
+            mask = 1          # Starting with the first node (index 0)
+            last = 0          # Starting node
+            path = [last]     # Initialize path with the starting node
             while mask != (1 << n) - 1:
                 next_point = parent.get((mask, last))
                 if next_point is None:
@@ -261,70 +263,6 @@ class TravelPlanner:
             print("Warning: The computed path does not include all locations.")
 
         return min_cost, path
-
-    def optimize_cluster_route_ortools(self, distances):
-        """
-        Optimize the route for a single cluster using Google OR-Tools.
-
-        Args:
-            distances (list of list of float): Distance matrix for the cluster.
-
-        Returns:
-            tuple: (minimum total distance, optimal route as a list of indices)
-        """
-        # Create the data model
-        data = {}
-        data["distance_matrix"] = distances
-        data["num_vehicles"] = 1
-        data["depot"] = 0
-
-        # Create the routing index manager
-        manager = pywrapcp.RoutingIndexManager(len(data["distance_matrix"]),
-                                               data["num_vehicles"], data["depot"])
-
-        # Create Routing Model
-        routing = pywrapcp.RoutingModel(manager)
-
-        # Create and register a transit callback
-        def distance_callback(from_index, to_index):
-            """Returns the distance between the two nodes."""
-            # Convert from routing variable Index to distance matrix NodeIndex.
-            from_node = manager.IndexToNode(from_index)
-            to_node = manager.IndexToNode(to_index)
-            return int(data["distance_matrix"][from_node][to_node] * 100)  # Convert to integer
-
-        transit_callback_index = routing.RegisterTransitCallback(distance_callback)
-
-        # Define cost of each arc
-        routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
-
-        # Setting first solution heuristic (cheapest addition)
-        search_parameters = pywrapcp.DefaultRoutingSearchParameters()
-        search_parameters.first_solution_strategy = (
-            routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC)
-
-        # Solve the problem
-        solution = routing.SolveWithParameters(search_parameters)
-
-        if solution:
-            # Get the route
-            index = routing.Start(0)
-            route = []
-            route_distance = 0
-            while not routing.IsEnd(index):
-                node = manager.IndexToNode(index)
-                route.append(node)
-                previous_index = index
-                index = solution.Value(routing.NextVar(index))
-                route_distance += routing.GetArcCostForVehicle(previous_index, index, 0)
-            route.append(manager.IndexToNode(index))  # Append the end node
-
-            # Convert route distance back to float
-            route_distance = route_distance / 100.0
-
-            return route_distance, route
-        else:
-            raise Exception("OR-Tools không tìm ra giải pháp cho lộ trình này.")
 
     def format_result(self, cluster_routes, cluster_distances):
         """
@@ -358,7 +296,7 @@ class TravelPlanner:
         return '\n'.join(result)
 
 
-def run_travel_planner(locations, m, centers=None, min_points_per_cluster=2):
+def run_travel_planner(locations, m, centers=None, min_points_per_cluster=4):
     """
     Run the TravelPlanner with given parameters.
 
@@ -395,29 +333,28 @@ def run_travel_planner(locations, m, centers=None, min_points_per_cluster=2):
 
 
 # Example usage:
-# if __name__ == "__main__":
-#     # Example list of location names
-#     locations = [
-#         "Đại học Bách Khoa Đà Nẵng",
-#         "Đại học Y Dược Huế",
-#         "Đại học Sư phạm Đà Nẵng",
-#         "Chùa Một Cột, Hà Nội",
-#         "Hoàng Thành Thăng Long, Hà Nội",
-#         "Nhà Thờ Lớn Hà Nội",
-#         "Bảo tàng Lịch sử Quốc gia, Hà Nội",
-#         # Add more locations as needed for testing
-#     ]
+if __name__ == "__main__":
+    # Example list of location names
+    locations = [
+        "Đại học Bách Khoa Đà Nẵng",
+        "Đại học Y Dược Huế",
+        "Đại học Sư phạm Đà Nẵng",
+        "Chùa Một Cột, Hà Nội",
+        "Hoàng Thành Thăng Long, Hà Nội",
+        "Nhà Thờ Lớn Hà Nội",
+        "Bảo tàng Lịch sử Quốc gia, Hà Nội",
+    ]
 
-#     # Number of travel days (clusters)
-#     m = 2  # Example: 2 days
+    # Number of travel days (clusters)
+    m = 2  # Example: 2 days
 
-#     # Optional: Specify centers by their indices. If empty or None, the first 'm' locations are used as centers
-#     centers = []  # Example: [] or [0, 2]
+    # Optional: Specify centers by their indices. If empty or None, the first 'm' locations are used as centers
+    centers = []  # Example: [] or [0, 2]
 
-#     # Run the travel planner
-#     try:
-#         trip_plan = run_travel_planner(locations, m, centers, min_points_per_cluster=2)
-#         print("\nKế hoạch chuyến đi:")
-#         print(trip_plan)
-#     except Exception as e:
-#         print(f"Đã xảy ra lỗi: {e}")
+    # Run the travel planner
+    try:
+        trip_plan = run_travel_planner(locations, m, centers, min_points_per_cluster=2)
+        print("\nKế hoạch chuyến đi:")
+        print(trip_plan)
+    except Exception as e:
+        print(f"Đã xảy ra lỗi: {e}")

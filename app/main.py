@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-from blog.database import engine
-# from blog.database import create_sample_data, delete_all
-from blog.routers import action, tour, user, authentication, userInfo, city, review, destination,authenGoogle, destination, hotel, restaurant, address, dashboard, tag, image
+from blog import models
+from blog.database import engine #, create_sample_data, delete_all
+from blog.routers import action, blog,tour, user, authentication, userInfo, city, review, destination,authenGoogle, destination, hotel, restaurant, address, dashboard, tag, image,trip
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 import os
@@ -47,6 +47,7 @@ app.include_router(tour.router)
 app.include_router(dashboard.router)
 app.include_router(tag.router)
 app.include_router(image.router)
+app.include_router(trip.router)
 
 
 async def crawl_destination_data():
