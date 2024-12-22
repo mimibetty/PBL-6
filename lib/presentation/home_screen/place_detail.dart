@@ -17,42 +17,55 @@ class PlaceDetailScreen extends StatefulWidget {
   State<PlaceDetailScreen> createState() => _PlaceDetailScreenState();
 }
 
-class _PlaceDetailScreenState extends State<PlaceDetailScreen> { 
+class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   final ReviewWidgetController controller = Get.put(ReviewWidgetController());
   @override
   double? _latitude; // Lưu trữ vĩ độ
   double? _longitude; // Lưu trữ kinh độ
-  String _address = '91 Trung Kính, Trung Hòa, Cầu Giấy, Hà Nội';
+  // String _address = '91 Trung Kính, Trung Hòa, Cầu Giấy, Hà Nội';
+  late Address _address; // Khởi tạo sau trong `initState`
 
   @override
   void initState() {
     super.initState();
     controller.fetchReviewsByDestinationID(widget.destination.id);
+    _address = widget.destination.address;
+
+    String fullAddress = _address.getFullAddress();
+    print("Địa chỉ đầy đủ: $fullAddress");
+
     _getCoordinates();
   }
-
 
   PageController pageController = PageController();
   int pageView = 0;
   bool isLiked = false; // Trạng thái nút tim
   void _getCoordinates() async {
-    if (_address.isNotEmpty) {
+    // Kiểm tra xem địa chỉ có hợp lệ không
+    if (_address.district.isNotEmpty && _address.street.isNotEmpty) {
+      String fullAddress =
+          '${_address.street}, ${_address.ward}, ${_address.district}';
+
+      // Gọi dịch vụ để lấy tọa độ
       var coordinates =
-          await GeocodingService.getCoordinatesFromAddress(_address);
+          await GeocodingService.getCoordinatesFromAddress(fullAddress);
 
       if (coordinates != null) {
         setState(() {
           _latitude = coordinates['latitude'];
           _longitude = coordinates['longitude'];
         });
+
         if (_latitude != null && _longitude != null) {
-          print("IN ra: Latitude = $_latitude, Longitude = $_longitude");
+          print("Latitude = $_latitude, Longitude = $_longitude");
         } else {
           print("Latitude hoặc Longitude chưa có giá trị.");
         }
       } else {
-        print("Couldn't get coordinates.");
+        print("Không thể lấy tọa độ từ địa chỉ.");
       }
+    } else {
+      print("Địa chỉ không đầy đủ để lấy tọa độ.");
     }
   }
 
@@ -107,9 +120,10 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                   builder: (context) => ReviewFormPage(
                     destinationId: destinationId,
                     destinationName: widget.destination.name,
-                    destinationAddress: '${widget.destination.address.street}, ${widget.destination.address.ward}, ${widget.destination.address.district}',
+                    destinationAddress:
+                        '${widget.destination.address.street}, ${widget.destination.address.ward}, ${widget.destination.address.district}',
                     destinationImageURL: widget.destination.images[0],
-                  ), 
+                  ),
                 ),
               );
             },
@@ -302,7 +316,9 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                         ),
                                         const SizedBox(width: 5),
                                         Text(
-                                          widget.destination.rating.toStringAsFixed(1).toString(),
+                                          widget.destination.rating
+                                              .toStringAsFixed(1)
+                                              .toString(),
                                           style: const TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.bold,
@@ -422,13 +438,16 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                           Padding(
                             padding: const EdgeInsets.all(15),
                             child: SingleChildScrollView(
-                              child: 
-                              // Tab Review
-                              Obx(() {
+                              child:
+                                  // Tab Review
+                                  Obx(() {
                                 if (controller.isLoading.value) {
-                                  return Center(child: CircularProgressIndicator());
+                                  return Center(
+                                      child: CircularProgressIndicator());
                                 }
-                                return ReviewWidget(destinationId: widget.destination.id,reviews: controller.reviews);
+                                return ReviewWidget(
+                                    destinationId: widget.destination.id,
+                                    reviews: controller.reviews);
                               }),
                             ),
                           ),

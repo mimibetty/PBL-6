@@ -37,7 +37,8 @@ class HomeScreen extends StatefulWidget {
 
 class _TravelHomeScreenState extends State<HomeScreen> {
   final HomeController homeController = Get.put(HomeController());
-  final TopicController topicController = Get.put(TopicController()); // Khởi tạo controller
+  final TopicController topicController =
+      Get.put(TopicController()); // Khởi tạo controller
   final ProfileController profileController = Get.put(ProfileController());
 
   // Gọi hàm lọc dựa trên `Topic`
@@ -61,31 +62,30 @@ class _TravelHomeScreenState extends State<HomeScreen> {
     }
   }
 
-
 // Chuyển đổi danh sách điểm đến thành danh sách hotelId
-List<int> getHotelIDs(List<TravelDestination> destinations) {
-  return destinations
-      .where((destination) => destination.hotelId != null)
-      .map((destination) => destination.hotelId!)
-      .toList();
-}
+  List<int> getHotelIDs(List<TravelDestination> destinations) {
+    return destinations
+        .where((destination) => destination.hotelId != null)
+        .map((destination) => destination.hotelId!)
+        .toList();
+  }
 
 // Chuyển đổi danh sách điểm đến thành danh sách restaurantId
-List<int> getRestaurantIDs(List<TravelDestination> destinations) {
-  return destinations
-      .where((destination) => destination.restaurantId != null)
-      .map((destination) => destination.restaurantId!)
-      .toList();
-}
+  List<int> getRestaurantIDs(List<TravelDestination> destinations) {
+    return destinations
+        .where((destination) => destination.restaurantId != null)
+        .map((destination) => destination.restaurantId!)
+        .toList();
+  }
 
 // Chuyển đổi danh sách điểm đến thành danh sách TravelDestination nếu cả hotelId và restaurantId đều null
-List<TravelDestination> getThingsToDoDestinations(List<TravelDestination> destinations) {
-  return destinations
-      .where((destination) =>
-          destination.hotelId == null && destination.restaurantId == null)
-      .toList();
-}
-
+  List<TravelDestination> getThingsToDoDestinations(
+      List<TravelDestination> destinations) {
+    return destinations
+        .where((destination) =>
+            destination.hotelId == null && destination.restaurantId == null)
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -204,7 +204,6 @@ List<TravelDestination> getThingsToDoDestinations(List<TravelDestination> destin
                                 builder: (_) => SeeAllScreen(
                                   title: "Popular Places",
                                   destinations: popularDestinations,
-                                 
                                 ),
                               ),
                             );
@@ -273,7 +272,6 @@ List<TravelDestination> getThingsToDoDestinations(List<TravelDestination> destin
                                 builder: (_) => SeeAllScreen(
                                   title: "Recommended for You",
                                   destinations: recommendDestinations,
-                                 
                                 ),
                               ),
                             );
@@ -376,7 +374,9 @@ List<TravelDestination> getThingsToDoDestinations(List<TravelDestination> destin
                   MaterialPageRoute(
                     builder: (context) => ThingToDoScreen(
                       cityNames: widget.cityName!,
-                      destinations: getThingsToDoDestinations(homeController.myDestination.value),),
+                      destinations: getThingsToDoDestinations(
+                          homeController.myDestination.value),
+                    ),
                   ),
                 );
                 break;
@@ -387,22 +387,25 @@ List<TravelDestination> getThingsToDoDestinations(List<TravelDestination> destin
                     builder: (context) => HotelSearchScreen(
                       cityNames: widget.cityName!,
                       cityID: widget.cityID!,
-                     hotelIDs: getHotelIDs(homeController.myDestination.value), // Directly fetching hotel IDs here
+                      hotelIDs: getHotelIDs(homeController.myDestination
+                          .value), // Directly fetching hotel IDs here
                     ),
                   ),
                 );
                 break;
               case 'Restaurants':
                 Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => RestaurantSearchScreen(
-                     cityNames: widget.cityName!,
-                     cityID: widget.cityID!,
-                     restaurantIDs: getRestaurantIDs(homeController.myDestination.value), // Directly fetching hotel IDs here
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RestaurantSearchScreen(
+                      cityNames: widget.cityName!,
+                      cityID: widget.cityID!,
+                      restaurantIDs: getRestaurantIDs(homeController
+                          .myDestination
+                          .value), // Directly fetching hotel IDs here
+                    ),
                   ),
-                ),
-              );
+                );
                 break;
             }
           },

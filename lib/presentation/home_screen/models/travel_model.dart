@@ -94,6 +94,9 @@ class Address {
       id: json['id'] ?? 0,
     );
   }
+  String getFullAddress() {
+    return '$street, $ward, $district, Da Nang';
+  }
 }
 
 
