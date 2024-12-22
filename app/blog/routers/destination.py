@@ -165,6 +165,13 @@ def get_destination_by_id(
     # })
     return dest
 
+def paginate_results(results: List, page: int, page_size: int):
+    if page < 1:
+        page = 1  # Đảm bảo trang không nhỏ hơn 1
+    start = (page - 1) * page_size
+    end = start + page_size
+    return results[start:end]  # Trả về danh sách đã phân trang
+
 
 @router.get("/",response_model=List[schemas.ShowDestinationList], 
     description=(
@@ -173,6 +180,13 @@ def get_destination_by_id(
         "- **Fill `city_id`**: Get all destinations in 1 city;\n"
         "- **Fill both `user_id` and `city_id`**: Get all destinations of 1 user in 1 city;\n\n"
         "- **`limit`**: get l destination to filter city_id and user_id. \n\n "
+        "- **`page`**:(>=1) if page == null -> return all else return `page_size` destination. \n\n "
+        "+ **`page_size`**: number of dest return if `page` != null. \n\n "
+        "## Example for limit and page:\n\n"
+        "- **Input**: limit = 15, page_size = 7 \n\n "
+        "- `page` : 1 =>7 first destination will be return \n\n"
+        "- `page` : 2 =>1 first destination will be return \n\n "
+        "- `page` : 3 =>=> return [] \n\n "
         
         
         
@@ -182,6 +196,8 @@ def get_destination(
     city_id: int = None,
     user_id: int = None,
     limit: int = None,
+    page: int = None,
+    page_size: int = 10,  # Thêm tham số page_size
     db: Session = Depends(get_db),
     # _ = Depends(authorize_action(action_name='SHOW_DESTINATION')),
 ):
@@ -202,7 +218,10 @@ def get_destination(
             else:
                 dests = destination.get_all(db=db, limit=limit)
                 results = dests
-
+        # Phân trang kết quả
+        if page is not None:
+            results = paginate_results(results, page, page_size)
+            
         return results
     # Lọc kết quả dựa trên user_id và city_id
     except Exception as e:
