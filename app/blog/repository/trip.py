@@ -11,7 +11,15 @@ from geopy.geocoders import Nominatim
 from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
 from . import mapService
-limit_point = 3 # Số điểm tối thiểu trong mỗi nhóm để sử dụng dp
+import os
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+# Đọc giá trị LIMIT_POINT_PERDAY từ file .env, nếu không có thì mặc định là 5
+limit_point_perday = int(os.getenv('LIMIT_POINT_PERDAY', 5))
+# limit_point_perday = 3 # Số điểm tối thiểu trong mỗi nhóm để sử dụng dp
 
 # def get_coordinate(location: str):
 #     """
@@ -179,7 +187,7 @@ class TravelPlanner:
         for cluster_id, points in clusters.items():
             if len(points) > 0:
                 # Choose optimization method based on group size
-                if len(points) <= limit_point:
+                if len(points) <= limit_point_perday:
                     # Use Dynamic Programming (Held-Karp) for small groups
                     print(f"\nĐang tối ưu hóa lộ trình cho Nhóm {cluster_id + 1} với {len(points)} điểm (sử dụng DP).")
                     cluster_distance_matrix = [[self.distances[i][j] for j in points] for i in points]

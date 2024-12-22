@@ -278,22 +278,56 @@ def get_destination_statistics(
     return destination.get_destination_stats(db, destination_id)
 
 
-@router.get("/top-destinations/{tag_id}")
-def get_top_destinations(
-    tag_id: int,
-    limit: int = Query(default=5, ge=1, le=100),  # Mặc định lấy 5 destinations, giới hạn từ 1-100
+@router.post("/top-destinations-by-tag-and-city")  
+def get_top_destinations_by_tagandcity(
+    tag_id: Optional[int] = Query(None, description="ID của tag cần lọc (không bắt buộc)"),
+    city_id: Optional[int] = Query(None, description="ID của thành phố cần lọc (không bắt buộc)"),
+    limit: int = Query(default=5, ge=1, le=100, description="Số lượng kết quả trả về (từ 1-100, mặc định là 5)"),
     db: Session = Depends(get_db)
 ):
-    return destination.get_top_destinations_by_tag(db, tag_id, limit)
+    """
+    Lấy danh sách các điểm đến (destinations) được sắp xếp theo popularity_score.
 
+    Parameters:
+    - tag_id (Optional[int]): ID của tag để lọc các điểm đến
+    - city_id (Optional[int]): ID của thành phố để lọc các điểm đến
+    - limit (int): Số lượng kết quả tối đa trả về (mặc định: 5, tối đa: 100)
 
-@router.get("/top-destination-ids/{tag_id}")
+    Returns:
+    - List[Destination]: Danh sách các điểm đến, mỗi điểm đến bao gồm đầy đủ thông tin
+
+    Example:
+    ```
+    POST /destination/top-destinations-by-tag-and-city?tag_id=1&city_id=3&limit=5
+    ```
+    """
+    return destination.get_top_destinations_bytag(db, tag_id, city_id, limit)
+
+@router.post("/top-destinations-IDS-by-tag-and-city")  
 def get_top_destination_ids(
-    tag_id: int,
-    limit: int = Query(default=5, ge=1, le=100),  # Số lượng kết quả (mặc định là 5)
+    tag_id: Optional[int] = Query(None, description="ID của tag cần lọc (không bắt buộc)"),
+    city_id: Optional[int] = Query(None, description="ID của thành phố cần lọc (không bắt buộc)"),
+    limit: int = Query(default=5, ge=1, le=100, description="Số lượng kết quả trả về (từ 1-100, mặc định là 5)"),
     db: Session = Depends(get_db)
 ):
-    return destination.get_top_destination_ids_by_tag(db, tag_id, limit)
+    """
+    Lấy danh sách ID của các điểm đến (destinations) được sắp xếp theo popularity_score.
+
+    Parameters:
+    - tag_id (Optional[int]): ID của tag để lọc các điểm đến
+    - city_id (Optional[int]): ID của thành phố để lọc các điểm đến
+    - limit (int): Số lượng kết quả tối đa trả về (mặc định: 5, tối đa: 100)
+
+    Returns:
+    - List[int]: Danh sách các ID của điểm đến
+
+    Example:
+    ```
+    POST /destination/top-destinations-IDS-by-tag-and-city?tag_id=1&city_id=3&limit=5
+    ```
+    """
+    return destination.get_top_destination_ids_bytag(db, tag_id, city_id, limit)
+
 
 
 @router.get('/recommendations_bylikes/{user_id}')

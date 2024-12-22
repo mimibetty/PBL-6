@@ -6,9 +6,9 @@ from fastapi import HTTPException, status
 import math
 import itertools
 from collections import defaultdict
-from geopy.geocoders import Nominatim
 from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
+from geopy.geocoders import Nominatim
 
 
 def get_coordinate(location: str):
