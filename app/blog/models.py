@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, Float, ForeignKey, Integer, String, Date, Time, DateTime
+from sqlalchemy import Boolean, Column, Float, ForeignKey, Integer, String, Date, Time, DateTime, func
 from blog.database import Base
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -25,13 +25,13 @@ class User(Base):
     city = relationship("City", back_populates="user")
     tours = relationship("Tour", back_populates="user")
     likes = relationship("UserDestinationLike", back_populates="user")
-
+    trips = relationship("Trip", back_populates="user")
 # Bảng Hành Động1
 class Action(Base):
     __tablename__ = 'action'
     
     id = Column(Integer, primary_key=True, index=True)
-    action_name = Column(String, unique=True)
+    action_name = Column(String(50), unique=True)
     
 
 # Bảng Quyền Người Dùng
@@ -110,6 +110,9 @@ class Destination(Base):
     tags = relationship("Tag", secondary="destination_tag", back_populates="destinations")
     likes = relationship("UserDestinationLike", back_populates="destination")
     
+    # Mối quan hệ với TripDestination
+    trip_destinations = relationship("TripDestination", back_populates="trip")
+
 class Image(Base):
     __tablename__ = 'image'
     
@@ -317,3 +320,29 @@ class UserDestinationLike(Base):
     # Relationships
     user = relationship("User", back_populates="likes")
     destination = relationship("Destination", back_populates="likes")
+    
+
+class Trip(Base):
+    __tablename__ = "trip"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    date = Column(Date, default=func.current_date())  # Ngày mặc định là ngày hiện tại    length = Column(Integer, default=1)  # Độ dài mặc định là 1 ngày
+    
+    user_id = Column(Integer, ForeignKey('user.id'))  # Khóa ngoại đến bảng User
+    
+    # Mối quan hệ với TripDestination
+    trip_destinations = relationship("TripDestination", back_populates="trip")
+    user = relationship("User", back_populates="trips")
+
+class TripDestination(Base):
+    __tablename__ = "trip_destination"
+    
+    destination_id = Column(Integer, ForeignKey('destination.id'), primary_key=True)  # Khóa ngoại đến bảng Destination
+    trip_id = Column(Integer, ForeignKey('trip.id'), primary_key=True)  # Khóa ngoại đến bảng Trip
+    
+    day = Column(Integer, default=1)  # Ngày mặc định là 1
+    order = Column(Integer, default=1)  # Thứ tự mặc định là 1
+    
+    # Mối quan hệ với Trip và Destination
+    trip = relationship("Trip", back_populates="trip_destinations")
+    destination = relationship("Destination")  # Nếu cần thêm thông tin từ bảng Destination
