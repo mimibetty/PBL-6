@@ -34,7 +34,23 @@ def create_trip(
     db: Session = Depends(get_db)  # Lấy phiên làm việc,
 ):
     return trip.create_trip(request=request, db=db)
+
+@router.put("/{id}")
+def update_trip(
+    id: int,
+    request: schemas.Trip,
+    db: Session = Depends(get_db)  # Lấy phiên làm việc,
+):
+    return trip.update_by_id(id=id, request=request, db=db)
     
+@router.get("/{id}")
+def get_by_id(
+    id: int,
+    db: Session = Depends(get_db)  # Lấy phiên làm việc,
+):
+    return trip.get_by_id(id=id, db=db)
+    
+
 
 
 

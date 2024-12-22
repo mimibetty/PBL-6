@@ -30,6 +30,63 @@ def get_all(db: Session):
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create trip with destinations")
 
+def get_by_id(id: int, db: Session):
+    try:
+        trip = db.query(models.Trip).filter(models.Trip.id == id).all()  # Chờ truy vấn
+        return trip
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create trip with destinations")
+
+def update_by_id(id: int, request: schemas.Trip, db: Session):
+    try:
+        import pdb;pdb.set_trace()
+        # Tìm chuyến đi tồn tại bằng id
+        trip_to_update = db.query(models.Trip).filter(models.Trip.id == id).first()
+        
+        # Kiểm tra xem chuyến đi có tồn tại không
+        if not trip_to_update:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Trip not found")
+        
+        # Cập nhật các trường của chuyến đi
+        trip_to_update.name = request.name
+        trip_to_update.duration = request.duration
+        trip_to_update.month_time = request.month_time
+        trip_to_update.user_id = request.user_id
+        
+        # Cam kết các thay đổi
+        db.commit()
+        db.refresh(trip_to_update)  # Refresh để lấy dữ liệu mới nhất từ cơ sở dữ liệu
+        
+        return trip_to_update  # Trả về chuyến đi đã được cập nhật
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create trip with destinations")
+
+def delete_by_id(id: int, db: Session):
+    try:
+
+        # Tìm chuyến đi bằng id
+        trip_to_delete = db.query(models.Trip).filter(models.Trip.id == id).first()
+        
+        # Kiểm tra xem chuyến đi có tồn tại không
+        if not trip_to_delete:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Trip not found")
+        
+        # Xóa các mục trong TripDestination liên quan đến chuyến đi
+        db.query(models.TripDestination).filter(models.TripDestination.trip_id == id).delete()
+
+        # Xóa chuyến đi
+        db.delete(trip_to_delete)
+        
+        # Cam kết các thay đổi
+        db.commit()
+
+        return {"detail": "Trip and associated destinations deleted successfully"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete trip with destinations")
+
 def create_trip(request: schemas.Trip, db: Session):
     try:
         new_trip = models.Trip(
@@ -48,9 +105,7 @@ def create_trip(request: schemas.Trip, db: Session):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create trip with destinations")
 
 def add_destination_to_trip(request: schemas.AddDestToTrip, db: Session):
-    try:
-        import pdb;pdb.set_trace()
-        
+    try:        
         trip_dest = models.TripDestination(
             destination_id=request.destination_id,
             trip_id=request.trip_id,

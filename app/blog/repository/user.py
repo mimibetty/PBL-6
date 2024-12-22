@@ -4,7 +4,7 @@ from fastapi import HTTPException, status
 from blog.hashing import Hash
 from typing import Optional
 from collections import Counter
-from blog.repository.destination import get_tags_by_id
+from blog.repository import destination  
 from sqlalchemy import func
 
 
@@ -175,7 +175,7 @@ def count_tags_for_user(user_id: int, db: Session):
         tag_counter = Counter()
 
         for destination_id in liked_destinations:
-            tags = get_tags_by_id(destination_id, db)
+            tags = destination.get_tags_by_id(destination_id, db)
             if tags and "tags" in tags:
                 tag_counter.update(tag.id for tag in tags["tags"])
         
