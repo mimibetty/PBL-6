@@ -399,7 +399,7 @@ if __name__ == "__main__":
         "Chùa Một Cột, Hà Nội",
         "Hoàng Thành Thăng Long, Hà Nội",
         "Nhà Thờ Lớn Hà Nội",
-        "Bảo tàng Lịch sử Quốc gia, Hà Nội",
+        "Vincom Đà Nẵng",
         # Add more locations as needed for testing
     ]
 

@@ -283,8 +283,8 @@ def get_popular_destinations_by_city_ID(city_id: int, db: Session):
         .outerjoin(models.Review, models.Destination.id == models.Review.destination_id)  # Kết hợp với bảng Review
         .filter(models.Destination.address.has(city_id=city_id))  # Lọc theo city_id
         .group_by(models.Destination.id)  # Nhóm theo id của Destination
-        .having(func.avg(models.Review.rating) >= 4.5)  # Điều kiện xếp hạng
-        .having(func.count(models.Review.id) >= 1000)  # Điều kiện số lượng đánh giá
+        .having(func.avg(models.Review.rating) >= 2)  # Điều kiện xếp hạng
+        .having(func.count(models.Review.id) >= 1)  # Điều kiện số lượng đánh giá
         .all()
     )
 
@@ -648,3 +648,49 @@ def get_rating_distribution(destination_id: int, db: Session):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error getting rating distribution: {str(e)}"
         )
+    
+
+# def get_topdestination_bytag(db:Session,  city_id: Optional[int], limit: Optional[int], tag_ids = Optional[list[int]]):
+#     try:
+#         query = db.query(models.Destination).join(models.DestinationTag)
+
+#         if tag_ids:
+#             query = query.filter(models.DestinationTag.tag_id.in_(tag_ids))
+
+#         if city_id:
+#             query = query.join(models.Address).filter(models.Address.city_id == city_id)
+
+#         if limit:
+#             query = query.limit(limit)
+#         dests = query.all()  # Thực hiện truy vấn
+#         return dests
+#     except Exception as e:
+#         # Bắt các lỗi khác
+#         print(f"An error occurred: {e}")
+#         raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+def getName_by_id(id: int, db: Session):
+    try:
+        destination = db.query(models.Destination.name).filter(models.Destination.id == id).first()
+        return destination
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail=f"Error retrieving destination: {str(e)}")
+    
+
+def sort_destinations_by_popularity(restaurant_ids: List[int], db: Session):
+    try:
+        sorted_destinations = (
+            db.query(models.Destination.id)
+            .filter(models.Destination.id.in_(restaurant_ids))
+            .order_by(models.Destination.popularity_score.desc())
+            .all()
+        )
+        # Convert query result to list of ids
+        return [restaurant[0] for restaurant in sorted_destinations]
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                          detail=f"Error sorting destinations: {str(e)}")
