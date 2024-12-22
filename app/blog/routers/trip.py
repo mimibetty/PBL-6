@@ -43,7 +43,7 @@ def update_trip(
 ):
     return trip.update_by_id(id=id, request=request, db=db)
     
-@router.get("/{id}")
+@router.get("/{id}", response_model=schemas.ShowTrip)
 def get_by_id(
     id: int,
     db: Session = Depends(get_db)  # Lấy phiên làm việc,

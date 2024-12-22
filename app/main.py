@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from blog import models
 from blog.database import engine, delete_all
-from blog.routers import map, action,tour, user, authentication, userInfo, city, review, destination,authenGoogle, destination, hotel, restaurant, address, dashboard, tag, image,trip
+from blog.routers import map,action,tour, user, authentication, userInfo, city, review, destination,authenGoogle, destination, hotel, restaurant, address, dashboard, tag, image,trip
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 import os
@@ -55,11 +55,11 @@ async def crawl_destination_data():
     db = next(get_db())
     await dataImport.main(db=db)
     
-# @app.on_event("startup")
-# async def startup_event():
+@app.on_event("startup")
+async def startup_event():
     # delete_all(engine=engine)
     # models.Base.metadata.drop_all(bind=engine)
-    # models.Base.metadata.create_all(engine)
+    models.Base.metadata.create_all(engine)
     # await create_sample_data() 
     # await dataImport.delete_duplicate_dest(db=next(get_db()), start_id=1784, end_id=1785)
     # dataCrawler.crawl_data_by_city(out_file_path="classified_data.json", city_json_file_path="option.json")

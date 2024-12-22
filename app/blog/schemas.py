@@ -351,9 +351,10 @@ class ShowDestinationList(Destination):
 
 class Trip(BaseModel):
     name: Optional[str]
-    month_time: Optional[date]
+    month_time: Optional[str]
     duration: Optional[int]
     user_id: Optional[int]
+    isAI: Optional[bool] = False
     
 class AddDestToTrip(BaseModel):
     destination_id: int
