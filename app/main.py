@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from blog import models
 from blog.database import engine #, create_sample_data, delete_all
-from blog.routers import action, blog,tour, user, authentication, userInfo, city, review, destination,authenGoogle, destination, hotel, restaurant, address, dashboard, tag, image,trip
+from blog.routers import action,tour, user, authentication, userInfo, city, review, destination,authenGoogle, destination, hotel, restaurant, address, dashboard, tag, image,trip
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 import os

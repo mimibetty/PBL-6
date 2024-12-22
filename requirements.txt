@@ -76,3 +76,7 @@ uvicorn==0.21.1
 websocket-client==1.8.0
 websockets==13.1
 wsproto==1.2.0
+geopy==2.4.1
+pulp==2.9.0
+ortools==9.11.4210
+googlemaps==4.10.0
