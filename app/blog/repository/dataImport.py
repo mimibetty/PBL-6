@@ -77,6 +77,7 @@ def check_city_in_json(data):
     for city_name, destinations in data.items():
         cnt +=1
         print(f"stt: {cnt}. city_name: {city_name}")
+          
 async def add_data_to_db(db: Session, data):
     try:
         for city_name, destinations in data.items():

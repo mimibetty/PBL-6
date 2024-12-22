@@ -157,7 +157,12 @@ def get_tags_by_id(id: int, db: Session):
                             detail=f"Error retrieving destination: {str(e)}")
 def get_all(db: Session, limit:int = 100):
     try:
-        destinations = db.query(models.Destination).limit(limit).all()  # Chờ truy vấn
+        destinations = (
+            db.query(models.Destination)
+            .order_by(models.Destination.popularity_score.desc())
+            .limit(limit)
+            .all()  # Chờ truy vấn
+        )
         return destinations
     except Exception as e:
         db.rollback()
