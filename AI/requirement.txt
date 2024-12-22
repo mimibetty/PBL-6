@@ -1,0 +1,6 @@
+geopy
+pulp
+ortools
+googlemaps
+fuzzywuzzy
+unidecode

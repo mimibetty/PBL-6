@@ -4,8 +4,12 @@ from fastapi import APIRouter, Body, File, HTTPException, Path, Query, UploadFil
 from .. import database, schemas, models
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, status
-from ..repository import destination, user,image
+from ..repository import destination, user,image, city
 from ..oauth2 import authorize_action
+from sqlalchemy import desc
+from typing import List
+
+
 router = APIRouter(
     prefix="/destination",
     tags=['Destination']
@@ -325,3 +329,44 @@ def get_destination_rating_distribution(
     Returns a dictionary with rating counts for each star rating (1-5)
     """
     return destination.get_rating_distribution(destination_id, db)
+
+
+@router.get("/destinations/by-city/{city_name}")
+def demo_get_top_destinations(city_name: str, limit: int = 5, db: Session = Depends(get_db)):
+    try:
+        # Find city
+        mycity = city.search_by_name_one(db, city_name)
+        if not mycity:
+            raise HTTPException(status_code=404, detail=f"City '{city_name}' not found")
+        print(mycity.id, mycity.name)
+        # Get destinations in that city
+        destinations = (db.query(models.Destination)
+            .join(models.Address)
+            .filter(models.Address.city_id == mycity.id)
+            .order_by(desc(models.Destination.popularity_score))
+            .limit(limit)
+            .all())
+
+        # Check if any destinations found
+        if not destinations:
+            raise HTTPException(
+                status_code=404, 
+                detail=f"No destinations found in {city_name}"
+            )
+            
+        return [{
+            "name": dest.name,
+            "description": dest.description,
+            "rating": dest.average_rating,
+            "review_count": dest.review_count,
+            "popularity": dest.popularity_score,
+            "address": f"{dest.address.street or ''}, {dest.address.ward or ''}, {dest.address.district or ''}"
+        } for dest in destinations]
+        
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Internal server error: {str(e)}"
+        )
