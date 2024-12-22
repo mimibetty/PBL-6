@@ -14,7 +14,7 @@ import 'package:travelappflutter/presentation/search_screen/models/restaurant_mo
 
 class SearchDestinationController extends GetxController {
   final String apiUrl =
-      'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/?is_popular=true&get_rating=true';
+      'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/?limit=10&page_size=10';
 
   RxList<TravelDestination> destinations = <TravelDestination>[].obs;
   RxList<TravelDestination> spotlightDestinations = <TravelDestination>[].obs;

@@ -40,6 +40,9 @@ class TravelDestination {
   factory TravelDestination.fromJson(Map<String, dynamic> json) {
     // Default image URL if none exists
     const String defaultImageUrl = 'https://experienceleaguecommunities.adobe.com/t5/image/serverpage/image-id/34749i7C7BB1DB5E28E527?v=v2';
+    
+    // Parse address from JSON
+    Address address = Address.fromJson(json['address'] ?? {});
 
     return TravelDestination(
       name: json['name'] ?? 'Unknown Destination', // Default if `name` is null
@@ -62,9 +65,7 @@ class TravelDestination {
 
       rating: (json['average_rating'] ?? 0).toDouble(),
       numOfReviews: json['review_count'] ?? 0,
-      location: json['district'] != null && json['district']['city_name'] != null
-          ? '${json['district']['city_name']}'
-          : 'Unknown Location',
+      location: address.getFullAddress(json['city_name'] ?? ''), // Lấy từ hàm getFullAddress()
       description: json['description'] ?? 'No description available',
     );
   }
@@ -94,7 +95,9 @@ class Address {
       id: json['id'] ?? 0,
     );
   }
-  String getFullAddress() {
-    return '$street, $ward, $district, Da Nang';
+
+  String getFullAddress(String cityName) {
+    // Nếu cityName tồn tại, thêm vào cuối chuỗi địa chỉ
+    return '$street, $ward, $district, $cityName';
   }
 }

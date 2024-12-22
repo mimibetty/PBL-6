@@ -22,46 +22,35 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   @override
   double? _latitude; // Lưu trữ vĩ độ
   double? _longitude; // Lưu trữ kinh độ
-  // String _address = '91 Trung Kính, Trung Hòa, Cầu Giấy, Hà Nội';
-  late Address _address; // Khởi tạo sau trong `initState`
 
   @override
   void initState() {
     super.initState();
     controller.fetchReviewsByDestinationID(widget.destination.id);
     controller.fetchRatingDistribution(widget.destination.id);
-    _getCoordinates();
+    _getCoordinates(widget.destination.location);
   }
 
   PageController pageController = PageController();
   int pageView = 0;
   bool isLiked = false; // Trạng thái nút tim
-  void _getCoordinates() async {
-    // Kiểm tra xem địa chỉ có hợp lệ không
-    if (_address.district.isNotEmpty && _address.street.isNotEmpty) {
-      String fullAddress =
-          '${_address.street}, ${_address.ward}, ${_address.district}';
+  void _getCoordinates(String fullAddress) async {
+    // Gọi dịch vụ để lấy tọa độ
+    var coordinates =
+        await GeocodingService.getCoordinatesFromAddress(fullAddress);
+    if (coordinates != null) {
+      setState(() {
+        _latitude = coordinates['latitude'];
+        _longitude = coordinates['longitude'];
+      });
 
-      // Gọi dịch vụ để lấy tọa độ
-      var coordinates =
-          await GeocodingService.getCoordinatesFromAddress(fullAddress);
-
-      if (coordinates != null) {
-        setState(() {
-          _latitude = coordinates['latitude'];
-          _longitude = coordinates['longitude'];
-        });
-
-        if (_latitude != null && _longitude != null) {
-          print("Latitude = $_latitude, Longitude = $_longitude");
-        } else {
-          print("Latitude hoặc Longitude chưa có giá trị.");
-        }
+      if (_latitude != null && _longitude != null) {
+        print("Latitude = $_latitude, Longitude = $_longitude");
       } else {
-        print("Không thể lấy tọa độ từ địa chỉ.");
+        print("Latitude hoặc Longitude chưa có giá trị.");
       }
     } else {
-      print("Địa chỉ không đầy đủ để lấy tọa độ.");
+      print("Không thể lấy tọa độ từ địa chỉ.");
     }
   }
 
