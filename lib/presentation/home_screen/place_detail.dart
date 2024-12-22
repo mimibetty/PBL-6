@@ -19,10 +19,8 @@ class PlaceDetailScreen extends StatefulWidget {
 
 class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   final ReviewWidgetController controller = Get.put(ReviewWidgetController());
-  @override
   double? _latitude; // Lưu trữ vĩ độ
   double? _longitude; // Lưu trữ kinh độ
-  // String _address = '91 Trung Kính, Trung Hòa, Cầu Giấy, Hà Nội';
   late Address _address; // Khởi tạo sau trong `initState`
 
   @override

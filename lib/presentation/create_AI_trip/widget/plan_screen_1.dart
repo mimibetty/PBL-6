@@ -83,21 +83,21 @@ class _PlanScreenState extends State<PlanScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      // Xử lý khi nhấn nút "Create a Trip"
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue, // Màu nền xanh cho nút trên
-                      minimumSize: Size(double.infinity,
-                          50), // Chiều rộng full và chiều cao 50
-                    ),
-                    child: Text(
-                      '+ Create a Trip',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  SizedBox(height: 8), // Khoảng cách giữa hai nút
+                  // ElevatedButton(
+                  //   onPressed: () {
+                  //     // Xử lý khi nhấn nút "Create a Trip"
+                  //   },
+                  //   style: ElevatedButton.styleFrom(
+                  //     backgroundColor: Colors.blue, // Màu nền xanh cho nút trên
+                  //     minimumSize: Size(double.infinity,
+                  //         50), // Chiều rộng full và chiều cao 50
+                  //   ),
+                  //   child: Text(
+                  //     '+ Create a Trip',
+                  //     style: TextStyle(color: Colors.white),
+                  //   ),
+                  // ),
+                  // SizedBox(height: 8), // Khoảng cách giữa hai nút
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(

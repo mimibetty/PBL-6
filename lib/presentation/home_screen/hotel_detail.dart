@@ -24,7 +24,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
   bool isLiked = false;
   double? _latitude; // Lưu trữ vĩ độ
   double? _longitude; // Lưu trữ kinh độ
-  String _address = '91 Trung Kính, Trung Hòa, Cầu Giấy, Hà Nội';
+  late String _address = '91 Trung Kính, Trung Hòa, Cầu Giấy, Hà Nội';
 
 
   @override
