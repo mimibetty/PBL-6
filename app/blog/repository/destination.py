@@ -503,7 +503,54 @@ def get_top_destinations_by_tag(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error retrieving top destinations: {str(e)}"
         )
+def get_top_destinations_by_tag(
+    db: Session, 
+    tag_id: Optional[int] = None, 
+    limit: int = 5, 
+    city_id: Optional[int] = None
+) -> List[models.Destination]:
+    try:
+        # Base query
+        query = (
+            db.query(models.Destination)
+            .join(models.Address)  # Join với Address
+        )
 
+        # Thêm filter tag_id nếu được chỉ định
+        if tag_id is not None:
+            query = query.join(models.DestinationTag).filter(models.DestinationTag.tag_id == tag_id)
+
+        # Thêm filter city_id nếu được chỉ định
+        if city_id is not None:
+            query = query.filter(models.Address.city_id == city_id)
+
+        # Thực hiện query
+        top_destinations = (
+            query
+            .order_by(desc(models.Destination.popularity_score))
+            .limit(limit)
+            .all()
+        )
+
+        if not top_destinations:
+            filters = []
+            if tag_id is not None:
+                filters.append(f"tag_id {tag_id}")
+            if city_id is not None:
+                filters.append(f"city_id {city_id}")
+            
+            filter_msg = " and ".join(filters)
+            print(f"No destinations found" + (f" with {filter_msg}" if filter_msg else ""))
+            return []
+
+        return top_destinations
+
+    except Exception as e:
+        print(f"Error in get_top_destinations_by_tag: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error retrieving top destinations: {str(e)}"
+        )
 
 def get_top_destination_ids_by_tag(
     db: Session, 
