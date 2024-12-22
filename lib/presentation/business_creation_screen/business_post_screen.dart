@@ -288,7 +288,7 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => DashboardScreen(),
+        builder: (context) => BusinessDashboard(),
       ),
     );
   }

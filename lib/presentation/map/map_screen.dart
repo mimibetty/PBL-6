@@ -2,13 +2,15 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:async'; // ignore: unnecessary_import
 import 'dart:core';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'dart:typed_data';
+import 'package:url_launcher/url_launcher.dart';
 
 class MapScreen extends StatefulWidget {
   final double latitude;
@@ -66,13 +68,6 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _onStyleLoadedCallback() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text("Style loaded :)"),
-        backgroundColor: Theme.of(context).primaryColor,
-        duration: const Duration(seconds: 1),
-      ),
-    );
     if (_currentPosition != null) {
       _addMarkerAtCurrentPosition();
     }
@@ -86,12 +81,29 @@ class _MapScreenState extends State<MapScreen> {
     print('in trong addMarkerCurrentPost: ${widget.latitude}');
 
     try {
-      mapController?.addSymbol(SymbolOptions(
+      // Add the marker with a click listener
+      final symbol = await mapController?.addSymbol(SymbolOptions(
         geometry: LatLng(widget.latitude, widget.longitude),
         iconImage: 'location',
         iconSize: 0.1,
         zIndex: 1, // Ensure marker is above circle
       ));
+
+      if (symbol != null) {
+        // Handle double-click event
+        mapController?.onSymbolTapped.add((Symbol tappedSymbol) async {
+          if (tappedSymbol.id == symbol.id) {
+            final googleMapsUrl =
+                "https://www.google.com/maps?q=${widget.latitude},${widget.longitude}";
+            if (await canLaunch(googleMapsUrl)) {
+              await launch(googleMapsUrl);
+            } else {
+              print("Could not launch $googleMapsUrl");
+            }
+          }
+        });
+      }
+
       print(
           "Initial marker added at (${widget.latitude}, ${widget.longitude})");
     } catch (e) {
@@ -280,136 +292,61 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Widget _buildListView() {
-    return ListView.separated(
-      itemCount: places.length,
-      shrinkWrap: true,
-      separatorBuilder: (BuildContext context, int index) =>
-          const Divider(height: 1),
-      itemBuilder: (context, index) {
-        final coordinate = places[index];
-        return ListTile(
-          title: Text(
-            coordinate['description'],
-            style: const TextStyle(
-              fontSize: 16, // Đặt kích thước chữ bạn muốn ở đây
-              fontWeight: FontWeight.w400,
-              color: Colors.black,
-            ),
-          ),
-          onTap: () async {
-            final url = Uri.parse(
-                'https://rsapi.goong.io/place/detail?place_id=${coordinate['place_id']}&api_key=$api_key');
-            final response = await http.get(url);
-            final jsonResponse = jsonDecode(response.body);
-            setState(() {
-              _destinationPoint = LatLng(
-                  jsonResponse['result']['geometry']['location']['lat'],
-                  jsonResponse['result']['geometry']['location']['lng']);
-              isShow = false;
-              isHidden = true;
-              _addMarkerAtDestinationPoint();
-            });
-          },
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       body: Stack(
         children: [
-          SizedBox(
-            width: double.infinity,
-            height: double.infinity,
-            child: MapLibreMap(
-              onMapCreated: _onMapCreated,
-              onStyleLoadedCallback: _onStyleLoadedCallback,
-              initialCameraPosition: CameraPosition(
-                target: LatLng(
-                    widget.latitude,
-                    widget
-                        .longitude), // Vị trí ban đầu của bản đồ (Cái này sẽ bắt vị trí hiện tại của bạn)
-                zoom: 14.0,
-              ),
-              styleString:
-                  'https://tiles.goong.io/assets/goong_map_web.json?api_key=$map_tiles_key', // URL của style
-              attributionButtonPosition: null,
-            ),
-          ),
-          Container(
-            height: 70,
-            alignment: Alignment.topLeft,
-            margin: const EdgeInsets.fromLTRB(5, 10, 5, 10),
-            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-            decoration: BoxDecoration(color: Colors.grey[200]),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.only(left: 4),
-                        decoration: const BoxDecoration(color: Colors.white),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.location_on_outlined,
-                              color: Colors.blue,
-                              size: 20,
-                            ),
-                            Expanded(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 4, right: 8),
-                                child: TextField(
-                                  controller: _searchController,
-                                  onChanged: (String text) {
-                                    print("onChanged: $text");
-                                    fetchData(text);
-                                    isHidden = true;
-                                  },
-                                  decoration: const InputDecoration(
-                                    hintText: "Nhập địa điểm",
-                                    border: InputBorder.none,
-                                    hintStyle: TextStyle(
-                                        color: Colors.black54, fontSize: 16),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                // Thực hiện hành động dẫn đường ở đây
-                                fetchDataDirection();
-                                print("Dẫn đường");
-                              },
-                              child: const Text(
-                                "Dẫn đường",
-                                style: TextStyle(color: Colors.blue),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+          // Map Container
+          Positioned.fill(
+            child: Container(
+              margin: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: Offset(0, 4),
                   ),
+                ],
+                border: Border.all(
+                  color: Colors.grey.shade300,
+                  width: 2,
                 ),
-              ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: MapLibreMap(
+                  onMapCreated: _onMapCreated,
+                  onStyleLoadedCallback: _onStyleLoadedCallback,
+                  initialCameraPosition: CameraPosition(
+                    target: LatLng(widget.latitude, widget.longitude),
+                    zoom: 14.0,
+                  ),
+                  styleString:
+                      'https://tiles.goong.io/assets/goong_map_web.json?api_key=$map_tiles_key',
+                  attributionButtonPosition: null,
+                  scrollGesturesEnabled: true,
+                  gestureRecognizers: Set()
+                    ..add(Factory<PanGestureRecognizer>(
+                        () => PanGestureRecognizer()))
+                    ..add(Factory<ScaleGestureRecognizer>(
+                        () => ScaleGestureRecognizer()))
+                    ..add(Factory<TapGestureRecognizer>(
+                        () => TapGestureRecognizer()))
+                    ..add(Factory<LongPressGestureRecognizer>(
+                        () => LongPressGestureRecognizer())),
+                ),
+              ),
             ),
           ),
-          if (isShow == true)
-            Container(
-              margin: const EdgeInsets.fromLTRB(5, 70, 5, 0),
-              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-              decoration: const BoxDecoration(color: Colors.white),
-              child: _buildListView(),
-            ),
         ],
       ),
     );
   }
 }
+

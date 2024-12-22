@@ -47,15 +47,35 @@ class GeocodingService {
                 };
               } else {
                 print("Latitude or Longitude is null.");
+                // Nếu không có lat lng từ API, trả về tọa độ mặc định
+                return {
+                  'latitude': 16.075752080266554,
+                  'longitude': 108.15339064229775
+                };
               }
             } else {
               print("Location is null.");
+              // Nếu không có location, trả về tọa độ mặc định
+              return {
+                'latitude': 16.075752080266554,
+                'longitude': 108.15339064229775
+              };
             }
           } else {
             print("Geometry is null.");
+            // Nếu không có geometry, trả về tọa độ mặc định
+            return {
+              'latitude': 16.075752080266554,
+              'longitude': 108.15339064229775
+            };
           }
         } else {
-          print("No results found for the address");
+          // Nếu không có kết quả, trả về tọa độ mặc định
+          print("No results found.");
+          return {
+            'latitude': 16.075752080266554,
+            'longitude': 108.15339064229775
+          };
         }
       } else {
         print("Failed to fetch data: ${response.statusCode}");
@@ -67,6 +87,10 @@ class GeocodingService {
     } catch (e) {
       print("Error getting coordinates: $e");
     }
-    return null;
+
+    return {
+      'latitude': 16.075752080266554,
+      'longitude': 108.15339064229775
+    };
   }
 }

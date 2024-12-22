@@ -69,8 +69,8 @@ class ThingsToDoModel {
       tags: tags,
       address: address,
       images: images,
-      rating: (apiData['rating'] ?? 0).toDouble(),
-      numOfReviews: apiData['numOfReviews'] ?? 0,
+      rating: (apiData['average_rating'] ?? 0).toDouble(),
+      numOfReviews: apiData['review_count'] ?? 0,
     );
   }
 }

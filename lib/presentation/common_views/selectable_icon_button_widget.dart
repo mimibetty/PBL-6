@@ -31,39 +31,42 @@ class _SelectableIconButtonWidgetState
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft, // Căn lề trái
-      child: Wrap(
-        spacing: 8.0,
-        children: widget.buttonData.map((data) {
-          final isSelected = selectedLabel == data['label'];
+    return Padding(
+      padding: const EdgeInsets.all(10.0), // Thêm padding tổng thể 10
+      child: Align(
+        alignment: Alignment.centerLeft, // Căn lề trái
+        child: Wrap(
+          spacing: 8.0,
+          children: widget.buttonData.map((data) {
+            final isSelected = selectedLabel == data['label'];
 
-          return ChoiceChip(
-            label: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  data['icon'],
-                  color: isSelected ? Colors.white : Colors.black,
-                  size: 16.0,
-                ),
-                SizedBox(width: 8),
-                Text(
-                  data['label'],
-                  style: TextStyle(
+            return ChoiceChip(
+              label: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    data['icon'],
                     color: isSelected ? Colors.white : Colors.black,
-                    fontSize: 14,
+                    size: 16.0,
                   ),
-                ),
-              ],
-            ),
-            selected: isSelected,
-            onSelected: (_) => _selectButton(data['label']),
-            selectedColor: Colors.blue, // Màu khi được chọn
-            backgroundColor: Colors.white, // Màu khi không được chọn
-            labelStyle: TextStyle(color: isSelected ? Colors.white : Colors.black),
-          );
-        }).toList(),
+                  SizedBox(width: 8),
+                  Text(
+                    data['label'],
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : Colors.black,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+              selected: isSelected,
+              onSelected: (_) => _selectButton(data['label']),
+              selectedColor: Colors.blue, // Màu khi được chọn
+              backgroundColor: Colors.white, // Màu khi không được chọn
+              labelStyle: TextStyle(color: isSelected ? Colors.white : Colors.black),
+            );
+          }).toList(),
+        ),
       ),
     );
   }

@@ -46,35 +46,44 @@ class Hotel {
     required this.email,
     required this.hotelContact,
   });
-
   factory Hotel.fromApi(Map<String, dynamic> apiData) {
-    List<String> imageUrls = (apiData['images'] as List<dynamic>)
-        .map((img) => img['url'] as String)
-        .map((url) => url.isEmpty ? defaultImageUrl : url)
+    // Kiểm tra và xử lý danh sách ảnh
+    List<String> imageUrls = (apiData['images'] as List<dynamic>? ?? [])
+        .map((img) => img['url'] as String?)
+        .where((url) => url != null && url.isNotEmpty)
+        .map((url) => url!)
         .toList();
 
+    // Nếu không có ảnh hợp lệ, thêm ảnh mặc định
+    if (imageUrls.isEmpty) {
+      imageUrls.add(Hotel.defaultImageUrl);
+    }
+
     return Hotel(
-      hotelID: apiData['hotel_id'] as int, // Get hotel_id
-      destinationID: apiData['id'] as int, // Get destination_id
-      hotelName: apiData['name'] ?? 'Unknown Hotel',
-      hotelLocation: '${apiData['address']['ward']}, ${apiData['address']['district']}, ${apiData['address']['street']}',
+      hotelID: apiData['hotel_id'] as int? ?? 0, // Giá trị mặc định là 0 nếu null
+      destinationID: apiData['id'] as int? ?? 0, // Giá trị mặc định là 0 nếu null
+      hotelName: apiData['name']?.toString() ?? 'Unknown Hotel',
+      hotelLocation: '${apiData['address']?['ward'] ?? 'Unknown Ward'}, '
+          '${apiData['address']?['district'] ?? 'Unknown District'}, '
+          '${apiData['address']?['street'] ?? 'Unknown Street'}',
       priceRange: "From ${apiData['price_bottom']?.toString() ?? '0'} to ${apiData['price_top']?.toString() ?? '0'}",
-      age: apiData['age'] ?? 0,
-      openTime: apiData['opentime'] ?? '00:00',
-      duration: (apiData['duration'] ?? 0).toDouble(),
-      roomFeatures: (apiData['hotel']['room_features']?.split(', ') ?? []).cast<String>(),
-      propertyAmenities: (apiData['hotel']['property_amenities']?.split(', ') ?? []).cast<String>(),
-      roomTypes: (apiData['hotel']['room_types']?.split(', ') ?? []).cast<String>(),
-      hotelStyles: (apiData['hotel']['hotel_styles']?.split(', ') ?? []).cast<String>(),
-      hotelLanguages: (apiData['hotel']['Languages']?.split(', ') ?? []).cast<String>(),
-      star: apiData['hotel']['hotel_class'] ?? 0,
-      images: imageUrls,
-      about: apiData['description'] ?? '',
-      rating: (apiData['rating'] ?? 0).toDouble(),
-      reviewCount: apiData['numOfReviews'] ?? 0,
-      website: apiData['hotel']['website'] ?? 'No website available',
-      email: apiData['hotel']['email'] ?? 'No email available',
-      hotelContact: apiData['hotel']['phone'] ?? 'No contact available',
+      age: apiData['age'] as int? ?? 0,
+      openTime: apiData['opentime']?.toString() ?? '00:00',
+      duration: (apiData['duration'] as num?)?.toDouble() ?? 0.0,
+      roomFeatures: (apiData['hotel']?['room_features']?.split(', ') ?? []).cast<String>(),
+      propertyAmenities: (apiData['hotel']?['property_amenities']?.split(', ') ?? []).cast<String>(),
+      roomTypes: (apiData['hotel']?['room_types']?.split(', ') ?? []).cast<String>(),
+      hotelStyles: (apiData['hotel']?['hotel_styles']?.split(', ') ?? []).cast<String>(),
+      hotelLanguages: (apiData['hotel']?['languages']?.split(', ') ?? []).cast<String>(),
+      star: apiData['hotel']?['hotel_class'] as int? ?? 0,
+      images: imageUrls, // Sử dụng danh sách ảnh đã xử lý
+      about: apiData['description']?.toString() ?? '',
+      rating: (apiData['rating'] as num?)?.toDouble() ?? 0.0,
+      reviewCount: apiData['numOfReviews'] as int? ?? 0,
+      website: apiData['hotel']?['website']?.toString() ?? 'No website available',
+      email: apiData['hotel']?['email']?.toString() ?? 'No email available',
+      hotelContact: apiData['hotel']?['phone']?.toString() ?? 'No contact available',
     );
   }
+
 }

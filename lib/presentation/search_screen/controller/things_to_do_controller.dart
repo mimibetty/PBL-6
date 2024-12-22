@@ -28,11 +28,11 @@ class ThingsToDoController extends GetxController {
   }
 
   // Phương thức lấy danh sách ThingsToDo theo tagId
-  Future<void> fetchThingsToDoByTag(int tagId) async {
+  Future<void> fetchThingsToDoByTag(int tagId,int cityID) async {
     isLoading.value = true;
     selectedTagId.value = tagId;
     try {
-      final response = await http.get(Uri.parse('$apiUrl/destination/by_tags?tag_ids=$tagId'));
+      final response = await http.get(Uri.parse('$apiUrl/destination/by_tags?tag_ids=$tagId&city_id=$cityID'));
       if (response.statusCode == 200) {
         List<dynamic> apiData = json.decode(utf8.decode(response.bodyBytes));
         thingsToDoList.value = apiData.map((data) => TravelDestination.fromJson(data)).toList();
@@ -75,11 +75,11 @@ class ThingsToDoController extends GetxController {
 
 
   // Phương thức để làm mới danh sách ThingsToDo dựa trên tag đã chọn
-  void refreshThingsToDo() {
+  void refreshThingsToDo(int cityID) {
     if (selectedTagId.value == 0) {
       //fetchAllThingsToDo();
     } else {
-      fetchThingsToDoByTag(selectedTagId.value);
+      fetchThingsToDoByTag(selectedTagId.value,cityID);
     }
   }
 

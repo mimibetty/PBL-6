@@ -3,8 +3,14 @@ import 'package:flutter/material.dart';
 class HeartIconWidget extends StatefulWidget {
   final bool isLiked;
   final VoidCallback onDoubleTap;
+  final double size; 
 
-  const HeartIconWidget({Key? key, required this.isLiked, required this.onDoubleTap}) : super(key: key);
+  const HeartIconWidget({
+    Key? key,
+    required this.isLiked,
+    required this.onDoubleTap,
+    this.size = 30.0, 
+  }) : super(key: key);
 
   @override
   _HeartIconWidgetState createState() => _HeartIconWidgetState();
@@ -58,11 +64,19 @@ class _HeartIconWidgetState extends State<HeartIconWidget> with SingleTickerProv
         builder: (context, child) {
           return Transform.translate(
             offset: _shakeAnimation.value, // Thêm hiệu ứng lắc
-            child: Transform.scale(
-              scale: _scaleAnimation.value, // Phóng to/thu nhỏ
-              child: Icon(
-                widget.isLiked ? Icons.favorite : Icons.favorite_border,
-                color: widget.isLiked ? Colors.red : Colors.grey,
+            child: Container(
+              padding: EdgeInsets.all(widget.size * 0.5), // Padding tương đối với kích thước
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white, // Màu nền của vòng tròn
+              ),
+              child: Transform.scale(
+                scale: _scaleAnimation.value, // Phóng to/thu nhỏ
+                child: Icon(
+                  widget.isLiked ? Icons.favorite : Icons.favorite_border,
+                  color: widget.isLiked ? Colors.red : Colors.grey,
+                  size: widget.size, // Kích thước của trái tim được truyền vào
+                ),
               ),
             ),
           );

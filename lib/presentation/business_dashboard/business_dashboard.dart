@@ -1,218 +1,157 @@
-import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
+import 'package:travelappflutter/presentation/business_dashboard/bar_chart.dart';
+import 'package:travelappflutter/presentation/business_dashboard/bar_chart_2.dart';
+import 'package:travelappflutter/presentation/business_dashboard/line_chart.dart';
 
-class DashboardScreen extends StatelessWidget {
+class BusinessDashboard extends StatefulWidget {
+  @override
+  _DashboardState createState() => _DashboardState();
+}
+
+class _DashboardState extends State<BusinessDashboard> {
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Dashboard',
-          style: TextStyle(color: Colors.black),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              // Statistics Section
-              Wrap(
-                spacing: 16,
-                runSpacing: 16,
-                children: [
-                  _buildStatCard("Pending", "\$12,800", Icons.hourglass_top, screenWidth),
-                  _buildStatCard("Earnings", "\$14,200", Icons.attach_money, screenWidth),
-                  _buildStatCard("Bookings", "\$8,100", Icons.book_online, screenWidth),
-                  _buildStatCard("Services", "22,786", Icons.electric_bolt, screenWidth),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              // Graph and Recent Bookings
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: _buildEarningGraph(),
-                  ),
-                  const SizedBox(width: 16),
-                  // Expanded(
-                  //   flex: 1,
-                  //   child: _buildRecentBookings(),
-                  // ),
-                ],
-              ),
-            ],
+        title: Text('Business Dashboard'),
+        backgroundColor: Colors.grey[100],
+        actions: [
+          IconButton(
+            icon: Icon(Icons.notifications),
+            onPressed: () {
+              // Handle notification button press
+            },
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatCard(String title, String value, IconData icon, double screenWidth) {
-    return SizedBox(
-      width: (screenWidth < 600) ? (screenWidth / 2) - 24 : 150,
-      child: Card(
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 40, color: Colors.blue),
-              const SizedBox(height: 10),
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                title,
-                style: const TextStyle(fontSize: 16, color: Colors.grey),
-              ),
-            ],
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              // Handle settings button press
+            },
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEarningGraph() {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Earning Statistics",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            DropdownButton<String>(
-              value: "This Week",
-              items: ["This Week", "This Month"]
-                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                  .toList(),
-              onChanged: (value) {},
-            ),
-            const SizedBox(height: 20),
-            AspectRatio(
-              aspectRatio: 1.6, // Đảm bảo tỷ lệ đồ thị phù hợp
-              child: LineChart(
-                LineChartData(
-                  gridData: FlGridData(show: false),
-                  borderData: FlBorderData(show: false),
-                  titlesData: FlTitlesData(show: false),
-                  lineBarsData: [
-                    LineChartBarData(
-                      isCurved: true,
-                      spots: [
-                        FlSpot(0, 100),
-                        FlSpot(1, 150),
-                        FlSpot(2, 200),
-                        FlSpot(3, 180),
-                        FlSpot(4, 240),
-                        FlSpot(5, 280),
-                        FlSpot(6, 300),
-                      ],
-                      color: Colors.blue,
-                      dotData: FlDotData(show: true),
-                      belowBarData: BarAreaData(show: false),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Widget _buildRecentBookings() {
-  //   return Card(
-  //     elevation: 4,
-  //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-  //     child: Padding(
-  //       padding: const EdgeInsets.all(16.0),
-  //       child: Column(
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           Row(
-  //             children: [
-  //               const Text(
-  //                 "Recent Bookings",
-  //                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-  //               ),
-  //               const Spacer(),
-  //               TextButton(
-  //                 onPressed: () {},
-  //                 child: const Text(
-  //                   "View All",
-  //                   style: TextStyle(color: Colors.blue),
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //           const SizedBox(height: 10),
-  //           Container(
-  //             height: 200, // Đảm bảo không tràn khi danh sách dài
-  //             child: ListView(
-  //               children: [
-  //                 _buildBookingRow("#1", "New York", "\$130", "\$0", "Pending",
-  //                     "04/04/2024"),
-  //                 _buildBookingRow("#2", "Discover America", "\$130", "\$0",
-  //                     "Confirmed", "04/04/2024"),
-  //               ],
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  Widget _buildBookingRow(String id, String item, String total, String paid,
-      String status, String created) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          Expanded(child: Text(id, style: const TextStyle(fontSize: 14))),
-          Expanded(child: Text(item, style: const TextStyle(fontSize: 14))),
-          Expanded(child: Text(total, style: const TextStyle(fontSize: 14))),
-          Expanded(child: Text(paid, style: const TextStyle(fontSize: 14))),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.all(4.0),
-              decoration: BoxDecoration(
-                color: status == "Pending" ? Colors.yellow : Colors.green,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                status,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 12, color: Colors.white),
-              ),
-            ),
-          ),
-          Expanded(child: Text(created, style: const TextStyle(fontSize: 14))),
         ],
+      ),
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(  // Wrap the body with SingleChildScrollView
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(18.0),
+                child: Text(
+                  "Welcome to VinGroup Company Dashboard \n\nAnalyze your business performance",
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.start,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Center(
+                  child: Wrap(
+                    spacing: 20,
+                    runSpacing: 20.0,
+                    children: <Widget>[
+                      buildDashboardCard(
+                        "assets/images/places.png",
+                        "Total Places",
+                        "69 Places",
+                      ),
+                      buildDashboardCard(
+                        "assets/images/total_tours.png",
+                        "Total Tour Packages",
+                        "12 Tours",
+                      ),
+                      buildDashboardCard(
+                        "assets/images/total_review.png",
+                        "Total Reviews",
+                        "96 Review",
+                      ),
+                      buildDashboardCard(
+                        "assets/images/total_rating.png",
+                        "Average Ratings",
+                        "3.6",
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              // Add both charts inside the Column
+              LineChartSample2(),
+              BarChartSample3(),  
+          
+
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildDashboardCard(String assetPath, String title, String subtitle) {
+    return SizedBox(
+      width: 160.0,
+      height: 160.0,
+      child: Card(
+        color: Colors.grey[200],
+        elevation: 2.0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Image.asset(
+                  assetPath,
+                  width: 64.0,
+                ),
+                SizedBox(
+                  height: 10.0,
+                ),
+                Flexible(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16.0,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                SizedBox(
+                  height: 5.0,
+                ),
+                Flexible(
+                  child: Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w200,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

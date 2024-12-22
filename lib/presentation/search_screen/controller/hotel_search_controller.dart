@@ -54,12 +54,6 @@ class HotelController extends GetxController {
           return 0;
       }
     });
-
-    // Print sorted hotels
-    print("\nHotels sorted by $criteria (${ascending ? 'ascending' : 'descending'})");
-    for (var hotel in hotels) {
-      print("Name: ${hotel.hotelName}, Rating: ${hotel.rating}, Review Count: ${hotel.reviewCount}");
-    }
   }
 
 Future<void> filterHotels(String filters, int cityId) async {

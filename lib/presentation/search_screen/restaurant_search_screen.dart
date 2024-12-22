@@ -24,6 +24,7 @@ class RestaurantSearchScreen extends StatefulWidget {
 class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
   late List<Restaurant> filteredRestaurants = [];
+  String selectedSortOption = "Rating";
   late final RestaurantController restaurantController;
 
   @override
@@ -33,11 +34,12 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
     // Fetch data for each restaurant ID
     for (int restaurantID in widget.restaurantIDs) {
       restaurantController.fetchRestaurantData(restaurantID.toString());
+      
     }
   // Method to filter restaurants based on certain criteria
   void _filterRestaurants() {
     filteredRestaurants = restaurantController.restaurants
-        .where((restaurant) => restaurant.rating > 0.0 && restaurant.review > 0)
+        .where((restaurant) => restaurant.rating >= 0.0 && restaurant.review >= 0)
         .toList();
     if (mounted) { // Ensure widget is still in the widget tree
       setState(() {}); // Update UI after filtering
@@ -103,7 +105,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
                       ),
                       TextSpan(
                         text:
-                            " result match your filter", 
+                            " Result match your filter", 
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.black,
@@ -132,7 +134,7 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
                     ),
                   ),
                   DropdownButton<String>(
-                    value: "Rating", // Default sort by rating
+                    value: selectedSortOption, // Default sort by rating
                     items: <String>[
                       'Rating',
                       'Name',
@@ -144,7 +146,12 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
                       );
                     }).toList(),
                     onChanged: (String? newValue) {
+                      if (newValue != null) {
+                        setState(() {
+                          selectedSortOption = newValue; // Cập nhật giá trị được chọn
+                        });
                       _sortRestaurants(newValue);
+                      }
                     },
                   ),
                 ],

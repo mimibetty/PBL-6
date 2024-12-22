@@ -15,7 +15,6 @@ class RestaurantController extends GetxController {
 
     try {
       final response = await http.get(Uri.parse('$apiUrl$restaurantID'));
-
       if (response.statusCode == 200) {
         // Parse the API response
         Map<String, dynamic> apiData = json.decode(utf8.decode(response.bodyBytes));

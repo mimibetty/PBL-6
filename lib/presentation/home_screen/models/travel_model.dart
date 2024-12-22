@@ -60,8 +60,8 @@ class TravelDestination {
             )
           : [defaultImageUrl], // Use default image if `images` is empty
 
-      rating: (json['rating'] ?? 0).toDouble(),
-      numOfReviews: json['numOfReviews'] ?? 0,
+      rating: (json['average_rating'] ?? 0).toDouble(),
+      numOfReviews: json['review_count'] ?? 0,
       location: json['district'] != null && json['district']['city_name'] != null
           ? '${json['district']['city_name']}'
           : 'Unknown Location',
