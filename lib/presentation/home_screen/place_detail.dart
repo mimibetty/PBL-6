@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:travelappflutter/presentation/common_views/fullscrenn_image_viewer.dart';
 import 'package:travelappflutter/presentation/common_views/geocoding_service.dart';
 import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
@@ -161,8 +162,14 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                       children: List.generate(
                         widget.destination.images!.length,
                         (index) => GestureDetector(
-                          onDoubleTap: () {
-                            setState(() {});
+                          onTap: () {
+                            // Chuyển đến FullScreenImageViewer
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FullScreenImageViewer(imageUrl: widget.destination.images![index]),
+                              ),
+                            );
                           },
                           child: Image.network(
                             widget.destination.images![index],

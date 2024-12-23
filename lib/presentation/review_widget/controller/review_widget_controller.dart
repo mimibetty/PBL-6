@@ -127,7 +127,7 @@ class ReviewWidgetController extends GetxController {
     } catch (e) {
       Get.snackbar('Error', 'An error occurred: $e');
     } finally {
-      isLoading.value = false;
+      isLoading.value = false; // Đặt trạng thái tải xong
     }
   }
 

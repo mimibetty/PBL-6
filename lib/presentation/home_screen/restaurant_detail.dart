@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:travelappflutter/core/app_export.dart';
+import 'package:travelappflutter/presentation/common_views/fullscrenn_image_viewer.dart';
 import 'package:travelappflutter/presentation/common_views/geocoding_service.dart';
 import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
@@ -231,9 +232,21 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                       },
                       children: List.generate(
                         widget.restaurant.images!.length,
-                        (index) => Image.network(
-                          widget.restaurant.images![index],
-                          fit: BoxFit.cover,
+                        (index) => GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FullScreenImageViewer(
+                                  imageUrl: widget.restaurant.images[index],
+                                ),
+                              ),
+                            );
+                          },
+                          child: Image.network(
+                            widget.restaurant.images![index],
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                     ),
@@ -460,9 +473,9 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                                   const SizedBox(height: 10),
                                   _buildContactInfo("Open Time :",
                                       widget.restaurant.openTime.toString()),
-                                  const SizedBox(height: 30),
+                                  const SizedBox(height: 5),
                                   _buildContactInfo("The area :", ""),
-                                  const SizedBox(height: 30),
+                                  const SizedBox(height: 5),
                                   _latitude != null && _longitude != null
                                       ? Container(
                                           height: 250,
