@@ -32,12 +32,15 @@ def get_all(db: Session):
 
 def get_by_id(id: int, db: Session):
     try:
-        trip = db.query(models.Trip).filter(models.Trip.id == id).all()  # Chờ truy vấn
+        trip = db.query(models.Trip).filter(models.Trip.id == id).first()  # Đổi .all() thành .first()
+        if not trip:
+            raise HTTPException(status_code=404, detail="Trip not found")
         return trip
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create trip with destinations")
-
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+                          detail="Failed to retrieve trip")
+    
 def update_by_id(id: int, request: schemas.Trip, db: Session):
     try:
         # Tìm chuyến đi tồn tại bằng id
