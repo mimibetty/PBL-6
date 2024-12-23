@@ -17,18 +17,16 @@ GOONG_MAP_URL = os.getenv('GOONG_MAP_URL')
 GOONG_API_KEY = os.getenv('GOONG_API_KEY')
 GOONG_MAP_KEY = os.getenv('GOONG_MAP_KEY')
 
-
 def get_destination_coordinates(destination_id: int, db: Session) -> Optional[tuple]:
     """
-    Lấy tọa độ của một destination dựa trên ID.
-    Thử lần lượt các cách lấy tọa độ khác nhau cho đến khi thành công.
+    Lấy tọa độ và địa chỉ của một destination dựa trên ID.
     
     Args:
         destination_id: ID của destination
         db: Database session
         
     Returns:
-        tuple: (latitude, longitude) hoặc None nếu không tìm thấy
+        tuple: ((latitude, longitude), address_used) hoặc (None, None) nếu không tìm thấy
     """
     try:
         # Lấy danh sách các địa chỉ có thể dùng
@@ -41,7 +39,7 @@ def get_destination_coordinates(destination_id: int, db: Session) -> Optional[tu
                 if coords:
                     print("geopy")
                     print(f"Found coordinates for destination {destination_id}: {coords}")
-                    return coords
+                    return (coords, address)
             except Exception:
                 continue
                 
@@ -52,16 +50,16 @@ def get_destination_coordinates(destination_id: int, db: Session) -> Optional[tu
                 if coords:
                     print("goong")
                     print(f"Found coordinates for destination {destination_id}: {coords}")
-                    return coords
+                    return (coords, address)
             except Exception:
                 continue
                 
         # Nếu không tìm được tọa độ nào
-        return None
-        
+        return (None, None)
+
     except Exception as e:
         print(f"Error getting coordinates for destination {destination_id}: {str(e)}")
-        return None
+        return (None, None)
     
 def get_coordinate(location: str): # use Goong API
     """Lấy tọa độ (latitude, longitude) từ tên địa điểm."""

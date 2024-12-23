@@ -35,16 +35,19 @@ def get_destination_coordinates(
     - CoordinateResponse: Tọa độ và tên của địa điểm
     """
     try:
-        # Lấy tên địa điểm từ ID
-        dest = destination.getName_by_id(destination_id, db)
-
         # Lấy tọa độ dựa trên tên địa điểm
-        lat, long = map.get_destination_coordinates(destination_id,db)
+        coords, address = map.get_destination_coordinates(destination_id, db)
+        if (coords is None) or (address is None):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Coordinates not found for this destination  ID: {destination_id}"
+            )
+        lat, long = coords
         
         return CoordinateResponse(
             latitude=lat, 
             longitude=long,
-            location_name=dest.name
+            location_name=address
         )
 
     except HTTPException as e:

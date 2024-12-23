@@ -10,7 +10,7 @@ from pulp import LpProblem, LpMinimize, LpVariable, lpSum, value, LpStatus
 from geopy.geocoders import Nominatim
 from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
-from . import mapService
+from . import mapService, map
 import os
 from dotenv import load_dotenv
 
@@ -231,6 +231,38 @@ class TravelPlanner:
         # print("\nMa trận khoảng cách:")
         # for row in self.distances:
         #     print(row)
+# class TravelPlanner:
+#     def __init__(self, location_ids, centers, db: Session, min_points_per_cluster=4):
+#         """
+#         Initialize the TravelPlanner with locations, centers, and cluster constraints.
+
+#         Args:
+#             location_ids (list of int): List of destination IDs.
+#             centers (list of int): List of center indices.
+#             db: Database session
+#             min_points_per_cluster (int): Minimum number of points per cluster.
+#         """
+#         self.location_ids = location_ids
+#         self.centers = centers
+#         self.min_points = min_points_per_cluster
+#         self.n = len(location_ids)
+#         self.m = len(centers)
+
+#         # Get coordinates and addresses for all locations
+#         self.coordinates = []
+#         self.addresses = []
+#         for dest_id in location_ids:
+#             coords_result = map.get_destination_coordinates(dest_id, db)
+#             if coords_result and coords_result[0]:
+#                 coords, address = coords_result
+#                 self.coordinates.append(coords)
+#                 self.addresses.append(address)
+#                 print(f"Tọa độ của '{address}': {coords}")
+#             else:
+#                 raise ValueError(f"Không thể tìm thấy tọa độ cho destination ID: {dest_id}")
+
+#         # Build distance matrix
+#         self.distances = mapService.get_distances_between_all_locations(self.coordinates)
 
     def plan_trip(self):
         """

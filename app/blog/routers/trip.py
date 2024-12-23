@@ -80,6 +80,13 @@ async def build_trip(
                 destination_names.append(name_result.name)
                 destination_map[name_result.name] = dest_id
 
+        # for dest_id in all_destination_ids:
+        #     coords_result = map.get_destination_coordinates(dest_id, db)
+        #     if coords_result:  # Kiểm tra coords không None
+        #         coords, address = coords_result
+        #         destination_names.append(address)  # Sử dụng địa chỉ đã dùng để tìm được tọa độ
+        #         destination_map[address] = dest_id
+                
         trip_plan = trip.run_travel_planner(destination_names, trip_day)
 
         daily_schedule = {}
