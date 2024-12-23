@@ -25,7 +25,7 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
   int selectedPage = 0;
   bool showCarousel = true; // Biến để theo dõi hiển thị CarouselSlider
   String currentCity = "Loading..."; // Biến để lưu trữ thành phố hiện tại
-  bool showAllCities = false; // Mặc định chỉ hiển thị 5 thành phố
+  bool showAllCities = false; // Mặc định chỉ hiển thị 6 thành phố
 
   List<Topic> topics = TopicModel.getTopics(); // Get topics list
 
@@ -204,14 +204,14 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
                     city.name == "Hà Nội" ||
                     city.name == "TP Hồ Chí Minh" ||
                     city.name == "Đà Nẵng" ||
-                    city.name == "Huế" ||
+                    city.name == "Thừa Thiên Huế" ||
                     city.name == "Hải Phòng" ||
                     city.name == "Cần Thơ")
                 .toList();
 
             // Nếu không show all, chỉ lấy tối đa 5 thành phố
             List<CityModel> displayedCities =
-                showAllCities ? popularCities : popularCities.take(5).toList();
+                showAllCities ? welcomeController.myCities.value : popularCities;
 
             return Column(
               children: [

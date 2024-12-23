@@ -68,15 +68,15 @@ class SearchDestinationController extends GetxController {
   Future<void> getSearchRecommendation(int id) async {
     try {
       final Uri recommendationUrl = Uri.parse(
-          'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/recommendations_bylikes/$id?limit=5');
+          'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/recommendations_bylikes/$id?limit=7');
       final recommendationResponse = await http.get(recommendationUrl);
 
       if (recommendationResponse.statusCode == 200) {
         List<dynamic> recommendations = json.decode(utf8.decode(recommendationResponse.bodyBytes));
-        final List<TravelDestination> fetchedDestinations = [];
 
-        for (var recommendation in recommendations) {
-          final int destinationId = recommendation['id'];
+        // Gọi API chi tiết song song để tối ưu hiệu năng
+        final List<Future<TravelDestination>> futures = recommendations.map((recommendation) async {
+          final int destinationId = recommendation;
 
           // Gọi API lấy thông tin chi tiết của từng destination theo ID
           final Uri detailUrl = Uri.parse(
@@ -85,14 +85,15 @@ class SearchDestinationController extends GetxController {
 
           if (detailResponse.statusCode == 200) {
             final Map<String, dynamic> detailData = json.decode(utf8.decode(detailResponse.bodyBytes));
-            fetchedDestinations.add(TravelDestination.fromJson(detailData));
+            return TravelDestination.fromJson(detailData);
           } else {
             print('Failed to fetch details for destination ID: $destinationId');
+            throw Exception('Failed to fetch details');
           }
-        }
+        }).toList();
 
-        // Cập nhật danh sách gợi ý
-        searchRecommendations.value = fetchedDestinations;
+        // Đợi tất cả API hoàn thành
+        searchRecommendations.value = await Future.wait(futures);
       } else {
         print('Failed to fetch recommendations: ${recommendationResponse.statusCode}');
       }

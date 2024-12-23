@@ -12,7 +12,7 @@ class ReviewWidgetController extends GetxController {
 
   final String apiBaseUrl = 'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/review/';
   final String ratingDistributionUrl = 'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/rating-distribution/';
-
+  
   // Function to create review
   Future<void> setReviewData({
     required String title,
@@ -88,18 +88,39 @@ class ReviewWidgetController extends GetxController {
     }
   }
 
-  /// Fetch reviews for a specific destination ID
+  /// Fetch reviews by destination ID and include user details
   Future<void> fetchReviewsByDestinationID(int destinationId) async {
     isLoading.value = true;
     reviews.clear(); // Clear old data before fetching new reviews
     try {
-      final Uri url = Uri.parse('$apiBaseUrl?destination_id=$destinationId');
+      final Uri url = Uri.parse(
+          'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/review/?destination_id=$destinationId');
       final response = await http.get(url);
-
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200) {   
         final List<dynamic> responseData = json.decode(utf8.decode(response.bodyBytes));
-        final fetchedReviews = responseData.map((reviewData) => ReviewModel.fromJson(reviewData)).toList();
-        reviews.value = fetchedReviews; // Store the reviews
+        final List<Future<ReviewModel>> reviewFutures = responseData.map((reviewData) async {
+          final int userId = reviewData['user_id'];
+          final Uri userUrl = Uri.parse(
+              'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/user/$userId');
+          final userResponse = await http.get(userUrl);
+          String userName = 'Unknown';
+          String userAvatarUrl =
+              'https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png';
+
+          if (userResponse.statusCode == 200) {
+            final userData = json.decode(utf8.decode(userResponse.bodyBytes));
+            userName = userData['username'] ?? userName;
+            userAvatarUrl = userData['user_info']?['image']?['url'] ?? userAvatarUrl;
+          }
+
+          return ReviewModel.fromJson({
+            ...reviewData,
+            'user_name': userName,
+            'user_avatar_url': userAvatarUrl,
+          });
+        }).toList();
+
+        reviews.value = await Future.wait(reviewFutures);
       } else {
         Get.snackbar('Error', 'Failed to load reviews');
       }

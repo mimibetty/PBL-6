@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Để định dạng ngày
-import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/common_views/circle_rating_widget_view.dart';
-import 'package:travelappflutter/presentation/common_views/horizontal_rating_bar.dart';
-import 'package:travelappflutter/presentation/common_views/selected_chip_widget.dart';
 import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
 
 class Review extends StatefulWidget {

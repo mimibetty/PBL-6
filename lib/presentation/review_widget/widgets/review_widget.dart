@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Để định dạng ngày
 import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/common_views/circle_rating_widget_view.dart';
+import 'package:travelappflutter/presentation/common_views/fullscrenn_image_viewer.dart';
 import 'package:travelappflutter/presentation/common_views/horizontal_rating_bar.dart';
-import 'package:travelappflutter/presentation/common_views/selected_chip_widget.dart';
 import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
 
@@ -38,20 +38,20 @@ class ReviewWidget extends StatelessWidget {
           ),
           const SizedBox(height: 10),
 
-          // Thanh tìm kiếm
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: TextField(
-              decoration: InputDecoration(
-                labelText: 'Search Reviews',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                prefixIcon: Icon(Icons.search),
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
+          // // Thanh tìm kiếm
+          // Padding(
+          //   padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          //   child: TextField(
+          //     decoration: InputDecoration(
+          //       labelText: 'Search Reviews',
+          //       border: OutlineInputBorder(
+          //         borderRadius: BorderRadius.circular(10),
+          //       ),
+          //       prefixIcon: Icon(Icons.search),
+          //     ),
+          //   ),
+          // ),
+          // const SizedBox(height: 10),
 
           // Hàng với nút filter và dropdown ngôn ngữ
           Padding(
@@ -100,30 +100,30 @@ class ReviewWidget extends StatelessWidget {
           ),
           const SizedBox(height: 10),
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: Text(
-              'Popular Mentions',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          SelectableChipWidget(
-            labels: [
-              'All reviews',
-              'Cable car',
-              'Bana hill',
-              'Our tour guide',
-              'Theme park',
-              'day trip ',
-              'Da Nang',
-            ],
-            onSelectionChanged: (selectedLabels) {},
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          //   child: Text(
+          //     'Popular Mentions',
+          //     style: TextStyle(
+          //       fontSize: 18,
+          //       fontWeight: FontWeight.bold,
+          //       color: Colors.black,
+          //     ),
+          //   ),
+          // ),
+          // const SizedBox(height: 10),
+          // SelectableChipWidget(
+          //   labels: [
+          //     'All reviews',
+          //     'Cable car',
+          //     'Bana hill',
+          //     'Our tour guide',
+          //     'Theme park',
+          //     'day trip ',
+          //     'Da Nang',
+          //   ],
+          //   onSelectionChanged: (selectedLabels) {},
+          // ),
 
           // Nếu không có review thì hiển thị thông báo
           if (reviews.isEmpty)
@@ -159,15 +159,20 @@ class ReviewWidget extends StatelessWidget {
                                 CircleAvatar(
                                   backgroundColor: const Color(0xFF1B1B1B),
                                   radius: 20,
-                                  child: Text(
-                                    review.content[0].toUpperCase(),
-                                    style: const TextStyle(
-                                        color: Colors.white, fontSize: 20),
-                                  ),
+                                  backgroundImage: review.userAvatarUrl!.isNotEmpty
+                                      ? NetworkImage(review.userAvatarUrl!)
+                                      : null,
+                                  child: review.userAvatarUrl!.isEmpty
+                                      ? Text(
+                                          review.content[0].toUpperCase(),
+                                          style: const TextStyle(color: Colors.white, fontSize: 20),
+                                        )
+                                      : null,
                                 ),
+
                                 const SizedBox(width: 20),
                                 Text(
-                                  review.userId.toString(),
+                                  review.userName,
                                   style: const TextStyle(
                                       fontSize: 16,
                                       color: Colors.black,
@@ -223,24 +228,35 @@ class ReviewWidget extends StatelessWidget {
                         const SizedBox(height: 5),
                         const SizedBox(height: 5),
                         // Hiển thị danh sách ảnh
-                        if (review.images!.isNotEmpty) ...[
+                        if (review.images.isNotEmpty) ...[
                           const SizedBox(height: 10),
                           Wrap(
                             spacing: 8,
                             runSpacing: 8,
                             children: review.images.map((image) {
-                              return ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.network(
-                                  image.url,
-                                  height: 80,
-                                  width: 80,
-                                  fit: BoxFit.cover,
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => FullScreenImageViewer(imageUrl: image.url),
+                                    ),
+                                  );
+                                },
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.network(
+                                    image.url,
+                                    height: 80,
+                                    width: 80,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               );
                             }).toList(),
                           ),
                         ],
+
                       ],
                     ),
                   ),
