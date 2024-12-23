@@ -40,7 +40,6 @@ def get_by_id(id: int, db: Session):
 
 def update_by_id(id: int, request: schemas.Trip, db: Session):
     try:
-        import pdb;pdb.set_trace()
         # Tìm chuyến đi tồn tại bằng id
         trip_to_update = db.query(models.Trip).filter(models.Trip.id == id).first()
         
@@ -89,6 +88,7 @@ def delete_by_id(id: int, db: Session):
 
 def create_trip(request: schemas.Trip, db: Session):
     try:
+        # import pdb;pdb.set_trace()
         new_trip = models.Trip(
             name=request.name,
             duration=request.duration,

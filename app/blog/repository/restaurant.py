@@ -15,6 +15,18 @@ from sqlalchemy.exc import SQLAlchemyError
 from fastapi import HTTPException
 
 
+# def search_by_name(db: Session, text: str):
+#     try:
+#         # Use the correct column reference for the name
+#         hotels = db.query(models.Destination.id, models.Destination.name).filter(
+#             models.Destination.restaurant_id!= None, models.Destination.name.ilike(f"%{text}%")
+#         ).all()
+#         return hotels
+#     except Exception as e:
+#         # Handle exceptions (logging, re-raising, etc.)
+#         print(f"An error occurred: {e}")
+#         return []
+
 
 
 

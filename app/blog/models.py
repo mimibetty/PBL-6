@@ -329,7 +329,8 @@ class Trip(Base):
     
     name = Column(String(100), default="Trip")
     duration = Column(Integer, default= 1) 
-    month_time = Column(Date, default=func.current_date())  # Ngày mặc định là ngày hiện tại    length = Column(Integer, default=1)  # Độ dài mặc định là 1 ngày
+    month_time = Column(String(50), default="")  # Ngày mặc định là ngày hiện tại    length = Column(Integer, default=1)  # Độ dài mặc định là 1 ngày
+    isAI = Column(Boolean, default=False)
     
     user_id = Column(Integer, ForeignKey('user.id'))  # Khóa ngoại đến bảng User
     

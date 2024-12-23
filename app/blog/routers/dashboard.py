@@ -4,7 +4,7 @@ from fastapi import APIRouter, Body, HTTPException, Path, Query, UploadFile
 from .. import database, schemas, models
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, status
-from ..repository import destination, city,dashboard
+from ..repository import destination, city,dashboard, hotel, restaurant
 
 router = APIRouter(
     prefix="/dashboard",
@@ -26,6 +26,32 @@ def search_by_name_of_destination_and_city(
         "destinations": [{"id": destination.id, "name": destination.name} for destination in destination_list]
     }
 
+    return results
+
+@router.get("/specific_search",
+            description="Search city and destination by name, the result contains 2 list: cities and destinations")
+def search_by_name_of_destination_and_city(
+    text: str = None,    
+    db: Session = Depends(get_db)
+):
+    results = {
+        "things_to_do": [],
+        "restaurant": [],
+        "hotel": [],
+    }
+    # Search for destinations
+    destination_list = destination.search_by_name(db=db, text=text)
+
+    # Iterate through the destinations and categorize them
+    for dest in destination_list:
+        if dest.hotel_id is not None:
+            results["hotel"].append((dest.id, dest.name))
+        elif dest.restaurant_id is not None:
+            results["restaurant"].append((dest.id, dest.name))
+        else:
+            results["things_to_do"].append((dest.id, dest.name))
+
+        
     return results
 @router.get("/admin/usercounts/by_month/{year}", response_model=List[schemas.UserCountByMonth],
     description=(
