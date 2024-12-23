@@ -3,6 +3,7 @@ import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/common_views/geocoding_service.dart';
 import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
+import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/map/map_screen.dart';
 import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
@@ -22,24 +23,23 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   final ReviewWidgetController controller = Get.put(ReviewWidgetController());
   double? _latitude; // Lưu trữ vĩ độ
   double? _longitude; // Lưu trữ kinh độ
-  String _address = '91 Trung Kính, Trung Hòa, Cầu Giấy, Hà Nội';
+
 
   @override
   void initState() {
     super.initState();
     controller.fetchReviewsByDestinationID(widget.restaurant.destinationID);
     controller.fetchRatingDistribution(widget.restaurant.destinationID);
-    _getCoordinates();
+    _getCoordinates(widget.restaurant.restaurantLocation);
   }
 
   bool isLiked = false;
   PageController pageController = PageController();
   int pageView = 0;
 
-  void _getCoordinates() async {
-    if (_address.isNotEmpty) {
+  void _getCoordinates(String FullAddress) async {
       var coordinates =
-          await GeocodingService.getCoordinatesFromAddress(_address);
+          await GeocodingService.getCoordinatesFromAddress(FullAddress);
 
       if (coordinates != null) {
         setState(() {
@@ -54,7 +54,6 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
       } else {
         print("Couldn't get coordinates.");
       }
-    }
   }
 
   Widget _buildContactInfo(String label, String value) {

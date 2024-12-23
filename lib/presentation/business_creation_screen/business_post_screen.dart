@@ -32,7 +32,7 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
     if (_address.isNotEmpty) {
       var coordinates =
           await GeocodingService.getCoordinatesFromAddress(_address);
-
+  
       if (coordinates != null) {
         setState(() {
           _latitude = coordinates['latitude'];

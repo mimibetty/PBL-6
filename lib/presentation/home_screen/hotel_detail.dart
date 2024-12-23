@@ -24,7 +24,6 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
   bool isLiked = false;
   double? _latitude; // Lưu trữ vĩ độ
   double? _longitude; // Lưu trữ kinh độ
-  late String _address = '91 Trung Kính, Trung Hòa, Cầu Giấy, Hà Nội';
 
 
   @override
@@ -33,21 +32,19 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
       controller.fetchReviewsByDestinationID(widget.hotel.destinationID);
       controller.fetchRatingDistribution(widget.hotel.destinationID);
       // Fetch coordinates for the address
-      _getCoordinates();
+      _getCoordinates(widget.hotel.hotelLocation);
     }
 
-  void _getCoordinates() async {
-    if (_address.isNotEmpty) {
+  void _getCoordinates(String FullAddress) async {
       var coordinates =
-          await GeocodingService.getCoordinatesFromAddress(_address);
-
+          await GeocodingService.getCoordinatesFromAddress(FullAddress);
       if (coordinates != null) {
         setState(() {
           _latitude = coordinates['latitude'];
           _longitude = coordinates['longitude'];
         });
         if (_latitude != null && _longitude != null) {
-          print("IN ra: Latitude = $_latitude, Longitude = $_longitude");
+          print("IN ra: $_latitude,$_longitude");
         } else {
           print("Latitude hoặc Longitude chưa có giá trị.");
         }
@@ -55,7 +52,6 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
         print("Couldn't get coordinates.");
       }
     }
-  }
   Future<void> _launchURL(String url) async {
     final Uri uri = Uri.parse(url); // Convert the string URL to a Uri object
     if (await canLaunchUrl(uri)) {

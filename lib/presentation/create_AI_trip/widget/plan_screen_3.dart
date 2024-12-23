@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_4.dart';
+import 'package:travelappflutter/presentation/create_AI_trip/widget/trip_data.dart';
 
 class PlanScreen3 extends StatefulWidget {
   @override
@@ -31,11 +32,21 @@ class _PlanScreen3State extends State<PlanScreen3> {
     }
   }
 
-  void _navigateToNextPage(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => PlanScreen4()),
-    );
+   void _navigateToNextPage(BuildContext context) {
+    if (_selectedStartDate != null) {
+      // Save dates in the singleton
+      TripDates().startDate = _selectedStartDate;
+      TripDates().endDate = _calculatedEndDate;
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => PlanScreen4()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please select a start date first.')),
+      );
+    }
   }
 
   @override

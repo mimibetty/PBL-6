@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_6.dart';
+import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_7.dart';
 
 class PlanScreen5 extends StatefulWidget {
   @override
@@ -82,7 +83,8 @@ class _PlanScreen5State extends State<PlanScreen5> {
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: options.map((option) => choiceChip(option)).toList(),
+                    children:
+                        options.map((option) => choiceChip(option)).toList(),
                   ),
                   SizedBox(height: 80), // Add space to prevent overlap
                 ],
