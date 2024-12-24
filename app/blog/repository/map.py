@@ -86,7 +86,7 @@ def get_coordinate_geopy(location: str):
     Returns:
         tuple: (latitude, longitude)
     """
-    geolocator = Nominatim(user_agent="my_agent")
+    geolocator = Nominatim(user_agent="my_agenthaha_chang")
     try:
         location_data = geolocator.geocode(location)
         if location_data:
