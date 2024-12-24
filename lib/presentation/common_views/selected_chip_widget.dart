@@ -3,15 +3,27 @@ import 'package:flutter/material.dart';
 class SelectableChipWidget extends StatefulWidget {
   final List<String> labels;
   final Function(List<String>) onSelectionChanged;
+  final List<String> initialSelectedLabels; // Thêm giá trị khởi tạo
 
-  SelectableChipWidget({Key? key, required this.labels, required this.onSelectionChanged}) : super(key: key);
+  SelectableChipWidget({
+    Key? key,
+    required this.labels,
+    required this.onSelectionChanged,
+    this.initialSelectedLabels = const [], // Giá trị mặc định là danh sách rỗng
+  }) : super(key: key);
 
   @override
   _SelectableChipWidgetState createState() => _SelectableChipWidgetState();
 }
 
 class _SelectableChipWidgetState extends State<SelectableChipWidget> {
-  List<String> selectedLabels = []; // Danh sách các nút được chọn
+  late List<String> selectedLabels; // Danh sách các nút được chọn
+
+  @override
+  void initState() {
+    super.initState();
+    selectedLabels = widget.initialSelectedLabels; // Gán giá trị khởi tạo
+  }
 
   void _toggleSelection(String label) {
     setState(() {

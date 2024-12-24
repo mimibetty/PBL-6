@@ -301,6 +301,7 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
                       selectedImages = images;
                     });
                   },
+                  action: "create",
                 ),
                 SizedBox(height: 20),
 

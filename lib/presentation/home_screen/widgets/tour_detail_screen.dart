@@ -79,7 +79,7 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
                     destinationName: widget.tour.name,
                     destinationImageURL: widget.tour.images[0],
                     destinationAddress: widget.tour.location,
-                  ), // Truyền destinationId vào
+                  ),
                 ),
               );
             },
@@ -371,10 +371,14 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
                           //truyen interface của tour vào
                           TourOptionsScreen(),
                           //controller.fetchRatingDistribution(destinationId),
+                          // print("Average raing: " + controller.averageRating.value.toString());
+                          // print("totals review: " + controller.totalReviews.value.toString());
                           ReviewWidget(
                             destinationId: widget.tour.id,
                             reviews: filteredReviews,
                             ratingCounts: {1: 1, 2: 2, 3: 3, 4: 4, 5: 5},
+                            //UserId: Get.find<ProfileController>().profileModelObj.value.id,
+                            UserId: 67,
                           ),
                         ],
                       ),

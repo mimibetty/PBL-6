@@ -9,6 +9,7 @@ import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'dart:typed_data';
 import 'package:url_launcher/url_launcher.dart';
 
 class MapScreen extends StatefulWidget {
@@ -348,4 +349,3 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 }
-

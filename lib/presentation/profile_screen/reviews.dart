@@ -117,23 +117,28 @@ class _ReviewState extends State<Review> {
                               ),
                               Row(
                                 children: [
-                                  Icon(
-                                    Icons.thumb_up_alt_outlined,
-                                    color: Colors.blueAccent,
-                                    size: 18,
+                                  IconButton(
+                                    icon: const Icon(Icons.edit, color: Colors.blueAccent),
+                                    tooltip: 'Edit Review',
+                                    onPressed: () {
+                                      // Logic chỉnh sửa reviews
+                                      print('Edit Review: ${review.id}');
+                                    },
                                   ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '${review.likeCount} Likes',
-                                    style: const TextStyle(
-                                        fontSize: 12, color: Colors.black),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete, color: Colors.redAccent),
+                                    tooltip: 'Delete Review',
+                                    onPressed: () {
+                                      // Logic xóa reviews
+                                      print('Delete Review: ${review.id}');
+                                    },
                                   ),
                                 ],
                               ),
                             ],
                           ),
                           const SizedBox(height: 10),
-                          CircleRatingWidget(rating: review.rating, size: 15),
+                          CircleRatingWidget(rating: review.rating, size: 18),
                           const SizedBox(height: 10),
                           Text(
                             '${review.dateCreated} * ${review.companion}',

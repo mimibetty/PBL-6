@@ -5,29 +5,33 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:travelappflutter/presentation/common_views/image_picker_widget.dart';
 import 'package:travelappflutter/presentation/common_views/selected_chip_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
-import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
-import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
+import 'package:travelappflutter/presentation/review_widget/controller/update_review_controller.dart';
+import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
 
-class ReviewFormPage extends StatefulWidget {
+class UpdateReviewFormPage extends StatefulWidget {
   final int destinationId;
-  final String destinationName;
-  final String destinationImageURL;
-  final String destinationAddress;
+  final int reviewId;
+  final double destinationRating;
+  final List<ReviewImage> destinationSelectedImages;
+  final String destinationLanguage;
+  final String destinationCompanions;
+  final String destinationTitle;
+  final String destinationContent;
 
-  ReviewFormPage(
-      {Key? key, required this.destinationId, required this.destinationName, required this.destinationImageURL, required this.destinationAddress})
+  UpdateReviewFormPage(
+      {Key? key, required this.reviewId, required this.destinationRating, required this.destinationSelectedImages, required this.destinationLanguage, required this.destinationCompanions, required this.destinationTitle, required this.destinationContent, required this.destinationId})
       : super(key: key);
 
   @override
   _ReviewFormPageState createState() => _ReviewFormPageState();
 }
 
-class _ReviewFormPageState extends State<ReviewFormPage> {
+class _ReviewFormPageState extends State<UpdateReviewFormPage> {
   // Create a new review instance with the data
-  final controller = Get.find<ReviewWidgetController>();
+  final controller = Get.put(UpdateReviewController());
 
-  final TextEditingController _contextController = TextEditingController();
-  final TextEditingController _titleController = TextEditingController();
+  late TextEditingController _contextController = TextEditingController();
+  late TextEditingController _titleController = TextEditingController();
 
   final FocusNode _focusNode = FocusNode();
   //final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -44,19 +48,42 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
     'Chinese',
     'French',
   ];
-  // Các biến để lưu giá trị
-  //String? selectedMonthYear;
-  //String selectedPurpose = '';
+  // Các biến để lưu giá trị đã chọn
   List<String> selectedCompanions = [];
-   String selectedLanguage = 'English'; // Biến lưu trữ ngôn ngữ đã chọn
+  late String selectedLanguage = widget.destinationLanguage; // Biến lưu trữ ngôn ngữ đã chọn
   String reviewText = '';
   String reviewTitle = '';
+  late List<ReviewImage> existingImage = widget.destinationSelectedImages;
+  List<int> existingImageIdsToRemove = [];
 
+  String destinationName = 'Default Name'; 
+  String destinationAddress = 'Default Address'; 
+  String destinationImageURL = 'https://experienceleaguecommunities.adobe.com/t5/image/serverpage/image-id/34749i7C7BB1DB5E28E527?v=v2'; 
+
+  Future<void> loadDestinationInfo() async {
+    // Gọi API để lấy thông tin địa điểm
+    final info = await controller.fetchInfoDestination(widget.destinationId);
+    setState(() {
+      destinationName = info['name']!;
+      destinationAddress = info['address']!;
+      destinationImageURL = info['image']!;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    _contextController = TextEditingController(text: widget.destinationContent);
+    _titleController = TextEditingController(text: widget.destinationTitle);
+    reviewText = widget.destinationTitle;
+    reviewTitle = widget.destinationContent;
+    selectedCompanions = widget.destinationCompanions.split(', ');
+    _rating = widget.destinationRating;
+    selectedLanguage = widget.destinationLanguage;
+    // Gọi hàm load dữ liệu
+    loadDestinationInfo();
   }
+
   
   @override
   void dispose() {
@@ -79,20 +106,20 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Tell us, how was your visit?',
+            Text('Update your thoughts about your visit!',
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             SizedBox(height: 16),
             Card(
               child: Column(
                 children: [
                   Image.network(
-                    widget.destinationImageURL,
+                    destinationImageURL,
                     fit: BoxFit.cover,
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      '${widget.destinationName}\n${widget.destinationAddress}',  // Nối tên với địa chỉ
+                      '${destinationName}\n${destinationAddress}',  // Nối tên với địa chỉ
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -103,7 +130,7 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
             Text('How would you rate your experience?',
                 style: TextStyle(fontSize: 17)),
             RatingBar.builder(
-              initialRating: 0,
+              initialRating: widget.destinationRating,
               minRating: 1,
               direction: Axis.horizontal,
               allowHalfRating: true,
@@ -135,13 +162,12 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                 });
               },
             ),
-
             SizedBox(height: 9),
             Text('Who did you go with ?',
                 style: TextStyle(fontSize: 17)),
             SizedBox(height: 3),
             SelectableChipWidget(
-              initialSelectedLabels: [],
+              initialSelectedLabels: [widget.destinationCompanions],
               labels: ['Business', 'Couples', 'Family', 'Friends', 'Solo'],
               onSelectionChanged: (selectedLabels) {
                 setState(() {
@@ -172,15 +198,22 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                 reviewTitle = value;
               },
             ),
-            SizedBox(height: 16),
+            SizedBox(height: 4),
             ImagePickerWidget(
-              selectedImages: selectedImages,
+              selectedImages: selectedImages, // Ảnh mới (List<File>)
               onImagesPicked: (images) {
                 setState(() {
-                  selectedImages = images;
+                  selectedImages = images; // Cập nhật ảnh mới
                 });
               },
-              action: "create",
+              action: "update", // Chỉ định hành động
+              existingImages: existingImage, // Ảnh cũ đã tải từ server (List<File>)
+              onImagesRemoved: (removedIds) {
+                setState(() {
+                  existingImageIdsToRemove = removedIds; // Cập nhật ảnh cũ bị xóa
+                  print('Removed Image IDs: $removedIds'); // In ra ID của ảnh bị xóa
+                });
+              },
             ),
             SizedBox(height: 8),
             Row(
@@ -191,22 +224,17 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                     // Submit the review
                     try {
                       // Call the createReview function to submit the review  
-                        controller.createReview(
+                        controller.updateReview(
+                          destinationId: widget.destinationId, // Pass destination
+                          reviewId: widget.reviewId, // Pass review ID       
                           title: reviewTitle, // Pass title
                           content: reviewText, // Pass content
                           rating: _rating, // Pass rating
                           companion: selectedCompanions.join(', '), // Pass companion(s)
                           language: selectedLanguage, // Pass language
-                          destinationId: widget.destinationId, // Pass destination ID (converted to string)
-                          userId: Get.find<ProfileController>().profileModelObj.value.id, // Pass user ID (replace with actual user ID)
-                          images: selectedImages.isNotEmpty ? selectedImages : null, // Only pass images if not empty
+                          newImages: selectedImages, // Pass selected images
+                          imageIdsToRemove: existingImageIdsToRemove, // Pass empty list for image IDs to remove
                         );
-                      // Provide feedback to the user
-                      Get.snackbar(
-                        'Success',
-                        'Review submitted successfully!',
-                        snackPosition: SnackPosition.BOTTOM,
-                      );
                       // Navigate back
                       Navigator.pop(context);
                     } catch (e) {
@@ -231,7 +259,7 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                         Icon(Icons.confirmation_number_outlined,
                             color: Colors.white),
                         SizedBox(width: 5),
-                        Text("Create a review",
+                        Text("Update review",
                             style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,

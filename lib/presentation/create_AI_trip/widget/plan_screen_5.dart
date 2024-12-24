@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_6.dart';
+import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_7.dart';
 
 class PlanScreen5 extends StatefulWidget {
   @override
@@ -58,51 +59,42 @@ class _PlanScreen5State extends State<PlanScreen5> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "How do you want to spend your time?",
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text(
-              "Choose as many as you’d like.",
-              style: TextStyle(color: Colors.black54, fontSize: 16),
-            ),
-            SizedBox(height: 24),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: options.map((option) => choiceChip(option)).toList(),
-            ),
-            SizedBox(height: 24),
-            Text(
-              "Other (optional)",
-              style: TextStyle(color: Colors.black, fontSize: 16),
-            ),
-            SizedBox(height: 8),
-            TextField(
-              style: TextStyle(color: Colors.black),
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.grey[200],
-                hintText: 'Enter other preferences',
-                hintStyle: TextStyle(color: Colors.black45),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
-                ),
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "How do you want to spend your time?",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    "Choose as many as you’d like.",
+                    style: TextStyle(color: Colors.black54, fontSize: 16),
+                  ),
+                  SizedBox(height: 24),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children:
+                        options.map((option) => choiceChip(option)).toList(),
+                  ),
+                  SizedBox(height: 80), // Add space to prevent overlap
+                ],
               ),
             ),
-            SizedBox(height: 24),
-            Align(
-              alignment: Alignment.center,
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.all(30.0),
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -113,7 +105,7 @@ class _PlanScreen5State extends State<PlanScreen5> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, 
+                  foregroundColor: Colors.white,
                   backgroundColor: Colors.blue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -129,8 +121,8 @@ class _PlanScreen5State extends State<PlanScreen5> {
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

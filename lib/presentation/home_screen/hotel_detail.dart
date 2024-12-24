@@ -4,6 +4,7 @@ import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/common_views/geocoding_service.dart';
 import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
 import 'package:travelappflutter/presentation/map/map_screen.dart';
+import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/create_review.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
@@ -113,7 +114,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                       destinationId: widget.hotel.hotelID,
                       destinationName: widget.hotel.hotelName,
                       destinationAddress: widget.hotel.hotelLocation,
-                      destinationImageURL: widget.hotel.images.first
+                      destinationImageURL: widget.hotel.images.first,
                     ),
                 ),
               );
@@ -472,9 +473,12 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                         if (controller.isLoading.value) {
                           return Center(child: CircularProgressIndicator());
                         }
+                        print("Average raing: " + controller.averageRating.value.toString());
+                        print("totals review: " + controller.totalReviews.value.toString());
                         return ReviewWidget(destinationId: widget.hotel.destinationID ,
                                             reviews: controller.reviews, 
-                                            ratingCounts: controller.ratingCounts);
+                                            ratingCounts: controller.ratingCounts,
+                                            UserId: Get.find<ProfileController>().profileModelObj.value.id);
                       }),
                     ),
                   ),
