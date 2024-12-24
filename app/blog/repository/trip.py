@@ -21,6 +21,14 @@ load_dotenv()
 limit_point_perday = int(os.getenv('LIMIT_POINT_PERDAY', 5))
 # limit_point_perday = 3 # Số điểm tối thiểu trong mỗi nhóm để sử dụng dp
 
+def get_by_user_id(user_id: int, db: Session):
+    try:
+        trips = db.query(models.Trip).filter(models.Trip.user_id == user_id).all()  # Chờ truy vấn
+        return trips
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to retrieve trip")
+
 
 def get_all(db: Session):
     try:
@@ -28,7 +36,7 @@ def get_all(db: Session):
         return trips
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create trip with destinations")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to retrieve trip")
 
 def get_by_id(id: int, db: Session):
     try:

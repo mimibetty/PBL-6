@@ -16,10 +16,16 @@ get_db = database.get_db
 
 @router.get("/", response_model=List[schemas.ShowTrip])
 def get_all(
+    user_id: int = None,
     db: Session = Depends(get_db)  # Lấy phiên làm việc,
 ):
-    return trip.get_all(db=db)
-    
+    results = []
+    if user_id:
+        results = trip.get_by_user_id(user_id=user_id, db=db)
+        
+    else:
+        results = trip.get_all(db=db)
+    return results
 
 @router.post("/add_destination")
 def create_trip(
