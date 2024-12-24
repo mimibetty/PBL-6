@@ -20,7 +20,7 @@ class CoordinateResponse(BaseModel):
     longitude: float
     location_name: str
 
-@router.get("/get-coordinates//{destination_id}", response_model=CoordinateResponse)
+@router.get("/get-coordinates/{destination_id}", response_model=CoordinateResponse)
 def get_destination_coordinates(
     destination_id: int,
     db: Session = Depends(get_db)
