@@ -28,11 +28,19 @@ def get_all(
     return results
 
 @router.post("/add_destination")
-def create_trip(
+def add_dest_to_trip(
     request: schemas.AddDestToTrip,
     db: Session = Depends(get_db)  # Lấy phiên làm việc,
 ):
     return trip.add_destination_to_trip(request=request, db=db)
+
+@router.post("/delete_destination")
+def delete_dest_from_trip(
+    trip_id: int,
+    destination_id: int,
+    db: Session = Depends(get_db)  # Lấy phiên làm việc,
+):
+    return trip.delete_destination_from_trip(trip_id=trip_id, destination_id=destination_id, db=db)
     
 @router.post("/")
 def create_trip(

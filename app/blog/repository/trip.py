@@ -129,7 +129,28 @@ def add_destination_to_trip(request: schemas.AddDestToTrip, db: Session):
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create trip with destinations")
-
+def delete_destination_from_trip(destination_id: int, trip_id: int, db: Session):
+    try:
+        # Query for the TripDestination entry to delete
+        trip_dest = db.query(models.TripDestination).filter(
+            models.TripDestination.destination_id == destination_id,
+            models.TripDestination.trip_id == trip_id
+        ).first()
+        
+        if trip_dest is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="TripDestination not found")
+        
+        # Delete the entry
+        db.delete(trip_dest)
+        
+        # Commit the transaction
+        db.commit()
+        
+        return {"message": "Delete successfully"}
+        
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete destination from trip")
 # def get_coordinate(location: str):
 #     """
 #     Get the (latitude, longitude) coordinates from the location name using geopy.
