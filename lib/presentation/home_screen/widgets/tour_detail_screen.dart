@@ -1,43 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
+import 'package:travelappflutter/presentation/home_screen/controller/tour_controller.dart';
 import 'package:travelappflutter/presentation/home_screen/models/tour_model.dart';
 import 'package:travelappflutter/presentation/home_screen/widgets/tour_overview_screen.dart';
-import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
+import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
+import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/create_review.dart';
 import 'package:travelappflutter/presentation/home_screen/widgets/other_info_widget.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
 
 class TourDetailScreen extends StatefulWidget {
+  final cityName ;
   final Tour tour;
-  const TourDetailScreen({super.key, required this.tour});
+  const TourDetailScreen({super.key, required this.tour, this.cityName});
 
   @override
   State<TourDetailScreen> createState() => _TourDetailScreenState();
 }
 
 class _TourDetailScreenState extends State<TourDetailScreen> {
+  final TourController tourController = Get.find<TourController>();
+  final ReviewWidgetController reviewController = Get.find<ReviewWidgetController>();
   @override
   void initState() {
     super.initState();
-    allReviews = mockReviews; // Khởi tạo trong initState
+    tourImages = getImagesFromTour(widget.tour);
+    reviewController.typeOfReview = 'tour';
+    reviewController.fetchReviews(id: widget.tour.id);
+    reviewController.fetchRatingDistribution(widget.tour.id);
   }
 
   PageController pageController = PageController();
   int pageView = 0;
-  List<ReviewModel> allReviews =
-      mockReviews; // Sử dụng mockReviews đã tạo trước đó
+  List<String> tourImages = []; 
 
   @override
   Widget build(BuildContext context) {
-    final destinationId = widget.tour.id;
-    List<ReviewModel> filteredReviews = allReviews
-        .where((review) => review.destinationId == widget.tour.id)
-        .toList();
-
-    for (var review in filteredReviews) {
-      print(
-          'ID: ${review.destinationId}, Name: ${review.content}'); // In ra ID và Name
-    }
+    final destinationId = widget.tour.id; 
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
@@ -77,8 +77,9 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
                   builder: (context) => ReviewFormPage(
                     destinationId: destinationId,
                     destinationName: widget.tour.name,
-                    destinationImageURL: widget.tour.images[0],
-                    destinationAddress: widget.tour.location,
+                    destinationImageURL:tourImages[0],
+                    //destinationAddress: widget.tour.location,
+                    destinationAddress: "Đà Nẵng",
                   ),
                 ),
               );
@@ -130,9 +131,9 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
                         });
                       },
                       children: List.generate(
-                        widget.tour.images!.length,
+                        tourImages.length,
                         (index) => Image.network(
-                          widget.tour.images![index],
+                          tourImages[index],
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -155,12 +156,12 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
                               ),
                               borderRadius: BorderRadius.circular(15),
                               image: DecorationImage(
-                                image: widget.tour.images.length - 1 != pageView
+                                image: tourImages.length - 1 != pageView
                                     ? NetworkImage(
-                                        widget.tour.images[pageView + 1],
+                                        tourImages[pageView + 1],
                                       )
                                     : NetworkImage(
-                                        widget.tour.images[0],
+                                        tourImages[0],
                                       ),
                                 fit: BoxFit.cover,
                               ),
@@ -176,7 +177,7 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: List.generate(
-                                    widget.tour.images!.length,
+                                    tourImages!.length,
                                     (index) => GestureDetector(
                                       onTap: () {
                                         if (pageController.hasClients) {
@@ -240,7 +241,8 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
                                               const SizedBox(width: 5),
                                               Expanded(
                                                 child: Text(
-                                                  widget.tour.location,
+                                                  //widget.tour.location,
+                                                  widget.cityName,
                                                   style: const TextStyle(
                                                     color: Colors.white,
                                                     fontSize: 14,
@@ -351,7 +353,7 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
                                 children: [
                                   // Hiển thị mô tả tour
                                   Text(
-                                    widget.tour.about,
+                                    widget.tour.description,
                                     maxLines: 3,
                                     overflow: TextOverflow
                                         .ellipsis, // Cắt văn bản nếu vượt quá 3 dòng
@@ -363,22 +365,20 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
                                   ),
 
                                   // TourOverviewWidget hiển thị chi tiết tour
-                                  TourOverviewWidget(),
+                                  TourOverviewWidget(tour: widget.tour),
                                 ],
                               ),
                             ),
                           ),
                           //truyen interface của tour vào
-                          TourOptionsScreen(),
+                          TourOptionsScreen(tour: widget.tour),
                           //controller.fetchRatingDistribution(destinationId),
-                          // print("Average raing: " + controller.averageRating.value.toString());
-                          // print("totals review: " + controller.totalReviews.value.toString());
+                          //print("Average raing: " + reviewController.averageRating.value.toString());
+                          //print("totals review: " + reviewController.totalReviews.value.toString());
                           ReviewWidget(
                             destinationId: widget.tour.id,
-                            reviews: filteredReviews,
-                            ratingCounts: {1: 1, 2: 2, 3: 3, 4: 4, 5: 5},
-                            //UserId: Get.find<ProfileController>().profileModelObj.value.id,
-                            UserId: 67,
+                            ratingCounts: reviewController.ratingCounts,
+                            UserId: Get.find<ProfileController>().profileModelObj.value.id,
                           ),
                         ],
                       ),

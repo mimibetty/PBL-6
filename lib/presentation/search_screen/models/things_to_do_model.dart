@@ -44,7 +44,7 @@ class ThingsToDoModel {
 
     // Parse tags
     List<Tag> tags = (apiData['tags'] as List<dynamic>)
-        .map((tag) => Tag(name: tag['name'], id: tag['id']))
+        .map((tag) => Tag(name: tag['name'], id: tag['id'], destinationCount: tag['destination_count']))
         .toList();
 
     // Parse images and provide a default image if the URL is empty or null
@@ -77,22 +77,25 @@ class ThingsToDoModel {
 
 // Supporting classes
 class Tag {
-  final String name;
   final int id;
+  final String name;
+  final int destinationCount;
 
   Tag({
-    required this.name,
     required this.id,
+    required this.name,
+    required this.destinationCount,
   });
 
-  // Factory constructor to create a Tag object from JSON
   factory Tag.fromJson(Map<String, dynamic> json) {
     return Tag(
-      name: json['name'] ?? 'Unknown', // Gán giá trị mặc định nếu 'name' bị thiếu
-      id: json['id'] ?? 0, // Gán giá trị mặc định nếu 'id' bị thiếu
+      id: json['id'],
+      name: json['name'],
+      destinationCount: json['destination_count'],
     );
   }
 }
+
 
 class Address {
   final String district;

@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class SelectableChipWidget extends StatefulWidget {
   final List<String> labels;
   final Function(List<String>) onSelectionChanged;
-  final List<String> initialSelectedLabels; // Thêm giá trị khởi tạo
+  final List<String> initialSelectedLabels;
 
   SelectableChipWidget({
     Key? key,
     required this.labels,
     required this.onSelectionChanged,
-    this.initialSelectedLabels = const [], // Giá trị mặc định là danh sách rỗng
+    this.initialSelectedLabels = const [],
   }) : super(key: key);
 
   @override
@@ -17,43 +17,45 @@ class SelectableChipWidget extends StatefulWidget {
 }
 
 class _SelectableChipWidgetState extends State<SelectableChipWidget> {
-  late List<String> selectedLabels; // Danh sách các nút được chọn
+  Set<String> selectedLabels = <String>{};
 
   @override
   void initState() {
     super.initState();
-    selectedLabels = widget.initialSelectedLabels; // Gán giá trị khởi tạo
+    // Remove leading/trailing spaces in initialSelectedLabels and labels
+    selectedLabels = widget.initialSelectedLabels
+        .map((label) => label.trim())
+        .toSet();
   }
 
   void _toggleSelection(String label) {
     setState(() {
-      // Nếu label đã được chọn, bỏ chọn; nếu chưa chọn, thêm vào
+      label = label.trim(); // Ensure the label is trimmed before toggling
       if (selectedLabels.contains(label)) {
         selectedLabels.remove(label);
       } else {
         selectedLabels.add(label);
       }
     });
-
-    // Gọi hàm callback để trả về danh sách các nút được chọn
-    widget.onSelectionChanged(selectedLabels);
+    widget.onSelectionChanged(selectedLabels.toList());
   }
 
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: Alignment.centerLeft, // Căn lề trái
+      alignment: Alignment.centerLeft,
       child: Wrap(
         spacing: 8.0,
         children: widget.labels.map((label) {
-          final isSelected = selectedLabels.contains(label);
+          final trimmedLabel = label.trim(); // Trim each label
+          final isSelected = selectedLabels.contains(trimmedLabel);
 
           return ChoiceChip(
-            label: Text(label),
+            label: Text(trimmedLabel),
             selected: isSelected,
-            onSelected: (_) => _toggleSelection(label),
-            selectedColor: Colors.blue, // Màu khi được chọn
-            backgroundColor: Colors.white, // Màu khi không được chọn
+            onSelected: (_) => _toggleSelection(trimmedLabel),
+            selectedColor: Colors.blue,
+            backgroundColor: Colors.white,
             labelStyle: TextStyle(color: isSelected ? Colors.white : Colors.black),
           );
         }).toList(),

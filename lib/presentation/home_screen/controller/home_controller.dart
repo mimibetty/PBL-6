@@ -105,11 +105,23 @@ Future<void> getRecommendationDestinations(int userID, int cityID, String cityNa
   }
 }
 
-    // Method to combine two lists of TravelDestination
+  // Method to combine two lists of TravelDestination// Method to combine two lists of TravelDestination
   List<TravelDestination> combineDestinations(
     List<TravelDestination> list1,
     List<TravelDestination> list2,
   ) {
-    return [...list1, ...list2];
+    // Sử dụng Set để lưu trữ các ID đã tồn tại
+    final Set<int> seenIds = {};
+    
+    // Kết hợp hai danh sách và lọc các phần tử trùng lặp dựa trên ID
+    return [...list1, ...list2].where((destination) {
+      if (seenIds.contains(destination.id)) {
+        return false; // Bỏ qua nếu ID đã tồn tại
+      } else {
+        seenIds.add(destination.id); // Thêm ID mới vào Set
+        return true; // Giữ lại nếu ID chưa tồn tại
+      }
+    }).toList();
   }
+
 }

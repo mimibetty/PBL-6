@@ -195,7 +195,7 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                           title: reviewTitle, // Pass title
                           content: reviewText, // Pass content
                           rating: _rating, // Pass rating
-                          companion: selectedCompanions.join(', '), // Pass companion(s)
+                          companion: selectedCompanions.join(','), // Pass companion(s)
                           language: selectedLanguage, // Pass language
                           destinationId: widget.destinationId, // Pass destination ID (converted to string)
                           userId: Get.find<ProfileController>().profileModelObj.value.id, // Pass user ID (replace with actual user ID)

@@ -7,6 +7,7 @@ import 'package:travelappflutter/presentation/review_widget/models/review_widget
 import 'package:intl/intl.dart';
 
 class ReviewWidgetController extends GetxController {
+  String typeOfReview = '';
   RxList<ReviewModel> reviews = <ReviewModel>[].obs; // Store reviews
   RxBool isLoading = false.obs;
   var ratingCounts = <int, int>{}.obs; // Observable map để lưu rating counts
@@ -34,16 +35,17 @@ class ReviewWidgetController extends GetxController {
     isLoading.value = true; // Bắt đầu trạng thái loading
     try {
       dateCreate ??= DateFormat('yyyy-MM-dd').format(DateTime.now());
+      // Determine the API endpoint based on typeOfReview
+      final String endpoint = typeOfReview == 'destination' ? '' : 'tour/';
+      final String idParam = typeOfReview == 'destination' ? 'destination_id' : 'tour_id';
 
       // Tạo URL với query parameters
-      final Uri url = Uri.parse(
-          'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/review/')
-          .replace(queryParameters: {
+      final Uri url = Uri.parse('${apiBaseUrl}${endpoint}').replace(queryParameters: {
         'title': title,
         'content': content,
         'rating': rating.toString(),
         'user_id': userId.toString(),
-        'destination_id': destinationId.toString(),
+        idParam: destinationId.toString(),
         'language': language,
         'companion': companion,
         'date_create': dateCreate,
@@ -67,7 +69,7 @@ class ReviewWidgetController extends GetxController {
         final responseBody = await response.stream.bytesToString();
         if (response.statusCode == 200) {
           Get.snackbar('Success', 'Review created successfully');
-          fetchReviewsByDestinationID(destinationId); // Tải lại danh sách review
+          fetchReviews(id: destinationId); // Tải lại danh sách review
         } else {
           Get.snackbar('Error', 'Failed to update review: $responseBody');
         }
@@ -80,7 +82,7 @@ class ReviewWidgetController extends GetxController {
         print('Response status code: ${response.statusCode}');
         if (response.statusCode == 200) {
           print('Review created successfully');
-          fetchReviewsByDestinationID(destinationId); // Tải lại danh sách review
+          fetchReviews(id: destinationId); // Tải lại danh sách review
         } else {
           print('Error: ${response.body}');
         }
@@ -104,7 +106,7 @@ class ReviewWidgetController extends GetxController {
     if (response.statusCode == 200) {
       Get.snackbar('Success', 'Review deleted successfully!');
       // Cập nhật danh sách đánh giá sau khi xóa
-      fetchReviewsByDestinationID(destinationId);
+      fetchReviews(id: destinationId);
     } else {
       Get.snackbar('Error', 'Failed to delete review: ${response.body}');
     }
@@ -115,48 +117,58 @@ class ReviewWidgetController extends GetxController {
   }
 }
 
-  /// Fetch reviews by destination ID and include user details
-  Future<void> fetchReviewsByDestinationID(int destinationId) async {
-    isLoading.value = true;
-    reviews.clear(); // Clear old data before fetching new reviews
+  Future<void> fetchReviews({required int id}) async {
+    isLoading.value = true; // Set loading to true
+    reviews.clear(); // Clear old reviews
     int thisUserId = Get.find<ProfileController>().profileModelObj.value.id;
+
     try {
+      // Construct the API URL based on the type
       final Uri url = Uri.parse(
-          'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/review/?destination_id=$destinationId');
+          '${apiBaseUrl}?${typeOfReview == 'destination' ? 'destination_id' : 'tour_id'}=$id');
+      
       final response = await http.get(url);
+
       if (response.statusCode == 200) {
-        final List<dynamic> responseData = json.decode(utf8.decode(response.bodyBytes));
-        final List<Future<ReviewModel>> reviewFutures = responseData.map((reviewData) async {
+        final List<dynamic> responseData =
+            json.decode(utf8.decode(response.bodyBytes));
+
+        final List<Future<ReviewModel>> reviewFutures =
+            responseData.map((reviewData) async {
           final int userId = reviewData['user_id'];
-          final Uri userUrl = Uri.parse(
-              'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/user/$userId');
-          final userResponse = await http.get(userUrl);
+          final Uri userUrl = Uri.parse('https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/user/$userId');
+
           String userName = 'Unknown';
           String userAvatarUrl =
               'https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png';
 
+          // Fetch user details
+          final userResponse = await http.get(userUrl);
           if (userResponse.statusCode == 200) {
             final userData = json.decode(utf8.decode(userResponse.bodyBytes));
             userName = userData['username'] ?? userName;
-            userAvatarUrl = userData['user_info']?['image']?['url'] ?? userAvatarUrl;
+            userAvatarUrl =
+                userData['user_info']?['image']?['url'] ?? userAvatarUrl;
           }
 
+          // Construct ReviewModel with user details
           return ReviewModel.fromJson({
             ...reviewData,
             'user_name': userName,
             'user_avatar_url': userAvatarUrl,
           });
         }).toList();
+
         reviews.value = await Future.wait(reviewFutures);
 
-        // Sort the reviews to place this user's reviews at the top
+        // Sort reviews to prioritize the current user's reviews
         reviews.sort((a, b) {
           if (a.userId == thisUserId && b.userId != thisUserId) {
-            return -1; // `a` should come before `b`
+            return -1;
           } else if (a.userId != thisUserId && b.userId == thisUserId) {
-            return 1; // `b` should come before `a`
+            return 1;
           } else {
-            return 0; // Leave the order unchanged if neither matches
+            return 0;
           }
         });
 
@@ -169,11 +181,9 @@ class ReviewWidgetController extends GetxController {
     } catch (e) {
       Get.snackbar('Error', 'An error occurred: $e');
     } finally {
-      isLoading.value = false; // Đặt trạng thái tải xong
+      isLoading.value = false; // Set loading to false
     }
   }
-
-
 
   Future<void> applyFilter({
     required int destinationId,
@@ -184,7 +194,7 @@ class ReviewWidgetController extends GetxController {
   }) async {
     try {
       // Fetch the latest reviews before applying filters
-      await fetchReviewsByDestinationID(destinationId);
+      await fetchReviews(id: destinationId);
 
       // Lọc theo ngôn ngữ nếu được chọn
       if (selectedLanguage != null && selectedLanguage.isNotEmpty) {

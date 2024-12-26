@@ -29,7 +29,8 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   @override
   void initState() {
     super.initState();
-    controller.fetchReviewsByDestinationID(widget.restaurant.destinationID);
+    controller.typeOfReview = "destination";
+    controller.fetchReviews(id: widget.restaurant.destinationID);
     controller.fetchRatingDistribution(widget.restaurant.destinationID);
     _getCoordinates(widget.restaurant.restaurantLocation);
   }
@@ -503,7 +504,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                                 print("Average raing: " + controller.averageRating.value.toString());
                                 print("totals review: " + controller.totalReviews.value.toString());
                                 return ReviewWidget(destinationId: widget.restaurant.destinationID, 
-                                                    reviews: controller.reviews,
+                                                    //reviews: controller.reviews,
                                                     ratingCounts: controller.ratingCounts,
                                                     UserId: Get.find<ProfileController>().profileModelObj.value.id);
                               }),

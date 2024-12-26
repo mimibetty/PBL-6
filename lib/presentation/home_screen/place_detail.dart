@@ -27,7 +27,8 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   @override
   void initState() {
     super.initState();
-    controller.fetchReviewsByDestinationID(widget.destination.id);
+    controller.typeOfReview = "destination";
+    controller.fetchReviews(id:widget.destination.id);
     controller.fetchRatingDistribution(widget.destination.id);
     _getCoordinates(widget.destination.location);
   }
@@ -440,7 +441,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                 print("Average raing: " + controller.averageRating.value.toString());
                                 print("totals review: " + controller.totalReviews.value.toString());
                                 return ReviewWidget(destinationId: widget.destination.id,
-                                                    reviews: controller.reviews,
+                                                    //reviews: controller.reviews,
                                                     ratingCounts: controller.ratingCounts,
                                                     UserId: Get.find<ProfileController>().profileModelObj.value.id);
                               }),

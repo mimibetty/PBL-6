@@ -5,13 +5,13 @@ import 'package:travelappflutter/presentation/common_views/circle_rating_widget_
 import 'package:travelappflutter/presentation/common_views/fullscrenn_image_viewer.dart';
 import 'package:travelappflutter/presentation/common_views/horizontal_rating_bar.dart';
 import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
-import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
+// import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/update_review.dart';
 
 class ReviewWidget extends StatelessWidget {
   final int destinationId;
   final int UserId;
-  final List<ReviewModel> reviews;
+  //final List<ReviewModel> reviews;
   final Map<int, int> ratingCounts;
   final ReviewWidgetController controller = Get.put(ReviewWidgetController());
 
@@ -20,7 +20,7 @@ class ReviewWidget extends StatelessWidget {
     Key? key,
     required this.destinationId,
     required this.UserId,
-    required this.reviews,
+    //required this.reviews,
     required this.ratingCounts,
   }) : super(key: key);
 
@@ -502,7 +502,7 @@ class ReviewWidget extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    print("Reviews:  ${reviews.length}");
+                    //print("Reviews:  ${reviews.length}");
                     // Áp dụng bộ lọc
                     // Gọi applyFilter từ Controller khi bấm Apply
                     Get.find<ReviewWidgetController>().applyFilter(

@@ -10,18 +10,23 @@ class RestaurantController extends GetxController {
 
   final String apiUrl = 'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/restaurant/';
 
+  // Fetch a single restaurant's data by its ID
   Future<void> fetchRestaurantData(String restaurantID) async {
     isLoading.value = true;
 
     try {
       final response = await http.get(Uri.parse('$apiUrl$restaurantID'));
+
       if (response.statusCode == 200) {
-        // Parse the API response
         Map<String, dynamic> apiData = json.decode(utf8.decode(response.bodyBytes));
 
-        // Create a new Restaurant object
+        // Create a new Restaurant object and add to the list only if it's not a duplicate
         Restaurant newRestaurant = Restaurant.fromApi(apiData);
-        restaurants.add(newRestaurant); // Add to the restaurants list
+        if (!restaurants.any((restaurant) => restaurant.restaurantID == newRestaurant.restaurantID)) {
+          restaurants.add(newRestaurant);
+        } else {
+          print('Restaurant already exists in the list: ${newRestaurant.restaurantName}');
+        }
       } else {
         Get.snackbar("Error", "Failed to load restaurant data");
         print('Failed to load restaurant data. Status code: ${response.statusCode}');
@@ -34,9 +39,10 @@ class RestaurantController extends GetxController {
     }
   }
 
-    // Sort restaurants based on criteria
+  // Sort restaurants based on criteria
   void sortRestaurants(String criteria, {bool ascending = true}) {
-    restaurants.sort((a, b) {
+    var sortedList = [...restaurants]; // Clone the list
+    sortedList.sort((a, b) {
       switch (criteria) {
         case 'Name':
           return ascending
@@ -55,68 +61,66 @@ class RestaurantController extends GetxController {
       }
     });
 
-    // Print sorted restaurants
+    restaurants.value = sortedList; // Update the reactive list
     print("\nRestaurants sorted by $criteria (${ascending ? 'ascending' : 'descending'})");
     for (var restaurant in restaurants) {
       print("Name: ${restaurant.restaurantName}, Rating: ${restaurant.rating}, Review Count: ${restaurant.review}");
     }
   }
 
-  // Filter restaurants based on special_diets, cuisines, features, and meals
-Future<void> filterRestaurants(String filters, int cityId) async {
-  print("Filters applied: $filters");
-  // Parse filters into a map
-  Map<String, String> queryParameters = {};
-  filters.split(',').forEach((filter) {
-    List<String> parts = filter.split(':').map((e) => e.trim()).toList();
-    if (parts.length == 2) {
-      String key = parts[0].toLowerCase().replaceAll(' ', '_'); // Convert to snake_case
-      String value = parts[1].trim(); // Keep the value as it is
+  // Filter restaurants based on various criteria
+  Future<void> filterRestaurants(String filters, int cityId) async {
+    print("Filters applied: $filters");
 
-      if (key == 'special_diets') {
-        value = value.split(' ').map((e) => e.trim()).join(','); // Convert special diets to lowercase if needed
-      } else if (key == 'cuisines') {
-        value = value.split(' ').map((e) => e.trim()).join(','); // Join multiple cuisines if needed
-      } else if (key == 'features') {
-        value = value.split(' ').map((e) => e.trim()).join(','); // Join multiple features if needed
-      } else if (key == 'meals') {
-        value = value.split(' ').map((e) => e.trim()).join(','); // Join multiple meals if needed
+    // Parse filters into a map
+    Map<String, String> queryParameters = {};
+    filters.split(',').forEach((filter) {
+      List<String> parts = filter.split(':').map((e) => e.trim()).toList();
+      if (parts.length == 2) {
+        String key = parts[0].toLowerCase().replaceAll(' ', '_'); // Convert to snake_case
+        String value = parts[1].trim();
+
+        if (key == 'special_diets' || key == 'cuisines' || key == 'features' || key == 'meals') {
+          value = value.split(' ').map((e) => e.trim()).join(','); // Join multiple values if needed
+        }
+
+        queryParameters[key] = value;
+        print("Key: $key, Value: $value");
       }
-      queryParameters[key] = value;
-      print("Key: $key, Value: $value");
+    });
+
+    // Add city_id as a dynamic parameter
+    queryParameters['city_id'] = cityId.toString();
+    queryParameters['is_popular'] = 'true';
+
+    // Build the final URL with query parameters
+    Uri uri = Uri.parse(apiUrl).replace(queryParameters: queryParameters);
+
+    print("API URL: $uri");
+
+    isLoading.value = true;
+    try {
+      final response = await http.get(uri);
+
+      if (response.statusCode == 200) {
+        List<dynamic> apiData = json.decode(utf8.decode(response.bodyBytes));
+        restaurants.value = apiData
+            .map((data) => Restaurant.fromApi(data))
+            .toList()
+            .toSet()
+            .toList(); // Remove duplicates
+        print("Restaurants fetched successfully.");
+      } else {
+        Get.snackbar("Error", "Failed to fetch restaurants");
+        print('Failed to fetch restaurants. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      Get.snackbar("Error", "An error occurred: $e");
+      print('Error: $e');
+    } finally {
+      isLoading.value = false;
     }
-  });
-
-  // Add city_id as a dynamic parameter
-  queryParameters['city_id'] = cityId.toString();
-  queryParameters['is_popular'] = 'true';
-
-  // Build the final URL with query parameters
-  Uri uri = Uri.parse(apiUrl).replace(queryParameters: queryParameters);
-
-  print("API URL: $uri");
-
-  isLoading.value = true;
-  try {
-    final response = await http.get(uri);
-
-    if (response.statusCode == 200) {
-      // Parse and update restaurants list
-      List<dynamic> apiData = json.decode(utf8.decode(response.bodyBytes));
-      restaurants.value = apiData.map((data) => Restaurant.fromApi(data)).toList();
-      print("Restaurants fetched successfully.");
-    } else {
-      Get.snackbar("Error", "Failed to fetch restaurants");
-      print('Failed to fetch restaurants. Status code: ${response.statusCode}');
-    }
-  } catch (e) {
-    Get.snackbar("Error", "An error occurred: $e");
-    print('Error: $e');
-  } finally {
-    isLoading.value = false;
   }
-}
-
 
   @override
   void onReady() {

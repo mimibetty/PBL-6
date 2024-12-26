@@ -30,7 +30,8 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
   @override
     void initState() {
       super.initState();
-      controller.fetchReviewsByDestinationID(widget.hotel.destinationID);
+      controller.typeOfReview = "destination";
+      controller.fetchReviews(id: widget.hotel.destinationID);
       controller.fetchRatingDistribution(widget.hotel.destinationID);
       // Fetch coordinates for the address
       _getCoordinates(widget.hotel.hotelLocation);
@@ -476,7 +477,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                         print("Average raing: " + controller.averageRating.value.toString());
                         print("totals review: " + controller.totalReviews.value.toString());
                         return ReviewWidget(destinationId: widget.hotel.destinationID ,
-                                            reviews: controller.reviews, 
+                                            //reviews: controller.reviews, 
                                             ratingCounts: controller.ratingCounts,
                                             UserId: Get.find<ProfileController>().profileModelObj.value.id);
                       }),

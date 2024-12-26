@@ -57,6 +57,15 @@ class _SelectableIconButtonWidgetState
                       fontSize: 14,
                     ),
                   ),
+                  SizedBox(width: 4),
+                  Text(
+                    "(${data['count']})", // Hiển thị số lượng
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : Colors.black,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ],
               ),
               selected: isSelected,

@@ -11,7 +11,7 @@ class TourWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.yellow[100], // Màu vàng cho lớp bọc bên ngoài
+        color: const Color.fromARGB(157, 136, 226, 238), // Màu vàng cho lớp bọc bên ngoài
         borderRadius: BorderRadius.circular(20), // Bo góc cho lớp bọc
       ),
       child: Card(
@@ -28,7 +28,7 @@ class TourWidget extends StatelessWidget {
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(15)),
               child: Image.network(
-                tour.images[0], // Access the first image in the list
+                getFirstImageFromTour(tour), // Access the first image in the list
                 height: 180,
                 width: MediaQuery.of(context).size.width *
                     0.75, // Set a fixed width based on screen width
@@ -51,28 +51,28 @@ class TourWidget extends StatelessWidget {
                     overflow: TextOverflow.ellipsis, // Giới hạn text dài
                     maxLines: 2, // Hiển thị tối đa 2 dòng
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 3),
                   Text(
-                    tour.tourCategory,
+                    getDurationText(tour.duration),
                     style: const TextStyle(
                       color: Colors.grey,
                       fontSize: 14,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 3),
                   Row(
                     children: [
-                      const SizedBox(width: 5),
+                      const SizedBox(width: 1),
                       // Sử dụng CircleRatingWidget để hiển thị các hình tròn
                       CircleRatingWidget(rating: tour.rating, size: 16.0),
                       const SizedBox(width: 5),
                       
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
                   Text(
-                    "from \$${tour.price} ",
+                    "From \$${calculateTourBottomPrice(tour)} to \$${calculateTourTopPrice(tour)} ",
                     style: const TextStyle(
                       color: Colors.black,
                       fontSize: 16,
@@ -87,24 +87,24 @@ class TourWidget extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          // Chức năng khi nhấn nút
-                        },
-                        child: const Text("Reserve"),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.yellow,
-                          foregroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   children: [
+                  //     ElevatedButton(
+                  //       onPressed: () {
+                  //         // Chức năng khi nhấn nút
+                  //       },
+                  //       child: const Text("Reserve"),
+                  //       style: ElevatedButton.styleFrom(
+                  //         backgroundColor: Colors.yellow,
+                  //         foregroundColor: Colors.black,
+                  //         shape: RoundedRectangleBorder(
+                  //           borderRadius: BorderRadius.circular(10),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
                 ],
               ),
             ),

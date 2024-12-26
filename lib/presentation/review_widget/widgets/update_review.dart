@@ -49,7 +49,7 @@ class _ReviewFormPageState extends State<UpdateReviewFormPage> {
     'French',
   ];
   // Các biến để lưu giá trị đã chọn
-  List<String> selectedCompanions = [];
+  List<String> selectedCompanions = []; // Biến lưu Companions
   late String selectedLanguage = widget.destinationLanguage; // Biến lưu trữ ngôn ngữ đã chọn
   String reviewText = '';
   String reviewTitle = '';
@@ -77,7 +77,7 @@ class _ReviewFormPageState extends State<UpdateReviewFormPage> {
     _titleController = TextEditingController(text: widget.destinationTitle);
     reviewText = widget.destinationTitle;
     reviewTitle = widget.destinationContent;
-    selectedCompanions = widget.destinationCompanions.split(', ');
+    selectedCompanions = widget.destinationCompanions.split(',');
     _rating = widget.destinationRating;
     selectedLanguage = widget.destinationLanguage;
     // Gọi hàm load dữ liệu
@@ -94,6 +94,7 @@ class _ReviewFormPageState extends State<UpdateReviewFormPage> {
   }
 
   @override
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -167,7 +168,7 @@ class _ReviewFormPageState extends State<UpdateReviewFormPage> {
                 style: TextStyle(fontSize: 17)),
             SizedBox(height: 3),
             SelectableChipWidget(
-              initialSelectedLabels: [widget.destinationCompanions],
+              initialSelectedLabels: widget.destinationCompanions.split(','),
               labels: ['Business', 'Couples', 'Family', 'Friends', 'Solo'],
               onSelectionChanged: (selectedLabels) {
                 setState(() {
@@ -225,12 +226,12 @@ class _ReviewFormPageState extends State<UpdateReviewFormPage> {
                     try {
                       // Call the createReview function to submit the review  
                         controller.updateReview(
-                          destinationId: widget.destinationId, // Pass destination
+                          id: widget.destinationId, // Pass destination
                           reviewId: widget.reviewId, // Pass review ID       
                           title: reviewTitle, // Pass title
                           content: reviewText, // Pass content
                           rating: _rating, // Pass rating
-                          companion: selectedCompanions.join(', '), // Pass companion(s)
+                          companion: selectedCompanions.join(','), // Pass companion(s)
                           language: selectedLanguage, // Pass language
                           newImages: selectedImages, // Pass selected images
                           imageIdsToRemove: existingImageIdsToRemove, // Pass empty list for image IDs to remove
