@@ -6,7 +6,7 @@ import 'package:travelappflutter/presentation/common_views/geocoding_service.dar
 import 'package:travelappflutter/presentation/map/map_screen.dart';
 
 class BusinessPostScreen extends StatefulWidget {
-  final Business business;
+  final Business? business;
 
   BusinessPostScreen({required this.business});
 
@@ -129,7 +129,7 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
           children: [
             ClipOval(
               child: Image.network(
-                widget.business.logoUrl,
+                widget.business!.logoUrl,
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,
@@ -150,7 +150,7 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.business.name,
+                    widget.business!.name,
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -159,7 +159,7 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    widget.business.address,
+                    widget.business!.address,
                     style: const TextStyle(fontSize: 16, color: Colors.black54),
                   ),
                 ],
@@ -192,9 +192,9 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildDetailRow(Icons.phone, widget.business.phoneNumber),
+            _buildDetailRow(Icons.phone, widget.business!.phoneNumber),
             const SizedBox(height: 8),
-            _buildDetailRow(Icons.info, widget.business.description),
+            _buildDetailRow(Icons.info, widget.business!.description),
           ],
         ),
       ),
@@ -217,7 +217,7 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
   }
 
   Widget _buildImagesSlider() {
-    if (widget.business.images.isEmpty) {
+    if (widget.business!.images.isEmpty) {
       return Center(
         child: Column(
           children: [
@@ -235,7 +235,7 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
     return Column(
       children: [
         CarouselSlider.builder(
-          itemCount: widget.business.images.length,
+          itemCount: widget.business!.images.length,
           options: CarouselOptions(
             height: 200.0,
             autoPlay: true,
@@ -252,7 +252,7 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
             return ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Image.network(
-                widget.business.images[index],
+                widget.business!.images[index],
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Container(
                   color: Colors.grey[200],
@@ -266,8 +266,8 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
         const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: widget.business.images.map((image) {
-            int index = widget.business.images.indexOf(image);
+          children: widget.business!.images.map((image) {
+            int index = widget.business!.images.indexOf(image);
             return Container(
               width: 8.0,
               height: 8.0,

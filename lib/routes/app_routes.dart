@@ -1,6 +1,7 @@
 import 'package:travelappflutter/presentation/business_creation_screen/binding/business_creation_screen_binding.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/business_creation_screen.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/business_post_screen.dart';
+import 'package:travelappflutter/presentation/business_creation_screen/models/business_model.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/binding/plan_screen_binding.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_1.dart';
 import 'package:travelappflutter/presentation/home_screen/binding/welcome_binding.dart';
@@ -101,7 +102,7 @@ class AppRoutes {
   static String businessPostScreen = '/business_post_screen';
 
   static String planScreen = '/plan_screen';
-
+  
 
   static List<GetPage> pages = [
     GetPage(
@@ -125,14 +126,7 @@ class AppRoutes {
         OnboardOneBinding(),
       ],
     ),
-    // GetPage(
-    //   name: createReviewScreen,
-    //   page: () => ReviewFormPage(destinationId), // Truyền destinationId vào
-
-    //   bindings: [
-    //     ReviewWidgetBinding(),
-    //   ],
-    // ),
+   
     GetPage(
       name: businessCreationScreen,
       page: () => CreateBusinessPostScreen(),

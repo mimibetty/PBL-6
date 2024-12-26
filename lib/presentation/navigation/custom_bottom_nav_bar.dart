@@ -68,7 +68,7 @@ class CustomBottomNavBar extends StatelessWidget {
                   if (profileController.profileModelObj.value.role == 'guest') {
                     Get.toNamed('/plan_screen'); // Navigate to AI Trip
                   } else {
-                    Get.toNamed('/business_creation_screen'); // Navigate to Destination
+                    Get.toNamed('/business_post_screen'); // Navigate to Destination
                   }
                   break;
                 case 3:
