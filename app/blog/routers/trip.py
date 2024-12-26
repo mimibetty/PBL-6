@@ -87,7 +87,13 @@ async def build_trip(
         
         destination_map: Dict[str, int] = {}
         destination_names = []
-        
+        # for dest_id in all_destination_ids:
+        #     coords, address = map.get_destination_coordinates(destination_id, db)
+        #     if coords is not none and address is not none:
+        #         lat, long = coords
+        #         destination_names.append(address)
+        #         destination_map[address] = dest_id
+            
         for dest_id in all_destination_ids:
             name_result = destination.getName_by_id(dest_id, db)
             if name_result:
@@ -102,7 +108,6 @@ async def build_trip(
         #         destination_map[address] = dest_id
                 
         trip_plan = trip.run_travel_planner(destination_names, trip_day)
-
         daily_schedule = {}
         daily_distances = {}
         current_day = None

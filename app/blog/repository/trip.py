@@ -251,15 +251,15 @@ class TravelPlanner:
         self.n = len(locations)
         self.m = len(centers)
 
-        # Get coordinates for all locations
+        # Get coordinates for all locations 
         self.coordinates = []
         for location in locations:
-            coords = mapService.get_coordinate(location)
+            coords = map.get_coordinate(location)
             self.coordinates.append(coords)
             print(f"Tọa độ của '{location}': {coords}")
 
         # Build distance matrix
-        self.distances = mapService.get_distances_between_all_locations(self.coordinates)
+        self.distances = map.get_distances_between_all_locations(self.coordinates)
         # print("\nMa trận khoảng cách:")
         # for row in self.distances:
         #     print(row)
