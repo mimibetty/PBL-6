@@ -32,7 +32,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
       super.initState();
       controller.typeOfReview = "destination";
       controller.fetchReviews(id: widget.hotel.destinationID);
-      controller.fetchRatingDistribution(widget.hotel.destinationID);
+      controller.fetchRatingDistribution(id: widget.hotel.destinationID);
       // Fetch coordinates for the address
       _getCoordinates(widget.hotel.hotelLocation);
     }
@@ -97,12 +97,10 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
         ),
         actions: [
           HeartIconWidget(
-            isLiked: isLiked,
-            onDoubleTap: () {
-              setState(() {
-                isLiked = !isLiked; // Thay đổi trạng thái nút tim
-              });
-            },
+            userId: Get.find<ProfileController>().profileModelObj.value.id, // Add the userId argument
+            destinationId: widget.hotel.hotelID, // Add the destinationId argument
+            isLiked: isLiked, // Truyền trạng thái isLiked vào
+            //size: 18,
           ),
           const SizedBox(
             width: 10,

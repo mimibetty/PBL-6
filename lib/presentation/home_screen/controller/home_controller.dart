@@ -7,7 +7,6 @@ import 'package:http/http.dart' as http;
 class HomeController extends GetxController {
   Rx<HomeModel> homeModelObj = HomeModel().obs;
   var selectedPage = 0.obs;
-  var role = ''.obs; // Observable to store user role
   Rx<List<TravelDestination>> myDestination = Rx<List<TravelDestination>>([]);
   Rx<List<TravelDestination>> popularDestinations = Rx<List<TravelDestination>>([]); // For popular destinations
   Rx<List<TravelDestination>> recommendationDestinations = Rx<List<TravelDestination>>([]); // For recommendations

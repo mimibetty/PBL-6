@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
+import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
 
 class FavouriteScreen extends StatefulWidget {
   @override
@@ -113,16 +114,12 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
                                 Positioned(
                                   top: 8,
                                   right: 8,
-                                  child: HeartIconWidget(
-                                    isLiked: isLiked,
-                                    onDoubleTap: () {
-                                      setState(() {
-                                        isLiked =
-                                            !isLiked; // Thay đổi trạng thái nút tim
-                                      });
-                                    },
-                                    size: 15,
-                                  ),
+                                  child:  HeartIconWidget(
+                  userId: Get.find<ProfileController>().profileModelObj.value.id, // Add the userId argument
+                  destinationId: 123, // Add the destinationId argument
+                  isLiked: isLiked, // Truyền trạng thái isLiked vào
+                  size: 18,
+                ),
                                 ),
                               ],
                             ),

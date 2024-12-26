@@ -29,7 +29,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
     super.initState();
     controller.typeOfReview = "destination";
     controller.fetchReviews(id:widget.destination.id);
-    controller.fetchRatingDistribution(widget.destination.id);
+    controller.fetchRatingDistribution(id: widget.destination.id);
     _getCoordinates(widget.destination.location);
   }
 
@@ -92,12 +92,10 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
         ),
         actions: [
           HeartIconWidget(
-            isLiked: isLiked,
-            onDoubleTap: () {
-              setState(() {
-                isLiked = !isLiked; // Thay đổi trạng thái nút tim
-              });
-            },
+            userId: Get.find<ProfileController>().profileModelObj.value.id, // Add the userId argument
+            destinationId: widget.destination.id, // Add the destinationId argument
+            isLiked: isLiked, // Truyền trạng thái isLiked vào
+            //size: 18,
           ),
           const SizedBox(width: 10),
           GestureDetector(

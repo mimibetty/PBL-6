@@ -31,7 +31,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
     super.initState();
     controller.typeOfReview = "destination";
     controller.fetchReviews(id: widget.restaurant.destinationID);
-    controller.fetchRatingDistribution(widget.restaurant.destinationID);
+    controller.fetchRatingDistribution(id: widget.restaurant.destinationID);
     _getCoordinates(widget.restaurant.restaurantLocation);
   }
 
@@ -163,12 +163,10 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
         ),
         actions: [
           HeartIconWidget(
-            isLiked: isLiked,
-            onDoubleTap: () {
-              setState(() {
-                isLiked = !isLiked; // Thay đổi trạng thái nút tim
-              });
-            },
+            userId: Get.find<ProfileController>().profileModelObj.value.id, // Add the userId argument
+            destinationId: widget.restaurant.restaurantID, // Add the destinationId argument
+            isLiked: isLiked, // Truyền trạng thái isLiked vào
+            //size: 18,
           ),
           const SizedBox(width: 10),
           GestureDetector(

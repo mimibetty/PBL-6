@@ -16,8 +16,8 @@ class ReviewWidgetController extends GetxController {
   RxString selectedLanguage = 'English'.obs; // Lưu ngôn ngữ được chọn
   
   final String apiBaseUrl = 'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/review/';
-  final String ratingDistributionUrl = 'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/rating-distribution/';
-  
+  final String ratingDistributionUrlForDestination = 'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/rating-distribution/';
+  final String ratingDistributionUrlForTour = 'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/tour/rating-distribution/';
   // Function to create review
 
   // Hàm Create Review
@@ -280,18 +280,25 @@ class ReviewWidgetController extends GetxController {
     }
   }
 
-  /// Fetch rating distribution for a specific destination ID
-  Future<void> fetchRatingDistribution(int destinationId) async {
+  /// Fetch rating distribution for a specific ID
+  Future<void> fetchRatingDistribution({
+    required int id,
+  }) async {
     try {
       isLoading.value = true;
 
-      final Uri url = Uri.parse('$ratingDistributionUrl$destinationId');
-      final response = await http.get(url);
+      // Determine the appropriate URL based on the typeOfReview
+      final String url = typeOfReview == 'destination'
+          ? '$ratingDistributionUrlForDestination$id'
+          : '$ratingDistributionUrlForTour$id';
+
+      final Uri uri = Uri.parse(url);
+      final response = await http.get(uri);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(utf8.decode(response.bodyBytes));
         print('Rating distribution: $responseData');
-        // Gán trực tiếp dữ liệu từ API vào ratingCounts
+        // Map API response to ratingCounts
         ratingCounts.value =
             responseData.map((key, value) => MapEntry(int.parse(key), value as int));
       } else {
@@ -303,6 +310,7 @@ class ReviewWidgetController extends GetxController {
       isLoading.value = false;
     }
   }
+
     double calculateAverageRating(List<ReviewModel> reviews) {
     if (reviews.isEmpty) return 0.0; // Nếu không có đánh giá, trả về 0.0
     
@@ -313,4 +321,60 @@ class ReviewWidgetController extends GetxController {
     double averageRating = totalRating / reviews.length;
     return double.parse(averageRating.toStringAsFixed(1));
   }
+  
+  Future<void> fetchReviewsByUserId({required int userId}) async {
+  isLoading.value = true; // Đặt trạng thái loading
+  reviews.clear(); // Xóa dữ liệu review cũ
+
+  try {
+    // Tạo URL với user_id
+    final Uri url = Uri.parse('${apiBaseUrl}?user_id=$userId');
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> responseData =
+          json.decode(utf8.decode(response.bodyBytes));
+
+      final List<Future<ReviewModel>> reviewFutures =
+          responseData.map((reviewData) async {
+        // Fetch thêm thông tin người dùng
+        final int userId = reviewData['user_id'];
+        final Uri userUrl = Uri.parse(
+            'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/user/$userId');
+
+        String userName = 'Unknown';
+        String userAvatarUrl =
+            'https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png';
+
+        final userResponse = await http.get(userUrl);
+        if (userResponse.statusCode == 200) {
+          final userData = json.decode(utf8.decode(userResponse.bodyBytes));
+          userName = userData['username'] ?? userName;
+          userAvatarUrl =
+              userData['user_info']?['image']?['url'] ?? userAvatarUrl;
+        }
+
+        return ReviewModel.fromJson({
+          ...reviewData,
+          'user_name': userName,
+          'user_avatar_url': userAvatarUrl,
+        });
+      }).toList();
+
+      // Cập nhật reviews
+      reviews.value = await Future.wait(reviewFutures);
+
+      // Cập nhật tổng số và điểm trung bình
+      totalReviews.value = reviews.length;
+      averageRating.value = calculateAverageRating(reviews);
+    } else {
+      Get.snackbar('Error', 'Failed to load user reviews');
+    }
+  } catch (e) {
+    Get.snackbar('Error', 'An error occurred: $e');
+  } finally {
+    isLoading.value = false; // Đặt trạng thái loading về false
+  }
+}
 }

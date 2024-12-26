@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart'; // Để định dạng ngày
 import 'package:travelappflutter/presentation/common_views/circle_rating_widget_view.dart';
+import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
 
 class Review extends StatefulWidget {
@@ -11,13 +13,12 @@ class Review extends StatefulWidget {
 }
 
 class _ReviewState extends State<Review> {
+  final ReviewWidgetController reviewController = Get.put<ReviewWidgetController>(ReviewWidgetController());
   String _sortOrder = 'Newest First'; // Mặc định là "Mới nhất"
 
   @override
   Widget build(BuildContext context) {
-    // Mock data có sẵn
-    final List<ReviewModel> reviews = mockReviews;
-
+    List<ReviewModel> reviews = reviewController.reviews; // Lấy danh sách review từ controller
     // Sắp xếp lại danh sách review theo lựa chọn
     if (_sortOrder == 'Newest First') {
       reviews.sort((a, b) => DateTime.parse(b.dateCreated).compareTo(DateTime.parse(a.dateCreated)));
@@ -107,7 +108,7 @@ class _ReviewState extends State<Review> {
                                   ),
                                   const SizedBox(width: 20),
                                   Text(
-                                    review.userId.toString(),
+                                    review.userName.toString(),
                                     style: const TextStyle(
                                         fontSize: 16,
                                         color: Colors.black,

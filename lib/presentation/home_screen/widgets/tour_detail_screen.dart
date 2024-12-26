@@ -20,15 +20,15 @@ class TourDetailScreen extends StatefulWidget {
 }
 
 class _TourDetailScreenState extends State<TourDetailScreen> {
-  final TourController tourController = Get.find<TourController>();
-  final ReviewWidgetController reviewController = Get.find<ReviewWidgetController>();
+  final TourController tourController = Get.put(TourController());
+  final ReviewWidgetController reviewController = Get.put(ReviewWidgetController());
   @override
   void initState() {
     super.initState();
     tourImages = getImagesFromTour(widget.tour);
     reviewController.typeOfReview = 'tour';
     reviewController.fetchReviews(id: widget.tour.id);
-    reviewController.fetchRatingDistribution(widget.tour.id);
+    reviewController.fetchRatingDistribution(id: widget.tour.id);
   }
 
   PageController pageController = PageController();

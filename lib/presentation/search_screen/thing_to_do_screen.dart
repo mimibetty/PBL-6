@@ -60,7 +60,7 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
   @override
   void initState() {
     super.initState();
-    thingsToDoController.fetchTags();
+    thingsToDoController.fetchTags(widget.cityID);
     thingsToDoController.fetchAllThingsToDo(widget.cityID);
     tourController.fetchTourByCityID(widget.cityID);
   }

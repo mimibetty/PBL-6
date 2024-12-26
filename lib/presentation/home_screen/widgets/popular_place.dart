@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
+import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
 import '../models/travel_model.dart';
 
 class PopularPlace extends StatefulWidget {
@@ -55,13 +57,10 @@ class _PopularPlaceState extends State<PopularPlace> {
                   child: Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: HeartIconWidget(
-                      isLiked: isLiked,
-                      size: 24,
-                      onDoubleTap: () {
-                        setState(() {
-                          isLiked = !isLiked; // Thay đổi trạng thái khi double-tap
-                        });
-                      },
+                      userId: Get.find<ProfileController>().profileModelObj.value.id, // Add the userId argument
+                      destinationId: widget.destination.id, // Add the destinationId argument
+                      isLiked: isLiked, // Truyền trạng thái isLiked vào
+                      size: 30,
                     ),
                   ),
                 ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:http/http.dart';
 import 'package:travelappflutter/presentation/common_views/see_all_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';

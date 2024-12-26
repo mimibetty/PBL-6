@@ -13,12 +13,12 @@ class ThingsToDoController extends GetxController {
   final String apiUrl = 'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net'; // API URL gốc
 
   // Phương thức lấy danh sách tag và số lượng điểm đến từ hai API
-  Future<void> fetchTags() async {
+  Future<void> fetchTags(int cityID) async {
     isLoadingForTags.value = true; // Set loading to true
     try {
       // Fetch full tag list
       final responseTags = await http.get(Uri.parse('$apiUrl/tag/'));
-      final responseTagCounts = await http.get(Uri.parse('$apiUrl/tag/destination_num'));
+      final responseTagCounts = await http.get(Uri.parse('$apiUrl/tag/destination_num?city_id=$cityID'));
 
       if (responseTags.statusCode == 200 && responseTagCounts.statusCode == 200) {
         // Parse the responses
@@ -102,7 +102,7 @@ class ThingsToDoController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchTags(); // Lấy danh sách tag khi khởi tạo controller
+    //fetchTags(); // Lấy danh sách tag khi khởi tạo controller
     //fetchAllThingsToDo(); // Tải toàn bộ ThingsToDo mặc định khi khởi tạo
   }
 }
