@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from blog import models, schemas
 from fastapi import HTTPException, status
-from sqlalchemy import func
+from sqlalchemy import func, text
 
 
 def create_tag(request: schemas.Tag, db: Session):
@@ -103,3 +103,29 @@ def get_destination_num_of_each_tag(db: Session):
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error retrieving destinations count: {str(e)}")
+
+
+def get_tag_in_dict(db: Session):
+    # Lấy danh sách tag_id từ cơ sở dữ liệu
+    tags = db.query(models.Tag.id).all()
+    
+    # Tạo dictionary với giá trị khởi tạo là 0
+    tag_dict = {tag.id: 0 for tag in tags}
+
+    return tag_dict
+
+
+def get_destination_num_by_tag_and_city(db: Session, city_id: int = None):
+    # Truy vấn SQL để lấy số lượng điểm đến cho từng tag
+    query = text("""
+        SELECT a.city_id, dt.tag_id AS id, t.name AS name, COUNT(dt.destination_id) AS destination_count
+        FROM destination_tag dt
+        JOIN destination d ON dt.destination_id = d.id
+        JOIN address a ON d.address_id = a.id
+        JOIN tag t ON dt.tag_id = t.id
+        WHERE a.city_id = :city_id
+        GROUP BY dt.tag_id, t.name;
+""")
+    result = db.execute(query, {"city_id": city_id}).fetchall()
+    
+    return result
