@@ -341,7 +341,7 @@ def get_recommendations(
 
 @router.delete("/{id}")
 async def delete_destination_by_id(id: int, db: Session = Depends(get_db),
-    _ = Depends(authorize_action(action_name='DELETE_DESTINATION')),
+    # _ = Depends(authorize_action(action_name='DELETE_DESTINATION')),
     ):
     return await destination.delete_by_id(id, db)
 
