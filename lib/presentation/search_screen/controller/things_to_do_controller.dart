@@ -9,30 +9,56 @@ class ThingsToDoController extends GetxController {
   RxList<TravelDestination> thingsToDoList = <TravelDestination>[].obs; // Danh sách ThingsToDo theo tag
   RxBool isLoading = false.obs; // Trạng thái loading
   RxInt selectedTagId = 0.obs; // ID của tag được chọn (0 nghĩa là không chọn tag nào)
-
+  RxBool isLoadingForTags = false.obs; // Trạng thái loading
   final String apiUrl = 'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net'; // API URL gốc
 
-  // Phương thức lấy tất cả các tag từ API
+  // Phương thức lấy danh sách tag và số lượng điểm đến từ hai API
   Future<void> fetchTags() async {
+    isLoadingForTags.value = true; // Set loading to true
     try {
-      final response = await http.get(Uri.parse('$apiUrl/tag/'));
-      if (response.statusCode == 200) {
-        List<dynamic> apiTags = json.decode(utf8.decode(response.bodyBytes));
-        tags.value = apiTags.map((tag) => Tag.fromJson(tag)).toList();
+      // Fetch full tag list
+      final responseTags = await http.get(Uri.parse('$apiUrl/tag/'));
+      final responseTagCounts = await http.get(Uri.parse('$apiUrl/tag/destination_num'));
+
+      if (responseTags.statusCode == 200 && responseTagCounts.statusCode == 200) {
+        // Parse the responses
+        List<dynamic> apiTags = json.decode(utf8.decode(responseTags.bodyBytes));
+        List<dynamic> apiTagCounts = json.decode(utf8.decode(responseTagCounts.bodyBytes));
+
+        // Create a map from the destination_num API
+        Map<int, int> tagCountsMap = {
+          for (var tag in apiTagCounts)
+            tag['id']: tag['destination_count']
+        };
+
+        // Combine both API responses
+        tags.value = apiTags.map((tag) {
+          int id = tag['id'];
+          return Tag(
+            id: id,
+            name: tag['name'],
+            destinationCount: tagCountsMap[id] ?? 0, // Default to 0 if not found
+          );
+        }).toList();
       } else {
-        print("Failed to load tags: ${response.statusCode}");
+        print("Failed to load tags or counts: ${responseTags.statusCode}, ${responseTagCounts.statusCode}");
       }
     } catch (e) {
-      print("Error fetching tags: $e");
+      print("Error fetching tags or counts: $e");
+    } finally {
+      isLoadingForTags.value = false; // Set loading to false
     }
   }
 
   // Phương thức lấy danh sách ThingsToDo theo tagId
-  Future<void> fetchThingsToDoByTag(int tagId,int cityID) async {
+  Future<void> fetchThingsToDoByTag(int tagId, int cityID) async {
     isLoading.value = true;
-    selectedTagId.value = tagId;
+
     try {
+      // Gọi API để lấy danh sách theo tagId
+      selectedTagId.value = tagId;
       final response = await http.get(Uri.parse('$apiUrl/destination/by_tags?tag_ids=$tagId&city_id=$cityID'));
+
       if (response.statusCode == 200) {
         List<dynamic> apiData = json.decode(utf8.decode(response.bodyBytes));
         thingsToDoList.value = apiData.map((data) => TravelDestination.fromJson(data)).toList();
@@ -46,41 +72,31 @@ class ThingsToDoController extends GetxController {
     }
   }
 
-  // Phương thức để lấy tất cả các ThingsToDo khi không lọc theo tag
-  Future<void> fetchAllThingsToDo() async {
-  isLoading.value = true;
-  selectedTagId.value = 0; // Đặt lại selectedTagId về 0 khi tải toàn bộ
-  try {
-    final response = await http.get(Uri.parse('$apiUrl/destination/?is_popular=true&get_rating=true'));
-    
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}'); // In ra dữ liệu nhận được từ API
+  // Phương thức lấy tất cả ThingsToDo
+  Future<void> fetchAllThingsToDo(int cityID) async {
+    isLoading.value = true;
+    try {
+      final response = await http.get(Uri.parse('$apiUrl/destination/?city_id=$cityID'));
 
-    if (response.statusCode == 200) {
-      List<dynamic> apiData = json.decode(utf8.decode(response.bodyBytes));
-      if (apiData.isEmpty) {
-        print("No data found for things to do.");
+      if (response.statusCode == 200) {
+        List<dynamic> apiData = json.decode(utf8.decode(response.bodyBytes));
+        thingsToDoList.value = apiData.map((data) => TravelDestination.fromJson(data)).toList();
+      } else {
+        print("Failed to load all things to do: ${response.statusCode}");
       }
-      thingsToDoList.value = apiData.map((data) => TravelDestination.fromJson(data)).toList();
-      print('Number of things to do: ${thingsToDoList.length}');
-    } else {
-      print("Failed to load all things to do: ${response.statusCode}");
+    } catch (e) {
+      print("Error fetching all things to do: $e");
+    } finally {
+      isLoading.value = false;
     }
-  } catch (e) {
-    print("Error fetching all things to do: $e");
-  } finally {
-    isLoading.value = false;
   }
-}
+
 
 
   // Phương thức để làm mới danh sách ThingsToDo dựa trên tag đã chọn
   void refreshThingsToDo(int cityID) {
-    if (selectedTagId.value == 0) {
-      //fetchAllThingsToDo();
-    } else {
-      fetchThingsToDoByTag(selectedTagId.value,cityID);
-    }
+    print("Refreshing things to do ");
+    fetchAllThingsToDo(cityID);
   }
 
   @override

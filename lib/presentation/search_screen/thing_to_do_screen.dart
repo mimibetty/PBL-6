@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:travelappflutter/presentation/common_views/see_all_widget.dart';
 import 'package:travelappflutter/presentation/common_views/selectable_icon_button_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
-import 'package:travelappflutter/presentation/home_screen/models/tour_model.dart';
+import 'package:travelappflutter/presentation/home_screen/controller/tour_controller.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/home_screen/place_detail.dart';
 import 'package:travelappflutter/presentation/home_screen/widgets/popular_place.dart';
@@ -53,14 +54,15 @@ Widget experienceButton(String label, int count, IconData icon) {
 }
 
 class _ThingToDoScreenState extends State<ThingToDoScreen> {
-  final ThingsToDoController thingsToDoController =
-      Get.put(ThingsToDoController());
-
+  final ThingsToDoController thingsToDoController = Get.put(ThingsToDoController());
+  final TourController tourController = Get.put(TourController());
+  
   @override
   void initState() {
     super.initState();
     thingsToDoController.fetchTags();
-    // thingsToDoController.fetchAllThingsToDo();
+    thingsToDoController.fetchAllThingsToDo(widget.cityID);
+    tourController.fetchTourByCityID(widget.cityID);
   }
 
   @override
@@ -68,8 +70,9 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
     // List<TravelDestination> popularDestinations = widget.destinations.toList();
     List<TravelDestination> recommendDestinations =
         widget.destinations.toList();
-    final List<Tour> daNangTours =
-        mockTours.where((tour) => tour.location == "Đà Nẵng").toList();
+    // Sắp xếp giảm dần theo rating
+    recommendDestinations.sort((a, b) => b.rating.compareTo(a.rating));
+
 
     return Scaffold(
       backgroundColor: kBackgroundColor,
@@ -144,23 +147,42 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
               ),
             ),
           ),
-          SelectableIconButtonWidget(
-            buttonData: thingsToDoController.tags
-                .map((tag) => {
-                      'label': tag.name,
-                      'icon': _getIconForTag(
-                          tag.name), // Trả về IconData thay vì Icon
-                    })
-                .toList(),
-            onSelectionChanged: (selectedTag) {
-              // Khi người dùng chọn tag, load dữ liệu tương ứng
-              final selectedTagId = thingsToDoController.tags
-                  .firstWhere((tag) => tag.name == selectedTag)
-                  .id;
-              thingsToDoController.fetchThingsToDoByTag(selectedTagId,widget.cityID);
-            },
-          ),
+          Obx(() {
+            if (thingsToDoController.isLoadingForTags.value) {
+              // Show loading indicator while tags are loading
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (thingsToDoController.tags.isEmpty) {
+              // Display message if no tags are available
+              return const Center(
+                child: Text("No tags available."),
+              );
+            }
+            return SelectableIconButtonWidget(
+              buttonData: thingsToDoController.tags.map((tag) {
+                return {
+                  'label': tag.name,
+                  'icon': _getIconForTag(tag.name),
+                  'count' : tag.destinationCount,
+                  //'count' : thingsToDoController.thingsToDoList.length,
+                };
+              }).toList(),
+              onSelectionChanged: (selectedTagName) {
+                final selectedTag = thingsToDoController.tags
+                    .firstWhereOrNull((tag) => tag.name == selectedTagName);
 
+                if (selectedTag != null) {
+                  thingsToDoController.fetchThingsToDoByTag(
+                    selectedTag.id,
+                    widget.cityID,
+                  );
+                } else {
+                  thingsToDoController.refreshThingsToDo(widget.cityID);
+                  //Get.snackbar('Error', 'Tag not found');
+                }
+              },
+            );
+          }),
           const SizedBox(height: 15),
           // Hiển thị danh sách điểm đến tương ứng khi nhấn tag
           Obx(() {
@@ -200,12 +222,12 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
             );
           }),
 
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   "Recommendation for you",
                   style: TextStyle(
                     fontSize: 20,
@@ -213,11 +235,26 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
                     color: Colors.black,
                   ),
                 ),
-                Text(
-                  "See all",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: blueTextColor,
+                TextButton(
+                  onPressed: recommendDestinations.isNotEmpty
+                      ? () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => SeeAllScreen(
+                                title: "Recommended for You",
+                                destinations: recommendDestinations,
+                              ),
+                            ),
+                          );
+                        }
+                      : null, // Vô hiệu hóa nếu danh sách rỗng
+                  child: const Text(
+                    "See all",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: blueTextColor,
+                    ),
                   ),
                 ),
               ],
@@ -228,7 +265,7 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Column(
               children: List.generate(
-                recommendDestinations.length,
+                recommendDestinations.length <= 8 ? recommendDestinations.length : 8,
                 (index) => Padding(
                   padding: const EdgeInsets.only(bottom: 15),
                   child: GestureDetector(
@@ -273,39 +310,43 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 20),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.center, // Căn giữa các phần tử trong Row
-              mainAxisSize: MainAxisSize
-                  .min, // Đảm bảo Row không chiếm toàn bộ chiều ngang
-              children: List.generate(
-                daNangTours.length,
-                (index) => Padding(
-                  padding: const EdgeInsets.only(
-                      bottom: 15, right: 10), // Căn lề phải giữa các phần tử
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => TourDetailScreen(
-                            tour: daNangTours[index],
+          const SizedBox(height: 12),
+          Obx(() {
+            if (tourController.isLoading.value) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (tourController.tours.isEmpty) {
+              return const Center(child: Text("No tours available."));
+            }
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: Row(
+                children: List.generate(
+                 tourController.tours.length,
+                  (index) => Padding(
+                    padding: const EdgeInsets.only(bottom: 15, right: 10),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => TourDetailScreen(
+                              tour:tourController.tours[index],
+                              cityName: widget.cityNames,
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                    child: TourWidget(
-                      tour: daNangTours[index],
+                        );
+                      },
+                      child: TourWidget(
+                        tour:tourController.tours[index],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          )
+            );
+          }),
         ],
       ),
       bottomNavigationBar: CustomBottomNavBar(controller: HomeController()),

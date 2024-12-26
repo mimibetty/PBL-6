@@ -22,7 +22,13 @@ class HotelController extends GetxController {
 
         // Create a new Hotel object
         Hotel newHotel = Hotel.fromApi(apiData);
-        hotels.add(newHotel); // Add to the hotels list
+
+        // Check if the hotel already exists in the list
+        if (!hotels.any((hotel) => hotel.hotelID == newHotel.hotelID)) {
+          hotels.add(newHotel); // Add to the hotels list
+        } else {
+          print('Hotel already exists in the list: ${newHotel.hotelName}');
+        }
       } else {
         Get.snackbar("Error", "Failed to load hotel data");
         print('Failed to load hotel data. Status code: ${response.statusCode}');
@@ -35,8 +41,10 @@ class HotelController extends GetxController {
     }
   }
 
+
   void sortHotels(String criteria, {bool ascending = true}) {
-    hotels.sort((a, b) {
+    var sortedList = [...hotels]; // Clone the original list
+    sortedList.sort((a, b) {
       switch (criteria) {
         case 'Name':
           return ascending
@@ -54,60 +62,64 @@ class HotelController extends GetxController {
           return 0;
       }
     });
+    hotels.value = sortedList; // Update the observable list
   }
 
-Future<void> filterHotels(String filters, int cityId) async {
-  print("Filters applied: $filters");
+  Future<void> filterHotels(String filters, int cityId) async {
+    print("Filters applied: $filters");
 
-  // Parse filters into a map
-  Map<String, String> queryParameters = {};
-  filters.split(',').forEach((filter) {
-    List<String> parts = filter.split(':').map((e) => e.trim()).toList();
-    if (parts.length == 2) {
-      String key = parts[0].toLowerCase().replaceAll(' ', '_'); // Convert to snake_case
-      String value = parts[1].trim(); // Không chỉnh sửa giá trị trước khi xử lý
+    // Parse filters into a map
+    Map<String, String> queryParameters = {};
+    filters.split(',').forEach((filter) {
+      List<String> parts = filter.split(':').map((e) => e.trim()).toList();
+      if (parts.length == 2) {
+        String key = parts[0].toLowerCase().replaceAll(' ', '_'); // Convert to snake_case
+        String value = parts[1].trim(); // Không chỉnh sửa giá trị trước khi xử lý
 
-      if (key == 'price_range') {
-        value = value.toLowerCase(); // Price Range chuyển thành lowercase
-      } else if (key == 'star') {
-        key = 'hotel_star'; // Đổi tên thành hotel_star
-        value = value.split(' ')[0]; // Lấy số, bỏ từ "Star"
+        if (key == 'price_range') {
+          value = value.toLowerCase(); // Price Range chuyển thành lowercase
+        } else if (key == 'star') {
+          key = 'hotel_star'; // Đổi tên thành hotel_star
+          value = value.split(' ')[0]; // Lấy số, bỏ từ "Star"
+        }
+        queryParameters[key] = value;
       }
-      // Giữ nguyên giá trị cho 'amenities'
-      
-      queryParameters[key] = value;
+    });
+
+    // Add city_id as a dynamic parameter
+    queryParameters['city_id'] = cityId.toString();
+    queryParameters['is_popular'] = 'true';
+
+    // Build the final URL with query parameters
+    Uri uri = Uri.parse(apiUrl).replace(queryParameters: queryParameters);
+
+    print("API URL: $uri");
+
+    isLoading.value = true;
+    try {
+      final response = await http.get(uri);
+
+      if (response.statusCode == 200) {
+        // Parse and update hotels list
+        List<dynamic> apiData = json.decode(utf8.decode(response.bodyBytes));
+        hotels.value = apiData
+            .map((data) => Hotel.fromApi(data))
+            .toList()
+            .toSet() // Remove duplicates
+            .toList();
+        print("Hotels fetched successfully.");
+      } else {
+        Get.snackbar("Error", "Failed to fetch hotels");
+        print('Failed to fetch hotels. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      Get.snackbar("Error", "An error occurred: $e");
+      print('Error: $e');
+    } finally {
+      isLoading.value = false;
     }
-  });
-
-  // Add city_id as a dynamic parameter
-  queryParameters['city_id'] = cityId.toString();
-  queryParameters['is_popular'] = 'true';
-
-  // Build the final URL with query parameters
-  Uri uri = Uri.parse(apiUrl).replace(queryParameters: queryParameters);
-
-  print("API URL: $uri");
-
-  isLoading.value = true;
-  try {
-    final response = await http.get(uri);
-
-    if (response.statusCode == 200) {
-      // Parse and update hotels list
-      List<dynamic> apiData = json.decode(utf8.decode(response.bodyBytes));
-      hotels.value = apiData.map((data) => Hotel.fromApi(data)).toList();
-      print("Hotels fetched successfully.");
-    } else {
-      Get.snackbar("Error", "Failed to fetch hotels");
-      print('Failed to fetch hotels. Status code: ${response.statusCode}');
-    }
-  } catch (e) {
-    Get.snackbar("Error", "An error occurred: $e");
-    print('Error: $e');
-  } finally {
-    isLoading.value = false;
   }
-}
+
 
   @override
   void onReady() {

@@ -175,7 +175,8 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
                       setState(() {
                         selectedRestaurantFeatures = selectedLabels;
                       });
-                    },
+                    }, 
+                    initialSelectedLabels: [],
                   ),
                   SizedBox(height: 30.0),
                   _buildTextInput(
@@ -216,7 +217,8 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
                       setState(() {
                         selectedCuisine = selectedLabels;
                       });
-                    },
+                    }, 
+                    initialSelectedLabels: [],
                   ),
                   SizedBox(height: 16.0),
                   Container(
@@ -251,7 +253,8 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
                       setState(() {
                         selectedRestaurantFeatures = selectedLabels;
                       });
-                    },
+                    }, 
+                    initialSelectedLabels: [],
                   ),
                   SizedBox(height: 16.0),
                   _buildTextInput('Special Diets', (value) => meal = value),
@@ -301,6 +304,7 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
                       selectedImages = images;
                     });
                   },
+                  action: "create",
                 ),
                 SizedBox(height: 20),
 

@@ -221,7 +221,7 @@ Future<void> _fetchDestinations() async {
               padding: const EdgeInsets.only(bottom: 40),
               child: Row(
                 children: List.generate(
-                  popularDestinations.length,
+                  popularDestinations.length <= 8 ? popularDestinations.length : 8,
                   (index) => Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: GestureDetector(
@@ -288,7 +288,7 @@ Future<void> _fetchDestinations() async {
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Column(
                 children: List.generate(
-                  recommendDestinations.length,
+                  recommendDestinations.length <= 8 ? recommendDestinations.length : 8,
                   (index) => Padding(
                     padding: const EdgeInsets.only(bottom: 15),
                     child: GestureDetector(

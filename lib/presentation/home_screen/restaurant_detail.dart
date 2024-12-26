@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:travelappflutter/core/app_export.dart';
+import 'package:travelappflutter/presentation/common_views/fullscrenn_image_viewer.dart';
 import 'package:travelappflutter/presentation/common_views/geocoding_service.dart';
 import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
-import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/map/map_screen.dart';
+import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
 import 'package:travelappflutter/presentation/search_screen/models/restaurant_model.dart';
@@ -28,7 +29,8 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   @override
   void initState() {
     super.initState();
-    controller.fetchReviewsByDestinationID(widget.restaurant.destinationID);
+    controller.typeOfReview = "destination";
+    controller.fetchReviews(id: widget.restaurant.destinationID);
     controller.fetchRatingDistribution(widget.restaurant.destinationID);
     _getCoordinates(widget.restaurant.restaurantLocation);
   }
@@ -231,9 +233,21 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                       },
                       children: List.generate(
                         widget.restaurant.images!.length,
-                        (index) => Image.network(
-                          widget.restaurant.images![index],
-                          fit: BoxFit.cover,
+                        (index) => GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FullScreenImageViewer(
+                                  imageUrl: widget.restaurant.images[index],
+                                ),
+                              ),
+                            );
+                          },
+                          child: Image.network(
+                            widget.restaurant.images![index],
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                     ),
@@ -460,9 +474,9 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                                   const SizedBox(height: 10),
                                   _buildContactInfo("Open Time :",
                                       widget.restaurant.openTime.toString()),
-                                  const SizedBox(height: 30),
+                                  const SizedBox(height: 5),
                                   _buildContactInfo("The area :", ""),
-                                  const SizedBox(height: 30),
+                                  const SizedBox(height: 5),
                                   _latitude != null && _longitude != null
                                       ? Container(
                                           height: 250,
@@ -487,9 +501,12 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                                 if (controller.isLoading.value) {
                                   return Center(child: CircularProgressIndicator());
                                 }
+                                print("Average raing: " + controller.averageRating.value.toString());
+                                print("totals review: " + controller.totalReviews.value.toString());
                                 return ReviewWidget(destinationId: widget.restaurant.destinationID, 
-                                                    reviews: controller.reviews,
-                                                    ratingCounts: controller.ratingCounts);
+                                                    //reviews: controller.reviews,
+                                                    ratingCounts: controller.ratingCounts,
+                                                    UserId: Get.find<ProfileController>().profileModelObj.value.id);
                               }),
                             ),
                           ),

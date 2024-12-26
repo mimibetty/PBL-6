@@ -1,19 +1,58 @@
+import 'dart:convert';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
+import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
 
 class BusinessCreationController extends GetxController {
-  //<HomeModel> businessCreationModelObj = BusinessCreationModel().obs;
-  var selectedPage = 0.obs;
+  var selectedPage = 0.obs; // Track selected tab/page
+  RxList<TravelDestination> destinations = <TravelDestination>[].obs; // Destination data
+  RxBool isLoading = false.obs; // Loading state
+
+  final String baseUrl =
+      'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/';
+
+  @override
+  void onInit() {
+    super.onInit();
+
+    // Initialize selected page if passed as an argument
+    var initialPage = Get.arguments?['selectedPage'] ?? 0;
+    selectedPage.value = initialPage;
+
+    // Fetch destinations on initialization
+    fetchDestinations();
+  }
 
   void changePage(int index) {
     selectedPage.value = index;
   }
 
-  @override
-  void onInit() {
-    super.onInit();
-    // Lấy giá trị tab ban đầu từ arguments (nếu có)
-    var initialPage = Get.arguments['selectedPage'] ?? 0;
-    selectedPage.value = initialPage;
+  Future<void> fetchDestinations({int limit = 15, int pageSize = 10}) async {
+    isLoading.value = true; // Set loading state to true
+
+    try {
+      // Fetch the user ID from the profile controller
+      final int userId = Get.find<ProfileController>().profileModelObj.value.id;
+      final Uri url = Uri.parse('$baseUrl?user_id=$userId&limit=$limit&page_size=$pageSize');
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        List<dynamic> jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+        destinations.value = jsonResponse
+            .map((data) => TravelDestination.fromJson(data as Map<String, dynamic>))
+            .toList();
+      } else {
+        // Display error snackbar for non-200 responses
+        Get.snackbar('Error', 'Failed to load destinations: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle errors gracefully
+      Get.snackbar('Error', 'An error occurred: $e');
+    } finally {
+      isLoading.value = false; // Reset loading state
+    }
   }
 
   @override

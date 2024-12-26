@@ -29,7 +29,7 @@ class CircleRatingWidget extends StatelessWidget {
               size: size,
               color: Colors.grey,
             ),
-        const SizedBox(width: 20),
+        const SizedBox(width: 25),
         Text(
           "${rating.toString()} ★",
           style: const TextStyle(fontSize: 15, color: Colors.grey),

@@ -7,11 +7,14 @@ class ReviewModel {
   String companion;
   int id;
   int userId;
+  String userName;
+  String? userAvatarUrl;
   int? destinationId; // Có thể null
   int likeCount; // Thêm trường likeCount
   List<ReviewImage> images;
 
   ReviewModel({
+    required this.userName,
     required this.title,
     required this.content,
     required this.rating,
@@ -21,6 +24,7 @@ class ReviewModel {
     required this.id,
     required this.userId,
     this.destinationId, // Có thể null
+    this.userAvatarUrl, // có thể null
     required this.likeCount,
     required this.images,
   });
@@ -36,6 +40,8 @@ class ReviewModel {
       companion: json['companion'] ?? 'Unknown',
       id: json['id'] ?? 0,
       userId: json['user_id'] ?? 0,
+      userName: json['user_name'] ?? 'Unknown',
+      userAvatarUrl: json['user_avatar_url'] ?? 'https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png',
       destinationId: json['destination_id'], // Null nếu không có
       likeCount: json['like_count'] ?? 0, // Mặc định là 0
       images: (json['images'] as List<dynamic>?)
@@ -95,6 +101,7 @@ class ReviewImage {
 
 final List<ReviewModel> mockReviews = [
   ReviewModel(
+    userName: "User1",
     title: "Review 1 for Destination 2",
     content: "This is review 1 for Destination 2.",
     rating: 1.5,
@@ -108,6 +115,7 @@ final List<ReviewModel> mockReviews = [
     images: [], // No images for this review
   ),
   ReviewModel(
+    userName: "User2",
     title: "좋은",
     content: "호텔은 꽤 괜찮습니다",
     rating: 4.5,
@@ -127,6 +135,7 @@ final List<ReviewModel> mockReviews = [
     ],
   ),
   ReviewModel(
+    userName: "User3",
     title: "糟糕的酒店",
     content: "食物不好，房间不好，空调坏了",
     rating: 2.0,

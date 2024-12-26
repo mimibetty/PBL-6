@@ -2,146 +2,131 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Để định dạng ngày
 import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/common_views/circle_rating_widget_view.dart';
+import 'package:travelappflutter/presentation/common_views/fullscrenn_image_viewer.dart';
 import 'package:travelappflutter/presentation/common_views/horizontal_rating_bar.dart';
-import 'package:travelappflutter/presentation/common_views/selected_chip_widget.dart';
 import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
-import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
+// import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
+import 'package:travelappflutter/presentation/review_widget/widgets/update_review.dart';
 
 class ReviewWidget extends StatelessWidget {
   final int destinationId;
-  final List<ReviewModel> reviews;
+  final int UserId;
+  //final List<ReviewModel> reviews;
   final Map<int, int> ratingCounts;
-  const ReviewWidget({Key? key, required this.destinationId, required this.reviews,required this.ratingCounts}) : super(key: key);
+  final ReviewWidgetController controller = Get.put(ReviewWidgetController());
+
+
+  ReviewWidget({
+    Key? key,
+    required this.destinationId,
+    required this.UserId,
+    //required this.reviews,
+    required this.ratingCounts,
+  }) : super(key: key);
 
 
   @override
+
   Widget build(BuildContext context) {
-    // Tính toán số lượng review cho từng mức rating
-    // Tổng số review
-    int totalReviews = reviews.length;
+  return SingleChildScrollView(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Truyền các giá trị vào RatingBarWidget
+        RatingBarWidget(
+          rating: controller.averageRating.value,
+          fiveStarCount: ratingCounts[5] ?? 0,
+          fourStarCount: ratingCounts[4] ?? 0,
+          threeStarCount: ratingCounts[3] ?? 0,
+          twoStarCount: ratingCounts[2] ?? 0,
+          oneStarCount: ratingCounts[1] ?? 0,
+          totalReviews: controller.totalReviews.value,
+        ),
+        const SizedBox(height: 10),
 
-    return SingleChildScrollView(
-      // Bao quanh toàn bộ widget bằng SingleChildScrollView
-     
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Truyền các giá trị vào RatingBarWidget
-          RatingBarWidget(
-            rating: calculateAverageRating(reviews),
-            fiveStarCount: ratingCounts[5] ?? 0,
-            fourStarCount: ratingCounts[4] ?? 0,
-            threeStarCount: ratingCounts[3] ?? 0,
-            twoStarCount: ratingCounts[2] ?? 0,
-            oneStarCount: ratingCounts[1] ?? 0,
-            totalReviews: totalReviews,
-          ),
-          const SizedBox(height: 10),
-
-          // Thanh tìm kiếm
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: TextField(
-              decoration: InputDecoration(
-                labelText: 'Search Reviews',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                prefixIcon: Icon(Icons.search),
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-
-          // Hàng với nút filter và dropdown ngôn ngữ
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Nút filter
-                ElevatedButton(
-                  onPressed: () {
-                    // Hàm mở cửa sổ filter
-                    _showFilterDialog(context);
-                  },
-                  child: Text('Filter'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+        // Thanh filter và dropdown
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  _showFilterDialog(context);
+                },
+                child: Text('Filter'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-
-                // Dropdown chọn ngôn ngữ
-                DropdownButton<String>(
-                  items: <String>[
-                    'Korean',
-                    'Japanese',
-                    'English',
-                    'Vienamese',
-                    'Thai',
-                    'Chinese',
-                    'French'
-                  ].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    // Hàm xử lý thay đổi ngôn ngữ
-                  },
-                  hint: Text('Select Language'),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 10),
-
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: Text(
-              'Popular Mentions',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
               ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          SelectableChipWidget(
-            labels: [
-              'All reviews',
-              'Cable car',
-              'Bana hill',
-              'Our tour guide',
-              'Theme park',
-              'day trip ',
-              'Da Nang',
+              Obx(
+                () {
+                   print('Dropdown selected language: ${controller.selectedLanguage.value}');
+                  return DropdownButton<String>(
+                    value: controller.selectedLanguage.value.isEmpty ? null : controller.selectedLanguage.value,
+                    items: <String>[
+                      'Korean',
+                      'Japanese',
+                      'English',
+                      'Vietnamese',
+                      'Thai',
+                      'Chinese',
+                      'French'
+                    ].map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      if (newValue != null) {
+                        controller.selectedLanguage.value = newValue;
+                        print('Updated Language: ${controller.selectedLanguage.value}');
+                        // Call filterReviewsByLanguage from the controller
+                        controller.filterReviewsByLanguage(
+                          destinationId: destinationId,
+                          language: newValue,
+                        );
+                      }
+                    },
+                    hint: const Text('Select Language'),
+                  );
+                },
+              ),
             ],
-            onSelectionChanged: (selectedLabels) {},
           ),
+        ),
+        const SizedBox(height: 10),
 
-          // Nếu không có review thì hiển thị thông báo
-          if (reviews.isEmpty)
-            const Center(
+        // Phần danh sách đánh giá
+        Obx(() {
+          if (controller.isLoading.value) {
+            print("isLoading state: " + controller.isLoading.value.toString());
+            // Hiển thị spinner khi đang tải dữ liệu
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (controller.reviews.isEmpty) {
+            // Hiển thị thông báo khi không có đánh giá nào
+            return const Center(
               child: Text(
                 'No Reviews Yet',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
-            )
-          else
-            // Đảm bảo danh sách review không gây overflow
-            Column(
-              children: reviews.map((review) {
+            );
+          } else {
+            print("isLoading state: " + controller.isLoading.value.toString());
+            // Hiển thị danh sách đánh giá
+            return Column(
+              children: controller.reviews.map((review) {
                 DateTime date = DateTime.parse(review.dateCreated);
-                String formattedDate = DateFormat('dd MMM yyyy').format(date); // Định dạng ngày
+                String formattedDate = DateFormat('dd MMM yyyy').format(date);
+
                 return Card(
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
                   color: const Color(0xFFF1F3F5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -151,6 +136,7 @@ class ReviewWidget extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Thông tin người dùng
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -159,15 +145,11 @@ class ReviewWidget extends StatelessWidget {
                                 CircleAvatar(
                                   backgroundColor: const Color(0xFF1B1B1B),
                                   radius: 20,
-                                  child: Text(
-                                    review.content[0].toUpperCase(),
-                                    style: const TextStyle(
-                                        color: Colors.white, fontSize: 20),
-                                  ),
+                                  backgroundImage: NetworkImage(review.userAvatarUrl!),
                                 ),
                                 const SizedBox(width: 20),
                                 Text(
-                                  review.userId.toString(),
+                                  review.userName,
                                   style: const TextStyle(
                                       fontSize: 16,
                                       color: Colors.black,
@@ -177,65 +159,202 @@ class ReviewWidget extends StatelessWidget {
                             ),
                             Row(
                               children: [
-                                Icon(
-                                  Icons.thumb_up_alt_outlined,
-                                  color: Colors.blueAccent,
-                                  size: 18,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  '${review.likeCount} Likes',
-                                  style: const TextStyle(
-                                      fontSize: 12, color: Colors.black),
-                                ),
+                                if (UserId == review.userId) ...[
+                                  IconButton(
+                                    icon: const Icon(Icons.edit, color: Colors.blueAccent),
+                                    tooltip: 'Edit Review',
+                                    onPressed: () {
+                                      // Logic chỉnh sửa reviews
+                                      Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => UpdateReviewFormPage(
+                                          destinationId: destinationId,
+                                          reviewId: review.id,
+                                          destinationRating: review.rating,
+                                          destinationLanguage: review.language,
+                                          destinationSelectedImages: review.images,
+                                          destinationCompanions: review.companion,
+                                          destinationTitle: review.title,
+                                          destinationContent: review.content,
+                                        ),
+                                      ),
+                                    );
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete, color: Colors.redAccent),
+                                    tooltip: 'Delete Review',
+                                    onPressed: () {
+                                      // Hiển thị hộp thoại xác nhận
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text("Confirm Delete"),
+                                            content: const Text("Are you sure you want to delete this review?"),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop(); // Đóng hộp thoại
+                                                },
+                                                child: const Text("Cancel"),
+                                              ),
+                                              TextButton(
+                                                onPressed: () async {
+                                                  Navigator.of(context).pop(); // Đóng hộp thoại
+                                                  // Gọi hàm deleteReview
+                                                  await controller.deleteReview(review.id, destinationId);
+                                                },
+                                                child: const Text(
+                                                  "Confirm",
+                                                  style: TextStyle(color: Colors.red),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ],
                               ],
                             ),
                           ],
                         ),
-                        const SizedBox(height: 10),
-                        CircleRatingWidget(rating: review.rating, size: 15),
-                        const SizedBox(height: 10),
-                        Text(
-                          '${review.dateCreated} * ${review.companion}',
-                          style: const TextStyle(
-                              fontSize: 15, color: Colors.black),
+                        const SizedBox(height: 2),
+                        // Đánh giá
+                        CircleRatingWidget(rating: review.rating, size: 21),
+                        const SizedBox(height: 4),
+                        // Ngày và Companion
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          margin: const EdgeInsets.symmetric(vertical: 5),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100], // Màu nền nhẹ
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 6,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.calendar_today,
+                                    size: 18,
+                                    color: Colors.blueAccent,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    formattedDate,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.group,
+                                    size: 18,
+                                    color: Colors.green,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    review.companion,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 5),
-                        Text(
-                          review.title,
-                          style: const TextStyle(
-                              fontSize: 20,
-                              color: Color(0xFF1B1B1B),
-                              fontWeight: FontWeight.bold),
+
+                        // Tiêu đề và nội dung đánh giá
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Title: ',
+                              style: TextStyle(
+                                  fontSize: 19,
+                                  color: Color(0xFF1B1B1B),
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Expanded(
+                              child: Text(
+                                review.title,
+                                style: const TextStyle(
+                                    fontSize: 19,
+                                    color: Color(0xFF1B1B1B),
+                                    fontWeight: FontWeight.bold),
+                                overflow: TextOverflow.ellipsis, // Cắt bớt nếu tiêu đề quá dài
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 5),
-                        Text(
-                          review.content,
-                          style: const TextStyle(
-                              fontSize: 16, color: Color(0xFF1B1B1B)),
+                        const SizedBox(height: 2),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Content: ',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: Color(0xFF1B1B1B),
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            Expanded(
+                              child: Text(
+                                review.content,
+                                style: const TextStyle(
+                                    fontSize: 16, color: Color(0xFF1B1B1B)),
+                                overflow: TextOverflow.ellipsis, // Cắt bớt nếu nội dung quá dài
+                                maxLines: 3, // Hiển thị tối đa 3 dòng
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 5),
-                        Text(
-                          'Written $formattedDate',
-                          style:
-                              const TextStyle(fontSize: 12, color: Colors.grey),
-                        ),
-                        const SizedBox(height: 5),
-                        const SizedBox(height: 5),
-                        // Hiển thị danh sách ảnh
-                        if (review.images!.isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        // Danh sách ảnh
+                        if (review.images.isNotEmpty) ...[
                           const SizedBox(height: 10),
                           Wrap(
                             spacing: 8,
                             runSpacing: 8,
                             children: review.images.map((image) {
-                              return ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.network(
-                                  image.url,
-                                  height: 80,
-                                  width: 80,
-                                  fit: BoxFit.cover,
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          FullScreenImageViewer(imageUrl: image.url),
+                                    ),
+                                  );
+                                },
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.network(
+                                    image.url,
+                                    height: 80,
+                                    width: 80,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               );
                             }).toList(),
@@ -246,21 +365,23 @@ class ReviewWidget extends StatelessWidget {
                   ),
                 );
               }).toList(),
-            ),
-        ],
-      ),
-    );
-  }
-
+            );
+          }
+        }),
+      ],
+    ),
+  );
+}
 
   // Hàm mở cửa sổ filter
+
   void _showFilterDialog(BuildContext context) {
-    int? selectedRating; // Lưu rating được chọn
+    String? selectedRating; // Lưu rating được chọn
     String? selectedTimeOfYear; // Lưu thời gian trong năm được chọn
     String? selectedTypeOfVisit; // Lưu loại chuyến đi được chọn
 
     // Các lựa chọn cố định
-    final List<int> ratings = [1, 2, 3, 4, 5];
+    final List<String> ratings = ["1", "2", "3" , "4" , "5", "All"];
     final List<String> timesOfYear = ['Mar-May', 'Jun-Aug', 'Sep-Nov', 'Dec-Feb'];
     final List<String> typesOfVisit = ['Families', 'Couples', 'Friends', 'Solo','Business'];
 
@@ -381,12 +502,12 @@ class ReviewWidget extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    print("Reviews:  ${reviews.length}");
+                    //print("Reviews:  ${reviews.length}");
                     // Áp dụng bộ lọc
                     // Gọi applyFilter từ Controller khi bấm Apply
                     Get.find<ReviewWidgetController>().applyFilter(
                       destinationId: destinationId,
-                      selectedRating: selectedRating?.toInt(),
+                      selectedRating: selectedRating?.toString(),
                       selectedSeason: selectedTimeOfYear,
                       selectedCompanion: selectedTypeOfVisit,
                     );
@@ -408,18 +529,6 @@ class ReviewWidget extends StatelessWidget {
       },
     );
   }
-
-  double calculateAverageRating(List<ReviewModel> reviews) {
-    if (reviews.isEmpty) return 0.0; // Nếu không có đánh giá, trả về 0.0
-    
-    // Tính tổng điểm rating
-    double totalRating = reviews.fold(0, (sum, review) => sum + review.rating);
-    
-    // Tính trung bình và làm tròn đến 1 chữ số sau dấu thập phân
-    double averageRating = totalRating / reviews.length;
-    return double.parse(averageRating.toStringAsFixed(1));
-  }
-
 }
 
 

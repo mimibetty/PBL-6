@@ -232,13 +232,6 @@ class AppRoutes {
         FavoritePlacesBinding(),
       ],
     ),
-    // GetPage(
-    //   name: messagesScreen,
-    //   page: () => MessagesScreen(),
-    //   bindings: [
-    //     MessagesBinding(),
-    //   ],
-    // ),
     GetPage(
       name: chatsScreen,
       page: () => ChatsScreen(),

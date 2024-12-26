@@ -17,12 +17,6 @@ class WelcomeController extends GetxController {
         myCities.value = (decodedResponse as List)
             .map((json) => CityModel.fromJson(json))
             .toList();
-        
-        // Log cities information for verification
-        myCities.value.forEach((city) {
-          city.images.forEach((image) {
-          });
-        });
       } else {
         print('Error: ${response.statusCode}');
         throw Exception('Failed to load cities');

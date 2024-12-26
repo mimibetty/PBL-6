@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:travelappflutter/core/app_export.dart';
+import 'package:travelappflutter/presentation/business_creation_screen/binding/business_creation_screen_binding.dart';
+import 'package:travelappflutter/presentation/business_creation_screen/business_facilities_screen.dart';
+import 'package:travelappflutter/presentation/business_creation_screen/controller/business_creation_screen_controller.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/models/business_model.dart';
 import 'package:travelappflutter/presentation/business_dashboard/business_dashboard.dart';
 import 'package:travelappflutter/presentation/common_views/geocoding_service.dart';
+import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/map/map_screen.dart';
+import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
 
 class BusinessPostScreen extends StatefulWidget {
   final Business? business;
@@ -15,24 +21,34 @@ class BusinessPostScreen extends StatefulWidget {
 }
 
 class _BusinessPostScreenState extends State<BusinessPostScreen> {
+  final BusinessCreationController businessCreationController =
+      Get.put(BusinessCreationController());
+
   int _currentImageIndex = 0; // Biến để quản lý chỉ báo vị trí
   String _address = '91 Trung Kính, Trung Hòa, Cầu Giấy, Hà Nội';
 
-
   double? _latitude; // Lưu trữ vĩ độ
   double? _longitude; // Lưu trữ kinh độ
+  List<TravelDestination> getThingsToDoDestinations(
+      List<TravelDestination> destinations) {
+    return destinations
+        .where((destination) =>
+            destination.hotelId == null && destination.restaurantId == null)
+        .toList();
+  }
 
   @override
   void initState() {
     super.initState();
     _getCoordinates(); // Fetch coordinates after init
+    businessCreationController.fetchDestinations();
   }
 
   void _getCoordinates() async {
     if (_address.isNotEmpty) {
       var coordinates =
           await GeocodingService.getCoordinatesFromAddress(_address);
-  
+
       if (coordinates != null) {
         setState(() {
           _latitude = coordinates['latitude'];
@@ -87,8 +103,9 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
           icon: const Icon(Icons.menu, color: Colors.black),
           onSelected: (value) {
             switch (value) {
-              case 'Things to do':
-                _navigateToFilteredBusinesses(context, 'things to do');
+              case 'Facilities':
+                _navigateToBusinessesFacilities();
+
                 break;
               case 'Hotels':
                 _navigateToFilteredBusinesses(context, 'hotel');
@@ -96,13 +113,18 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
               case 'Restaurants':
                 _navigateToFilteredBusinesses(context, 'restaurant');
                 break;
+              case 'Business Statistics':
+                _navigateToFilteredBusinesses(context, 'restaurant');
+                break;
             }
           },
           itemBuilder: (context) {
             return [
-              _buildPopupMenuItem('Things to do'),
+              _buildPopupMenuItem('Tours'),
+              _buildPopupMenuItem('Facilities'),
               _buildPopupMenuItem('Hotels'),
               _buildPopupMenuItem('Restaurants'),
+              _buildPopupMenuItem('Business Statistics'),
             ];
           },
         ),
@@ -173,7 +195,7 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
                 height: 250,
                 child: MapScreen(
                   latitude: 21.0137443130001,
-                  longitude:105.798346108,
+                  longitude: 105.798346108,
                 ),
               )
             : Center(
@@ -292,4 +314,30 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
       ),
     );
   }
+
+ void _navigateToBusinessesFacilities() {
+  // Get the filtered destinations
+  var filteredDestinations = getThingsToDoDestinations(businessCreationController.destinations);
+  var allDestinations = businessCreationController.destinations;
+  // Check if filteredDestinations is empty
+  if (filteredDestinations.isEmpty) {
+    print("No filtered destinations found.");
+  } else {
+    print("Filtered destinations found: ${filteredDestinations.length}");
+    for (var destination in filteredDestinations) {
+      print('Destination Name: ${destination.name}, Location: ${destination.location}, Rating: ${destination.rating}');
+    }
+  }
+
+  // Navigate to the BusinessFacilityScreen
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => BusinessFacilityScreen(
+        destinations: allDestinations,
+      ),
+    ),
+  );
+}
+
 }
