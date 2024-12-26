@@ -17,6 +17,38 @@ GOONG_MAP_URL = os.getenv('GOONG_MAP_URL')
 GOONG_API_KEY = os.getenv('GOONG_API_KEY')
 GOONG_MAP_KEY = os.getenv('GOONG_MAP_KEY')
 
+def get_destination_coordinates_onlyGeopy(destination_id: int, db: Session) -> Optional[tuple]:
+    """
+    Lấy tọa độ và địa chỉ của một destination dựa trên ID.
+    
+    Args:
+        destination_id: ID của destination
+        db: Database session
+        
+    Returns:
+        tuple: ((latitude, longitude), address_used) hoặc (None, None) nếu không tìm thấy
+    """
+    try:
+        # Lấy danh sách các địa chỉ có thể dùng
+        addresses = destination.get_full_address_by_id(destination_id, db)
+        
+        # Thử lấy tọa độ bằng geopy cho từng địa chỉ
+        for address in addresses:
+            try:
+                coords = get_coordinate_geopy(address)
+                if coords:
+                    print("geopy")
+                    print(f"Found coordinates for destination {destination_id}: {coords}")
+                    return (coords, address)
+            except Exception:
+                continue
+        # Nếu không tìm được tọa độ nào
+        return (None, None)
+
+    except Exception as e:
+        print(f"Error getting coordinates for destination {destination_id}: {str(e)}")
+        return (None, None)
+    
 def get_destination_coordinates(destination_id: int, db: Session) -> Optional[tuple]:
     """
     Lấy tọa độ và địa chỉ của một destination dựa trên ID.
@@ -60,6 +92,9 @@ def get_destination_coordinates(destination_id: int, db: Session) -> Optional[tu
     except Exception as e:
         print(f"Error getting coordinates for destination {destination_id}: {str(e)}")
         return (None, None)
+
+
+
     
 def get_coordinate(location: str): # use Goong API
     """Lấy tọa độ (latitude, longitude) từ tên địa điểm."""
@@ -86,7 +121,7 @@ def get_coordinate_geopy(location: str):
     Returns:
         tuple: (latitude, longitude)
     """
-    geolocator = Nominatim(user_agent="my_agent")
+    geolocator = Nominatim(user_agent="my_agenthaha_chang")
     try:
         location_data = geolocator.geocode(location)
         if location_data:
@@ -110,6 +145,7 @@ def get_distance_of_2_locations(latlong1, latlong2):
             raise ValueError("Không tìm thấy khoảng cách giữa các địa điểm.")
     else:
         raise Exception(f"Error fetching distance: {response.status_code} - {response.text}")
+    
 def get_distances_between_all_locations(locations):
     """Lấy ra khoảng cách giữa tất cả các đường với nhau dưới dạng ma trận đối xứng."""
     n = len(locations)
