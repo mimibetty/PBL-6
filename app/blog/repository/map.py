@@ -36,6 +36,7 @@ def get_destination_coordinates_onlyGeopy(destination_id: int, db: Session) -> O
         for address in addresses:
             try:
                 coords = get_coordinate_geopy(address)
+                print(address, coords)
                 if coords:
                     print("geopy")
                     print(f"Found coordinates for destination {destination_id}: {coords}")
@@ -62,9 +63,11 @@ def get_destination_coordinates(destination_id: int, db: Session) -> Optional[tu
     """
     try:
         # Lấy danh sách các địa chỉ có thể dùng
+
         addresses = destination.get_full_address_by_id(destination_id, db)
-        
+
         # Thử lấy tọa độ bằng geopy cho từng địa chỉ
+
         for address in addresses:
             try:
                 coords = get_coordinate_geopy(address)
@@ -121,7 +124,7 @@ def get_coordinate_geopy(location: str):
     Returns:
         tuple: (latitude, longitude)
     """
-    geolocator = Nominatim(user_agent="my_agenthaha_chang")
+    geolocator = Nominatim(user_agent="my_agenthaha_chansgee")
     try:
         location_data = geolocator.geocode(location)
         if location_data:

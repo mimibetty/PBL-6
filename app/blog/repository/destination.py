@@ -819,6 +819,8 @@ def sort_destinations_by_popularity(restaurant_ids: List[int], db: Session):
     
 def get_full_address_by_id(destination_id: int, db: Session) -> List[str]:
     try:
+        # import pdb;pdb.set_trace()
+        print("destination_id", destination_id)   
         destination = db.query(models.Destination).filter(models.Destination.id == destination_id).first()
         if not destination:
             raise HTTPException(status_code=404, detail="Destination not found")
@@ -840,7 +842,6 @@ def get_full_address_by_id(destination_id: int, db: Session) -> List[str]:
     except HTTPException as e:
         raise e
     except Exception as e:
-        db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error retrieving address: {str(e)}"

@@ -1,3 +1,4 @@
+import time
 from typing import List
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -236,7 +237,7 @@ def delete_destination_from_trip(destination_id: int, trip_id: int, db: Session)
 
 
 class TravelPlanner:
-    def __init__(self, locations, centers, min_points_per_cluster=4):
+    def __init__(self, locations, centers, min_points_per_cluster=4, db: Session = None):
         """
         Initialize the TravelPlanner with locations, centers, and cluster constraints.
 
@@ -253,48 +254,26 @@ class TravelPlanner:
 
         # Get coordinates for all locations 
         self.coordinates = []
-        for location in locations:
-            coords = map.get_coordinate(location)
-            self.coordinates.append(coords)
-            print(f"Tọa độ của '{location}': {coords}")
-
+        self.addresses = []
+        # for location in locations:
+        #     coords = map.get_coordinate(location)
+        #     self.coordinates.append(coords)
+        #     print(f"Tọa độ của '{location}': {coords}")
+   
+        for location_id in locations:
+            coords, address = map.get_destination_coordinates(location_id, db=db)
+            if coords and address:
+                self.coordinates.append(coords)
+                self.addresses.append(address)
+                print(f"Tọa độ của '{address}': {coords}")
+            else:
+                print(f"Không tìm được tọa độ cho địa điểm ID: {location_id}")
         # Build distance matrix
-        self.distances = map.get_distances_between_all_locations(self.coordinates)
+        #  lưu ý mapservice là dùng khoảng cách thật, map.get_dis là dùng khoảng cách chim bay
+        self.distances = mapService.get_distances_between_all_locations(self.coordinates)
         # print("\nMa trận khoảng cách:")
         # for row in self.distances:
         #     print(row)
-# class TravelPlanner:
-#     def __init__(self, location_ids, centers, db: Session, min_points_per_cluster=4):
-#         """
-#         Initialize the TravelPlanner with locations, centers, and cluster constraints.
-
-#         Args:
-#             location_ids (list of int): List of destination IDs.
-#             centers (list of int): List of center indices.
-#             db: Database session
-#             min_points_per_cluster (int): Minimum number of points per cluster.
-#         """
-#         self.location_ids = location_ids
-#         self.centers = centers
-#         self.min_points = min_points_per_cluster
-#         self.n = len(location_ids)
-#         self.m = len(centers)
-
-#         # Get coordinates and addresses for all locations
-#         self.coordinates = []
-#         self.addresses = []
-#         for dest_id in location_ids:
-#             coords_result = map.get_destination_coordinates(dest_id, db)
-#             if coords_result and coords_result[0]:
-#                 coords, address = coords_result
-#                 self.coordinates.append(coords)
-#                 self.addresses.append(address)
-#                 print(f"Tọa độ của '{address}': {coords}")
-#             else:
-#                 raise ValueError(f"Không thể tìm thấy tọa độ cho destination ID: {dest_id}")
-
-#         # Build distance matrix
-#         self.distances = mapService.get_distances_between_all_locations(self.coordinates)
 
     def plan_trip(self):
         """
@@ -496,17 +475,59 @@ class TravelPlanner:
         else:
             raise Exception("OR-Tools không tìm ra giải pháp cho lộ trình này.")
 
+    # def format_result(self, cluster_routes, cluster_distances):
+    #     """
+    #     Format the result for display.
+
+    #     Args:
+    #         cluster_routes (dict): Cluster ID mapped to list of location indices in order.
+    #         cluster_distances (dict): Cluster ID mapped to total distance.
+
+    #     Returns:
+    #         str: Formatted result string.
+    #     """
+    #     result = []
+    #     for cluster_id in range(self.m):
+    #         route = cluster_routes.get(cluster_id, [])
+    #         distance = cluster_distances.get(cluster_id, 0)
+
+    #         if not route:
+    #             cluster_info = f"\nNhóm {cluster_id + 1} (Trung tâm: {self.locations[self.centers[cluster_id]]}):"
+    #             cluster_info += f"\nKhông có địa điểm nào trong nhóm."
+    #             result.append(cluster_info)
+    #             continue
+
+    #         cluster_info = f"\nNhóm {cluster_id + 1} (Trung tâm: {self.locations[self.centers[cluster_id]]}):"
+    #         # Convert location indices to names
+    #         route_names = ' -> '.join(self.locations[i] for i in route)
+    #         cluster_info += f"\nLộ trình: {route_names}"
+    #         cluster_info += f"\nTổng khoảng cách: {distance:.2f} km"
+    #         result.append(cluster_info)
+
+    #     return '\n'.join(result)
+    
+    #cach nay ok nhung dang tra ve id 0,1,2,3 
+    # def format_result(self, cluster_routes, cluster_distances):
+    #     result = []
+    #     for cluster_id in range(self.m):
+    #         route = cluster_routes.get(cluster_id, [])
+    #         distance = cluster_distances.get(cluster_id, 0)
+
+    #         if not route:
+    #             cluster_info = f"\nNhóm {cluster_id + 1} (Trung tâm: {self.centers[cluster_id]}):"
+    #             cluster_info += f"\nKhông có địa điểm nào trong nhóm."
+    #             result.append(cluster_info)
+    #             continue
+
+    #         cluster_info = f"\nNhóm {cluster_id + 1} (Trung tâm: {self.centers[cluster_id]}):"
+    #         # Use location IDs directly
+    #         route_ids = ' -> '.join(str(i) for i in route)
+    #         cluster_info += f"\nLộ trình: {route_ids}"
+    #         cluster_info += f"\nTổng khoảng cách: {distance:.2f} km"
+    #         result.append(cluster_info)
+
+    #     return '\n'.join(result)
     def format_result(self, cluster_routes, cluster_distances):
-        """
-        Format the result for display.
-
-        Args:
-            cluster_routes (dict): Cluster ID mapped to list of location indices in order.
-            cluster_distances (dict): Cluster ID mapped to total distance.
-
-        Returns:
-            str: Formatted result string.
-        """
         result = []
         for cluster_id in range(self.m):
             route = cluster_routes.get(cluster_id, [])
@@ -519,16 +540,15 @@ class TravelPlanner:
                 continue
 
             cluster_info = f"\nNhóm {cluster_id + 1} (Trung tâm: {self.locations[self.centers[cluster_id]]}):"
-            # Convert location indices to names
-            route_names = ' -> '.join(self.locations[i] for i in route)
-            cluster_info += f"\nLộ trình: {route_names}"
+            # Map index back to original locations
+            route_ids = ' -> '.join(str(self.locations[i]) for i in route)
+            cluster_info += f"\nLộ trình: {route_ids}"
             cluster_info += f"\nTổng khoảng cách: {distance:.2f} km"
             result.append(cluster_info)
 
         return '\n'.join(result)
 
-
-def run_travel_planner(locations, m, centers=None, min_points_per_cluster=2):
+def run_travel_planner(locations, m, centers=None, min_points_per_cluster=2, db: Session = None):
     """
     Run the TravelPlanner with given parameters.
 
@@ -554,11 +574,11 @@ def run_travel_planner(locations, m, centers=None, min_points_per_cluster=2):
             raise ValueError("Các chỉ số trung tâm phải nằm trong khoảng từ 0 đến số địa điểm - 1.")
 
     # Initialize the TravelPlanner
-    planner = TravelPlanner(locations, centers, min_points_per_cluster)
+    planner = TravelPlanner(locations, centers, min_points_per_cluster, db = db)
 
     # Plan the trip
     cluster_routes, cluster_distances = planner.plan_trip()
-
+    print("testtt  ",cluster_routes, cluster_distances)
     # Format and return the result
     result = planner.format_result(cluster_routes, cluster_distances)
     return result

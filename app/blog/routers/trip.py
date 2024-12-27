@@ -106,19 +106,42 @@ async def build_trip(
         #         coords, address = coords_result
         #         destination_names.append(address)  # Sử dụng địa chỉ đã dùng để tìm được tọa độ
         #         destination_map[address] = dest_id
-                
-        trip_plan = trip.run_travel_planner(destination_names, trip_day)
+        
+        # 1                
+        # trip_plan = trip.run_travel_planner(destination_names, trip_day, db)
+        trip_plan = trip.run_travel_planner(all_destination_ids, trip_day, db=db)
+
+        # daily_schedule = {}
+        # daily_distances = {}
+        # current_day = None
+        
+        # print("Trip plan:", trip_plan)
+        # for line in trip_plan.split('\n'):
+        #     if line.startswith("Nhóm"):
+        #         current_day = int(line.split()[1])
+        #         daily_schedule[f"day_{current_day}"] = []
+        #     elif line.startswith("Lộ trình:"):
+        #         route = line.split(": ")[1].split(" -> ")
+        #         daily_schedule[f"day_{current_day}"] = [destination_map[location] for location in route]
+        #     elif line.startswith("Tổng khoảng cách:"):
+        #         distance = float(line.split(": ")[1].split()[0])  # Lấy số km
+        #         daily_distances[f"day_{current_day}"] = distance
+
+        # response = TripResponse(
+        #     daily_schedule=daily_schedule,
+        #     hotels=hotel_ids,
+        #     daily_distances=daily_distances
+        # )
         daily_schedule = {}
         daily_distances = {}
-        current_day = None
-        
+
         for line in trip_plan.split('\n'):
             if line.startswith("Nhóm"):
                 current_day = int(line.split()[1])
                 daily_schedule[f"day_{current_day}"] = []
             elif line.startswith("Lộ trình:"):
                 route = line.split(": ")[1].split(" -> ")
-                daily_schedule[f"day_{current_day}"] = [destination_map[location] for location in route]
+                daily_schedule[f"day_{current_day}"] = [int(location_id) for location_id in route]
             elif line.startswith("Tổng khoảng cách:"):
                 distance = float(line.split(": ")[1].split()[0])  # Lấy số km
                 daily_distances[f"day_{current_day}"] = distance
@@ -128,7 +151,7 @@ async def build_trip(
             hotels=hotel_ids,
             daily_distances=daily_distances
         )
-        
+
         print("All destination IDs:", all_destination_ids)
         print("Destination names:", destination_names)
         print("Daily schedule:", daily_schedule)
