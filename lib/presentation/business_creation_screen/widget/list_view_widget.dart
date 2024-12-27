@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/business_edit_screen.dart';
-import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
-import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/home_screen/place_detail.dart';
 
@@ -170,19 +168,20 @@ class _DestinationListWidgetState extends State<DestinationListWidget> {
                                 ),
                               ),
                             ),
-                            Positioned(
-                              top: 8,
-                              right: 8,
-                              child: HeartIconWidget(
-                                isLiked: isLiked,
-                                size: 18,
-                                onDoubleTap: () {
-                                  setState(() {
-                                    isLiked = !isLiked;
-                                  });
-                                },
-                              ),
-                            ),
+                            //Sửa lại để bỏ cmt
+                            // Positioned(
+                            //   top: 8,
+                            //   right: 8,
+                            //   child: HeartIconWidget(
+                            //     isLiked: isLiked,
+                            //     size: 18,
+                            //     onDoubleTap: () {
+                            //       setState(() {
+                            //         isLiked = !isLiked;
+                            //       });
+                            //     },
+                            //   ),
+                            // ),
                           ],
                         ),
                         const SizedBox(width: 10),

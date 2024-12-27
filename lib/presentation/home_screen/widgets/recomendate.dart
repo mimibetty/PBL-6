@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
+import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
 
 class Recomendate extends StatefulWidget {
   final TravelDestination destination;
@@ -48,13 +50,10 @@ class _RecomendateState extends State<Recomendate> {
                 top: 8,
                 right: 8,
                 child: HeartIconWidget(
+                  userId: Get.find<ProfileController>().profileModelObj.value.id, // Add the userId argument
+                  destinationId: widget.destination.id, // Add the destinationId argument
                   isLiked: isLiked, // Truyền trạng thái isLiked vào
-                  size: 18,
-                  onDoubleTap: () {
-                    setState(() {
-                      isLiked = !isLiked; // Thay đổi trạng thái nút tim khi double-tap
-                    });
-                  },
+                  //size: 18,
                 ),
               ),
             ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:travelappflutter/presentation/common_views/fullscrenn_image_viewer.dart';
 import 'package:travelappflutter/presentation/common_views/geocoding_service.dart';
 import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
@@ -28,8 +29,8 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   void initState() {
     super.initState();
     controller.typeOfReview = "destination";
-    controller.fetchReviews(id:widget.destination.id);
-    controller.fetchRatingDistribution(widget.destination.id);
+    controller.fetchReviews(id: widget.destination.id);
+    controller.fetchRatingDistribution(id: widget.destination.id);
     _getCoordinates(widget.destination.location);
   }
 
@@ -92,12 +93,14 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
         ),
         actions: [
           HeartIconWidget(
-            isLiked: isLiked,
-            onDoubleTap: () {
-              setState(() {
-                isLiked = !isLiked; // Thay đổi trạng thái nút tim
-              });
-            },
+            userId: Get.find<ProfileController>()
+                .profileModelObj
+                .value
+                .id, // Add the userId argument
+            destinationId:
+                widget.destination.id, // Add the destinationId argument
+            isLiked: isLiked, // Truyền trạng thái isLiked vào
+            //size: 18,
           ),
           const SizedBox(width: 10),
           GestureDetector(
@@ -168,7 +171,9 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => FullScreenImageViewer(imageUrl: widget.destination.images![index]),
+                                builder: (context) => FullScreenImageViewer(
+                                    imageUrl:
+                                        widget.destination.images![index]),
                               ),
                             );
                           },
@@ -416,12 +421,15 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                       ? Container(
                                           height: 250,
                                           child: MapScreen(
-                                            latitude: _latitude!,
-                                            longitude: _longitude!,
+                                            coordinates: [
+                                              LatLng(_latitude!,
+                                                  _longitude!), // Đưa vào danh sách
+                                            ],
                                           ),
                                         )
                                       : Center(
-                                          child: CircularProgressIndicator()),
+                                          child: CircularProgressIndicator(),
+                                        )
                                 ],
                               ),
                             ),
@@ -438,12 +446,18 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                   return Center(
                                       child: CircularProgressIndicator());
                                 }
-                                print("Average raing: " + controller.averageRating.value.toString());
-                                print("totals review: " + controller.totalReviews.value.toString());
-                                return ReviewWidget(destinationId: widget.destination.id,
-                                                    //reviews: controller.reviews,
-                                                    ratingCounts: controller.ratingCounts,
-                                                    UserId: Get.find<ProfileController>().profileModelObj.value.id);
+                                print("Average raing: " +
+                                    controller.averageRating.value.toString());
+                                print("totals review: " +
+                                    controller.totalReviews.value.toString());
+                                return ReviewWidget(
+                                    destinationId: widget.destination.id,
+                                    //reviews: controller.reviews,
+                                    ratingCounts: controller.ratingCounts,
+                                    UserId: Get.find<ProfileController>()
+                                        .profileModelObj
+                                        .value
+                                        .id);
                               }),
                             ),
                           ),

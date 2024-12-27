@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/common_views/fullscrenn_image_viewer.dart';
 import 'package:travelappflutter/presentation/common_views/geocoding_service.dart';
@@ -25,13 +26,12 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   double? _latitude; // Lưu trữ vĩ độ
   double? _longitude; // Lưu trữ kinh độ
 
-
   @override
   void initState() {
     super.initState();
     controller.typeOfReview = "destination";
     controller.fetchReviews(id: widget.restaurant.destinationID);
-    controller.fetchRatingDistribution(widget.restaurant.destinationID);
+    controller.fetchRatingDistribution(id: widget.restaurant.destinationID);
     _getCoordinates(widget.restaurant.restaurantLocation);
   }
 
@@ -40,22 +40,22 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   int pageView = 0;
 
   void _getCoordinates(String FullAddress) async {
-      var coordinates =
-          await GeocodingService.getCoordinatesFromAddress(FullAddress);
+    var coordinates =
+        await GeocodingService.getCoordinatesFromAddress(FullAddress);
 
-      if (coordinates != null) {
-        setState(() {
-          _latitude = coordinates['latitude'];
-          _longitude = coordinates['longitude'];
-        });
-        if (_latitude != null && _longitude != null) {
-          print("IN ra: Latitude = $_latitude, Longitude = $_longitude");
-        } else {
-          print("Latitude hoặc Longitude chưa có giá trị.");
-        }
+    if (coordinates != null) {
+      setState(() {
+        _latitude = coordinates['latitude'];
+        _longitude = coordinates['longitude'];
+      });
+      if (_latitude != null && _longitude != null) {
+        print("IN ra: Latitude = $_latitude, Longitude = $_longitude");
       } else {
-        print("Couldn't get coordinates.");
+        print("Latitude hoặc Longitude chưa có giá trị.");
       }
+    } else {
+      print("Couldn't get coordinates.");
+    }
   }
 
   Widget _buildContactInfo(String label, String value) {
@@ -129,7 +129,6 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
@@ -163,12 +162,14 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
         ),
         actions: [
           HeartIconWidget(
-            isLiked: isLiked,
-            onDoubleTap: () {
-              setState(() {
-                isLiked = !isLiked; // Thay đổi trạng thái nút tim
-              });
-            },
+            userId: Get.find<ProfileController>()
+                .profileModelObj
+                .value
+                .id, // Add the userId argument
+            destinationId: widget
+                .restaurant.restaurantID, // Add the destinationId argument
+            isLiked: isLiked, // Truyền trạng thái isLiked vào
+            //size: 18,
           ),
           const SizedBox(width: 10),
           GestureDetector(
@@ -385,7 +386,8 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                                             const SizedBox(width: 5),
                                             Text(
                                               widget.restaurant.rating
-                                                  .toStringAsFixed(1).toString(),
+                                                  .toStringAsFixed(1)
+                                                  .toString(),
                                               style: const TextStyle(
                                                 fontSize: 17,
                                                 fontWeight: FontWeight.bold,
@@ -481,12 +483,15 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                                       ? Container(
                                           height: 250,
                                           child: MapScreen(
-                                            latitude: _latitude!,
-                                            longitude: _longitude!,
+                                            coordinates: [
+                                              LatLng(_latitude!,
+                                                  _longitude!), // Đưa vào danh sách
+                                            ],
                                           ),
                                         )
                                       : Center(
-                                          child: CircularProgressIndicator()),
+                                          child: CircularProgressIndicator(),
+                                        )
                                 ],
                               ),
                             ),
@@ -495,18 +500,26 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                           Padding(
                             padding: const EdgeInsets.all(15),
                             child: SingleChildScrollView(
-                              child: 
-                              // Tab Review
-                              Obx(() {
+                              child:
+                                  // Tab Review
+                                  Obx(() {
                                 if (controller.isLoading.value) {
-                                  return Center(child: CircularProgressIndicator());
+                                  return Center(
+                                      child: CircularProgressIndicator());
                                 }
-                                print("Average raing: " + controller.averageRating.value.toString());
-                                print("totals review: " + controller.totalReviews.value.toString());
-                                return ReviewWidget(destinationId: widget.restaurant.destinationID, 
-                                                    //reviews: controller.reviews,
-                                                    ratingCounts: controller.ratingCounts,
-                                                    UserId: Get.find<ProfileController>().profileModelObj.value.id);
+                                print("Average raing: " +
+                                    controller.averageRating.value.toString());
+                                print("totals review: " +
+                                    controller.totalReviews.value.toString());
+                                return ReviewWidget(
+                                    destinationId:
+                                        widget.restaurant.destinationID,
+                                    //reviews: controller.reviews,
+                                    ratingCounts: controller.ratingCounts,
+                                    UserId: Get.find<ProfileController>()
+                                        .profileModelObj
+                                        .value
+                                        .id);
                               }),
                             ),
                           ),

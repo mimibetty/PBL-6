@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
-import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
+import 'package:travelappflutter/presentation/sign_in_screen/controller/sign_in_controller.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   final HomeController controller;
@@ -11,12 +11,12 @@ class CustomBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final profileController = Get.find<ProfileController>();
+    final signInController = Get.find<SignInController>();
     // Gọi fetchUserProfile nếu dữ liệu chưa sẵn sàng
-    if (!profileController.isProfileReady.value) {
-      profileController.fetchUserProfile();
-    }
-    print("Role: " + profileController.profileModelObj.value.role);
+    // if (!profileController.isLoading.value) {
+    //   profileController.fetchUserProfile();
+    // }
+    print("Role: " + signInController.userRole.value);
 
     return Obx(() => Material(
           borderRadius: const BorderRadius.only(
@@ -40,10 +40,10 @@ class CustomBottomNavBar extends StatelessWidget {
                   icon: Icon(Iconsax.search_normal), label: 'Search'),
               // Dynamic icon and label based on role
               BottomNavigationBarItem(
-                icon: profileController.profileModelObj.value.role == 'guest'
+                icon: signInController.userRole.value == 'guest'
                     ? const Icon(Icons.computer) // Icon for AI Trip
                     : const Icon(Icons.domain_add_outlined), // Icon for Destination
-                label: profileController.profileModelObj.value.role == 'guest'
+                label: signInController.userRole.value == 'guest'
                     ? 'AI Trip'
                     : 'Destination',
               ),
@@ -65,7 +65,7 @@ class CustomBottomNavBar extends StatelessWidget {
                   Get.toNamed('/search_screen');
                   break;
                 case 2:
-                  if (profileController.profileModelObj.value.role == 'guest') {
+                  if (signInController.userRole.value == 'guest') {
                     Get.toNamed('/plan_screen'); // Navigate to AI Trip
                   } else {
                     Get.toNamed('/business_creation_screen'); // Navigate to Destination

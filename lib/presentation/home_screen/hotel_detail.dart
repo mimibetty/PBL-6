@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/common_views/geocoding_service.dart';
 import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
@@ -32,7 +33,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
       super.initState();
       controller.typeOfReview = "destination";
       controller.fetchReviews(id: widget.hotel.destinationID);
-      controller.fetchRatingDistribution(widget.hotel.destinationID);
+      controller.fetchRatingDistribution(id: widget.hotel.destinationID);
       // Fetch coordinates for the address
       _getCoordinates(widget.hotel.hotelLocation);
     }
@@ -97,12 +98,10 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
         ),
         actions: [
           HeartIconWidget(
-            isLiked: isLiked,
-            onDoubleTap: () {
-              setState(() {
-                isLiked = !isLiked; // Thay đổi trạng thái nút tim
-              });
-            },
+            userId: Get.find<ProfileController>().profileModelObj.value.id, // Add the userId argument
+            destinationId: widget.hotel.hotelID, // Add the destinationId argument
+            isLiked: isLiked, // Truyền trạng thái isLiked vào
+            //size: 18,
           ),
           const SizedBox(
             width: 10,
@@ -451,16 +450,19 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 20,),
-                  _latitude != null && _longitude != null
-                      ? Container(
-                          height: 250,
-                          child: MapScreen(
-                            latitude: _latitude!,
-                            longitude: _longitude!,
-                          ),
-                        )
-                      : Center(child: CircularProgressIndicator()),
-                  // Hiển thị Reviews
+                 _latitude != null && _longitude != null
+                                      ? Container(
+                                          height: 250,
+                                          child: MapScreen(
+                                            coordinates: [
+                                              LatLng(_latitude!,
+                                                  _longitude!), // Đưa vào danh sách
+                                            ],
+                                          ),
+                                        )
+                                      : Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
                   Text(
                     "Reviews",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),

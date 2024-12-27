@@ -13,15 +13,13 @@ import 'dart:typed_data';
 import 'package:url_launcher/url_launcher.dart';
 
 class MapScreen extends StatefulWidget {
-  final double latitude;
-
-  final double longitude;
-  const MapScreen({
+  final List<LatLng> coordinates;
+  final double zoom;
+ const MapScreen({
     Key? key,
-    required this.latitude,
-    required this.longitude,
+    required this.coordinates,
+    this.zoom = 14.0, 
   }) : super(key: key);
-
   @override
   State<MapScreen> createState() => _MapScreenState();
 }
@@ -44,10 +42,22 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<void> _getCurrentLocation() async {
+  if (widget.coordinates.isNotEmpty) {
+    LatLng firstCoordinate = widget.coordinates.first;
+
     setState(() {
-      _currentPosition = LatLng(widget.latitude, widget.longitude);
+      _currentPosition = firstCoordinate;
     });
+
+    // Thêm marker tại vị trí hiện tại
+    _addMarkerAtCurrentPosition(firstCoordinate.latitude, firstCoordinate.longitude);
+
+    print('Current position set to: $_currentPosition');
+  } else {
+    print('Error: Coordinates list is empty');
   }
+}
+
 
   void _onMapCreated(MaplibreMapController controller) async {
     mapController = controller;
@@ -67,23 +77,38 @@ class _MapScreenState extends State<MapScreen> {
     mapController?.addImage('locationEnd', bytes.buffer.asUint8List());
   }
 
-  void _onStyleLoadedCallback() {
-    if (_currentPosition != null) {
-      _addMarkerAtCurrentPosition();
+void _onStyleLoadedCallback() {
+  if (widget.coordinates.isNotEmpty) {
+    // Thêm marker cho tất cả các tọa độ trong danh sách coordinates
+    for (final coordinate in widget.coordinates) {
+      _addMarkerAtCurrentPosition(coordinate.latitude, coordinate.longitude);
     }
-  }
 
-  void _addMarkerAtCurrentPosition() async {
+    // Nếu có vị trí hiện tại, thêm marker cho vị trí đó
+    if (_currentPosition != null) {
+      _addMarkerAtCurrentPosition(
+        _currentPosition!.latitude,
+        _currentPosition!.longitude,
+      );
+    }
+
+    print('Markers added for all coordinates and current position');
+  } else {
+    print('Error: Coordinates list is empty, no markers added');
+  }
+}
+
+
+  void _addMarkerAtCurrentPosition(double latitude, double longitude) async {
     if (mapController == null) {
       print("Map controller is not initialized");
       return;
     }
-    print('in trong addMarkerCurrentPost: ${widget.latitude}');
 
     try {
-      // Add the marker with a click listener
+      // Add the marker
       final symbol = await mapController?.addSymbol(SymbolOptions(
-        geometry: LatLng(widget.latitude, widget.longitude),
+        geometry: LatLng(latitude, longitude),
         iconImage: 'location',
         iconSize: 0.1,
         zIndex: 1, // Ensure marker is above circle
@@ -94,7 +119,7 @@ class _MapScreenState extends State<MapScreen> {
         mapController?.onSymbolTapped.add((Symbol tappedSymbol) async {
           if (tappedSymbol.id == symbol.id) {
             final googleMapsUrl =
-                "https://www.google.com/maps?q=${widget.latitude},${widget.longitude}";
+                "https://www.google.com/maps?q=$latitude,$longitude";
             if (await canLaunch(googleMapsUrl)) {
               await launch(googleMapsUrl);
             } else {
@@ -104,10 +129,9 @@ class _MapScreenState extends State<MapScreen> {
         });
       }
 
-      print(
-          "Initial marker added at (${widget.latitude}, ${widget.longitude})");
+      print("Marker added at ($latitude, $longitude)");
     } catch (e) {
-      print("Error adding initial marker: $e");
+      print("Error adding marker: $e");
     }
   }
 
@@ -293,59 +317,83 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      body: Stack(
-        children: [
-          // Map Container
-          Positioned.fill(
-            child: Container(
-              margin: const EdgeInsets.all(8.0),
-              padding: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-                border: Border.all(
-                  color: Colors.grey.shade300,
-                  width: 2,
+ @override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Colors.grey[100],
+    body: Stack(
+      children: [
+        // Map Container
+        Positioned.fill(
+          child: Container(
+            margin: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: Offset(0, 4),
                 ),
+              ],
+              border: Border.all(
+                color: Colors.grey.shade300,
+                width: 2,
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: MapLibreMap(
-                  onMapCreated: _onMapCreated,
-                  onStyleLoadedCallback: _onStyleLoadedCallback,
-                  initialCameraPosition: CameraPosition(
-                    target: LatLng(widget.latitude, widget.longitude),
-                    zoom: 14.0,
-                  ),
-                  styleString:
-                      'https://tiles.goong.io/assets/goong_map_web.json?api_key=$map_tiles_key',
-                  attributionButtonPosition: null,
-                  scrollGesturesEnabled: true,
-                  gestureRecognizers: Set()
-                    ..add(Factory<PanGestureRecognizer>(
-                        () => PanGestureRecognizer()))
-                    ..add(Factory<ScaleGestureRecognizer>(
-                        () => ScaleGestureRecognizer()))
-                    ..add(Factory<TapGestureRecognizer>(
-                        () => TapGestureRecognizer()))
-                    ..add(Factory<LongPressGestureRecognizer>(
-                        () => LongPressGestureRecognizer())),
-                ),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: MapLibreMap(
+                onMapCreated: _onMapCreated,
+                onStyleLoadedCallback: _onStyleLoadedCallback,
+                initialCameraPosition: _calculateInitialCameraPosition(),
+                styleString:
+                    'https://tiles.goong.io/assets/goong_map_web.json?api_key=$map_tiles_key',
+                attributionButtonPosition: null,
+                scrollGesturesEnabled: true,
+                gestureRecognizers: Set()
+                  ..add(Factory<PanGestureRecognizer>(
+                      () => PanGestureRecognizer()))
+                  ..add(Factory<ScaleGestureRecognizer>(
+                      () => ScaleGestureRecognizer()))
+                  ..add(Factory<TapGestureRecognizer>(
+                      () => TapGestureRecognizer()))
+                  ..add(Factory<LongPressGestureRecognizer>(
+                      () => LongPressGestureRecognizer())),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
+    ),
+  );
+}
+
+CameraPosition _calculateInitialCameraPosition() {
+  if (widget.coordinates.isNotEmpty) {
+    // Tính trung bình latitude và longitude từ danh sách coordinates
+    final avgLatitude = widget.coordinates
+            .map((coord) => coord.latitude)
+            .reduce((a, b) => a + b) /
+        widget.coordinates.length;
+    final avgLongitude = widget.coordinates
+            .map((coord) => coord.longitude)
+            .reduce((a, b) => a + b) /
+        widget.coordinates.length;
+
+    return CameraPosition(
+      target: LatLng(avgLatitude, avgLongitude),
+      zoom: widget.zoom, // Sử dụng zoom từ tham số
     );
   }
+
+  // Trả về giá trị mặc định nếu danh sách tọa độ rỗng
+  return CameraPosition(
+    target: LatLng(0, 0),
+    zoom: widget.zoom, // Sử dụng zoom từ tham số
+  );
+}
+
 }

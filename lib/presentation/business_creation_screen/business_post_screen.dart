@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/binding/business_creation_screen_binding.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/business_facilities_screen.dart';
@@ -108,13 +109,18 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
 
                 break;
               case 'Hotels':
-                _navigateToFilteredBusinesses(context, 'hotel');
+                _navigateToBusinessesFacilities();
+
                 break;
               case 'Restaurants':
-                _navigateToFilteredBusinesses(context, 'restaurant');
+                _navigateToBusinessesFacilities();
+
+                break;
+              case 'Tours':
+                _navigateToBusinessesFacilities();
                 break;
               case 'Business Statistics':
-                _navigateToFilteredBusinesses(context, 'restaurant');
+                _navigateToBusinessesDashboard(context, 'restaurant');
                 break;
             }
           },
@@ -194,13 +200,17 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
             ? Container(
                 height: 250,
                 child: MapScreen(
-                  latitude: 21.0137443130001,
-                  longitude: 105.798346108,
+                  coordinates: [
+                    LatLng(
+                        _latitude!, _longitude!), // Truyền tọa độ vào danh sách
+                  ],
+                  zoom:
+                      14.0, // Truyền giá trị zoom tùy ý (có thể bỏ nếu dùng mặc định)
                 ),
               )
             : Center(
-                child:
-                    CircularProgressIndicator()), // Show loading until coordinates are available
+                child: CircularProgressIndicator(),
+              ),
       ],
     );
   }
@@ -306,7 +316,7 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
     );
   }
 
-  void _navigateToFilteredBusinesses(BuildContext context, String type) {
+  void _navigateToBusinessesDashboard(BuildContext context, String type) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -314,30 +324,30 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
       ),
     );
   }
+  // Sửa lại theo đúng res,hotel,things to do , cùng 1 hàm chỉ thay đổi đầu vàonhé
 
- void _navigateToBusinessesFacilities() {
-  // Get the filtered destinations
-  var filteredDestinations = getThingsToDoDestinations(businessCreationController.destinations);
-  var allDestinations = businessCreationController.destinations;
-  // Check if filteredDestinations is empty
-  if (filteredDestinations.isEmpty) {
-    print("No filtered destinations found.");
-  } else {
-    print("Filtered destinations found: ${filteredDestinations.length}");
-    for (var destination in filteredDestinations) {
-      print('Destination Name: ${destination.name}, Location: ${destination.location}, Rating: ${destination.rating}');
+  void _navigateToBusinessesFacilities() {
+    var filteredDestinations =
+        getThingsToDoDestinations(businessCreationController.destinations);
+    var allDestinations = businessCreationController.destinations;
+    if (filteredDestinations.isEmpty) {
+      print("No filtered destinations found.");
+    } else {
+      print("Filtered destinations found: ${filteredDestinations.length}");
+      for (var destination in filteredDestinations) {
+        print(
+            'Destination Name: ${destination.name}, Location: ${destination.location}, Rating: ${destination.rating}');
+      }
     }
-  }
 
-  // Navigate to the BusinessFacilityScreen
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => BusinessFacilityScreen(
-        destinations: allDestinations,
+    // Navigate to the BusinessFacilityScreen
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BusinessFacilityScreen(
+          destinations: allDestinations,
+        ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 }

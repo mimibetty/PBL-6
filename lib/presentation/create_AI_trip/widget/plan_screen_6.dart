@@ -48,15 +48,15 @@ class _PlanScreen6 extends State<PlanScreen6> {
     {
       'title': 'Must-See Attraction',
       'image':
-          'https://m.yodycdn.com/blog/hot-tiktoker-viet-nam-yody-vn-10.jpg',
+          'https://media-cdn-v2.laodong.vn/storage/newsportal/2024/12/24/1440299/DIFF-2023.jpg',
       'rating': 4.8,
       'duration': '2 hours',
       'features': ['Guide Included', 'Family Friendly'],
     },
     {
       'title': 'Hidden Gem',
-      'image':
-          'https://m.yodycdn.com/blog/hot-tiktoker-viet-nam-yody-vn-10.jpg',
+     'image':
+          'https://media-cdn-v2.laodong.vn/storage/newsportal/2024/12/24/1440299/DIFF-2023.jpg',
       'rating': 4.5,
       'duration': '1.5 hours',
       'features': ['Quiet Spot', 'Scenic Views'],
@@ -67,15 +67,15 @@ class _PlanScreen6 extends State<PlanScreen6> {
     {
       'title': 'Local Diner',
       'image':
-          'https://m.yodycdn.com/blog/hot-tiktoker-viet-nam-yody-vn-10.jpg',
+          'https://media-cdn-v2.laodong.vn/storage/newsportal/2024/12/24/1440299/DIFF-2023.jpg',
       'rating': 4.2,
       'duration': '1 hour',
       'features': ['Local Cuisine', 'Cozy Atmosphere'],
     },
     {
       'title': 'Fine Dining',
-      'image':
-          'https://m.yodycdn.com/blog/hot-tiktoker-viet-nam-yody-vn-10.jpg',
+     'image':
+          'https://media-cdn-v2.laodong.vn/storage/newsportal/2024/12/24/1440299/DIFF-2023.jpg',
       'rating': 4.9,
       'duration': '2 hours',
       'features': ['Luxurious', 'Gourmet'],
@@ -86,15 +86,15 @@ class _PlanScreen6 extends State<PlanScreen6> {
     {
       'title': 'Luxury Hotel',
       'image':
-          'https://m.yodycdn.com/blog/hot-tiktoker-viet-nam-yody-vn-10.jpg',
+          'https://media-cdn-v2.laodong.vn/storage/newsportal/2024/12/24/1440299/DIFF-2023.jpg',
       'rating': 5.0,
       'duration': 'Stay',
       'features': ['Pool', 'Spa'],
     },
     {
       'title': 'Budget Inn',
-      'image':
-          'https://m.yodycdn.com/blog/hot-tiktoker-viet-nam-yody-vn-10.jpg',
+     'image':
+          'https://media-cdn-v2.laodong.vn/storage/newsportal/2024/12/24/1440299/DIFF-2023.jpg',
       'rating': 3.8,
       'duration': 'Stay',
       'features': ['Affordable', 'Basic Amenities'],
@@ -102,7 +102,7 @@ class _PlanScreen6 extends State<PlanScreen6> {
     {
       'title': 'Budget Inn 6',
       'image':
-          'https://m.yodycdn.com/blog/hot-tiktoker-viet-nam-yody-vn-10.jpg',
+          'https://media-cdn-v2.laodong.vn/storage/newsportal/2024/12/24/1440299/DIFF-2023.jpg',
       'rating': 3.8,
       'duration': 'Stay',
       'features': ['Affordable', 'Basic Amenities'],
@@ -110,7 +110,7 @@ class _PlanScreen6 extends State<PlanScreen6> {
     {
       'title': 'Budget Inn 7',
       'image':
-          'https://m.yodycdn.com/blog/hot-tiktoker-viet-nam-yody-vn-10.jpg',
+          'https://media-cdn-v2.laodong.vn/storage/newsportal/2024/12/24/1440299/DIFF-2023.jpg',
       'rating': 3.8,
       'duration': 'Stay',
       'features': ['Affordable', 'Basic Amenities'],
@@ -118,7 +118,7 @@ class _PlanScreen6 extends State<PlanScreen6> {
     {
       'title': 'Budget Inn 8',
       'image':
-          'https://m.yodycdn.com/blog/hot-tiktoker-viet-nam-yody-vn-10.jpg',
+          'https://media-cdn-v2.laodong.vn/storage/newsportal/2024/12/24/1440299/DIFF-2023.jpg',
       'rating': 3.8,
       'duration': 'Stay',
       'features': ['Affordable', 'Basic Amenities'],
@@ -126,7 +126,7 @@ class _PlanScreen6 extends State<PlanScreen6> {
     {
       'title': 'Budget Inn 9',
       'image':
-          'https://m.yodycdn.com/blog/hot-tiktoker-viet-nam-yody-vn-10.jpg',
+          'https://media-cdn-v2.laodong.vn/storage/newsportal/2024/12/24/1440299/DIFF-2023.jpg',
       'rating': 3.8,
       'duration': 'Stay',
       'features': ['Affordable', 'Basic Amenities'],

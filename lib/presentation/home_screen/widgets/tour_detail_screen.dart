@@ -28,7 +28,7 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
     tourImages = getImagesFromTour(widget.tour);
     reviewController.typeOfReview = 'tour';
     reviewController.fetchReviews(id: widget.tour.id);
-    reviewController.fetchRatingDistribution(widget.tour.id);
+    reviewController.fetchRatingDistribution(id: widget.tour.id);
   }
 
   PageController pageController = PageController();

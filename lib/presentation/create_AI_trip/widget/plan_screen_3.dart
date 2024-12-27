@@ -15,7 +15,7 @@ class _PlanScreen3State extends State<PlanScreen3> {
   // Calculate the end date based on the selected start date and trip length
   DateTime? get _calculatedEndDate {
     if (_selectedStartDate == null) return null;
-    return _selectedStartDate!.add(Duration(days: _tripLength - 1));
+    return _selectedStartDate!.add(Duration(days: _tripLength));
   }
 
   Future<void> _selectStartDate(BuildContext context) async {
@@ -108,7 +108,7 @@ class _PlanScreen3State extends State<PlanScreen3> {
                     IconButton(
                       icon: Icon(Icons.remove),
                       onPressed: () {
-                        if (_tripLength > 1) {
+                        if (_tripLength >1) {
                           setState(() {
                             _tripLength--;
                           });
