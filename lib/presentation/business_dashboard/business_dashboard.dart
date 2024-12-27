@@ -9,7 +9,7 @@ class BusinessDashboard extends StatefulWidget {
 class _DashboardState extends State<BusinessDashboard> {
   final mockData = [
     {
-      'photo':
+      'image':
           'https://images.unsplash.com/photo-1600891964599-f61ba0e24092?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
       'name': 'Cơm mộc Lê Gia',
       'location': 'Số 2 ngõ 59 Mễ Trì, Nguyễn Trãi, Hà Đông, Hà Nội',
@@ -17,7 +17,7 @@ class _DashboardState extends State<BusinessDashboard> {
       'chartData': [2.0, 5.0, 3.0, 7.0, 8.0, 5.0, 6.0, 9.0, 4.0, 8.0, 7.0, 5.0]
     },
     {
-      'photo':
+      'image':
           'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
       'name': 'Sân Golf Vân Trì',
       'location': 'Kim Nỗ, Xã Kim Nỗ, Đông Anh, Hà Nội',
@@ -25,7 +25,7 @@ class _DashboardState extends State<BusinessDashboard> {
       'chartData': [3.0, 4.0, 2.0, 8.0, 5.0, 6.0, 7.0, 8.0, 4.0, 6.0, 9.0, 7.0]
     },
     {
-      'photo':
+      'image':
           'https://images.unsplash.com/photo-1546069901-eacef0df6022?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
       'name': 'Yu long - Buffet lẩu nướng',
       'location': '10, lô 10, ngõ 67 Phùng Khoang, Nam Từ Liêm, Hà Nội',
@@ -33,7 +33,7 @@ class _DashboardState extends State<BusinessDashboard> {
       'chartData': [5.0, 6.0, 7.0, 5.0, 4.0, 8.0, 6.0, 7.0, 9.0, 5.0, 8.0, 6.0]
     },
     {
-      'photo':
+      'image':
           'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
       'name': 'Somerset West Lake Hà Nội',
       'location': '254D Thuỵ Khuê, Thuỵ Khuê, Tây Hồ, Hà Nội',
@@ -41,7 +41,7 @@ class _DashboardState extends State<BusinessDashboard> {
       'chartData': [4.0, 5.0, 6.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 7.0, 6.0, 8.0]
     },
     {
-      'photo':
+      'image':
           'https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/473768Xww/reency-ngo-838611.jpg',
       'name': 'Hotel du Monde Art',
       'location': '69 Hoàng Như Tiếp, Bồ Đề, Long Biên',
@@ -216,7 +216,7 @@ class _DashboardState extends State<BusinessDashboard> {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8.0),
                       child: Image.network(
-                        location['photo'] as String,
+                        location['image'] as String,
                         width: 60.0,
                         height: 60.0,
                         fit: BoxFit.cover,

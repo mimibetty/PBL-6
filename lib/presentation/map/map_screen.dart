@@ -15,10 +15,10 @@ import 'package:url_launcher/url_launcher.dart';
 class MapScreen extends StatefulWidget {
   final List<LatLng> coordinates;
   final double zoom;
- const MapScreen({
+  const MapScreen({
     Key? key,
     required this.coordinates,
-    this.zoom = 14.0, 
+    this.zoom = 14.0,
   }) : super(key: key);
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -39,25 +39,236 @@ class _MapScreenState extends State<MapScreen> {
   void initState() {
     super.initState();
     _getCurrentLocation();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.coordinates.isNotEmpty) {
+        fetchAndDrawMultiPointRoute(widget.coordinates);
+      }
+    });
   }
 
   Future<void> _getCurrentLocation() async {
-  if (widget.coordinates.isNotEmpty) {
-    LatLng firstCoordinate = widget.coordinates.first;
+    if (widget.coordinates.isNotEmpty) {
+      LatLng firstCoordinate = widget.coordinates.first;
 
-    setState(() {
-      _currentPosition = firstCoordinate;
-    });
+      setState(() {
+        _currentPosition = firstCoordinate;
+      });
 
-    // Thêm marker tại vị trí hiện tại
-    _addMarkerAtCurrentPosition(firstCoordinate.latitude, firstCoordinate.longitude);
+      // Thêm marker tại vị trí hiện tại
+      _addMarkerAtCurrentPosition(
+          firstCoordinate.latitude, firstCoordinate.longitude);
 
-    print('Current position set to: $_currentPosition');
-  } else {
-    print('Error: Coordinates list is empty');
+      print('Current position set to: $_currentPosition');
+    } else {
+      print('Error: Coordinates list is empty');
+    }
   }
-}
 
+  Future<void> fetchAndDrawMultiPointRoute(List<LatLng> points) async {
+    if (points.length < 2) {
+      print("Not enough points to draw a route.");
+      return;
+    }
+
+    List<List<double>> combinedCoordinates = [];
+
+    for (int i = 0; i < points.length - 1; i++) {
+      final origin = points[i];
+      final destination = points[i + 1];
+
+      final url = Uri.parse(
+          'https://rsapi.goong.io/Direction?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&vehicle=car&api_key=$api_key');
+
+      try {
+        final response = await http.get(url);
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+          String polyline = data['routes'][0]['overview_polyline']['points'];
+          List<PointLatLng> decodedPolyline =
+              polylinePoints.decodePolyline(polyline);
+
+          combinedCoordinates.addAll(decodedPolyline
+              .map((point) => [point.longitude, point.latitude]));
+        } else {
+          print("Failed to fetch route for segment $i.");
+        }
+      } catch (e) {
+        print("Error fetching route for segment $i: $e");
+      }
+    }
+
+    print("Combined GeoJSON Data: $combinedCoordinates");
+    _drawPath(combinedCoordinates);
+  }
+
+  void _drawPath(List<List<double>> coordinates) {
+    if (mapController == null) {
+      print("Map controller is not initialized.");
+      return;
+    }
+
+    // Check if there are coordinates to draw
+    if (coordinates.isEmpty) {
+      print("No coordinates provided for the path.");
+      return;
+    }
+
+    // Remove existing path if any
+    mapController?.removeLayer("route_layer");
+    mapController?.removeSource("route_source");
+
+    // Prepare GeoJSON data
+    final geoJsonData = {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "geometry": {
+            "type": "LineString",
+            "coordinates": coordinates,
+          },
+          "properties": {}
+        },
+      ],
+    };
+
+    // Add the source and layer
+    try {
+      mapController?.addSource(
+        "route_source",
+        GeojsonSourceProperties(
+          data: geoJsonData,
+        ),
+      );
+
+      mapController?.addLineLayer(
+        "route_source",
+        "route_layer",
+        LineLayerProperties(
+          lineColor: "#0000FF", // Blue color
+          lineWidth: 6, // Adjust the width of the line
+          lineOpacity: 0.9, // Adjust opacity if needed
+          lineCap: "round",
+          lineJoin: "round",
+        ),
+      );
+
+      print("Route drawn successfully with ${coordinates.length} points.");
+    } catch (e) {
+      print("Error drawing path: $e");
+    }
+  }
+  //duong chim bay
+  // Future<void> fetchAndDrawMultiPointRoute(List<LatLng> points) async {
+//   if (points.length < 2) {
+//     print("Not enough points to draw a route.");
+//     return;
+//   }
+
+//   List<List<double>> combinedCoordinates = [];
+
+//   for (int i = 0; i < points.length - 1; i++) {
+//     final origin = points[i];
+//     final destination = points[i + 1];
+
+//     final url = Uri.parse(
+//         'https://rsapi.goong.io/Direction?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&vehicle=car&api_key=$api_key');
+
+//     try {
+//       final response = await http.get(url);
+//       if (response.statusCode == 200) {
+//         final data = jsonDecode(response.body);
+//         String polyline = data['routes'][0]['overview_polyline']['points'];
+//         List<PointLatLng> decodedPolyline =
+//             polylinePoints.decodePolyline(polyline);
+
+//         // Sample points to reduce the number of coordinates
+//         List<List<double>> sampledCoordinates = _sampleCoordinates(decodedPolyline);
+
+//         combinedCoordinates.addAll(sampledCoordinates);
+//       } else {
+//         print("Failed to fetch route for segment $i.");
+//       }
+//     } catch (e) {
+//       print("Error fetching route for segment $i: $e");
+//     }
+//   }
+
+//   print("Combined GeoJSON Data: $combinedCoordinates");
+//   _drawPath(combinedCoordinates);
+// }
+
+// // Helper function to sample coordinates
+// List<List<double>> _sampleCoordinates(List<PointLatLng> decodedPolyline, {int step = 5}) {
+//   List<List<double>> sampledCoordinates = [];
+//   for (int i = 0; i < decodedPolyline.length; i += step) {
+//     sampledCoordinates.add([decodedPolyline[i].longitude, decodedPolyline[i].latitude]);
+//   }
+
+//   // Ensure the last point is included
+//   if (decodedPolyline.isNotEmpty) {
+//     sampledCoordinates.add([
+//       decodedPolyline.last.longitude,
+//       decodedPolyline.last.latitude,
+//     ]);
+//   }
+
+//   return sampledCoordinates;
+// }
+
+// void _drawPath(List<List<double>> coordinates) {
+//   if (mapController == null) {
+//     print("Map controller is not initialized.");
+//     return;
+//   }
+
+//   if (coordinates.isEmpty) {
+//     print("No coordinates provided for the path.");
+//     return;
+//   }
+
+//   mapController?.removeLayer("route_layer");
+//   mapController?.removeSource("route_source");
+
+//   final geoJsonData = {
+//     "type": "FeatureCollection",
+//     "features": [
+//       {
+//         "type": "Feature",
+//         "geometry": {
+//           "type": "LineString",
+//           "coordinates": coordinates,
+//         },
+//         "properties": {}
+//       },
+//     ],
+//   };
+
+//   try {
+//     mapController?.addSource(
+//       "route_source",
+//       GeojsonSourceProperties(
+//         data: geoJsonData,
+//       ),
+//     );
+
+//     mapController?.addLineLayer(
+//       "route_source",
+//       "route_layer",
+//       LineLayerProperties(
+//         lineColor: "#0000FF", // Blue color
+//         lineWidth: 6, // Adjust the width of the line
+//         lineOpacity: 0.9, // Adjust opacity if needed
+//         lineCap: "round",
+//         lineJoin: "round",
+//       ),
+//     );
+
+//     print("Route drawn successfully with ${coordinates.length} points.");
+//   } catch (e) {
+//     print("Error drawing path: $e");
+//   }
+// }
 
   void _onMapCreated(MaplibreMapController controller) async {
     mapController = controller;
@@ -77,27 +288,19 @@ class _MapScreenState extends State<MapScreen> {
     mapController?.addImage('locationEnd', bytes.buffer.asUint8List());
   }
 
-void _onStyleLoadedCallback() {
-  if (widget.coordinates.isNotEmpty) {
-    // Thêm marker cho tất cả các tọa độ trong danh sách coordinates
-    for (final coordinate in widget.coordinates) {
-      _addMarkerAtCurrentPosition(coordinate.latitude, coordinate.longitude);
-    }
+  void _onStyleLoadedCallback() {
+    if (widget.coordinates.isNotEmpty) {
+      // Add markers for all coordinates
+      for (final coordinate in widget.coordinates) {
+        _addMarkerAtCurrentPosition(coordinate.latitude, coordinate.longitude);
+      }
 
-    // Nếu có vị trí hiện tại, thêm marker cho vị trí đó
-    if (_currentPosition != null) {
-      _addMarkerAtCurrentPosition(
-        _currentPosition!.latitude,
-        _currentPosition!.longitude,
-      );
+      // Draw the path connecting all coordinates
+      fetchAndDrawMultiPointRoute(widget.coordinates);
+    } else {
+      print('Error: Coordinates list is empty, no markers or path added.');
     }
-
-    print('Markers added for all coordinates and current position');
-  } else {
-    print('Error: Coordinates list is empty, no markers added');
   }
-}
-
 
   void _addMarkerAtCurrentPosition(double latitude, double longitude) async {
     if (mapController == null) {
@@ -317,83 +520,82 @@ void _onStyleLoadedCallback() {
   }
 
   @override
- @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: Colors.grey[100],
-    body: Stack(
-      children: [
-        // Map Container
-        Positioned.fill(
-          child: Container(
-            margin: const EdgeInsets.all(8.0),
-            padding: const EdgeInsets.all(8.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: Offset(0, 4),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey[100],
+      body: Stack(
+        children: [
+          // Map Container
+          Positioned.fill(
+            child: Container(
+              margin: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+                border: Border.all(
+                  color: Colors.grey.shade300,
+                  width: 2,
                 ),
-              ],
-              border: Border.all(
-                color: Colors.grey.shade300,
-                width: 2,
               ),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: MapLibreMap(
-                onMapCreated: _onMapCreated,
-                onStyleLoadedCallback: _onStyleLoadedCallback,
-                initialCameraPosition: _calculateInitialCameraPosition(),
-                styleString:
-                    'https://tiles.goong.io/assets/goong_map_web.json?api_key=$map_tiles_key',
-                attributionButtonPosition: null,
-                scrollGesturesEnabled: true,
-                gestureRecognizers: Set()
-                  ..add(Factory<PanGestureRecognizer>(
-                      () => PanGestureRecognizer()))
-                  ..add(Factory<ScaleGestureRecognizer>(
-                      () => ScaleGestureRecognizer()))
-                  ..add(Factory<TapGestureRecognizer>(
-                      () => TapGestureRecognizer()))
-                  ..add(Factory<LongPressGestureRecognizer>(
-                      () => LongPressGestureRecognizer())),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: MapLibreMap(
+                  onMapCreated: _onMapCreated,
+                  onStyleLoadedCallback: _onStyleLoadedCallback,
+                  initialCameraPosition: _calculateInitialCameraPosition(),
+                  styleString:
+                      'https://tiles.goong.io/assets/goong_map_web.json?api_key=$map_tiles_key',
+                  attributionButtonPosition: null,
+                  scrollGesturesEnabled: true,
+                  gestureRecognizers: Set()
+                    ..add(Factory<PanGestureRecognizer>(
+                        () => PanGestureRecognizer()))
+                    ..add(Factory<ScaleGestureRecognizer>(
+                        () => ScaleGestureRecognizer()))
+                    ..add(Factory<TapGestureRecognizer>(
+                        () => TapGestureRecognizer()))
+                    ..add(Factory<LongPressGestureRecognizer>(
+                        () => LongPressGestureRecognizer())),
+                ),
               ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
-
-CameraPosition _calculateInitialCameraPosition() {
-  if (widget.coordinates.isNotEmpty) {
-    // Tính trung bình latitude và longitude từ danh sách coordinates
-    final avgLatitude = widget.coordinates
-            .map((coord) => coord.latitude)
-            .reduce((a, b) => a + b) /
-        widget.coordinates.length;
-    final avgLongitude = widget.coordinates
-            .map((coord) => coord.longitude)
-            .reduce((a, b) => a + b) /
-        widget.coordinates.length;
-
-    return CameraPosition(
-      target: LatLng(avgLatitude, avgLongitude),
-      zoom: widget.zoom, // Sử dụng zoom từ tham số
+        ],
+      ),
     );
   }
 
-  // Trả về giá trị mặc định nếu danh sách tọa độ rỗng
-  return CameraPosition(
-    target: LatLng(0, 0),
-    zoom: widget.zoom, // Sử dụng zoom từ tham số
-  );
-}
+  CameraPosition _calculateInitialCameraPosition() {
+    if (widget.coordinates.isNotEmpty) {
+      // Tính trung bình latitude và longitude từ danh sách coordinates
+      final avgLatitude = widget.coordinates
+              .map((coord) => coord.latitude)
+              .reduce((a, b) => a + b) /
+          widget.coordinates.length;
+      final avgLongitude = widget.coordinates
+              .map((coord) => coord.longitude)
+              .reduce((a, b) => a + b) /
+          widget.coordinates.length;
 
+      return CameraPosition(
+        target: LatLng(avgLatitude, avgLongitude),
+        zoom: widget.zoom, // Sử dụng zoom từ tham số
+      );
+    }
+
+    // Trả về giá trị mặc định nếu danh sách tọa độ rỗng
+    return CameraPosition(
+      target: LatLng(0, 0),
+      zoom: widget.zoom, // Sử dụng zoom từ tham số
+    );
+  }
 }
