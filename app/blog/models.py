@@ -24,8 +24,8 @@ class User(Base):
     forum_comments = relationship("ForumComment", back_populates="user")
     city = relationship("City", back_populates="user")
     tours = relationship("Tour", back_populates="user")
-    likes = relationship("UserDestinationLike", back_populates="user")
-    trips = relationship("Trip", back_populates="user")
+    likes = relationship("UserDestinationLike", back_populates="user",  cascade="all, delete-orphan")
+    trips = relationship("Trip", back_populates="user",  cascade="all, delete-orphan")
 # Bảng Hành Động1
 class Action(Base):
     __tablename__ = 'action'
@@ -107,11 +107,11 @@ class Destination(Base):
     # destination_journeys = relationship("DestinationJourney", back_populates="destination")  
     tours = relationship("Tour",secondary="destination_tour", back_populates="destinations")
     journeys = relationship("Journey",secondary="destination_journey", back_populates="destinations")
-    tags = relationship("Tag", secondary="destination_tag", back_populates="destinations")
-    likes = relationship("UserDestinationLike", back_populates="destination")
+    tags = relationship("Tag", secondary="destination_tag", back_populates="destinations", cascade="all")
+    likes = relationship("UserDestinationLike", back_populates="destination", cascade="all, delete-orphan")
     
     # Mối quan hệ với TripDestination
-    trip_destinations = relationship("TripDestination", back_populates="destination")
+    trip_destinations = relationship("TripDestination", back_populates="destination", cascade="all, delete-orphan")
 
 class Image(Base):
     __tablename__ = 'image'

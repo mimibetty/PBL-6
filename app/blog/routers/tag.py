@@ -32,10 +32,13 @@ def delete_tag(id: int, db: Session = Depends(get_db)):
     return tag.delete_tag(id, db)
 
 
-@router.get("/destination_num")
-def get_destination_num_of_each_tag(db: Session = Depends(get_db)):
-    tags = tag.get_destination_num_of_each_tag(db=db)
-    return tags
+@router.get("/destination_num", response_model=List[schemas.ShowDestNumByTag])
+def get_destination_num_of_each_tag(city_id: int = None, db: Session = Depends(get_db)):
+    if city_id:
+        result = tag.get_destination_num_by_tag_and_city(city_id=city_id, db=db)
+    else:
+        result = tag.get_destination_num_of_each_tag(db=db)
+    return result
 
 @router.get("/{id}", response_model=schemas.ShowTag)
 def get_tag(id: int, db: Session = Depends(get_db)):
@@ -44,3 +47,4 @@ def get_tag(id: int, db: Session = Depends(get_db)):
 @router.get("/", response_model=List[schemas.ShowTag])
 def get_all_tags(db: Session = Depends(get_db)):
     return tag.get_all_tags(db)
+

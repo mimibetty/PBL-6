@@ -370,3 +370,9 @@ class ShowTrip(Trip):
 
     class Config():
         orm_mode = True
+        
+class ShowDestNumByTag(BaseModel):
+    id: int
+    destination_count: int
+    name: Optional[str]
+    city_id: Optional[int]

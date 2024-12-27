@@ -164,3 +164,36 @@ def sorting_by_ratings_and_quantity_of_reviews(tours: List[models.Tour], db: Ses
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f"Error sorting tours: {str(e.detail)}")
         
+
+
+
+def get_rating_distribution(tour_id: int, db: Session):
+    try:
+        # Dictionary để lưu số lượng đánh giá cho mỗi rating
+        rating_counts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+        
+        # Query để đếm số lượng review cho mỗi rating
+        reviews = db.query(
+            func.floor(models.Review.rating).label('rating'),
+            func.count().label('count')
+        ).filter(
+            models.Review.tour_id == tour_id,
+            models.Review.rating.isnot(None)  # Loại bỏ các review không có rating
+        ).group_by(
+            func.floor(models.Review.rating)
+        ).all()
+        
+        # Cập nhật số lượng vào dictionary
+        for review in reviews:
+            rating = int(review.rating)
+            if 1 <= rating <= 5:  # Đảm bảo rating nằm trong khoảng hợp lệ
+                rating_counts[rating] = review.count
+                
+        return rating_counts
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error getting rating distribution: {str(e)}"
+        )
+    

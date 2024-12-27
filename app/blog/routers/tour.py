@@ -81,3 +81,15 @@ def get_all_tour_endpoint(
         final_results.append(result)
 
     return final_results
+
+
+@router.get('/rating-distribution/{tour_id}')
+def get_tour_rating_distribution(
+    tour_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    Get the distribution of ratings for a specific tour
+    Returns a dictionary with rating counts for each star rating (1-5)
+    """
+    return tour.get_rating_distribution(tour_id, db)
