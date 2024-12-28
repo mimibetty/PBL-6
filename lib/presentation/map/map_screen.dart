@@ -96,7 +96,6 @@ class _MapScreenState extends State<MapScreen> {
       }
     }
 
-    print("Combined GeoJSON Data: $combinedCoordinates");
     _drawPath(combinedCoordinates);
   }
 
