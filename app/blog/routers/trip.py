@@ -111,27 +111,6 @@ async def build_trip(
         # trip_plan = trip.run_travel_planner(destination_names, trip_day, db)
         trip_plan = trip.run_travel_planner(all_destination_ids, trip_day, db=db)
 
-        # daily_schedule = {}
-        # daily_distances = {}
-        # current_day = None
-        
-        # print("Trip plan:", trip_plan)
-        # for line in trip_plan.split('\n'):
-        #     if line.startswith("Nhóm"):
-        #         current_day = int(line.split()[1])
-        #         daily_schedule[f"day_{current_day}"] = []
-        #     elif line.startswith("Lộ trình:"):
-        #         route = line.split(": ")[1].split(" -> ")
-        #         daily_schedule[f"day_{current_day}"] = [destination_map[location] for location in route]
-        #     elif line.startswith("Tổng khoảng cách:"):
-        #         distance = float(line.split(": ")[1].split()[0])  # Lấy số km
-        #         daily_distances[f"day_{current_day}"] = distance
-
-        # response = TripResponse(
-        #     daily_schedule=daily_schedule,
-        #     hotels=hotel_ids,
-        #     daily_distances=daily_distances
-        # )
         daily_schedule = {}
         daily_distances = {}
 
@@ -164,3 +143,66 @@ async def build_trip(
 
 
 
+class CreateTripInput(BaseModel):
+    trip_name: str
+    month_time: str
+    user_id: int
+    isAI: bool
+    trip_day: int
+    list_day: Dict[str, List[int]]  # Format: {"day_1": [id1, id2, ...], "day_2": [id3, id4, ...]}
+    list_hotel: List[int]
+
+@router.post("/create-complete-trip", response_model=int)
+async def create_complete_trip(
+    trip_input: CreateTripInput,
+    db: Session = Depends(get_db)
+):
+    try:
+        # 1. Tạo trip mới
+        new_trip = trip.create_trip(
+            schemas.Trip(
+                name=trip_input.trip_name,
+                month_time=trip_input.month_time,
+                duration=trip_input.trip_day,
+                user_id=trip_input.user_id,
+                isAI=trip_input.isAI
+            ),
+            db
+        )
+        
+        # 2. Thêm hotels (day = 0)
+        for idx, hotel_id in enumerate(trip_input.list_hotel):
+            trip.add_destination_to_trip(
+                schemas.AddDestToTrip(
+                    destination_id=hotel_id,
+                    trip_id=new_trip.id,
+                    day=0,
+                    order=idx
+                ),
+                db
+            )
+        
+        # 3. Thêm các destination theo từng ngày
+        for day_key, destinations in trip_input.list_day.items():
+            # Chuyển day_1 thành số 1
+            day_num = int(day_key.split('_')[1])
+            
+            # Thêm từng destination theo thứ tự
+            for order, dest_id in enumerate(destinations):
+                trip.add_destination_to_trip(
+                    schemas.AddDestToTrip(
+                        destination_id=dest_id,
+                        trip_id=new_trip.id,
+                        day=day_num,
+                        order=order
+                    ),
+                    db
+                )
+        
+        return new_trip.id
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create complete trip: {str(e)}"
+        )
