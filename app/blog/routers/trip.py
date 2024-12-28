@@ -206,3 +206,33 @@ async def create_complete_trip(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to create complete trip: {str(e)}"
         )
+    
+
+
+
+@router.delete("/{trip_id}", response_model=int)
+def delete_trip_by_id(
+    trip_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    Xóa trip và tất cả các trip_destination liên quan.
+    
+    Parameters:
+    - trip_id: ID của trip cần xóa
+    
+    Returns:
+    - 1 nếu xóa thành công
+    - 0 nếu không tìm thấy trip hoặc xóa thất bại
+    """
+    try:
+        result = trip.delete_trip(trip_id, db)
+        return 1 if result else 0
+        
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error deleting trip: {str(e)}"
+        )

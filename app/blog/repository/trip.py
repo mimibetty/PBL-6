@@ -152,6 +152,31 @@ def delete_destination_from_trip(destination_id: int, trip_id: int, db: Session)
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete destination from trip")
+    
+# sử dụng cái này để xóa trip bằng id 
+def delete_trip(trip_id: int, db: Session) -> bool:
+    try:
+        # Xóa tất cả các trip_destination trước
+        db.query(models.TripDestination).filter(
+            models.TripDestination.trip_id == trip_id
+        ).delete(synchronize_session=False)
+        
+        # Xóa trip
+        deleted_trip = db.query(models.Trip).filter(
+            models.Trip.id == trip_id
+        ).delete(synchronize_session=False)
+        
+        db.commit()
+        
+        # Trả về True nếu đã xóa được trip, False nếu không tìm thấy trip
+        return deleted_trip > 0
+
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to delete trip: {str(e)}"
+        )
 # def get_coordinate(location: str):
 #     """
 #     Get the (latitude, longitude) coordinates from the location name using geopy.
