@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/controller/plan_screen_controller.dart';
+import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_1.dart';
 
 class PlanScreen9 extends StatelessWidget {
-  final int UserId;
-  final List<int> selectedHotelIDs;
-  final List<int> selectedRestaurantIDs;
-  final List<int> selectedThingsToDoIDs;
+  final Map<String, dynamic> jsonResponse;
   final String action;
+  final int UserId;
 
   PlanScreen9({
-    required this.UserId,
-    required this.selectedHotelIDs,
-    required this.selectedRestaurantIDs,
-    required this.selectedThingsToDoIDs,
+    required this.jsonResponse,
     required this.action,
+    required this.UserId,
   });
 
   final TextEditingController _tripNameController = TextEditingController();
@@ -64,7 +61,46 @@ class PlanScreen9 extends StatelessWidget {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
- 
+                  String tripName = _tripNameController.text.trim();
+
+                  if (tripName.isEmpty) {
+                    Get.snackbar(
+                      "Error",
+                      "Please enter a name for your trip",
+                      snackPosition: SnackPosition.BOTTOM,
+                    );
+                    return;
+                  }
+
+                  final result = action == "Itinerary"
+                      ? await planScreenController.saveTripAI(
+                          name: tripName,
+                          monthTime: planScreenController.monthTime.value,
+                          duration: planScreenController.tripLength.value,
+                          userId: UserId,
+                          buildData: jsonResponse,
+                        )
+                      : await planScreenController.buildTripNoAI(
+                          name: tripName,
+                          userId: UserId,
+                          buildData: jsonResponse,
+                        );
+
+                  if (result['success']) {
+                    Get.snackbar(
+                      "Success",
+                      action == "Itinerary" ? "Trip created successfully!" : "Trip saved successfully!",
+                      snackPosition: SnackPosition.BOTTOM,
+                    );
+
+                    Get.off(() => PlanScreen());
+                  } else {
+                    Get.snackbar(
+                      "Error",
+                      result['message'] ?? "An error occurred",
+                      snackPosition: SnackPosition.BOTTOM,
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,

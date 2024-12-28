@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/controller/plan_screen_controller.dart';
+import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_9.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/widget/trip_data.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 class PlanScreen7 extends StatefulWidget {
+  final int UserId;
   final Map<String, dynamic> jsonResponse; // JSON từ PlanScreen8
 
   PlanScreen7({
+    required this.UserId,
     required this.jsonResponse,
   });
 
@@ -98,7 +101,21 @@ class _PlanScreen7State extends State<PlanScreen7>
         );
       }),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () {
+          final Map<String, dynamic> jsonResponse = widget.jsonResponse; // Use existing JSON data
+          final String action = "Itinerary"; // Set the action
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PlanScreen9(
+                jsonResponse: jsonResponse,
+                action: action,
+                UserId: widget.UserId, // Pass the user ID from the current widget
+              ),
+            ),
+          );
+        },
         label: Text('Save itinerary'),
         icon: Icon(Icons.favorite_border),
         backgroundColor: Colors.blue,

@@ -147,7 +147,6 @@ Future<void> fetchDailyDestinations(Map<String, dynamic> dailySchedule) async {
     }
   }
 
-  // Build trip by AI and remove the last ID from each day
   Future<Map<String, dynamic>> buildTripAI({
     required int duration,
     required List<int> hotelIds,
@@ -166,30 +165,17 @@ Future<void> fetchDailyDestinations(Map<String, dynamic> dailySchedule) async {
       );
 
       if (response.statusCode == 200) {
-        final buildData = jsonDecode(utf8.decode(response.bodyBytes)); // Use utf8.decode
-
-        // Process daily_schedule to remove last ID of each day
-        Map<String, List<int>> adjustedSchedule = {};
-        (buildData['daily_schedule'] as Map<String, dynamic>).forEach((dayKey, destinations) {
-          List<int> destinationIds = List<int>.from(destinations);
-          if (destinationIds.length > 1) {
-            adjustedSchedule[dayKey] = destinationIds.sublist(0, destinationIds.length - 1); // Remove last ID
-          } else {
-            adjustedSchedule[dayKey] = destinationIds; // Keep if only one ID
-          }
-        });
-
-        buildData['daily_schedule'] = adjustedSchedule; // Update daily_schedule
+        final buildData = jsonDecode(utf8.decode(response.bodyBytes));
+        buildData['daily_schedule'] = _removeLastDestination(buildData['daily_schedule']);
         return {'success': true, 'data': buildData};
       } else {
-        final errorMessage = utf8.decode(response.bodyBytes); // Decode error message
-        return {'success': false, 'message': 'Failed to build trip by AI: $errorMessage'};
+        return {'success': false, 'message': _decodeError(response)};
       }
     } catch (error) {
-      return {'success': false, 'message': 'Error occurred while building trip', 'error': error.toString()};
+      return _handleException(error);
     }
   }
-  
+
   Future<Map<String, dynamic>> saveTripAI({
     required String name,
     required String monthTime,
@@ -198,65 +184,105 @@ Future<void> fetchDailyDestinations(Map<String, dynamic> dailySchedule) async {
     required Map<String, dynamic> buildData,
   }) async {
     try {
-      // 1. Create the trip
+      final jsonPayload = {
+        "trip_name": name,
+        "month_time": monthTime,
+        "user_id": userId,
+        "isAI": true,
+        "trip_day": duration,
+        "list_day": buildData['daily_schedule'],
+        "list_hotel": List<int>.from(buildData['hotels']),
+      };
+
+      final response = await http.post(
+        Uri.parse('https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/trip/create-complete-trip'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(jsonPayload),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(utf8.decode(response.bodyBytes));
+        return {'success': true, 'data': responseData};
+      } else {
+        return {'success': false, 'message': _decodeError(response)};
+      }
+    } catch (error) {
+      return _handleException(error);
+    }
+  }
+
+  Future<Map<String, dynamic>> buildTripNoAI({
+    required String name,
+    required int userId,
+    required Map<String, dynamic> buildData,
+  }) async {
+    try {
       final tripResponse = await http.post(
         Uri.parse('https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/trip/'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'name': name,
-          'month_time': monthTime,
-          'duration': duration,
+          'month_time': monthTime.value,
+          'duration': tripLength.value,
           'user_id': userId,
-          'isAI': true,
+          'isAI': false,
         }),
       );
 
       if (tripResponse.statusCode != 200) {
-        return {'success': false, 'message': 'Failed to create trip: ${tripResponse.body}'};
+        return {'success': false, 'message': _decodeError(tripResponse)};
       }
 
-      final tripData = jsonDecode(utf8.decode(tripResponse.bodyBytes)); // Use utf8.decode
-      final tripId = tripData['id'];
+      final tripData = jsonDecode(utf8.decode(tripResponse.bodyBytes));
+      final int tripID = tripData['id'];
+      final List<int> allDestinations = [
+        ...List<int>.from(buildData['hotels']),
+        ...List<int>.from(buildData['restaurants']),
+        ...List<int>.from(buildData['things_to_do']),
+      ];
 
-      // 2. Prepare destinations array
-      final List<Map<String, dynamic>> destinations = [];
-      (buildData['daily_schedule'] as Map<String, List<int>>).forEach((dayKey, destinationsList) {
-        destinationsList.asMap().forEach((order, destinationId) {
-          destinations.add({
-            'destination_id': destinationId,
-            'trip_id': tripId,
-            'order': order,
-            'day': int.parse(dayKey.split('_').last), // Extract day number from key
-          });
-        });
-      });
-
-      (buildData['hotels'] as List<dynamic>).asMap().forEach((order, hotelId) {
-        destinations.add({
-          'destination_id': hotelId,
-          'trip_id': tripId,
-          'order': order,
-          'day': 0,
-        });
-      });
-
-      // 3. Add destinations to the trip
-      for (final destination in destinations) {
+      for (final destinationID in allDestinations) {
         final destinationResponse = await http.post(
           Uri.parse('https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/trip/add_destination'),
           headers: {'Content-Type': 'application/json'},
-          body: jsonEncode(destination),
+          body: jsonEncode({
+            'destination_id': destinationID,
+            'trip_id': tripID,
+            'order': 0,
+            'day': 0,
+          }),
         );
 
         if (destinationResponse.statusCode != 200) {
-          return {'success': false, 'message': 'Failed to add destination: ${destinationResponse.body}'};
+          return {
+            'success': false,
+            'message': 'Failed to add destination ID $destinationID: ${_decodeError(destinationResponse)}',
+          };
         }
       }
 
-      return {'success': true, 'message': 'Trip created successfully', 'data': tripId};
+      return {'success': true, 'message': 'Trip saved successfully!', 'trip_id': tripID};
     } catch (error) {
-      return {'success': false, 'message': 'Error occurred while saving trip', 'error': error.toString()};
+      return _handleException(error);
     }
+  }
+
+  // Helper to remove last destinations from daily_schedule
+  Map<String, List<int>> _removeLastDestination(Map<String, dynamic> dailySchedule) {
+    return dailySchedule.map((key, destinations) {
+      final List<int> destinationIds = List<int>.from(destinations);
+      return MapEntry(key, destinationIds.length > 1 ? destinationIds.sublist(0, destinationIds.length - 1) : destinationIds);
+    });
+  }
+
+  // Helper to decode error
+  String _decodeError(http.Response response) {
+    return utf8.decode(response.bodyBytes);
+  }
+
+  // Helper to handle exceptions
+  Map<String, dynamic> _handleException(dynamic error) {
+    return {'success': false, 'message': 'An error occurred', 'error': error.toString()};
   }
 
   @override
@@ -264,5 +290,4 @@ Future<void> fetchDailyDestinations(Map<String, dynamic> dailySchedule) async {
     super.onInit();
     clearAll(); // Clear all data when the controller is initialized
   }
-  
 }

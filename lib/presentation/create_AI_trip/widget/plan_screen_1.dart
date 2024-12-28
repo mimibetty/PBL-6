@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_2.dart';
-import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
 import '../../navigation/custom_bottom_nav_bar.dart';
 
 class PlanScreen extends StatefulWidget {
