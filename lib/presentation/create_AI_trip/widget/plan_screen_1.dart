@@ -124,9 +124,8 @@ class _PlanScreenState extends State<PlanScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavBar(
-        controller: HomeController(),
-      ),
+            bottomNavigationBar: CustomBottomNavBar(),
+
     );
   }
 }

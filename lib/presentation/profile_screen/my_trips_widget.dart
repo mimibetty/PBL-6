@@ -58,7 +58,7 @@ class _MyTripsWidgetState extends State<MyTripsWidget> {
       },
       icon: Icon(Icons.sort, color: Colors.black),
       iconSize: 24,
-      elevation: 16,
+      elevation: 16, 
       itemBuilder: (BuildContext context) {
         return <String>['Show All', 'Things to Do', 'Restaurants', 'Places to Stay']
             .map<PopupMenuEntry<String>>((String value) {

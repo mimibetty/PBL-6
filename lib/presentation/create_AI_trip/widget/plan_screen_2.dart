@@ -101,7 +101,7 @@ class _PlanScreen2State extends State<PlanScreen2>
           SizedBox(height: 20),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavBar(controller: HomeController()),
+      bottomNavigationBar: CustomBottomNavBar(),
     );
   }
 }

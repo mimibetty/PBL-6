@@ -253,13 +253,7 @@ class AppRoutes {
         EditProfileBinding(),
       ],
     ),
-    GetPage(
-      name: notificationScreen,
-      page: () => NotificationScreen(),
-      bindings: [
-        NotificationBinding(),
-      ],
-    ),
+   
 
     GetPage(
       name: initialRoute,

@@ -349,7 +349,7 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
           }),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavBar(controller: HomeController()),
+      bottomNavigationBar: CustomBottomNavBar(),
     );
   }
 

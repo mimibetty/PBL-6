@@ -495,7 +495,7 @@ class _SearchScreenState extends State<SearchScreen>
         ],
       ),
       // Thanh điều hướng
-      bottomNavigationBar: CustomBottomNavBar(controller: HomeController()),
+      bottomNavigationBar: CustomBottomNavBar(),
     );
   }
 }

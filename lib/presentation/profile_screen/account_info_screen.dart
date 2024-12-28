@@ -166,7 +166,7 @@ void _handleUpdate() {
           ),
         );
       }),
-      bottomNavigationBar: CustomBottomNavBar(controller: HomeController()),
+      bottomNavigationBar: CustomBottomNavBar(),
     );
   }
 

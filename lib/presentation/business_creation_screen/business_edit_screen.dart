@@ -199,7 +199,7 @@ class _EditBusinessPostScreenState extends State<EditBusinessPostScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: CustomBottomNavBar(controller: HomeController()),
+      bottomNavigationBar: CustomBottomNavBar(),
     );
   }
 
