@@ -287,7 +287,7 @@ class TravelPlanner:
    
         for location_id in locations:
             coords, address = map.get_destination_coordinates(location_id, db=db)
-            if coords and address:
+            if coords:
                 self.coordinates.append(coords)
                 self.addresses.append(address)
                 print(f"Tọa độ của '{address}': {coords}")

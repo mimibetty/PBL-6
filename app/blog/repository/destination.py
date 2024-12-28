@@ -894,7 +894,7 @@ def get_full_address_by_id(destination_id: int, db: Session) -> List[str]:
         # String thứ hai: full address không có destination name và không có dấu phẩy
         full_address_without_name = f"{address.street} {address.ward} {address.district} {city.name}"
         full_address_onlyname = f"{destination.name}"
-        return [full_address_with_name, full_address_without_name, full_address_onlyname]
+        return [full_address_without_name, full_address_with_name, full_address_onlyname]
 
     except HTTPException as e:
         raise e
@@ -914,7 +914,7 @@ def get_latLong(id: int, db: Session):
                     .first()
         )
         if latLong.lat_address == None or latLong.long_address == None:
-            raise HTTPException(status_code=404, detail="No Lat Long")
+            return None
 
     except Exception as e:
         raise HTTPException(

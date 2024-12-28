@@ -20,6 +20,7 @@ GOONG_MAP_KEY = os.getenv('GOONG_MAP_KEY')
 def get_destination_coordinates_onlyGeopy(destination_id: int, db: Session) -> Optional[tuple]:
     """
     Lấy tọa độ và địa chỉ của một destination dựa trên ID.
+    Chỉ sử dụng geopy để lấy tọa độ nếu không có trong database.
     
     Args:
         destination_id: ID của destination
@@ -29,21 +30,40 @@ def get_destination_coordinates_onlyGeopy(destination_id: int, db: Session) -> O
         tuple: ((latitude, longitude), address_used) hoặc (None, None) nếu không tìm thấy
     """
     try:
-        # Lấy danh sách các địa chỉ có thể dùng
+        # Thử lấy tọa độ từ database trước
+        try:
+            latlong_db = destination.get_latLong(destination_id, db)
+            if latlong_db and latlong_db.lat_address and latlong_db.long_address:
+                # Lấy tên địa điểm để trả về cùng với tọa độ
+                name_result = destination.getName_by_id(destination_id, db)
+                if name_result:
+                    coords = (float(latlong_db.lat_address), float(latlong_db.long_address))
+                    print(f"Found coordinates in database for destination {destination_id}: {coords}")
+                    return (coords, name_result.name)  # Trả về name attribute của object
+        except HTTPException as he:
+            if he.status_code != 404:  # Nếu lỗi không phải do không tìm thấy tọa độ
+                raise he
+            print("No coordinates found in database, trying geopy...")
+
+        # Nếu không có trong database, thử với geopy
         addresses = destination.get_full_address_by_id(destination_id, db)
         
         # Thử lấy tọa độ bằng geopy cho từng địa chỉ
         for address in addresses:
             try:
                 coords = get_coordinate_geopy(address)
-                print(address, coords)
+                print(f"Trying address: {address}, Got coordinates: {coords}")
                 if coords:
-                    print("geopy")
                     print(f"Found coordinates for destination {destination_id}: {coords}")
+                    # Update tọa độ vào database
+                    destination.update_latLong(destination_id, coords[0], coords[1], db)
                     return (coords, address)
-            except Exception:
+            except Exception as e:
+                print(f"Error with geopy for address {address}: {str(e)}")
                 continue
+                
         # Nếu không tìm được tọa độ nào
+        print(f"No coordinates found for destination {destination_id}")
         return (None, None)
 
     except Exception as e:
@@ -62,18 +82,33 @@ def get_destination_coordinates(destination_id: int, db: Session) -> Optional[tu
         tuple: ((latitude, longitude), address_used) hoặc (None, None) nếu không tìm thấy
     """
     try:
-        # Lấy danh sách các địa chỉ có thể dùng
+        # Thử lấy tọa độ từ database trước
+        try:
+            latlong_db = destination.get_latLong(destination_id, db)
+            if latlong_db and latlong_db.lat_address and latlong_db.long_address:
+                # Lấy tên địa điểm để trả về cùng với tọa độ
+                name_result = destination.getName_by_id(destination_id, db)
+                if name_result:
+                    coords = (float(latlong_db.lat_address), float(latlong_db.long_address))
+                    print(f"Found coordinates in database for destination {destination_id}: {coords}")
+                    return (coords, name_result.name)  # Trả về name attribute của object
+        except HTTPException as he:
+            if he.status_code != 404:
+                raise he
+            print("No coordinates found in database, trying geocoding services...")
 
+        # Nếu không có trong database, lấy danh sách địa chỉ để thử geocoding
         addresses = destination.get_full_address_by_id(destination_id, db)
-
+        
         # Thử lấy tọa độ bằng geopy cho từng địa chỉ
-
         for address in addresses:
             try:
                 coords = get_coordinate_geopy(address)
                 if coords:
                     print("geopy")
                     print(f"Found coordinates for destination {destination_id}: {coords}")
+                    # Update tọa độ vào database
+                    destination.update_latLong(destination_id, coords[0], coords[1], db)
                     return (coords, address)
             except Exception:
                 continue
@@ -85,6 +120,8 @@ def get_destination_coordinates(destination_id: int, db: Session) -> Optional[tu
                 if coords:
                     print("goong")
                     print(f"Found coordinates for destination {destination_id}: {coords}")
+                    # Update tọa độ vào database
+                    destination.update_latLong(destination_id, coords[0], coords[1], db)
                     return (coords, address)
             except Exception:
                 continue
@@ -95,7 +132,6 @@ def get_destination_coordinates(destination_id: int, db: Session) -> Optional[tu
     except Exception as e:
         print(f"Error getting coordinates for destination {destination_id}: {str(e)}")
         return (None, None)
-
 
 
     

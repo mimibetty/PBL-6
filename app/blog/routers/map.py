@@ -37,7 +37,7 @@ def get_destination_coordinates(
     try:
         # Lấy tọa độ dựa trên tên địa điểm
         coords, address = map.get_destination_coordinates(destination_id, db)
-        if (coords is None) or (address is None):
+        if (coords is None):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"Coordinates not found for this destination  ID: {destination_id}"
@@ -77,7 +77,7 @@ def get_destination_coordinates_byGeopy(
     try:
         # Lấy tọa độ dựa trên tên địa điểm
         coords, address = map.get_destination_coordinates_onlyGeopy(destination_id, db)
-        if (coords is None) or (address is None):
+        if (coords is None):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"Coordinates not found for this destination  ID: {destination_id}"
