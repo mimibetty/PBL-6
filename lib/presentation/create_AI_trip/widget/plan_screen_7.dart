@@ -1,17 +1,43 @@
 import 'package:flutter/material.dart';
-
+import 'package:travelappflutter/core/app_export.dart';
+import 'package:travelappflutter/presentation/create_AI_trip/controller/plan_screen_controller.dart';
+import 'package:travelappflutter/presentation/create_AI_trip/widget/trip_data.dart';
+import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 class PlanScreen7 extends StatefulWidget {
+  final Map<String, dynamic> jsonResponse; // JSON từ PlanScreen8
+
+  PlanScreen7({
+    required this.jsonResponse,
+  });
+
   @override
   _PlanScreen7State createState() => _PlanScreen7State();
 }
 
-class _PlanScreen7State extends State<PlanScreen7> with SingleTickerProviderStateMixin {
+class _PlanScreen7State extends State<PlanScreen7>
+    with SingleTickerProviderStateMixin {
+
   TabController? _tabController;
+  final PlanScreenController planScreenController = Get.find<PlanScreenController>();
+  late List<String> dailyScheduleKeys;
 
   @override
   void initState() {
+    print(widget.jsonResponse);
     super.initState();
-    _tabController = TabController(length: 7, vsync: this);
+    _fetchData();
+    dailyScheduleKeys = widget.jsonResponse['daily_schedule'].keys.toList();
+    int numberOfDays = _calculateNumberOfDays();
+    _tabController = TabController(
+        length: numberOfDays + 1, vsync: this); // +1 for 'Places to stay'
+  }
+  Future<void> _fetchData() async {
+    final hotels = widget.jsonResponse['hotels'];
+    final dailySchedule = widget.jsonResponse['daily_schedule'];
+
+    // Fetch dữ liệu từ Controller
+    await planScreenController.fetchHotels(List<int>.from(hotels));
+    await planScreenController.fetchDailyDestinations(dailySchedule);
   }
 
   @override
@@ -20,13 +46,26 @@ class _PlanScreen7State extends State<PlanScreen7> with SingleTickerProviderStat
     super.dispose();
   }
 
+  int _calculateNumberOfDays() {
+    final tripDates = TripDates();
+    if (tripDates.startDate == null || tripDates.endDate == null) {
+      return 0;
+    }
+    return tripDates.endDate!
+        .difference(tripDates.startDate!)
+        .inDays; // Calculate the number of days
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    int numberOfDays = _calculateNumberOfDays();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text('Da Nang City Itinerary', style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.grey[200],
+        title: Text('${planScreenController.cityName} City Itinerary',
+            style: TextStyle(color: Colors.black)),
         actions: [
           IconButton(
             icon: Icon(Icons.close, color: Colors.black),
@@ -39,23 +78,24 @@ class _PlanScreen7State extends State<PlanScreen7> with SingleTickerProviderStat
           indicatorColor: Colors.black,
           tabs: [
             Tab(text: 'Places to stay'),
-            Tab(text: 'Day 1'),
-            Tab(text: 'Day 2'),
-            Tab(text: 'Day 3'),
-            Tab(text: 'Day 4'),
+            for (int day = 1; day <= numberOfDays; day++) Tab(text: 'Day $day'),
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          PlacesToStayTab(),
-          ItineraryDayTab(day: 'Day 1', description: 'Welcome to Da Nang City! Get ready for an exciting first day exploring...'),
-          ItineraryDayTab(day: 'Day 2', description: 'Explore My Khe Beach and the Dragon Bridge.'),
-          ItineraryDayTab(day: 'Day 3', description: 'Discover the vibrant culture in Hoi An.'),
-          ItineraryDayTab(day: 'Day 4', description: 'Enjoy a relaxing day with a scenic cruise.'),
-        ],
-      ),
+      body: Obx(() {
+        final planScreenController = Get.find<PlanScreenController>();
+        return TabBarView(
+          controller: _tabController,
+          children: [
+            PlacesToStayTab(),
+            for (var dayKey in dailyScheduleKeys)
+              ItineraryDayTab(
+                day: dayKey,
+                destinations: planScreenController.dailyGroupedDestinations[dayKey] ?? [],
+              ),
+          ],
+        );
+      }),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {},
         label: Text('Save itinerary'),
@@ -68,94 +108,291 @@ class _PlanScreen7State extends State<PlanScreen7> with SingleTickerProviderStat
 }
 
 class PlacesToStayTab extends StatelessWidget {
+  final PlanScreenController planScreenController = Get.find<PlanScreenController>();
+
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: EdgeInsets.all(16),
-      children: [
-        Text(
-          'We\'ve also recommended some places to stay during your trip.',
-          style: TextStyle(color: Colors.black, fontSize: 16),
-        ),
-        SizedBox(height: 16),
-        Card(
-          color: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return Obx(() {
+      // Kiểm tra nếu danh sách khách sạn rỗng
+      if (planScreenController.hotelPlanScreen.isEmpty) {
+        return Center(
+          child: Text(
+            'No recommended places to stay available.',
+            style: TextStyle(color: Colors.black54, fontSize: 16),
+          ),
+        );
+      }
+
+      // Hiển thị danh sách khách sạn
+      return ListView.builder(
+        padding: EdgeInsets.all(16),
+        itemCount: planScreenController.hotelPlanScreen.length,
+        itemBuilder: (context, index) {
+          final hotel = planScreenController.hotelPlanScreen[index];
+          return _buildPlaceToStay(
+            imageUrl: hotel.images[0],
+            name: hotel.name,
+            address: hotel.address.district,
+            time: hotel.openTime.toString(),
+            rating: hotel.rating.toStringAsFixed(1),
+            numOfReviews: hotel.numOfReviews.toString(),
+            price: hotel.priceTop - hotel.priceBottom == 0
+                ? '\$${hotel.priceTop}'
+                : '\$${hotel.priceBottom} - \$${hotel.priceTop}',
+            description: hotel.description,
+          );
+        },
+      );
+    });
+  }
+
+  Widget _buildPlaceToStay({
+    required String imageUrl,
+    required String name,
+    required String address,
+    required String time,
+    required String rating,
+    required String numOfReviews,
+    required String price,
+    required String description,
+  }) {
+    return Card(
+      color: Colors.grey[100], // Lighter gray color for the card background
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.network(imageUrl,
+                height: 120, width: double.infinity, fit: BoxFit.cover),
+            SizedBox(height: 5),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Image.network(
-                  'https://vivutour.vn/wp-content/uploads/2024/09/muong-thanh-luxury-anh-sp-1.jpg',
-                  height: 120,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-                SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Moxy NYC', style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
-                    Icon(Icons.favorite_border, color: Colors.black),
-                  ],
-                ),
-                Text('4 star hotel · 2.80 mi from location', style: TextStyle(color: Colors.black54)),
-                Text('\$209 USD - \$479 USD per night', style: TextStyle(color: Colors.black)),
-                SizedBox(height: 8),
-                Text(
-                  'Perfectly located for exploring Da Nang , this hotel offers small, creative rooms with a modern ambiance and friendly service.',
-                  style: TextStyle(color: Colors.black54),
-                ),
+                Text(name,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold)),
+                Icon(Icons.favorite_border, color: Colors.black),
               ],
             ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class ItineraryDayTab extends StatelessWidget {
-  final String day;
-  final String description;
-
-  ItineraryDayTab({required this.day, required this.description});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: EdgeInsets.all(16),
-      children: [
-        Text(
-          day,
-          style: TextStyle(color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 8),
-        Text(
-          description,
-          style: TextStyle(color: Colors.black54),
-        ),
-        SizedBox(height: 16),
-        for (int i = 1; i <= 4; i++)
-          Card(
-            color: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            child: ExpansionTile(
-              title: Text('Location $i', style: TextStyle(color: Colors.black)),
-              subtitle: Text('Description of location $i', style: TextStyle(color: Colors.black54)),
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.all(16),
+            SizedBox(height: 5),
+            Text(address, style: TextStyle(color: Colors.black54)),
+            const SizedBox(height: 5),
+            Text(
+              "Time: ${time}",
+              style: TextStyle(
+                  fontSize: 14, color: Colors.black54),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+            ),
+            const SizedBox(height: 5),
+            Row(
+              children: [
+                for (int i = 1; i <= 5; i++)
+                  Icon(
+                    Icons.circle,
+                    size: 12,
+                    color: Colors.grey,
+                  ),
+                const SizedBox(width: 8),
+                Text(
+                  "${rating} ★",
+                  style: TextStyle(
+                      fontSize: 14, color: Colors.grey),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
                   child: Text(
-                    'Here is some additional information about Location $i. This can include details such as the history, significance, or tips for visiting.',
-                    style: TextStyle(color: Colors.black54),
+                    "(${numOfReviews} reviews)",
+                    style: TextStyle(
+                        fontSize: 14, color: Colors.grey),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
                   ),
                 ),
               ],
             ),
+            SizedBox(height: 5),
+            Text(
+              price,
+              style: TextStyle(
+                color: Colors.black, // Màu chữ đen
+                fontSize: 15, // Font size lớn hơn một chút
+                fontWeight: FontWeight.bold, // Chữ in đậm
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(description, style: TextStyle(color: Colors.black54)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+class ItineraryDayTab extends StatelessWidget {
+  final String day;
+  final List<TravelDestination> destinations; // Danh sách địa điểm cho ngày hiện tại
+  ItineraryDayTab({
+    required this.day,
+    required this.destinations,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      padding: EdgeInsets.all(16),
+      itemCount: destinations.length,
+      itemBuilder: (context, index) {
+        final destination = destinations[index];
+        return _buildLocationCard(
+          name: destination.name,
+          imageUrl: destination.images[0],
+          description: destination.description,
+          address: destination.address.district,
+          addressDetail: destination.address.street + " " + destination.address.ward,
+          time: destination.openTime.toString(),
+          rating: destination.rating.toStringAsFixed(1),
+          numOfReviews: destination.numOfReviews.toString(),
+        );
+      },
+    );
+  }
+
+  Widget _buildLocationCard({
+    required String name,
+    required String imageUrl,
+    required String description,
+    required String address,
+    required String addressDetail,
+    required String time,
+    required String rating,
+    required String numOfReviews,
+
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0), // Adjust bottom padding to increase spacing
+      child: Card(
+        color: Colors.grey[100], 
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: ExpansionTile(
+            backgroundColor: Colors.grey[100],
+            tilePadding: EdgeInsets.all(0),
+            title: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+              child: Text(name, style: TextStyle(color: Colors.black)),
+            ),
+            subtitle: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(address, style: TextStyle(color: Colors.black54)),
+            ),
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 7,
+                                offset: Offset(0, 3),
+                              ),
+                            ],
+                            image: DecorationImage(
+                              image: NetworkImage(imageUrl),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 15),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                description,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black54,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  Icon(Icons.location_pin, color: Colors.red, size: 16),
+                                  SizedBox(width: 2),
+                                  Expanded(
+                                    child: Text(
+                                      addressDetail,
+                                      style: TextStyle(color: Colors.black54),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                "Time: ${time.toString()}",
+                                style: TextStyle(
+                                    fontSize: 14, color: Colors.black54),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                              ),
+                              const SizedBox(height: 5),
+                              Row(
+                                children: [
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    "${rating} ★",
+                                    style: TextStyle(
+                                        fontSize: 14, color: Colors.grey),
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Expanded(
+                                    child: Text(
+                                      "(${numOfReviews} reviews)",
+                                      style: TextStyle(
+                                          fontSize: 14, color: Colors.grey),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-      ],
+        ),
+      ),
     );
   }
 }

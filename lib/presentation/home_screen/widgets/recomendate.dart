@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
-import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
 
 class Recomendate extends StatefulWidget {
   final TravelDestination destination;
-  const Recomendate({super.key, required this.destination});
+  final bool isLiked; // Thêm `final` vì giá trị này không thay đổi trong widget
+
+  const Recomendate({
+    super.key,
+    required this.destination,
+    this.isLiked = false, // Giá trị mặc định cho isLiked
+  });
 
   @override
   _RecomendateState createState() => _RecomendateState();
 }
 
 class _RecomendateState extends State<Recomendate> {
-  bool isLiked = false; // Trạng thái của nút tim
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +56,7 @@ class _RecomendateState extends State<Recomendate> {
                 child: HeartIconWidget(
                   userId: Get.find<ProfileController>().profileModelObj.value.id, // Add the userId argument
                   destinationId: widget.destination.id, // Add the destinationId argument
-                  isLiked: isLiked, // Truyền trạng thái isLiked vào
+                  isLiked: widget.isLiked, // Truyền trạng thái isLiked vào
                   //size: 18,
                 ),
               ),

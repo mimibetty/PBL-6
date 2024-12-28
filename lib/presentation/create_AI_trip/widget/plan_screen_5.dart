@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:travelappflutter/presentation/create_AI_trip/controller/plan_screen_controller.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_6.dart';
-import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_7.dart';
+import 'package:travelappflutter/presentation/search_screen/controller/things_to_do_controller.dart';
 
 class PlanScreen5 extends StatefulWidget {
   @override
@@ -8,22 +10,19 @@ class PlanScreen5 extends StatefulWidget {
 }
 
 class _PlanScreen5State extends State<PlanScreen5> {
-  List<String> options = [
-    "Must-see Attractions",
-    "Great Food",
-    "Hidden Gems",
-    "Central Park Tours",
-    "Broadway Shows & NYC Stages",
-    "Nightlife Tours in NYC",
-    "Art Museums",
-    "Broadway Theater",
-    "Pizza",
-    "Iconic Landmarks",
-    "Luxury Shopping",
-    "Jazz Clubs",
-  ];
+  final ThingsToDoController thingsToDoController = Get.put(ThingsToDoController());
+  final PlanScreenController planScreenController = Get.put(PlanScreenController());
 
-  List<String> selectedOptions = [];
+  @override
+  void initState() {
+    super.initState();
+    // Clear selected tags when the screen is initialized
+    if (planScreenController.tagsSelected.isNotEmpty) {
+      planScreenController.tagsSelected.clear();
+    }
+    // Fetch tags for a specific city (replace with actual city ID)
+    thingsToDoController.fetchTags(planScreenController.cityId.value);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +35,7 @@ class _PlanScreen5State extends State<PlanScreen5> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Da Nang City, Da Nang Itinerary",
+              "${planScreenController.cityName.value} Itinerary",
               style: TextStyle(color: Colors.black, fontSize: 16),
             ),
             SizedBox(height: 4),
@@ -80,12 +79,19 @@ class _PlanScreen5State extends State<PlanScreen5> {
                     style: TextStyle(color: Colors.black54, fontSize: 16),
                   ),
                   SizedBox(height: 24),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children:
-                        options.map((option) => choiceChip(option)).toList(),
-                  ),
+                  Obx(() {
+                    if (thingsToDoController.isLoadingForTags.value) {
+                      return Center(child: CircularProgressIndicator(color: Colors.blue));
+                    } else if (thingsToDoController.tags.isEmpty) {
+                      return Center(child: Text('No tags found', style: TextStyle(color: Colors.black)));
+                    } else {
+                      return Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: thingsToDoController.tags.map((tag) => choiceChip(tag.name)).toList(),
+                      );
+                    }
+                  }),
                   SizedBox(height: 80), // Add space to prevent overlap
                 ],
               ),
@@ -128,28 +134,21 @@ class _PlanScreen5State extends State<PlanScreen5> {
   }
 
   Widget choiceChip(String label) {
-    bool isSelected = selectedOptions.contains(label);
+    bool isSelected = planScreenController.tagsSelected.any((tag) => tag.name == label);
 
     return ChoiceChip(
-      label: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(label,
-              style:
-                  TextStyle(color: isSelected ? Colors.white : Colors.black)),
-          if (isSelected) ...[
-            SizedBox(width: 4),
-            Icon(Icons.check, color: Colors.white, size: 18),
-          ]
-        ],
+      label: Text(
+        label,
+        style: TextStyle(color: isSelected ? Colors.white : Colors.black),
       ),
       selected: isSelected,
       onSelected: (selected) {
         setState(() {
+          final tag = thingsToDoController.tags.firstWhere((tag) => tag.name == label);
           if (selected) {
-            selectedOptions.add(label);
+            planScreenController.addTag(tag);
           } else {
-            selectedOptions.remove(label);
+            planScreenController.removeTag(tag);
           }
         });
       },

@@ -1,5 +1,6 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:travelappflutter/presentation/create_AI_trip/controller/plan_screen_controller.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_5.dart';
 
 class PlanScreen4 extends StatefulWidget {
@@ -8,7 +9,7 @@ class PlanScreen4 extends StatefulWidget {
 }
 
 class _PlanScreen4State extends State<PlanScreen4> {
-  String _selectedOption = ''; // Lưu lựa chọn người dùng
+  final PlanScreenController planScreenController = Get.find<PlanScreenController>();
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +19,7 @@ class _PlanScreen4State extends State<PlanScreen4> {
           'Who is coming with you?',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
+        backgroundColor: Colors.blue,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -56,7 +58,7 @@ class _PlanScreen4State extends State<PlanScreen4> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          _selectedOption = label; // Cập nhật lựa chọn khi người dùng chọn
+          planScreenController.setCompanionOption(label); // Cập nhật lựa chọn khi người dùng chọn
         });
         print('Selected: $label');
         
@@ -99,4 +101,3 @@ class _PlanScreen4State extends State<PlanScreen4> {
     );
   }
 }
-

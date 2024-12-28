@@ -16,6 +16,7 @@ import './widgets/recomendate.dart';
 import 'package:iconsax/iconsax.dart';
 import './widgets/popular_place.dart';
 import './models/travel_model.dart';
+import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatefulWidget {
   final int? cityID;
@@ -45,6 +46,37 @@ class _TravelHomeScreenState extends State<HomeScreen> {
   void filterDestinationsByTopic(String topic) {
     topicController.fetchDestinationsByTopic(topic); // Gọi API cho từng `Topic`
   }
+
+  Future<bool> _initializeIsLiked(String destinationId) async {
+  final String baseUrl =
+      "https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net";
+  final String userId = Get.find<ProfileController>().profileModelObj.value.id.toString();
+
+  try {
+    // Tạo URL request
+    final Uri url = Uri.parse('$baseUrl/user/$userId/has_liked/$destinationId');
+
+    // Gửi request GET
+    final response = await http.get(url);
+
+    // Kiểm tra trạng thái HTTP response
+    if (response.statusCode == 200) {
+      // Parse kết quả trả về
+      final bool likeStatus = response.body.toLowerCase() == 'true';
+      return likeStatus; // Trả về giá trị true/false
+    } else {
+      // Xử lý khi API trả về mã lỗi
+      debugPrint('Failed to fetch like status: ${response.statusCode}');
+      return false; // Trả về false nếu có lỗi
+    }
+  } catch (e) {
+    // Xử lý lỗi nếu có
+    debugPrint('Error checking like status: $e');
+    return false; // Trả về false nếu có lỗi
+  }
+}
+
+
 
   @override
   void initState() {
@@ -301,8 +333,20 @@ Future<void> _fetchDestinations() async {
                           ),
                         );
                       },
-                      child: Recomendate(
-                        destination: recommendDestinations[index],
+                      child: FutureBuilder<bool>(
+                        future: _initializeIsLiked(recommendDestinations[index].id.toString()),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else {
+                            return Recomendate(
+                              destination: recommendDestinations[index],
+                              isLiked: snapshot.data ?? false,
+                            );
+                          }
+                        },
                       ),
                     ),
                   ),

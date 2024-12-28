@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:travelappflutter/presentation/create_AI_trip/controller/plan_screen_controller.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_4.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/widget/trip_data.dart';
 
@@ -9,13 +11,13 @@ class PlanScreen3 extends StatefulWidget {
 }
 
 class _PlanScreen3State extends State<PlanScreen3> {
+  final PlanScreenController planScreenController = Get.find<PlanScreenController>();
   DateTime? _selectedStartDate;
-  int _tripLength = 1; // Default trip length (1 day)
 
   // Calculate the end date based on the selected start date and trip length
   DateTime? get _calculatedEndDate {
     if (_selectedStartDate == null) return null;
-    return _selectedStartDate!.add(Duration(days: _tripLength - 1));
+    return _selectedStartDate!.add(Duration(days: planScreenController.tripLength.value));
   }
 
   Future<void> _selectStartDate(BuildContext context) async {
@@ -28,11 +30,12 @@ class _PlanScreen3State extends State<PlanScreen3> {
     if (picked != null && picked != _selectedStartDate) {
       setState(() {
         _selectedStartDate = picked;
+        planScreenController.monthTime.value = DateFormat('MMMM').format(picked);
       });
     }
   }
 
-   void _navigateToNextPage(BuildContext context) {
+  void _navigateToNextPage(BuildContext context) {
     if (_selectedStartDate != null) {
       // Save dates in the singleton
       TripDates().startDate = _selectedStartDate;
@@ -57,6 +60,7 @@ class _PlanScreen3State extends State<PlanScreen3> {
           'Plan Your Trip',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
+        backgroundColor: Colors.blue,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -108,20 +112,20 @@ class _PlanScreen3State extends State<PlanScreen3> {
                     IconButton(
                       icon: Icon(Icons.remove),
                       onPressed: () {
-                        if (_tripLength > 1) {
+                        if (planScreenController.tripLength.value > 1) {
                           setState(() {
-                            _tripLength--;
+                            planScreenController.tripLength.value--;
                           });
                         }
                       },
                     ),
-                    Text('$_tripLength', style: TextStyle(fontSize: 20)),
+                    Obx(() => Text('${planScreenController.tripLength.value}', style: TextStyle(fontSize: 20))),
                     IconButton(
                       icon: Icon(Icons.add),
                       onPressed: () {
-                        if (_tripLength < 7) {
+                        if (planScreenController.tripLength.value < 7) {
                           setState(() {
-                            _tripLength++;
+                            planScreenController.tripLength.value++;
                           });
                         }
                       },
@@ -160,7 +164,7 @@ class _PlanScreen3State extends State<PlanScreen3> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   backgroundColor:
-                      Colors.blue, // Button background color set to green
+                      Colors.blue, // Button background color set to blue
                 ),
               ),
             ),

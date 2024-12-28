@@ -64,7 +64,9 @@ Future<void> getRecommendationDestinations(int userID, int cityID, String cityNa
   try {
     // Gửi yêu cầu để lấy danh sách ID
     final url =
-        'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/recommendations_bylikes/$userID?city_id=$cityID&limit=20';
+        'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/recommendationsIDS_bylikes/$userID?city_id=$cityID&limit=20';
+    
+    print(url);
 
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {

@@ -40,7 +40,7 @@ class SearchDestinationController extends GetxController {
         getMoreExploreAll();
 
         // Lấy ProfileController để sử dụng id
-        final ProfileController profileController = Get.find<ProfileController>();
+        final ProfileController profileController = Get.put(ProfileController());
         if (profileController.profileModelObj.value.id != 0) {
           getSearchRecommendation(profileController.profileModelObj.value.id); // Sử dụng id từ ProfileController
         }
@@ -68,7 +68,7 @@ class SearchDestinationController extends GetxController {
   Future<void> getSearchRecommendation(int id) async {
     try {
       final Uri recommendationUrl = Uri.parse(
-          'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/recommendations_bylikes/$id?limit=7');
+          'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/recommendationsIDS_bylikes/$id?limit=7');
       final recommendationResponse = await http.get(recommendationUrl);
 
       if (recommendationResponse.statusCode == 200) {

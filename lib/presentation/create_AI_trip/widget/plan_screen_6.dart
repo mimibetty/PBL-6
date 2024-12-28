@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:travelappflutter/presentation/business_creation_screen/widget/start_rating_widget.dart';
+import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/common_views/circle_rating_widget_view.dart';
-import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_7.dart';
+import 'package:travelappflutter/presentation/create_AI_trip/controller/plan_screen_controller.dart';
+import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_8.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/widget/trip_data.dart';
+import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 
 class PlanScreen6 extends StatefulWidget {
   @override
@@ -11,129 +13,74 @@ class PlanScreen6 extends StatefulWidget {
 }
 
 class _PlanScreen6 extends State<PlanScreen6> {
-  @override
+  final PlanScreenController planScreenController = Get.find<PlanScreenController>();
+  
   bool selectAll = true;
+  Set<String> selectedCards = {};
+  List<int> selectedThingsToDoIDs = [];
+  List<int> selectedHotelIDs = [];
+  List<int> selectedRestaurantIDs = [];
 
+  @override
   void initState() {
     super.initState();
-    // Select all items by default
-
-    selectedCards.addAll(
-      [
-        ...thingsToDo.map((e) => e['title'] as String),
-        ...restaurants.map((e) => e['title'] as String),
-        ...hotels.map((e) => e['title'] as String),
-      ],
-    );
-    _toggleSelectAll(selectAll);
+    // Fetch destinations and select all items by default
+    planScreenController.fetchDestinationsByCityAndTags().then((_) {
+      _toggleSelectAll(selectAll);
+    });
   }
 
   void _toggleSelectAll(bool value) {
     setState(() {
       selectAll = value;
       selectedCards.clear();
+      selectedThingsToDoIDs.clear();
+      selectedHotelIDs.clear();
+      selectedRestaurantIDs.clear();
       if (selectAll) {
         selectedCards.addAll(
           [
-            ...thingsToDo.map((e) => e['title'] as String),
-            ...restaurants.map((e) => e['title'] as String),
-            ...hotels.map((e) => e['title'] as String),
+            ...planScreenController.thingsToDoPlanScreen.map((e) => e.name),
+            ...planScreenController.restaurantPlanScreen.map((e) => e.name),
+            ...planScreenController.hotelPlanScreen.map((e) => e.name),
           ],
+        );
+        selectedThingsToDoIDs.addAll(
+          planScreenController.thingsToDoPlanScreen.map((e) => e.id),
+        );
+        selectedHotelIDs.addAll(
+          planScreenController.hotelPlanScreen.map((e) => e.id),
+        );
+        selectedRestaurantIDs.addAll(
+          planScreenController.restaurantPlanScreen.map((e) => e.id),
         );
       }
     });
   }
 
-  final List<Map<String, dynamic>> thingsToDo = [
-    {
-      'title': 'Must-See Attraction',
-      'image':
-          'https://m.yodycdn.com/blog/hot-tiktoker-viet-nam-yody-vn-10.jpg',
-      'rating': 4.8,
-      'duration': '2 hours',
-      'features': ['Guide Included', 'Family Friendly'],
-    },
-    {
-      'title': 'Hidden Gem',
-      'image':
-          'https://m.yodycdn.com/blog/hot-tiktoker-viet-nam-yody-vn-10.jpg',
-      'rating': 4.5,
-      'duration': '1.5 hours',
-      'features': ['Quiet Spot', 'Scenic Views'],
-    },
-  ];
-
-  final List<Map<String, dynamic>> restaurants = [
-    {
-      'title': 'Local Diner',
-      'image':
-          'https://m.yodycdn.com/blog/hot-tiktoker-viet-nam-yody-vn-10.jpg',
-      'rating': 4.2,
-      'duration': '1 hour',
-      'features': ['Local Cuisine', 'Cozy Atmosphere'],
-    },
-    {
-      'title': 'Fine Dining',
-      'image':
-          'https://m.yodycdn.com/blog/hot-tiktoker-viet-nam-yody-vn-10.jpg',
-      'rating': 4.9,
-      'duration': '2 hours',
-      'features': ['Luxurious', 'Gourmet'],
-    },
-  ];
-
-  final List<Map<String, dynamic>> hotels = [
-    {
-      'title': 'Luxury Hotel',
-      'image':
-          'https://m.yodycdn.com/blog/hot-tiktoker-viet-nam-yody-vn-10.jpg',
-      'rating': 5.0,
-      'duration': 'Stay',
-      'features': ['Pool', 'Spa'],
-    },
-    {
-      'title': 'Budget Inn',
-      'image':
-          'https://m.yodycdn.com/blog/hot-tiktoker-viet-nam-yody-vn-10.jpg',
-      'rating': 3.8,
-      'duration': 'Stay',
-      'features': ['Affordable', 'Basic Amenities'],
-    },
-    {
-      'title': 'Budget Inn 6',
-      'image':
-          'https://m.yodycdn.com/blog/hot-tiktoker-viet-nam-yody-vn-10.jpg',
-      'rating': 3.8,
-      'duration': 'Stay',
-      'features': ['Affordable', 'Basic Amenities'],
-    },
-    {
-      'title': 'Budget Inn 7',
-      'image':
-          'https://m.yodycdn.com/blog/hot-tiktoker-viet-nam-yody-vn-10.jpg',
-      'rating': 3.8,
-      'duration': 'Stay',
-      'features': ['Affordable', 'Basic Amenities'],
-    },
-    {
-      'title': 'Budget Inn 8',
-      'image':
-          'https://m.yodycdn.com/blog/hot-tiktoker-viet-nam-yody-vn-10.jpg',
-      'rating': 3.8,
-      'duration': 'Stay',
-      'features': ['Affordable', 'Basic Amenities'],
-    },
-    {
-      'title': 'Budget Inn 9',
-      'image':
-          'https://m.yodycdn.com/blog/hot-tiktoker-viet-nam-yody-vn-10.jpg',
-      'rating': 3.8,
-      'duration': 'Stay',
-      'features': ['Affordable', 'Basic Amenities'],
-    },
-  ];
-
-  Set<String> selectedCards = {};
+  void _toggleSelection(String name, int id, String type) {
+    setState(() {
+      if (selectedCards.contains(name)) {
+        selectedCards.remove(name);
+        if (type == 'ThingsToDo') {
+          selectedThingsToDoIDs.remove(id);
+        } else if (type == 'Hotel') {
+          selectedHotelIDs.remove(id);
+        } else if (type == 'Restaurant') {
+          selectedRestaurantIDs.remove(id);
+        }
+      } else {
+        selectedCards.add(name);
+        if (type == 'ThingsToDo') {
+          selectedThingsToDoIDs.add(id);
+        } else if (type == 'Hotel') {
+          selectedHotelIDs.add(id);
+        } else if (type == 'Restaurant') {
+          selectedRestaurantIDs.add(id);
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -167,7 +114,7 @@ class _PlanScreen6 extends State<PlanScreen6> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Your Trip to Da Nang, Vietnam',
+                  'Your Trip to ${planScreenController.cityName.value}, Vietnam',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -202,17 +149,20 @@ class _PlanScreen6 extends State<PlanScreen6> {
                   _buildSection(
                     'Plan Your Day with These Must-Do Experiences',
                     'Explore activities tailored for you to make the most of your trip.',
-                    thingsToDo,
+                    planScreenController.thingsToDoPlanScreen,
+                    'ThingsToDo',
                   ),
                   _buildSection(
                     'Must-Try Dining Spots for Food Lovers',
                     'Savor culinary delights and local flavors.',
-                    restaurants,
+                    planScreenController.restaurantPlanScreen,
+                    'Restaurant',
                   ),
                   _buildSection(
                     'The Finest Accommodations',
                     'Rest in comfort at these top-rated stays.',
-                    hotels,
+                    planScreenController.hotelPlanScreen,
+                    'Hotel',
                   ),
                 ],
               ),
@@ -236,12 +186,12 @@ class _PlanScreen6 extends State<PlanScreen6> {
                 Row(
                   children: [
                     Transform.scale(
-                      scale: 0.8, // Điều chỉnh kích thước của Switch
+                      scale: 0.8, // Adjust the size of the Switch
                       child: Switch(
                         value: selectedCards.length ==
-                            (thingsToDo.length +
-                                restaurants.length +
-                                hotels.length),
+                            (planScreenController.thingsToDoPlanScreen.length +
+                                planScreenController.restaurantPlanScreen.length +
+                                planScreenController.hotelPlanScreen.length),
                         onChanged: (value) {
                           _toggleSelectAll(value);
                         },
@@ -252,11 +202,21 @@ class _PlanScreen6 extends State<PlanScreen6> {
                 ),
                 ElevatedButton(
                   onPressed: () {
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) =>
+                    //         PlanScreen7(), // Replace `NextPage` with your target page
+                    //   ),
+                    // );
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            PlanScreen7(), // Replace `NextPage` with your target page
+                        builder: (context) => PlanScreen8(
+                          selectedHotelIDs: selectedHotelIDs,
+                          selectedRestaurantIDs: selectedRestaurantIDs,
+                          selectedThingsToDoIDs: selectedThingsToDoIDs,
+                        ),
                       ),
                     );
                   },
@@ -284,7 +244,7 @@ class _PlanScreen6 extends State<PlanScreen6> {
   }
 
   Widget _buildSection(
-      String title, String description, List<Map<String, dynamic>> items) {
+      String title, String description, List<TravelDestination> items, String type) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -326,7 +286,7 @@ class _PlanScreen6 extends State<PlanScreen6> {
                 itemCount: items.length,
                 itemBuilder: (context, index) {
                   final item = items[index];
-                  final isSelected = selectedCards.contains(item['title']);
+                  final isSelected = selectedCards.contains(item.name);
 
                   return Container(
                     width: cardWidth,
@@ -337,16 +297,9 @@ class _PlanScreen6 extends State<PlanScreen6> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: GestureDetector(
-                        // onTap: () {
-                        //   Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //       builder: (context) => PageA(
-                        //         title: item['title'],
-                        //       ),
-                        //     ),
-                        //   );
-                        // },
+                        onTap: () {
+                          _toggleSelection(item.name, item.id, type);
+                        },
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -358,7 +311,7 @@ class _PlanScreen6 extends State<PlanScreen6> {
                                     top: Radius.circular(8),
                                   ),
                                   child: Image.network(
-                                    item['image'],
+                                    item.images.isNotEmpty ? item.images[0] : '',
                                     width: double.infinity,
                                     height: 140, // Fixed image height
                                     fit: BoxFit.cover,
@@ -369,21 +322,15 @@ class _PlanScreen6 extends State<PlanScreen6> {
                                   right: 8,
                                   child: GestureDetector(
                                     onTap: () {
-                                      setState(() {
-                                        if (isSelected) {
-                                          selectedCards.remove(item['title']);
-                                        } else {
-                                          selectedCards.add(item['title']);
-                                        }
-                                      });
+                                      _toggleSelection(item.name, item.id, type);
                                     },
                                     child: Icon(
                                       isSelected
                                           ? Icons.check_circle
                                           : Icons.add_circle,
                                       color: isSelected
-                                          ? Colors.green
-                                          : Colors.blue,
+                                          ? const Color.fromARGB(255, 63, 240, 10)
+                                          : const Color.fromARGB(255, 2, 145, 255),
                                       size: 28,
                                     ),
                                   ),
@@ -399,7 +346,7 @@ class _PlanScreen6 extends State<PlanScreen6> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      item['title'],
+                                      item.name,
                                       style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
@@ -409,12 +356,12 @@ class _PlanScreen6 extends State<PlanScreen6> {
                                     ),
                                     const SizedBox(height: 4),
                                     CircleRatingWidget(
-                                      rating: item['rating'],
+                                      rating: double.parse(item.rating.toStringAsFixed(1)),
                                       size: 16,
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      '${item['features'].join(', ')}',
+                                      '${item.description}',
                                       style: const TextStyle(
                                         fontSize: 14,
                                         color: Colors.black54,
@@ -424,7 +371,7 @@ class _PlanScreen6 extends State<PlanScreen6> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      'Duration: ${item['duration']}',
+                                      'Duration: ${item.duration}',
                                       style: const TextStyle(
                                         fontSize: 14,
                                         color: Colors.black54,

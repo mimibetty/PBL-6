@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'dart:convert';
 import 'package:travelappflutter/presentation/profile_screen/models/profile_model.dart';
 import '/core/app_export.dart';
@@ -24,7 +25,8 @@ class ProfileController extends GetxController {
   RxBool isCitiesLoading = false.obs;
   final storage = GetStorage();
   Rx<String?> cityName = Rx<String?>(null);
-  
+  RxList<TravelDestination> likedDestinations = <TravelDestination>[].obs; // Observable for liked destinations
+
   @override
   void onInit() {
     super.onInit();
@@ -205,6 +207,7 @@ void updateAddressFromString(String addressInput) {
       isLoading.value = false;
     }
   }
+
   void resetProfile() {
     // Reset ProfileModel về giá trị mặc định
     profileModelObj.value = ProfileModel(
@@ -224,5 +227,37 @@ void updateAddressFromString(String addressInput) {
     print("Profile reset to default values.");
   }
 
+  Future<void> fetchLikedDestinations(int userId) async {
+    isLoading.value = true; // Start loading
+    try {
+      // Fetch liked destination IDs
+      final likedIdsResponse = await http.get(
+        Uri.parse('https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/user/$userId/likes'),
+      );
 
+      if (likedIdsResponse.statusCode == 200) {
+        List<int> likedIds = List<int>.from(json.decode(utf8.decode(likedIdsResponse.bodyBytes)));
+        
+        // Fetch destination details for each ID
+        List<TravelDestination> destinations = [];
+        for (var id in likedIds) {
+          final destinationResponse = await http.get(
+            Uri.parse('https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/$id'),
+          );
+
+          if (destinationResponse.statusCode == 200) {
+destinations.add(TravelDestination.fromJson(json.decode(utf8.decode(destinationResponse.bodyBytes))));
+          }
+        }
+
+        likedDestinations.value = destinations; // Update the liked destinations
+      } else {
+        print('Failed to fetch liked IDs: ${likedIdsResponse.body}');
+      }
+    } catch (e) {
+      print('Error fetching liked destinations: $e');
+    } finally {
+      isLoading.value = false; // Stop loading
+    }
+  }
 }
