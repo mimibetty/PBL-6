@@ -325,7 +325,7 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: CustomBottomNavBar(controller: HomeController()),
+      bottomNavigationBar: CustomBottomNavBar(),
     );
   }
 

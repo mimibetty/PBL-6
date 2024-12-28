@@ -356,7 +356,7 @@ Future<void> _fetchDestinations() async {
           ],
         );
       }),
-      bottomNavigationBar: CustomBottomNavBar(controller: homeController),
+      bottomNavigationBar: CustomBottomNavBar(),
     );
   }
 

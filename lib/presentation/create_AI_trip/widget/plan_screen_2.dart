@@ -159,7 +159,7 @@ class _PlanScreen2State extends State<PlanScreen2> with SingleTickerProviderStat
           }),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavBar(controller: HomeController()),
+      bottomNavigationBar: CustomBottomNavBar(),
     );
   }
 }

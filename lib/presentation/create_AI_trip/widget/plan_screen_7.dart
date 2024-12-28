@@ -60,6 +60,7 @@ class _PlanScreen7State extends State<PlanScreen7>
   @override
   Widget build(BuildContext context) {
     int numberOfDays = _calculateNumberOfDays();
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(

@@ -266,7 +266,7 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
           }),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavBar(controller: HomeController()),
+      bottomNavigationBar: CustomBottomNavBar(),
     );
   }
 

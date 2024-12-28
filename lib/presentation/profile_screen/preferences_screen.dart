@@ -5,7 +5,6 @@ import 'package:travelappflutter/presentation/profile_screen/account_info_screen
 import 'package:travelappflutter/presentation/profile_screen/change_pw_screen.dart';
 import 'package:travelappflutter/presentation/profile_screen/language_selection_screen.dart';
 
-
 class PreferencesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -38,7 +37,6 @@ class PreferencesPage extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => AccountInfoScreen()),
               );
             },
-        
           ),
           Divider(),
           // Language
@@ -57,7 +55,8 @@ class PreferencesPage extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LanguageSelectionScreen()),
+                MaterialPageRoute(
+                    builder: (context) => LanguageSelectionScreen()),
               );
             },
           ),
@@ -93,7 +92,7 @@ class PreferencesPage extends StatelessWidget {
           ),
           Divider(),
           // Payment Preferences
-         
+
           ListTile(
             title: Text(
               'Notifications',
@@ -102,12 +101,10 @@ class PreferencesPage extends StatelessWidget {
             trailing: Icon(Icons.chevron_right),
           ),
           Divider(),
-         ListTile(
+          ListTile(
             title: Text(
               'Change Password',
               style: TextStyle(fontSize: 18),
-
-              
             ),
             trailing: Icon(Icons.chevron_right),
             onTap: () {
@@ -120,9 +117,7 @@ class PreferencesPage extends StatelessWidget {
           Divider(),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavBar(
-          controller: HomeController()),
+      bottomNavigationBar: CustomBottomNavBar(),
     );
-    
   }
 }

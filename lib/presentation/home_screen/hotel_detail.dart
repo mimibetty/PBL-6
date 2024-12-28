@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/common_views/geocoding_service.dart';
 import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
@@ -449,16 +450,19 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 20,),
-                  _latitude != null && _longitude != null
-                      ? Container(
-                          height: 250,
-                          child: MapScreen(
-                            latitude: _latitude!,
-                            longitude: _longitude!,
-                          ),
-                        )
-                      : Center(child: CircularProgressIndicator()),
-                  // Hiển thị Reviews
+                 _latitude != null && _longitude != null
+                                      ? Container(
+                                          height: 250,
+                                          child: MapScreen(
+                                            coordinates: [
+                                              LatLng(_latitude!,
+                                                  _longitude!), // Đưa vào danh sách
+                                            ],
+                                          ),
+                                        )
+                                      : Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
                   Text(
                     "Reviews",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),

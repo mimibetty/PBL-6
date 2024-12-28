@@ -140,12 +140,12 @@ void _handleUpdate() {
                     },
                   ),
                   SizedBox(height: 25.0),
-                  //_buildTextInput('Name', nameController),
+                  _buildTextInput('Name', nameController),
                   // tạm thời ẩn Name vì chưa có bên API
                   SizedBox(height: 16.0),
                   _buildTextInput('Contact Number', contactNumberController),
                   SizedBox(height: 16.0),
-                  _buildDropdownCityType(),
+                  // _buildDropdownCityType(),
                   SizedBox(height: 27.0),
                   _buildTextInput('Location', locationController),
                   SizedBox(height: 16.0),
@@ -166,7 +166,7 @@ void _handleUpdate() {
           ),
         );
       }),
-      bottomNavigationBar: CustomBottomNavBar(controller: HomeController()),
+      bottomNavigationBar: CustomBottomNavBar(),
     );
   }
 
@@ -183,53 +183,53 @@ void _handleUpdate() {
     );
   }
 
- Widget _buildDropdownCityType() {
-  return Obx(() {
-    if (profileController.isCitiesLoading.value) {
-      return CircularProgressIndicator();
-    }
+//  Widget _buildDropdownCityType() {
+//   return Obx(() {
+//     if (profileController.isCitiesLoading.value) {
+//       return CircularProgressIndicator();
+//     }
 
-    return DropdownButtonFormField<int>(
-      value: profileController.selectedCityId.value,
-      decoration: InputDecoration(
-        labelText: 'Choose your city',
-        filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
-          borderSide: BorderSide(color: Colors.grey, width: 1.0),
-        ),
-      ),
-      items: profileController.citiesMap.entries
-          .map((entry) => DropdownMenuItem<int>(
-                value: entry.key,
-                child: Text(entry.value),
-              ))
-          .toList(),
-      onChanged: (value) {
-        profileController.selectedCityId.value = value;
+//     return DropdownButtonFormField<int>(
+//       value: profileController.selectedCityId.value,
+//       decoration: InputDecoration(
+//         labelText: 'Choose your city',
+//         filled: true,
+//         fillColor: Colors.white,
+//         border: OutlineInputBorder(
+//           borderRadius: BorderRadius.circular(10.0),
+//           borderSide: BorderSide(color: Colors.grey, width: 1.0),
+//         ),
+//       ),
+//       items: profileController.citiesMap.entries
+//           .map((entry) => DropdownMenuItem<int>(
+//                 value: entry.key,
+//                 child: Text(entry.value),
+//               ))
+//           .toList(),
+//       onChanged: (value) {
+//         profileController.selectedCityId.value = value;
 
-        // Cập nhật cityId trong ProfileModel nếu userInfo không null
-        final currentUserInfo = profileController.profileModelObj.value.userInfo;
-        if (currentUserInfo != null) {
-          final updatedUserInfo = currentUserInfo.copyWith(
-            address: currentUserInfo.address.copyWith(cityId: value ?? 0),
-          );
-          profileController.profileModelObj.value = profileController.profileModelObj.value.copyWith(
-            userInfo: updatedUserInfo,
-          );
-        }
-      },
-      validator: (value) {
-        if (value == null) {
-          return 'Please select a city';
-        }
-        return null;
-      },
-      isExpanded: true,
-    );
-  });
-}
+//         // Cập nhật cityId trong ProfileModel nếu userInfo không null
+//         final currentUserInfo = profileController.profileModelObj.value.userInfo;
+//         if (currentUserInfo != null) {
+//           final updatedUserInfo = currentUserInfo.copyWith(
+//             address: currentUserInfo.address.copyWith(cityId: value ?? 0),
+//           );
+//           profileController.profileModelObj.value = profileController.profileModelObj.value.copyWith(
+//             userInfo: updatedUserInfo,
+//           );
+//         }
+//       },
+//       validator: (value) {
+//         if (value == null) {
+//           return 'Please select a city';
+//         }
+//         return null;
+//       },
+//       isExpanded: true,
+//     );
+//   });
+// }
 
 
 

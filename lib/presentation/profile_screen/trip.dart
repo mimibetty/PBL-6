@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
+import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
+import 'package:travelappflutter/presentation/profile_screen/my_trips_widget.dart';
+
+import '../../core/app_export.dart';
 
 class MyTripsScreen extends StatefulWidget {
   const MyTripsScreen({super.key});
@@ -7,7 +12,30 @@ class MyTripsScreen extends StatefulWidget {
   _MyTripsScreenState createState() => _MyTripsScreenState();
 }
 
+List<TravelDestination> _getThingsToDoDestinations(
+    List<TravelDestination> destinations) {
+  return destinations
+      .where((dest) => dest.hotelId == null && dest.restaurantId == null)
+      .toList();
+}
+
+List<int> _getHotelIDs(List<TravelDestination> destinations) {
+  return destinations
+      .where((dest) => dest.hotelId != null)
+      .map((dest) => dest.hotelId!)
+      .toList();
+}
+
+List<int> _getRestaurantIDs(List<TravelDestination> destinations) {
+  return destinations
+      .where((dest) => dest.restaurantId != null)
+      .map((dest) => dest.restaurantId!)
+      .toList();
+}
+
 class _MyTripsScreenState extends State<MyTripsScreen> {
+  final HomeController homeController =
+      Get.put(HomeController()); // Initialize here
   String _sortOption = 'Edit Recently'; // Default sort option
 
   @override
@@ -90,7 +118,11 @@ class _MyTripsScreenState extends State<MyTripsScreen> {
               child: ListView.builder(
                 itemCount: 2, // 2 trips for example
                 itemBuilder: (context, index) {
-                  return _TripCard(index: index);
+                  return _TripCard(
+                    index: index,
+                    homeController:
+                        homeController, // Pass the homeController here
+                  );
                 },
               ),
             ),
@@ -103,113 +135,133 @@ class _MyTripsScreenState extends State<MyTripsScreen> {
 
 class _TripCard extends StatelessWidget {
   final int index;
-  const _TripCard({required this.index});
+  final HomeController homeController; // Accept HomeController as a parameter
+
+  const _TripCard({required this.index, required this.homeController});
 
   @override
   Widget build(BuildContext context) {
-    // Simulate different data for each trip
-    bool hasDate = index == 0; // First trip has date, second one doesn't
-    bool hasLocation =
-        index == 0; // First trip has location, second one doesn't
+    
+    List<TravelDestination> allDestinations =
+        homeController.myDestination.value;
+    List<TravelDestination> thingsToDo =
+        _getThingsToDoDestinations(allDestinations);
+    List<TravelDestination> restaurants = _getRestaurantIDs(allDestinations)
+        .map((id) =>
+            allDestinations.firstWhere((dest) => dest.restaurantId == id))
+        .toList();
+    List<TravelDestination> hotels = _getHotelIDs(allDestinations)
+        .map((id) => allDestinations.firstWhere((dest) => dest.hotelId == id))
+        .toList();
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 20),
-      child: Row(
-        children: [
-          // Left side (image)
-          Container(
-            width: MediaQuery.of(context).size.width * 0.3,
-            height: 100,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(index == 0
-                    ? 'assets/images/dana_trip.jpg'
-                    : 'assets/images/dana_trip.jpg'), // Same image for this case
-                fit: BoxFit.cover,
+    bool hasDate = index == 0; // Simulate different data for trips
+    bool hasLocation = index == 0;
+
+    return GestureDetector(
+      onTap: () {
+        print("Navigating to MyTripsWidget");
+        print("Things to do: ${thingsToDo.map((e) => e.toString()).toList()}");
+        print("Restaurants: ${restaurants.map((e) => e.toString()).toList()}");
+        print("Places to stay: ${hotels.map((e) => e.toString()).toList()}");
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MyTripsWidget(
+              thingsToDo: thingsToDo,
+              restaurants: restaurants,
+              placesToStay: hotels,
+            ),
+          ),
+        );
+      },
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 20),
+        child: Row(
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width * 0.3,
+              height: 100,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(index == 0
+                      ? 'assets/images/dana_trip.jpg'
+                      : 'assets/images/dana_trip.jpg'),
+                  fit: BoxFit.cover,
+                ),
+                borderRadius: BorderRadius.circular(8),
               ),
-              borderRadius: BorderRadius.circular(8),
             ),
-          ),
-          const SizedBox(width: 16),
-          // Right side (trip information)
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Trip title
-                Text(
-                  'Trip ${index + 1}',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Trip ${index + 1}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                    softWrap: true,
                   ),
-                  overflow: TextOverflow.ellipsis, // Prevent overflow
-                  maxLines: 2, // Limit the title to one line
-
-                  softWrap: true, // Allow soft wrapping to multiple lines
-                ),
-                const SizedBox(height: 8),
-                // Date information with icon
-                Row(
-                  children: [
-                    const Icon(Icons.calendar_today,
-                        size: 18, color: Colors.grey),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      // Ensure date text fits without overflow
-                      child: hasDate
-                          ? Text(
-                              'Date: 2024-12-15 to 2024-12-20',
-                              style: const TextStyle(
-                                  fontSize: 14, color: Colors.grey),
-                              overflow:
-                                  TextOverflow.ellipsis, // Prevent overflow
-                              maxLines: 2, // Prevent overflow
-                              softWrap:
-                                  true, // Allow soft wrapping to multiple lines
-                            )
-                          : TextButton(
-                              onPressed: () {
-                                // Handle adding date
-                                print("Add date clicked");
-                              },
-                              child: const Text('Have date yet? Add dates'),
-                            ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                // Location information with icon
-                Row(
-                  children: [
-                    const Icon(Icons.location_on, size: 18, color: Colors.grey),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      // Ensure location text fits without overflow
-                      child: hasLocation
-                          ? Text(
-                              'Location: Da Nang, Viet Nam',
-                              style: const TextStyle(
-                                  fontSize: 14, color: Colors.grey),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2, // Prevent overflow
-                              softWrap:
-                                  true, // Allow soft wrapping to multiple lines
-                            )
-                          : Text(
-                              'Location not set',
-                              style: const TextStyle(
-                                  fontSize: 14, color: Colors.grey),
-                              overflow:
-                                  TextOverflow.ellipsis, // Prevent overflow
-                            ),
-                    ),
-                  ],
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Icon(Icons.calendar_today,
+                          size: 18, color: Colors.grey),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: hasDate
+                            ? Text(
+                                'Date: 2024-12-15 to 2024-12-20',
+                                style: const TextStyle(
+                                    fontSize: 14, color: Colors.grey),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                                softWrap: true,
+                              )
+                            : TextButton(
+                                onPressed: () {
+                                  print("Add date clicked");
+                                },
+                                child: const Text('Have date yet? Add dates'),
+                              ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Icon(Icons.location_on,
+                          size: 18, color: Colors.grey),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: hasLocation
+                            ? Text(
+                                'Location: Da Nang, Viet Nam',
+                                style: const TextStyle(
+                                    fontSize: 14, color: Colors.grey),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                                softWrap: true,
+                              )
+                            : Text(
+                                'Location not set',
+                                style: const TextStyle(
+                                    fontSize: 14, color: Colors.grey),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

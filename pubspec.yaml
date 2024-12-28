@@ -36,6 +36,7 @@ dependencies:
   get_storage: ^2.0.3
   permission_handler: ^10.0.0
   photo_view: ^0.14.0
+  chartjs2: ^2.0.0
 
 
 

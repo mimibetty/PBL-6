@@ -1,22 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
+import 'package:travelappflutter/presentation/navigation/controller/app_navigation_controller.dart';
 import 'package:travelappflutter/presentation/sign_in_screen/controller/sign_in_controller.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
-  final HomeController controller;
-
-  const CustomBottomNavBar({required this.controller});
+  final AppController appController = Get.put(AppController());
 
   @override
   Widget build(BuildContext context) {
     final signInController = Get.find<SignInController>();
-    // Gọi fetchUserProfile nếu dữ liệu chưa sẵn sàng
-    // if (!profileController.isLoading.value) {
-    //   profileController.fetchUserProfile();
-    // }
-    print("Role: " + signInController.userRole.value);
 
     return Obx(() => Material(
           borderRadius: const BorderRadius.only(
@@ -25,6 +18,7 @@ class CustomBottomNavBar extends StatelessWidget {
           ),
           clipBehavior: Clip.hardEdge,
           child: BottomNavigationBar(
+            currentIndex: appController.currentIndex.value, // Lấy từ controller
             backgroundColor: Colors.black,
             selectedItemColor: Colors.white,
             unselectedItemColor: Colors.white.withOpacity(0.6),
@@ -38,11 +32,11 @@ class CustomBottomNavBar extends StatelessWidget {
                   icon: Icon(Iconsax.home1), label: 'Home'),
               const BottomNavigationBarItem(
                   icon: Icon(Iconsax.search_normal), label: 'Search'),
-              // Dynamic icon and label based on role
               BottomNavigationBarItem(
                 icon: signInController.userRole.value == 'guest'
                     ? const Icon(Icons.computer) // Icon for AI Trip
-                    : const Icon(Icons.domain_add_outlined), // Icon for Destination
+                    : const Icon(
+                        Icons.domain_add_outlined), // Icon for Destination
                 label: signInController.userRole.value == 'guest'
                     ? 'AI Trip'
                     : 'Destination',
@@ -52,11 +46,11 @@ class CustomBottomNavBar extends StatelessWidget {
               const BottomNavigationBarItem(
                   icon: Icon(Icons.person_outline), label: 'Profile'),
             ],
-            currentIndex: controller.selectedPage.value,
             onTap: (index) {
-              controller.changePage(index);
+              // Cập nhật trạng thái thông qua controller
+              appController.changePage(index);
 
-              // Handle navigation based on selected index and role
+              // Điều hướng dựa trên index
               switch (index) {
                 case 0:
                   Get.toNamed('/welcome_screen');
@@ -68,7 +62,9 @@ class CustomBottomNavBar extends StatelessWidget {
                   if (signInController.userRole.value == 'guest') {
                     Get.toNamed('/plan_screen'); // Navigate to AI Trip
                   } else {
-                    Get.toNamed('/business_creation_screen'); // Navigate to Destination
+                    Get.toNamed('/business_creation_screen', arguments: {
+                      "businessId": "3"
+                    }); // Navigate to Destination
                   }
                   break;
                 case 3:
@@ -77,8 +73,6 @@ class CustomBottomNavBar extends StatelessWidget {
                 case 4:
                   Get.toNamed('/profile_screen');
                   break;
-                default:
-                  Get.toNamed('/welcome_screen');
               }
             },
           ),

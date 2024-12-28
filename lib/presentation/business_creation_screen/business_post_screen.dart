@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:maplibre_gl/maplibre_gl.dart';
+import 'package:travelappflutter/core/app_export.dart';
+import 'package:travelappflutter/presentation/business_creation_screen/binding/business_creation_screen_binding.dart';
+import 'package:travelappflutter/presentation/business_creation_screen/business_facilities_screen.dart';
+import 'package:travelappflutter/presentation/business_creation_screen/controller/business_creation_screen_controller.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/models/business_model.dart';
 import 'package:travelappflutter/presentation/business_dashboard/business_dashboard.dart';
 import 'package:travelappflutter/presentation/common_views/geocoding_service.dart';
+import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/map/map_screen.dart';
+import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
 
 class BusinessPostScreen extends StatefulWidget {
-  final Business business;
+  final Business? business;
 
   BusinessPostScreen({required this.business});
 
@@ -15,24 +22,34 @@ class BusinessPostScreen extends StatefulWidget {
 }
 
 class _BusinessPostScreenState extends State<BusinessPostScreen> {
+  final BusinessCreationController businessCreationController =
+      Get.put(BusinessCreationController());
+
   int _currentImageIndex = 0; // Biến để quản lý chỉ báo vị trí
   String _address = '91 Trung Kính, Trung Hòa, Cầu Giấy, Hà Nội';
 
-
   double? _latitude; // Lưu trữ vĩ độ
   double? _longitude; // Lưu trữ kinh độ
+  List<TravelDestination> getThingsToDoDestinations(
+      List<TravelDestination> destinations) {
+    return destinations
+        .where((destination) =>
+            destination.hotelId == null && destination.restaurantId == null)
+        .toList();
+  }
 
   @override
   void initState() {
     super.initState();
     _getCoordinates(); // Fetch coordinates after init
+    businessCreationController.fetchDestinations();
   }
 
   void _getCoordinates() async {
     if (_address.isNotEmpty) {
       var coordinates =
           await GeocodingService.getCoordinatesFromAddress(_address);
-  
+
       if (coordinates != null) {
         setState(() {
           _latitude = coordinates['latitude'];
@@ -87,22 +104,33 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
           icon: const Icon(Icons.menu, color: Colors.black),
           onSelected: (value) {
             switch (value) {
-              case 'Things to do':
-                _navigateToFilteredBusinesses(context, 'things to do');
+              case 'Facilities':
+                _navigateToBusinessesFacilities();
+
                 break;
               case 'Hotels':
-                _navigateToFilteredBusinesses(context, 'hotel');
+                _navigateToBusinessesFacilities();
+
                 break;
               case 'Restaurants':
-                _navigateToFilteredBusinesses(context, 'restaurant');
+                _navigateToBusinessesFacilities();
+
+                break;
+              case 'Tours':
+                _navigateToBusinessesFacilities();
+                break;
+              case 'Business Statistics':
+                _navigateToBusinessesDashboard(context, 'restaurant');
                 break;
             }
           },
           itemBuilder: (context) {
             return [
-              _buildPopupMenuItem('Things to do'),
+              _buildPopupMenuItem('Tours'),
+              _buildPopupMenuItem('Facilities'),
               _buildPopupMenuItem('Hotels'),
               _buildPopupMenuItem('Restaurants'),
+              _buildPopupMenuItem('Business Statistics'),
             ];
           },
         ),
@@ -129,7 +157,7 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
           children: [
             ClipOval(
               child: Image.network(
-                widget.business.logoUrl,
+                widget.business!.logoUrl,
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,
@@ -150,7 +178,7 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.business.name,
+                    widget.business!.name,
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -159,7 +187,7 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    widget.business.address,
+                    widget.business!.address,
                     style: const TextStyle(fontSize: 16, color: Colors.black54),
                   ),
                 ],
@@ -172,13 +200,17 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
             ? Container(
                 height: 250,
                 child: MapScreen(
-                  latitude: 21.0137443130001,
-                  longitude:105.798346108,
+                  coordinates: [
+                    LatLng(
+                        _latitude!, _longitude!), // Truyền tọa độ vào danh sách
+                  ],
+                  zoom:
+                      14.0, // Truyền giá trị zoom tùy ý (có thể bỏ nếu dùng mặc định)
                 ),
               )
             : Center(
-                child:
-                    CircularProgressIndicator()), // Show loading until coordinates are available
+                child: CircularProgressIndicator(),
+              ),
       ],
     );
   }
@@ -192,9 +224,9 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildDetailRow(Icons.phone, widget.business.phoneNumber),
+            _buildDetailRow(Icons.phone, widget.business!.phoneNumber),
             const SizedBox(height: 8),
-            _buildDetailRow(Icons.info, widget.business.description),
+            _buildDetailRow(Icons.info, widget.business!.description),
           ],
         ),
       ),
@@ -217,7 +249,7 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
   }
 
   Widget _buildImagesSlider() {
-    if (widget.business.images.isEmpty) {
+    if (widget.business!.images.isEmpty) {
       return Center(
         child: Column(
           children: [
@@ -235,7 +267,7 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
     return Column(
       children: [
         CarouselSlider.builder(
-          itemCount: widget.business.images.length,
+          itemCount: widget.business!.images.length,
           options: CarouselOptions(
             height: 200.0,
             autoPlay: true,
@@ -252,7 +284,7 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
             return ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Image.network(
-                widget.business.images[index],
+                widget.business!.images[index],
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Container(
                   color: Colors.grey[200],
@@ -266,8 +298,8 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
         const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: widget.business.images.map((image) {
-            int index = widget.business.images.indexOf(image);
+          children: widget.business!.images.map((image) {
+            int index = widget.business!.images.indexOf(image);
             return Container(
               width: 8.0,
               height: 8.0,
@@ -284,11 +316,37 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
     );
   }
 
-  void _navigateToFilteredBusinesses(BuildContext context, String type) {
+  void _navigateToBusinessesDashboard(BuildContext context, String type) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => BusinessDashboard(),
+      ),
+    );
+  }
+  // Sửa lại theo đúng res,hotel,things to do , cùng 1 hàm chỉ thay đổi đầu vàonhé
+
+  void _navigateToBusinessesFacilities() {
+    var filteredDestinations =
+        getThingsToDoDestinations(businessCreationController.destinations);
+    var allDestinations = businessCreationController.destinations;
+    if (filteredDestinations.isEmpty) {
+      print("No filtered destinations found.");
+    } else {
+      print("Filtered destinations found: ${filteredDestinations.length}");
+      for (var destination in filteredDestinations) {
+        print(
+            'Destination Name: ${destination.name}, Location: ${destination.location}, Rating: ${destination.rating}');
+      }
+    }
+
+    // Navigate to the BusinessFacilityScreen
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BusinessFacilityScreen(
+          destinations: allDestinations,
+        ),
       ),
     );
   }
