@@ -330,7 +330,16 @@ def get_top_destination_ids(
 
 
 
-@router.get('/recommendations_bylikes/{user_id}')
+@router.get('/recommendationsIDS_bylikes/{user_id}')
+def get_recommendations(
+    user_id: int, 
+    city_id: Optional[int] = None,
+    limit: int = 20,
+    db: Session = Depends(get_db)
+):
+    return destination.get_recommended_destinationsIDS(user_id, db, city_id, limit)
+
+@router.get('/recommendations_bylikes/{user_id}', response_model=List[schemas.ShowDestinationList])
 def get_recommendations(
     user_id: int, 
     city_id: Optional[int] = None,

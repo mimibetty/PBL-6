@@ -10,6 +10,7 @@ from datetime import datetime
 from typing import List
 from blog.repository.image_handler import ImageHandler
 from blog.repository import image
+import random
 
 def create_address_of_destination(db: Session, destination: models.Destination, address):
     try:
@@ -664,8 +665,7 @@ def get_top_destination_ids_bytag(
 #             detail=f"Error getting recommendations: {str(e)}"
 #         )
 
-
-def get_recommended_destinations(user_id: int, db: Session, city_id: Optional[int] = None, limit: int = 20):
+def get_recommended_destinationsIDS(user_id: int, db: Session, city_id: Optional[int] = None, limit: int = 20):
     try:
         # 1. Lấy số lượng mỗi tag từ các destination user đã like
         tag_counts = user.count_tags_for_user(user_id, db)
@@ -674,7 +674,7 @@ def get_recommended_destinations(user_id: int, db: Session, city_id: Optional[in
         if not tag_counts:
             popular_destinations = get_top_destinations_bytag(db, tag_id=None, city_id=city_id, limit=limit)
             result = [dest.id for dest in popular_destinations]
-            print(f"\nNo tags found - Returning popular destinations: {result}")
+            print(f"\nNo tags found - Returning popular destination IDs")
             return result
             
         # 2. Tính toán tỷ lệ cho mỗi tag
@@ -685,52 +685,110 @@ def get_recommended_destinations(user_id: int, db: Session, city_id: Optional[in
         }
         print(f"\n2. Distribution of recommendations per tag: {tag_proportions}")
         
-        # 3. Lấy danh sách destination_ids đã được like
-        liked_destinations = set(user.get_liked_destinations(user_id, db))
-        print(f"\n3. User's liked destinations: {liked_destinations}")
-        
-        # 4. Xây dựng recommendations cho từng tag
-        recommended_destinations = set()
-        remaining_slots = limit
+        # 3. Xây dựng recommendations cho từng tag
+        recommended_destination_ids = set()
         
         # Sắp xếp tags theo tần suất giảm dần
         sorted_tags = sorted(tag_proportions.items(), key=lambda x: x[1], reverse=True)
         print(f"\n4. Tags sorted by frequency: {sorted_tags}")
         
+        # Xử lý từng tag
         for tag_id, proportion in sorted_tags:
-            if remaining_slots <= 0:
-                break
-                
             print(f"\nProcessing tag_id: {tag_id}, target proportion: {proportion}")
             
-            # Lấy top destinations cho tag hiện tại
-            top_destinations = set(get_top_destination_ids_bytag(db, tag_id, city_id, proportion))
-            print(f"Top destinations found for tag {tag_id}: {top_destinations}")
+            # Lấy top destinations cho tag hiện tại (lấy thêm 5 địa điểm)
+            extended_limit = proportion + 5
+            top_destinations = get_top_destinations_bytag(db, tag_id, city_id, limit=extended_limit)
             
-            # Lọc bỏ các destinations đã recommend hoặc đã like
-            new_recommendations = top_destinations - recommended_destinations - liked_destinations
-            print(f"New unique recommendations: {new_recommendations}")
-            
-            # Thêm recommendations mới theo số lượng được phân bổ
-            recommendations_to_add = list(new_recommendations)[:min(proportion, remaining_slots)]
-            recommended_destinations.update(recommendations_to_add)
-            
-            remaining_slots -= len(recommendations_to_add)
-            print(f"Added {len(recommendations_to_add)} destinations, remaining slots: {remaining_slots}")
+            if top_destinations:
+                # Random chọn proportion địa điểm từ danh sách mở rộng và lấy ID
+                selected_destinations = random.sample(top_destinations, min(proportion, len(top_destinations)))
+                recommended_destination_ids.update(dest.id for dest in selected_destinations)
+                
+            print(f"Current recommendations count: {len(recommended_destination_ids)}")
 
-        # 5. Điền các slots còn trống bằng popular destinations
-        if remaining_slots > 0:
-            print(f"\n5. Filling remaining {remaining_slots} slots with popular destinations")
-            popular_destinations = get_top_destination_ids_bytag(db, tag_id=None, city_id=city_id, limit=remaining_slots)
-            additional_recommendations = set(popular_destinations) - recommended_destinations - liked_destinations
-            final_additions = list(additional_recommendations)[:remaining_slots]
-            recommended_destinations.update(final_additions)
-            print(f"Added popular destinations: {final_additions}")
+        # Nếu chưa đủ số lượng limit, bổ sung thêm từ popular destinations
+        if len(recommended_destination_ids) < limit:
+            remaining = limit - len(recommended_destination_ids)
+            print(f"\n5. Need {remaining} more destinations to reach limit")
+            
+            popular_destinations = get_top_destinations_bytag(db, tag_id=None, city_id=city_id, limit=50)
+            
+            for dest in popular_destinations:
+                if dest.id not in recommended_destination_ids:
+                    recommended_destination_ids.add(dest.id)
+                    if len(recommended_destination_ids) >= limit:
+                        break
 
-        final_result = list(recommended_destinations)
-        print(f"\nFinal recommendations: {final_result}")
-        print(f"Total recommendations: {len(final_result)}")
+        final_result = list(recommended_destination_ids)[:limit]
+        print(f"\nFinal recommendation IDs count: {len(final_result)}")
         
+        return final_result
+
+    except Exception as e:
+        print(f"Error in get_recommended_destinationsIDS: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error getting recommended destination IDs: {str(e)}"
+        )
+
+def get_recommended_destinations(user_id: int, db: Session, city_id: Optional[int] = None, limit: int = 20):
+    try:
+        # 1. Lấy số lượng mỗi tag từ các destination user đã like
+        tag_counts = user.count_tags_for_user(user_id, db)
+        print(f"\n1. Tag counts from user's liked destinations: {tag_counts}")
+        
+        if not tag_counts:
+            popular_destinations = get_top_destinations_bytag(db, tag_id=None, city_id=city_id, limit=limit)
+            print(f"\nNo tags found - Returning popular destinations")
+            return popular_destinations
+            
+        # 2. Tính toán tỷ lệ cho mỗi tag
+        total_tags = sum(tag_counts.values())
+        tag_proportions = {
+            tag_id: max(1, int((count/total_tags) * limit))
+            for tag_id, count in tag_counts.items()
+        }
+        print(f"\n2. Distribution of recommendations per tag: {tag_proportions}")
+        
+        # 3. Xây dựng recommendations cho từng tag
+        recommended_destinations = set()
+        
+        # Sắp xếp tags theo tần suất giảm dần
+        sorted_tags = sorted(tag_proportions.items(), key=lambda x: x[1], reverse=True)
+        print(f"\n4. Tags sorted by frequency: {sorted_tags}")
+        
+        # Xử lý từng tag
+        for tag_id, proportion in sorted_tags:
+            print(f"\nProcessing tag_id: {tag_id}, target proportion: {proportion}")
+            
+            # Lấy top destinations cho tag hiện tại (lấy thêm 5 địa điểm)
+            extended_limit = proportion + 5
+            top_destinations = get_top_destinations_bytag(db, tag_id, city_id, limit=extended_limit)
+            
+            if top_destinations:
+                # Random chọn proportion địa điểm từ danh sách mở rộng
+                selected_destinations = random.sample(top_destinations, min(proportion, len(top_destinations)))
+                recommended_destinations.update(selected_destinations)
+                
+            print(f"Current recommendations count: {len(recommended_destinations)}")
+
+        # Nếu chưa đủ số lượng limit, bổ sung thêm từ popular destinations
+        if len(recommended_destinations) < limit:
+            remaining = limit - len(recommended_destinations)
+            print(f"\n5. Need {remaining} more destinations to reach limit")
+            
+            popular_destinations = get_top_destinations_bytag(db, tag_id=None, city_id=city_id, limit=50)
+            
+            for dest in popular_destinations:
+                if dest not in recommended_destinations:
+                    recommended_destinations.add(dest)
+                    if len(recommended_destinations) >= limit:
+                        break
+
+        final_result = list(recommended_destinations)[:limit]
+        print(f"\nFinal recommendations count: {len(final_result)}")
+        print(f"Final recommendations: {[dest.id for dest in final_result]}")
         return final_result
 
     except Exception as e:
@@ -739,8 +797,7 @@ def get_recommended_destinations(user_id: int, db: Session, city_id: Optional[in
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error getting recommended destinations: {str(e)}"
         )
-
-
+    
 def get_rating_distribution(destination_id: int, db: Session):
     try:
         # Dictionary để lưu số lượng đánh giá cho mỗi rating
@@ -819,6 +876,8 @@ def sort_destinations_by_popularity(restaurant_ids: List[int], db: Session):
     
 def get_full_address_by_id(destination_id: int, db: Session) -> List[str]:
     try:
+        # import pdb;pdb.set_trace()
+        print("destination_id", destination_id)   
         destination = db.query(models.Destination).filter(models.Destination.id == destination_id).first()
         if not destination:
             raise HTTPException(status_code=404, detail="Destination not found")
@@ -840,7 +899,6 @@ def get_full_address_by_id(destination_id: int, db: Session) -> List[str]:
     except HTTPException as e:
         raise e
     except Exception as e:
-        db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error retrieving address: {str(e)}"
