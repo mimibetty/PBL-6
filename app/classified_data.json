@@ -449,116 +449,6 @@
                 "city": "Hà Nội"
             },
             "Tag": "Food & Drink"
-        },
-        {
-            "Name": "Melia Ba Vi Mountain Retreat",
-            "Address": {
-                "street": "Cote 600, Vườn quốc gia Ba Vì,, Xã Minh Quang",
-                "ward": "",
-                "district": "Ba Vì",
-                "city": "Hà Nội"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Sân tập Golf FLC",
-            "Address": {
-                "street": "Khu Liên hợp thể thao Golfnet,  Lê Đức Thọ,",
-                "ward": "Mỹ Đình 2",
-                "district": "Nam Từ Liêm",
-                "city": "Hà Nội"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Sân Tennis TCKT Bộ Công An",
-            "Address": {
-                "street": "280 Lạc Long Quân,",
-                "ward": "Bưởi",
-                "district": "Tây Hồ",
-                "city": "Hà Nội"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Sân vận động Hàng Đẫy",
-            "Address": {
-                "street": "9 Trịnh Hoài Đức,",
-                "ward": "Cát Linh",
-                "district": "Đống Đa",
-                "city": "Hà Nội"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Sân Golf BRG",
-            "Address": {
-                "street": "200 Yên Phụ,",
-                "ward": "Yên Phụ",
-                "district": "Tây Hồ",
-                "city": "Hà Nội"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Sân Golf Hà Nội Ciputra",
-            "Address": {
-                "street": "Ciputra Hanoi International City ,",
-                "ward": "Xuân Đỉnh",
-                "district": "Bắc Từ Liêm",
-                "city": "Hà Nội"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Sân Golf Long Biên",
-            "Address": {
-                "street": "Khu trung đoàn 918,",
-                "ward": "Phúc Đồng",
-                "district": "Long Biên",
-                "city": "Hà Nội"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Sân Golf Vân Trì",
-            "Address": {
-                "street": "Kim Nỗ, Xã Kim Nỗ",
-                "ward": "",
-                "district": "Đông Anh",
-                "city": "Hà Nội"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Sân Golf Đồng Mô Hà Nội",
-            "Address": {
-                "street": "Đồng Mô, Xã Sơn Đông, Thị xã Sơn Tây",
-                "ward": "",
-                "district": "",
-                "city": "Hà Nội"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Sân Golf Legend Hill",
-            "Address": {
-                "street": "Thôn Cộng Hòa, Xã Phù Linh",
-                "ward": "",
-                "district": "Sóc Sơn",
-                "city": "Hà Nội"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Sân Mipec Golf Club",
-            "Address": {
-                "street": "9 Lê Trọng Tấn,",
-                "ward": "Khương Mai",
-                "district": "Thanh Xuân",
-                "city": "Hà Nội"
-            },
-            "Tag": "Outdoor Activities"
         }
     ],
     "Hải Phòng": [
@@ -1463,66 +1353,6 @@
                 "city": "Đà Nẵng"
             },
             "Tag": "Food & Drink"
-        },
-        {
-            "Name": "Quốc Thi Fitness and Yoga",
-            "Address": {
-                "street": "72 Hàm Nghi, Tầng 2, Căn Hộ HAGL,",
-                "ward": "Chính Gián",
-                "district": "Thanh Khê",
-                "city": "Đà Nẵng"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "California Fitness & Yoga tại Đà Nẵng",
-            "Address": {
-                "street": "Tòa Nhà Bưu Điện Thành Phố, Tầng 3, 271 Nguyễn Văn Linh,",
-                "ward": "Vĩnh Trung",
-                "district": "Thanh Khê",
-                "city": "Đà Nẵng"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Trung Tâm Fitness & Yoga Funny",
-            "Address": {
-                "street": "43 Đỗ Quang,",
-                "ward": "Vĩnh Trung",
-                "district": "Thanh Khê",
-                "city": "Đà Nẵng"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "HĐ Fitness Center",
-            "Address": {
-                "street": "996 Ngô Quyền,",
-                "ward": "An Hải Bắc",
-                "district": "Sơn Trà",
-                "city": "Đà Nẵng"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "TA Galaxy Fitness & Yoga Center Family",
-            "Address": {
-                "street": "144 Ông Ích Khiêm, khu Phú Gia Compound,",
-                "ward": "Thanh Bình",
-                "district": "Hải Châu",
-                "city": "Đà Nẵng"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "The City Gym",
-            "Address": {
-                "street": "512 - 514 Nguyễn Tri Phương,",
-                "ward": "Hòa Thuận Tây",
-                "district": "Hải Châu",
-                "city": "Đà Nẵng"
-            },
-            "Tag": "Outdoor Activities"
         }
     ],
     "Hồ Chí Minh": [
@@ -1688,7 +1518,7 @@
         },
         {
             "Name": "Trung tâm thương mại Pearl Plaza",
-            "Address": {
+            "Address": 
                 "street": "561 A Điện Biên Phủ ,",
                 "ward": "25",
                 "district": "Bình Thạnh",
@@ -4427,36 +4257,6 @@
                 "city": "Bạc Liêu"
             },
             "Tag": "Food & Drink"
-        },
-        {
-            "Name": "Trung tâm thể dục thể thao thành phố Bạc Liêu",
-            "Address": {
-                "street": "số 546, đường Võ Thị Sáu,",
-                "ward": "3",
-                "district": "",
-                "city": "Bạc Liêu"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Gym Hợp Phố",
-            "Address": {
-                "street": "Long Điền, Xã Long Điền Đông A",
-                "ward": "",
-                "district": "Đông Hải",
-                "city": "Bạc Liêu"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "CLB thể hình Thành Thái, Bạc Liêu",
-            "Address": {
-                "street": "Nguyễn Thái Học,",
-                "ward": "1",
-                "district": "",
-                "city": "Bạc Liêu"
-            },
-            "Tag": "Outdoor Activities"
         }
     ],
     "Bắc Ninh": [
@@ -5773,46 +5573,6 @@
                 "city": "Bình Định"
             },
             "Tag": "Food & Drink"
-        },
-        {
-            "Name": "Trung Tâm Thể Dục Thể Thao Tỉnh Bình Định",
-            "Address": {
-                "street": "236 B Lê Hồng Phong,",
-                "ward": "Lê Hồng Phong",
-                "district": "",
-                "city": "Bình Định"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Forever Young Yoga & Fitness",
-            "Address": {
-                "street": "Lô DC2, 21 Đ. Trần Đăng Phong,",
-                "ward": "Nguyễn Văn Cừ",
-                "district": "",
-                "city": "Bình Định"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Devi Yoga",
-            "Address": {
-                "street": "105F Hai Bà Trưng,",
-                "ward": "Lê Lợi",
-                "district": "",
-                "city": "Bình Định"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Câu lạc bộ VVTD JET Martial Arts & Fitness",
-            "Address": {
-                "street": "814 Trần Hưng Đạo,",
-                "ward": "Đống Đa",
-                "district": "",
-                "city": "Bình Định"
-            },
-            "Tag": "Outdoor Activities"
         }
     ],
     "Bình Dương": [
@@ -7039,46 +6799,6 @@
                 "city": "Bình Thuận"
             },
             "Tag": "Food & Drink"
-        },
-        {
-            "Name": "Gym Café",
-            "Address": {
-                "street": "M39-40, Tôn Đức Thắng,",
-                "ward": "Xuân An",
-                "district": "",
-                "city": "Bình Thuận"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Câu Lạc Bộ Gym – Fitness",
-            "Address": {
-                "street": "485 Cách Mạng Tháng Tám, Thị trấn Võ Xu",
-                "ward": "",
-                "district": "Đức Linh",
-                "city": "Bình Thuận"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "S Fitness Phan Thiết",
-            "Address": {
-                "street": "24 Lê Quý Đôn,",
-                "ward": "Phú Thủy",
-                "district": "",
-                "city": "Bình Thuận"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Gym Fitness Mũi Né",
-            "Address": {
-                "street": "89 Huỳnh Tấn Phát,",
-                "ward": "Mũi Né",
-                "district": "",
-                "city": "Bình Thuận"
-            },
-            "Tag": "Outdoor Activities"
         }
     ],
     "Cà Mau": [
@@ -8235,46 +7955,6 @@
                 "city": "Đắk Lắk"
             },
             "Tag": "Food & Drink"
-        },
-        {
-            "Name": "Hoàng Tiến Sport",
-            "Address": {
-                "street": "434 Lê Duẩn,",
-                "ward": "Ea Tam",
-                "district": "",
-                "city": "Đắk Lắk"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Phong Sport",
-            "Address": {
-                "street": "36 Ama khê,",
-                "ward": "Tân Lập",
-                "district": "",
-                "city": "Đắk Lắk"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "H2K Shop",
-            "Address": {
-                "street": "95 Y Ngông,",
-                "ward": "Tân Tiến",
-                "district": "",
-                "city": "Đắk Lắk"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Gym BMT Shop",
-            "Address": {
-                "street": "06 Kpă Púi (Cổng chợ Tân An -  Ngô Quyền),",
-                "ward": "Tân An",
-                "district": "",
-                "city": "Đắk Lắk"
-            },
-            "Tag": "Outdoor Activities"
         }
     ],
     "Đắk Nông": [
@@ -8547,46 +8227,6 @@
                 "city": "Đắk Nông"
             },
             "Tag": "Food & Drink"
-        },
-        {
-            "Name": "Phòng tập gym đẹp Tấn Phát Gym & Fitness",
-            "Address": {
-                "street": "Tôn Đức Thắng, Tổ 1,",
-                "ward": "Nghĩa Trung",
-                "district": "",
-                "city": "Đắk Nông"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Câu lạc bộ thể hình Anh Gym",
-            "Address": {
-                "street": "05 đường Đinh Tiên Hoàng,",
-                "ward": "Nghĩa Tân",
-                "district": "",
-                "city": "Đắk Nông"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Phòng tập Gym Center",
-            "Address": {
-                "street": "Tổ 2 ,",
-                "ward": "Nghĩa Đức",
-                "district": "",
-                "city": "Đắk Nông"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "An Phú Gym Center",
-            "Address": {
-                "street": "26 Mạc Thị Bưởi, TDP 10,",
-                "ward": "Nghĩa Thành",
-                "district": "",
-                "city": "Đắk Nông"
-            },
-            "Tag": "Outdoor Activities"
         }
     ],
     "Điện Biên": [
@@ -9553,46 +9193,6 @@
                 "city": "Đồng Tháp"
             },
             "Tag": "Food & Drink"
-        },
-        {
-            "Name": "Best Gym",
-            "Address": {
-                "street": "753/7 Phạm Hữu Lầu,",
-                "ward": "6",
-                "district": "",
-                "city": "Đồng Tháp"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "G8 Gym - Yoga",
-            "Address": {
-                "street": "134/15 Ngô Thì Nhậm, cống Rạch Chùa,",
-                "ward": "1",
-                "district": "",
-                "city": "Đồng Tháp"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Gym Phương Anh",
-            "Address": {
-                "street": "42 Trần Thị Nhượng,",
-                "ward": "4",
-                "district": "",
-                "city": "Đồng Tháp"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Phòng Gym Thuận Trần",
-            "Address": {
-                "street": "298 Nguyễn Thị Minh Khai,",
-                "ward": "11",
-                "district": "",
-                "city": "Đồng Tháp"
-            },
-            "Tag": "Outdoor Activities"
         }
     ],
     "Gia Lai": [
@@ -9885,36 +9485,6 @@
                 "city": "Gia Lai"
             },
             "Tag": "Food & Drink"
-        },
-        {
-            "Name": "Gym Hoàng Như",
-            "Address": {
-                "street": "123 đường Nguyễn Trung Trực,",
-                "ward": "Hội Thương",
-                "district": "",
-                "city": "Gia Lai"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "NT Center Gia Lai",
-            "Address": {
-                "street": "55/2A đường Nguyễn Du,",
-                "ward": "Tây Sơn",
-                "district": "",
-                "city": "Gia Lai"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Times Plus Fitness & Yoga Pleiku Gia Lai",
-            "Address": {
-                "street": "53 đường Quang Trung,",
-                "ward": "Hội Thương",
-                "district": "",
-                "city": "Gia Lai"
-            },
-            "Tag": "Outdoor Activities"
         }
     ],
     "Hà Giang": [
@@ -10519,36 +10089,6 @@
                 "city": "Hà Nam"
             },
             "Tag": "Food & Drink"
-        },
-        {
-            "Name": "Nhà thi đấu Thể dục thể thao tỉnh Hà Nam",
-            "Address": {
-                "street": "tỉnh 9711, thôn Phú Hoàn, Xã Tiên Hiệp, Thành phố Phủ Lý",
-                "ward": "",
-                "district": "",
-                "city": "Hà Nam"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Sân golf Kim Bảng Hà Nam",
-            "Address": {
-                "street": "Tổ dân phố số 5, Thị trấn Ba Sao",
-                "ward": "",
-                "district": "Kim Bảng",
-                "city": "Hà Nam"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Sân bóng đá cỏ nhân tạo Hải Minh",
-            "Address": {
-                "street": "D5,",
-                "ward": "Lê Hồng Phong",
-                "district": "",
-                "city": "Hà Nam"
-            },
-            "Tag": "Outdoor Activities"
         }
     ],
     "Hà Tĩnh": [
@@ -10851,46 +10391,6 @@
                 "city": "Hà Tĩnh"
             },
             "Tag": "Food & Drink"
-        },
-        {
-            "Name": "Gym-Yoga-Zumba BMC Hà Tĩnh",
-            "Address": {
-                "street": "Tầng 3 tòa nhà BMC, 06 đường Phan Đình Phùng,",
-                "ward": "Nam Hà",
-                "district": "",
-                "city": "Hà Tĩnh"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Diamond - Fitness & Yoga Center",
-            "Address": {
-                "street": "28 đường Lê Duẩn,",
-                "ward": "Trần Phú",
-                "district": "",
-                "city": "Hà Tĩnh"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "CLB Thể Hình GymStar",
-            "Address": {
-                "street": "245 đường Vũ Quang,",
-                "ward": "Thạch Linh",
-                "district": "",
-                "city": "Hà Tĩnh"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Power Gym",
-            "Address": {
-                "street": "144B đường Trần Phú,",
-                "ward": "Nguyễn Du",
-                "district": "",
-                "city": "Hà Tĩnh"
-            },
-            "Tag": "Outdoor Activities"
         }
     ],
     "Hải Dương": [
@@ -11063,36 +10563,6 @@
                 "city": "Hải Dương"
             },
             "Tag": "Food & Drink"
-        },
-        {
-            "Name": "Nhà Thi đấu thể dục thể thao Hải Dương",
-            "Address": {
-                "street": "1 Bùi Thị Xuân,",
-                "ward": "Lê Thanh Nghị",
-                "district": "",
-                "city": "Hải Dương"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Sân tập Tennis Hà Hải",
-            "Address": {
-                "street": "180 Hồng Châu,  Bùi Thị Xuân,",
-                "ward": "Lê Thanh Nghị",
-                "district": "",
-                "city": "Hải Dương"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Sân Golf Chí Linh",
-            "Address": {
-                "street": "445 Nguyễn Thái Học – KDC Thái Học 3 ,",
-                "ward": "Sao Đỏ",
-                "district": "",
-                "city": "Hải Dương"
-            },
-            "Tag": "Outdoor Activities"
         }
     ],
     "Hậu Giang": [
@@ -11325,36 +10795,6 @@
                 "city": "Hậu Giang"
             },
             "Tag": "Food & Drink"
-        },
-        {
-            "Name": "Gym Khả Hân",
-            "Address": {
-                "street": "",
-                "ward": "III",
-                "district": "",
-                "city": "Hậu Giang"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Gym Tuấn Anh",
-            "Address": {
-                "street": "13 Nguyễn Công Trứ,",
-                "ward": "III",
-                "district": "",
-                "city": "Hậu Giang"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Câu lạc bộ Yoga An Bình",
-            "Address": {
-                "street": "9 Nguyễn Công Trứ,",
-                "ward": "I",
-                "district": "",
-                "city": "Hậu Giang"
-            },
-            "Tag": "Outdoor Activities"
         }
     ],
     "Hoà Bình": [
@@ -12321,46 +11761,6 @@
                 "city": "Khánh Hòa"
             },
             "Tag": "Food & Drink"
-        },
-        {
-            "Name": "K Fitness Private Training",
-            "Address": {
-                "street": "Sth18.18 đường 8e (Đường số 13 rẽ phải vào 8e),",
-                "ward": "Phước Hải",
-                "district": "",
-                "city": "Khánh Hòa"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "PT GYM - Phòng Tập Gym Nữ Nha Trang",
-            "Address": {
-                "street": "Hẻm 141 đường Nguyễn Thị Minh Khai,",
-                "ward": "Phước Hòa",
-                "district": "",
-                "city": "Khánh Hòa"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Phòng tập Gym Nha Trang của California Fitness & Yoga",
-            "Address": {
-                "street": "Tầng 4 tòa nhà Nha Trang Center, số 20 đường Trần Phú,",
-                "ward": "Lộc Thọ",
-                "district": "",
-                "city": "Khánh Hòa"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Spartan Fitness And Yoga Nha Trang",
-            "Address": {
-                "street": "Tầng 4, siêu thị Co-op Mart, 124 Lê Hồng Phong,",
-                "ward": "Phước Hải",
-                "district": "",
-                "city": "Khánh Hòa"
-            },
-            "Tag": "Outdoor Activities"
         }
     ],
     "Kiên Giang": [
@@ -12663,106 +12063,6 @@
                 "city": "Kiên Giang"
             },
             "Tag": "Food & Drink"
-        },
-        {
-            "Name": "Boss Gym Phú Quốc",
-            "Address": {
-                "street": "217A đường 30/4, KP 1,",
-                "ward": "Dương Đông",
-                "district": "",
-                "city": "Kiên Giang"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Phú Quốc Gym",
-            "Address": {
-                "street": "308A Nguyễn Trung Trực,",
-                "ward": "Dương Đông",
-                "district": "",
-                "city": "Kiên Giang"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Thế Giới Gym 4",
-            "Address": {
-                "street": "115 Trần Hưng Đạo,",
-                "ward": "Dương Đông",
-                "district": "",
-                "city": "Kiên Giang"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Top Gym",
-            "Address": {
-                "street": "16 Lê Hồng Phong, KP 5,",
-                "ward": "Dương Đông",
-                "district": "",
-                "city": "Kiên Giang"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Ken Gym Finess Center",
-            "Address": {
-                "street": "121 - 123 Nguyễn Văn Cừ, KP 8,",
-                "ward": "An Thới",
-                "district": "",
-                "city": "Kiên Giang"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Iron Gym Phú Quốc",
-            "Address": {
-                "street": "465 Nguyễn Văn Cừ,",
-                "ward": "An Thới",
-                "district": "",
-                "city": "Kiên Giang"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Pullman Fit (thuộc Pullman Resort)",
-            "Address": {
-                "street": "Tổ 6, xóm Bàn Quy, ấp  Bào, Xã Dương Tơ, Thành phố Phú Quốc",
-                "ward": "",
-                "district": "",
-                "city": "Kiên Giang"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Câu lạc bộ Thể thao Nam Anh",
-            "Address": {
-                "street": "Khu đô thị mới 67ha, Bắc Dương Đông, KP9, Thành phố Phú Quốc",
-                "ward": "",
-                "district": "",
-                "city": "Kiên Giang"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Victoria Gym Rạch Giá",
-            "Address": {
-                "street": "1084 - 1086 Nguyễn Trung Trực,",
-                "ward": "An Bình",
-                "district": "",
-                "city": "Kiên Giang"
-            },
-            "Tag": "Outdoor Activities"
-        },
-        {
-            "Name": "Trung tâm Thể dục Golden Heath",
-            "Address": {
-                "street": "E12-70-71 Tôn Đức Thắng,",
-                "ward": "Vĩnh Lạc",
-                "district": "",
-                "city": "Kiên Giang"
-            },
-            "Tag": "Outdoor Activities"
         }
     ],
     "Kon Tum": [

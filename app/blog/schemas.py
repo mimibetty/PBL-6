@@ -119,7 +119,8 @@ class Destination(BaseModel):
     average_rating: Optional[float] = 0.0  # Thêm trường
     review_count: Optional[int] = 0         # Thêm trường
     popularity_score: Optional[float] = 0.0 # Thêm trường
-
+    lat_address: Optional[float]
+    long_address: Optional[float]
     class Config:
         orm_mode = True
 

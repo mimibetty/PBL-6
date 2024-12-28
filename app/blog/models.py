@@ -90,6 +90,9 @@ class Destination(Base):
     review_count = Column(Integer, default=0)
     popularity_score = Column(Float, default=0.0)
 
+    lat_address = Column(Float, default=None)
+    long_address = Column(Float, default=None)
+    
     # Foreign Key
     user_id = Column(Integer, ForeignKey('user.id', name="fk_destination_user", ondelete='CASCADE'))
     address_id = Column(Integer, ForeignKey('address.id', name="fk_destination_address", ondelete='CASCADE'), nullable=True)
