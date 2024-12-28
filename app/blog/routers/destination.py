@@ -151,7 +151,7 @@ def get_top_destinations(
     """Get top destinations sorted by popularity score"""
     return destination.get_top_destinations(db, limit, min_reviews)
 
-@router.get("/{id}", response_model=schemas.ShowDestinationList)
+@router.get("/{id}", response_model=schemas.ShowDestination)
 def get_destination_by_id(
     id: int = None,    
     db: Session = Depends(get_db)
