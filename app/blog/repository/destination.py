@@ -903,3 +903,45 @@ def get_full_address_by_id(destination_id: int, db: Session) -> List[str]:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error retrieving address: {str(e)}"
         )
+        
+
+def get_latLong(id: int, db: Session):
+    try:
+        latLong = (db
+                    .query(models.Destination.lat_address
+                                ,models.Destination.long_address )
+                    .filter(models.Destination.id == id)
+                    .first()
+        )
+        if latLong.lat_address == None or latLong.long_address == None:
+            raise HTTPException(status_code=404, detail="No Lat Long")
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error retrieving latLong address: {str(e.detail)}"
+        )
+    return latLong
+
+
+def update_latLong(id: int, lat_address: float, long_address: float, db: Session):
+    try:
+        destination = db.query(models.Destination).filter(models.Destination.id == id).first()  # Chờ truy vấn
+        if not destination:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail=f"destination with the id {id} is not available")
+
+        destination.lat_address= lat_address,
+        destination.long_address= long_address
+
+        
+        # Thêm điểm đến vào cơ sở dữ liệu
+        db.commit()  # Commit để lưu điểm đến
+        db.refresh(destination)  # Làm mới đối tượng mới
+
+        return destination 
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail=f"Error updating destination: {str(e)}")
+

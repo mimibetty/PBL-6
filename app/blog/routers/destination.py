@@ -82,6 +82,18 @@ async def create_destination(
     
     return schemas.ShowDestination.from_orm(new_dest)
 
+
+@router.put("/latLong/{destination_id}", response_model=schemas.ShowDestination)
+async def update_latLong_of_destination(
+    destination_id: int,
+    lat_address: float,
+    long_address: float,
+    db: Session = Depends(get_db),
+):
+    dest = destination.update_latLong(db=db, id=destination_id, lat_address=lat_address, long_address=long_address)
+    return dest
+    
+
 @router.put("/{id}", response_model=schemas.ShowDestination)
 async def update_destination_by_id(
     id: int,
