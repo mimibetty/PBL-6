@@ -4,13 +4,12 @@ import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dar
 import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
 
 class FavouriteScreen extends StatelessWidget {
-  final ProfileController profileController = Get.find<ProfileController>();
+  final ProfileController profileController = Get.put(ProfileController());
 
   @override
   Widget build(BuildContext context) {
-    // Fetch liked destinations when the screen is opened
     final userId = profileController.profileModelObj.value.id;
-    profileController.fetchLikedDestinations(userId);
+    profileController.fetchLikedDestinations(userId); // Fetch dữ liệu khi màn hình mở
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -19,12 +18,14 @@ class FavouriteScreen extends StatelessWidget {
         title: const Text('Favourite Destinations'),
       ),
       body: Obx(() {
-        // Wait for the user ID to be available
-        if (profileController.profileModelObj.value.id == 0) {
-          return const Center(child: CircularProgressIndicator());
+        // Hiển thị loading spinner nếu dữ liệu đang được tải
+        if (profileController.isLoading.value) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
         }
-        
-        // Fetch liked destinations if not already fetched
+
+        // Hiển thị thông báo nếu danh sách yêu thích rỗng
         if (profileController.likedDestinations.isEmpty) {
           return const Center(
             child: Text(
@@ -34,6 +35,7 @@ class FavouriteScreen extends StatelessWidget {
           );
         }
 
+        // Hiển thị danh sách điểm đến yêu thích
         return Padding(
           padding: const EdgeInsets.all(16.0),
           child: ListView.builder(
@@ -42,13 +44,7 @@ class FavouriteScreen extends StatelessWidget {
               var destination = profileController.likedDestinations[index];
               return GestureDetector(
                 onTap: () {
-                  // Navigate to place detail screen
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (context) => DetailScreen(destination: destination),
-                  //   ),
-                  // );
+                  // Điều hướng đến màn hình chi tiết
                 },
                 child: Card(
                   elevation: 4,
@@ -61,7 +57,7 @@ class FavouriteScreen extends StatelessWidget {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Image with heart icon
+                        // Hình ảnh với icon trái tim
                         Stack(
                           children: [
                             ClipRRect(
@@ -88,7 +84,7 @@ class FavouriteScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(width: 16),
-                        // Content
+                        // Nội dung chi tiết
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
