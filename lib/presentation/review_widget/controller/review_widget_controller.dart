@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
 import 'package:intl/intl.dart';
+import 'package:travelappflutter/presentation/sign_in_screen/controller/auth_controller.dart';
 
 class ReviewWidgetController extends GetxController {
   String typeOfReview = '';
@@ -120,7 +120,7 @@ class ReviewWidgetController extends GetxController {
   Future<void> fetchReviews({required int id}) async {
     isLoading.value = true; // Set loading to true
     reviews.clear(); // Clear old reviews
-    int thisUserId = Get.find<ProfileController>().profileModelObj.value.id;
+    int thisUserId = Get.find<AuthController>().userId.value;
 
     try {
       // Construct the API URL based on the type

@@ -5,8 +5,8 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:travelappflutter/presentation/common_views/image_picker_widget.dart';
 import 'package:travelappflutter/presentation/common_views/selected_chip_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/const.dart';
-import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
+import 'package:travelappflutter/presentation/sign_in_screen/controller/auth_controller.dart';
 
 class ReviewFormPage extends StatefulWidget {
   final int destinationId;
@@ -198,7 +198,7 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
                           companion: selectedCompanions.join(','), // Pass companion(s)
                           language: selectedLanguage, // Pass language
                           destinationId: widget.destinationId, // Pass destination ID (converted to string)
-                          userId: Get.find<ProfileController>().profileModelObj.value.id, // Pass user ID (replace with actual user ID)
+                          userId: Get.find<AuthController>().userId.value, // Pass user ID (replace with actual user ID)
                           images: selectedImages.isNotEmpty ? selectedImages : null, // Only pass images if not empty
                         );
                       // Provide feedback to the user

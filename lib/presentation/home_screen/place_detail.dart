@@ -10,6 +10,7 @@ import 'package:travelappflutter/presentation/map/map_screen.dart';
 import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
+import 'package:travelappflutter/presentation/sign_in_screen/controller/auth_controller.dart';
 import '../review_widget/widgets/create_review.dart';
 
 class PlaceDetailScreen extends StatefulWidget {
@@ -93,10 +94,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
         ),
         actions: [
           HeartIconWidget(
-            userId: Get.find<ProfileController>()
-                .profileModelObj
-                .value
-                .id, // Add the userId argument
+            userId: Get.find<AuthController>().userId.value, // Add the userId argument
             destinationId:
                 widget.destination.id, // Add the destinationId argument
             isLiked: isLiked, // Truyền trạng thái isLiked vào
@@ -164,7 +162,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                         });
                       },
                       children: List.generate(
-                        widget.destination.images!.length,
+                        widget.destination.images.length,
                         (index) => GestureDetector(
                           onTap: () {
                             // Chuyển đến FullScreenImageViewer
@@ -173,12 +171,12 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                               MaterialPageRoute(
                                 builder: (context) => FullScreenImageViewer(
                                     imageUrl:
-                                        widget.destination.images![index]),
+                                        widget.destination.images[index]),
                               ),
                             );
                           },
                           child: Image.network(
-                            widget.destination.images![index],
+                            widget.destination.images[index],
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -202,14 +200,14 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                               ),
                               borderRadius: BorderRadius.circular(15),
                               image: DecorationImage(
-                                image: widget.destination.images!.length - 1 !=
+                                image: widget.destination.images.length - 1 !=
                                         pageView
                                     ? NetworkImage(
                                         widget
-                                            .destination.images![pageView + 1],
+                                            .destination.images[pageView + 1],
                                       )
                                     : NetworkImage(
-                                        widget.destination.images![0],
+                                        widget.destination.images[0],
                                       ),
                                 fit: BoxFit.cover,
                               ),
@@ -225,7 +223,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: List.generate(
-                                    widget.destination.images!.length,
+                                    widget.destination.images.length,
                                     (index) => GestureDetector(
                                       onTap: () {
                                         if (pageController.hasClients) {
@@ -454,10 +452,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                     destinationId: widget.destination.id,
                                     //reviews: controller.reviews,
                                     ratingCounts: controller.ratingCounts,
-                                    UserId: Get.find<ProfileController>()
-                                        .profileModelObj
-                                        .value
-                                        .id);
+                                    UserId: Get.find<AuthController>().userId.value);
                               }),
                             ),
                           ),

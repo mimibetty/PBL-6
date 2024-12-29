@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
-import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
+import 'package:travelappflutter/presentation/sign_in_screen/controller/auth_controller.dart';
 import '../models/travel_model.dart';
 
 class PopularPlace extends StatefulWidget {
@@ -46,7 +46,7 @@ class _PopularPlaceState extends State<PopularPlace> {
               image: DecorationImage(
                 fit: BoxFit.cover,
                 image: NetworkImage(
-                  widget.destination.images![0],
+                  widget.destination.images[0],
                 ),
               ),
             ),
@@ -57,7 +57,7 @@ class _PopularPlaceState extends State<PopularPlace> {
                   child: Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: HeartIconWidget(
-                      userId: Get.find<ProfileController>().profileModelObj.value.id, // Add the userId argument
+                      userId: Get.find<AuthController>().userId.value, // Add the userId argument
                       destinationId: widget.destination.id, // Add the destinationId argument
                       isLiked: isLiked, // Truyền trạng thái isLiked vào
                       size: 30,

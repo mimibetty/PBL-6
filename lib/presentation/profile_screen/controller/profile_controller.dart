@@ -39,6 +39,14 @@ class ProfileController extends GetxController {
   }
 
   @override
+  void onClose() {
+    streetController.dispose();
+    wardController.dispose();
+    districtController.dispose();
+    super.onClose();
+  }
+
+  @override
   void onReady() {
     super.onReady();
     fetchCities().whenComplete(() => fetchUserProfile());
@@ -236,7 +244,7 @@ class ProfileController extends GetxController {
           );
 
           if (destinationResponse.statusCode == 200) {
-destinations.add(TravelDestination.fromJson(json.decode(utf8.decode(destinationResponse.bodyBytes))));
+            destinations.add(TravelDestination.fromJson(json.decode(utf8.decode(destinationResponse.bodyBytes))));
           }
         }
 

@@ -37,9 +37,6 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
     nameController.dispose();
     contactNumberController.dispose();
     aboutController.dispose();
-    profileController.streetController.dispose();
-    profileController.wardController.dispose();
-    profileController.districtController.dispose();
     super.dispose();
   }
 

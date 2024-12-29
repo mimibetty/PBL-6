@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:travelappflutter/presentation/common_views/heart_icon_widget.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
+import 'package:travelappflutter/presentation/sign_in_screen/controller/auth_controller.dart';
 
 class Recomendate extends StatefulWidget {
   final TravelDestination destination;
@@ -54,7 +55,7 @@ class _RecomendateState extends State<Recomendate> {
                 top: 8,
                 right: 8,
                 child: HeartIconWidget(
-                  userId: Get.find<ProfileController>().profileModelObj.value.id, // Add the userId argument
+                  userId: Get.find<AuthController>().userId.value, // Add the userId argument
                   destinationId: widget.destination.id, // Add the destinationId argument
                   isLiked: widget.isLiked, // Truyền trạng thái isLiked vào
                   //size: 18,

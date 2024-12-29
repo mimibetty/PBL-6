@@ -8,9 +8,9 @@ import 'dart:convert';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/home_screen/place_detail.dart';
 import 'package:travelappflutter/presentation/home_screen/restaurant_detail.dart';
-import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
 import 'package:travelappflutter/presentation/search_screen/models/hotel_model.dart';
 import 'package:travelappflutter/presentation/search_screen/models/restaurant_model.dart';
+import 'package:travelappflutter/presentation/sign_in_screen/controller/auth_controller.dart';
 
 class SearchDestinationController extends GetxController {
   final String apiUrl =
@@ -38,12 +38,7 @@ class SearchDestinationController extends GetxController {
         // Gọi các hàm liên quan
         getDestinationSpotlightAll();
         getMoreExploreAll();
-
-        // Lấy ProfileController để sử dụng id
-        final ProfileController profileController = Get.put(ProfileController());
-        if (profileController.profileModelObj.value.id != 0) {
-          getSearchRecommendation(profileController.profileModelObj.value.id); // Sử dụng id từ ProfileController
-        }
+        getSearchRecommendation(Get.find<AuthController>().userId.value); // Sử dụng id từ ProfileController
       } else {
         print('Failed to fetch destinations: ${response.statusCode}');
       }

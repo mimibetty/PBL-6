@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:travelappflutter/presentation/navigation/controller/app_navigation_controller.dart';
-import 'package:travelappflutter/presentation/sign_in_screen/controller/sign_in_controller.dart';
+import 'package:get_storage/get_storage.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   final AppController appController = Get.put(AppController());
+  final GetStorage storage = GetStorage(); // Sử dụng GetStorage để lấy userRole
 
   @override
   Widget build(BuildContext context) {
-    final signInController = Get.find<SignInController>();
+    String? userRole = storage.read('userRole') ?? 'guest'; // Lấy userRole từ Storage
+    print("User role: $userRole");
 
     return Obx(() => Material(
           borderRadius: const BorderRadius.only(
@@ -33,13 +35,11 @@ class CustomBottomNavBar extends StatelessWidget {
               const BottomNavigationBarItem(
                   icon: Icon(Iconsax.search_normal), label: 'Search'),
               BottomNavigationBarItem(
-                icon: signInController.userRole.value == 'guest'
+                icon: userRole == 'guest'
                     ? const Icon(Icons.computer) // Icon for AI Trip
                     : const Icon(
                         Icons.domain_add_outlined), // Icon for Destination
-                label: signInController.userRole.value == 'guest'
-                    ? 'AI Trip'
-                    : 'Destination',
+                label: userRole == 'guest' ? 'AI Trip' : 'Destination',
               ),
               const BottomNavigationBarItem(
                   icon: Icon(Icons.bookmark_outline), label: 'Forum'),
@@ -59,7 +59,7 @@ class CustomBottomNavBar extends StatelessWidget {
                   Get.toNamed('/search_screen');
                   break;
                 case 2:
-                  if (signInController.userRole.value == 'guest') {
+                  if (userRole == 'guest') {
                     Get.toNamed('/plan_screen'); // Navigate to AI Trip
                   } else {
                     Get.toNamed('/business_creation_screen', arguments: {

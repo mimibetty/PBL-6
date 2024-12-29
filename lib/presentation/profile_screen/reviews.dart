@@ -5,6 +5,7 @@ import 'package:travelappflutter/presentation/common_views/circle_rating_widget_
 import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
+import 'package:travelappflutter/presentation/sign_in_screen/controller/auth_controller.dart';
 
 class Review extends StatefulWidget {
   const Review({Key? key}) : super(key: key);
@@ -29,11 +30,7 @@ class _ReviewState extends State<Review> {
   @override
   Widget build(BuildContext context) {
     // Fetch reviews during build
-    final profile = profileController.profileModelObj.value;
-    if (profile.id != 0) {
-      reviewController.fetchReviewsByUserId(userId: profile.id);
-    }
-
+    reviewController.fetchReviewsByUserId(userId: Get.find<AuthController>().userId.value);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey[100],
