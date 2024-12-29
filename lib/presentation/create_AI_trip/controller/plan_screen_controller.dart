@@ -63,26 +63,55 @@ class PlanScreenController extends GetxController {
   }
 
   Future<void> fetchDestinationsByCityAndTags() async {
-    final String apiUrl = 'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/by_tags?limit=80';
+    const String apiUrl = 'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/by_tags';
+
     try {
-      final tagIds = tagsSelected.map((tag) => tag.id).toList();
+      // Làm sạch danh sách trước khi fetch dữ liệu mới
+      hotelPlanScreen.clear();
+      restaurantPlanScreen.clear();
+      thingsToDoPlanScreen.clear();
+      
+      // Tính toán limit cho API chính
+      int limit = (tripLength.value <= 4) ? tripLength.value * 5 : tripLength.value * 4;
+
+      // Lấy danh sách ID tag đã chọn
+      List<int> tagIds = tagsSelected.map((tag) => tag.id).toList();
+
+      // Fetch "Hotel" nếu chưa có
+      if (!tagsSelected.any((tag) => tag.name.trim() == "Hotel")) {
+        print("Fetching Hotel destinations");
+        await _fetchAndCombineTagDestinations(
+          apiUrl,
+          {'tag_ids': '14', 'limit': '2'}, // Luôn fetch 2 cho Hotel
+          hotelPlanScreen,
+        );
+      }
+
+      // Fetch "Food & Drink" nếu chưa có
+      if (!tagsSelected.any((tag) => tag.name.trim() == "Food & Drink")) {
+        print("Fetching Food & Drink destinations");
+        await _fetchAndCombineTagDestinations(
+          apiUrl,
+          {'tag_ids': '13', 'limit': (tripLength.value + 1).toString()}, // Limit là tripLength + 1
+          restaurantPlanScreen,
+        );
+      }
+
+      // Gọi API chính với các tag còn lại
       final queryParams = {
         'city_id': cityId.value.toString(),
+        'limit': limit.toString(),
       };
-
       final url = Uri.parse(apiUrl).replace(queryParameters: queryParams);
       final urlWithTags = url.toString() + tagIds.map((id) => '&tag_ids=$id').join('');
-      print("URL call destination: " + urlWithTags);
-      final response = await http.get(Uri.parse(urlWithTags));
+      print("Fetching main destinations with tags: $urlWithTags");
 
+      final response = await http.get(Uri.parse(urlWithTags));
       if (response.statusCode == 200) {
-        List<dynamic> apiData = json.decode(utf8.decode(response.bodyBytes)); // Sử dụng utf8.decode
+        List<dynamic> apiData = json.decode(utf8.decode(response.bodyBytes));
         List<TravelDestination> destinations = apiData.map((data) => TravelDestination.fromJson(data)).toList();
 
-        hotelPlanScreen.clear();
-        restaurantPlanScreen.clear();
-        thingsToDoPlanScreen.clear();
-
+        // Gộp dữ liệu vào các danh sách
         for (var destination in destinations) {
           if (destination.hotelId != null) {
             hotelPlanScreen.add(destination);
@@ -93,10 +122,29 @@ class PlanScreenController extends GetxController {
           }
         }
       } else {
-        print("Failed to load destinations: ${response.statusCode}");
+        print("Failed to load main destinations: ${response.statusCode}");
       }
     } catch (e) {
       print("Error fetching destinations: $e");
+    }
+  }
+
+  // Hàm fetch và gộp dữ liệu vào danh sách tương ứng
+  Future<void> _fetchAndCombineTagDestinations(
+      String apiUrl, Map<String, String> extraParams, RxList<TravelDestination> destinationList) async {
+    final queryParams = {
+      'city_id': cityId.value.toString(),
+      ...extraParams,
+    };
+    final url = Uri.parse(apiUrl).replace(queryParameters: queryParams);
+    print("Fetching tag-specific destinations: $url");
+
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
+      destinationList.addAll(data.map((item) => TravelDestination.fromJson(item)));
+    } else {
+      print("Failed to fetch tag-specific destinations: ${response.statusCode}");
     }
   }
 
