@@ -185,7 +185,7 @@ def get_distance_of_2_locations(latlong1, latlong2):
     else:
         raise Exception(f"Error fetching distance: {response.status_code} - {response.text}")
     
-def get_distances_between_all_locations(locations):
+def get_distances_between_all_locations_byGoong(locations):
     """Lấy ra khoảng cách giữa tất cả các đường với nhau dưới dạng ma trận đối xứng."""
     n = len(locations)
     distances = [[0] * n for _ in range(n)]  # Khởi tạo ma trận n x n

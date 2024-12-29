@@ -106,6 +106,7 @@ def create_trip(request: schemas.Trip, db: Session):
             duration=request.duration,
             month_time=request.month_time,
             user_id=request.user_id,
+            isAI=request.isAI
         )
         
         db.add(new_trip)
