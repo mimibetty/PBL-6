@@ -208,31 +208,29 @@ class _PlanScreen6 extends State<PlanScreen6> {
                             .inDays
                         : 0;
 
-                    // Check if the number of selected restaurants is at least the number of days
-                    // if (selectedRestaurantIDs.length < numberOfDays) {
-                    //   // Show an alert dialog
-                    //   showDialog(
-                    //     context: context,
-                    //     builder: (context) {
-                    //       return AlertDialog(
-                    //         title: Text('Insufficient Restaurants Selected'),
-                    //         content: Text(
-                    //           'You need to select at least $numberOfDays restaurant(s) for your trip.',
-                    //         ),
-                    //         actions: [
-                    //           TextButton(
-                    //             onPressed: () {
-                    //               Navigator.of(context)
-                    //                   .pop(); // Close the dialog
-                    //             },
-                    //             child: Text('OK'),
-                    //           ),
-                    //         ],
-                    //       );
-                    //     },
-                    //   );
-                    // } else {
-                    // Navigate to the next screen if the condition is satisfied
+                    if (selectedRestaurantIDs.length < numberOfDays) {
+                      // Show an alert dialog
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text('Insufficient Restaurants Selected'),
+                            content: Text(
+                              'You need to select at least $numberOfDays restaurant(s) for your trip.',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context)
+                                      .pop(); // Close the dialog
+                                },
+                                child: Text('OK'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -243,8 +241,8 @@ class _PlanScreen6 extends State<PlanScreen6> {
                         ),
                       ),
                     );
+                  };
                   },
-                  // },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue, // Blue background
                     shape: RoundedRectangleBorder(

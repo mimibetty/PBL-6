@@ -28,6 +28,7 @@ class _PlanScreen7State extends State<PlanScreen7>
       Get.find<PlanScreenController>();
   late List<String> dailyScheduleKeys;
   List<LatLng> newCoordinates = [];
+  Map<String, List<LatLng>> dailyCoordinates = {};
 
   @override
   void initState() {
@@ -39,56 +40,63 @@ class _PlanScreen7State extends State<PlanScreen7>
         length: numberOfDays + 1, vsync: this); // +1 for 'Places to stay'
   }
 
-  Future<void> _fetchData() async {
-    final hotels = widget.jsonResponse['hotels'];
-    final dailySchedule = widget.jsonResponse['daily_schedule'];
+ Future<void> _fetchData() async {
+  final dailySchedule = widget.jsonResponse['daily_schedule'];
 
-    await planScreenController.fetchHotels(List<int>.from(hotels));
-    await planScreenController.fetchDailyDestinations(dailySchedule);
+  await planScreenController.fetchDailyDestinations(dailySchedule);
 
-    List<TravelDestination> allDestinations = planScreenController
-        .dailyGroupedDestinations.values
-        .expand((x) => x)
-        .toList();
+  dailyCoordinates.clear(); // Ensure this is empty before populating
 
-    for (var destination in allDestinations) {
-      String street = destination.address.street ?? "Không rõ số nhà/đường";
-      String ward = destination.address.ward ?? "Không rõ phường/xã";
-      String district = destination.address.district ?? "Không rõ quận/huyện";
-      String city = planScreenController.cityName.value.isNotEmpty
-          ? planScreenController.cityName.value
-          : "Không rõ thành phố";
+  for (String dayKey in dailySchedule.keys) {
+    List<TravelDestination> destinations =
+        planScreenController.dailyGroupedDestinations[dayKey] ?? [];
+    List<LatLng> coordinates = [];
 
-      String fullAddress = '$street, $ward, $district, $city';
-      print("fullAddress: $fullAddress");
+    print("Processing day: $dayKey");
+    for (var destination in destinations) {
+      // Exclude hotels
+        String fullAddress = [
+          destination.address.street?.trimRight(),
+          destination.address.ward?.trimRight(),
+          destination.address.district?.trimRight(),
+          planScreenController.cityName.value.isNotEmpty
+              ? planScreenController.cityName.value
+              : "Không rõ thành phố"
+        ]
+            .where((item) =>
+                item != null &&
+                item.isNotEmpty) // Filter out null or empty values
+            .map((item) =>
+                item?.replaceAll(RegExp(r',\s*$'), '')) // Remove trailing commas
+            .join(', '); // Join with a comma
 
-      try {
-        // Add a delay between requests
-        await Future.delayed(Duration(milliseconds: 500));
+        try {
+          await Future.delayed(Duration(milliseconds: 500));
 
-        var coordinate =
-            await GeocodingService.getCoordinatesFromAddress(fullAddress);
-        if (coordinate != null) {
-          LatLng latLng =
-              LatLng(coordinate['latitude']!, coordinate['longitude']!);
-          newCoordinates.add(latLng);
+          var coordinate =
+              await GeocodingService.getCoordinatesFromAddress(fullAddress);
+          if (coordinate != null) {
+            LatLng latLng =
+                LatLng(coordinate['latitude']!, coordinate['longitude']!);
+            coordinates.add(latLng);
 
-          // Debugging log
-          print("Added coordinate: $latLng");
-        } else {
-          print('Failed to get coordinates for address: $fullAddress');
+            // Print destination and its coordinates
+            print("Destination: ${destination.name}, LatLng: $latLng");
+          } else {
+            print('Failed to get coordinates for address: $fullAddress');
+          }
+        } catch (e) {
+          print('Error geocoding $fullAddress: $e');
         }
-      } catch (e) {
-        print('Error geocoding $fullAddress: $e');
-      }
+      
     }
 
-    // Final log for debugging
-    print("Final newCoordinates: $newCoordinates");
-
-    // Update state to trigger UI rebuild if necessary
-    setState(() {});
+    dailyCoordinates[dayKey] = coordinates;
+    print("Coordinates for $dayKey: $coordinates");
   }
+
+  setState(() {});
+}
 
   @override
   void dispose() {
@@ -129,8 +137,7 @@ class _PlanScreen7State extends State<PlanScreen7>
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(50.0),
           child: Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 8.0), // Thêm padding
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: TabBar(
               controller: _tabController,
               isScrollable: true,
@@ -144,86 +151,111 @@ class _PlanScreen7State extends State<PlanScreen7>
           ),
         ),
       ),
-      body: Column(
-        children: [
-          // TabBarView chiếm toàn bộ chiều cao còn lại
-          Expanded(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: Obx(() {
-                final planScreenController = Get.find<PlanScreenController>();
-                return TabBarView(
-                  controller: _tabController,
-                  children: [
-                    PlacesToStayTab(),
-                    for (var dayKey in dailyScheduleKeys)
-                      ItineraryDayTab(
-                        day: dayKey,
-                        destinations: planScreenController
-                                .dailyGroupedDestinations[dayKey] ??
-                            [],
-                      ),
-                  ],
-                );
-              }),
-            ),
-          ),
-          // MapScreen được đặt dưới cùng
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Container(
-              height: 300,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade300),
-              ),
-              child: Builder(
-                builder: (context) {
-                  // Verify the data being passed to MapScreen
-                  print('Coordinates passed to MapScreen: $newCoordinates');
+      body: Obx(() {
+        final planScreenController = Get.find<PlanScreenController>();
+        return TabBarView(
+          controller: _tabController,
+          children: [
+            // Places to Stay Tab
+            PlacesToStayTab(),
 
-                  return newCoordinates.isNotEmpty
-                      ? MapScreen(
-                          coordinates: newCoordinates, // Pass coordinates
-                          zoom: 14.0,
-                        )
-                      : Center(
-                          child: Text(
-                            "No coordinates available",
-                            style: TextStyle(color: Colors.grey),
+            // Day Tabs with Map
+            for (var dayKey in dailyScheduleKeys)
+              Column(
+                children: [
+                  // Card Section for Day Content
+                  Expanded(
+                    child: ItineraryDayTab(
+                      day: dayKey,
+                      destinations: planScreenController
+                              .dailyGroupedDestinations[dayKey] ??
+                          [],
+                    ),
+                  ),
+
+                  // Map and Save Button Section
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
+                        child: Container(
+                          height: 250, // Reduced height for a closer look
+                          
+                          child: Builder(
+                            builder: (context) {
+
+                              final coordinates = dailyCoordinates[dayKey] ?? [];
+                              return coordinates.isNotEmpty
+                                  ? MapScreen(
+                                      coordinates: coordinates,
+                                      zoom: 12.0,
+                                    )
+                                  : Center(
+                                      child: Text(
+                                        "No coordinates available for $dayKey",
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                    );
+                            },
                           ),
-                        );
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          final Map<String, dynamic> jsonResponse =
-              widget.jsonResponse; // Use existing JSON data
-          final String action = "Itinerary"; // Set the action
+                        ),
+                      ),
+                      // Centered Save Button
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            final Map<String, dynamic> jsonResponse =
+                                widget.jsonResponse;
+                            final String action = "Itinerary";
 
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => PlanScreen9(
-                jsonResponse: jsonResponse,
-                action: action,
-                UserId:
-                    widget.UserId, // Pass the user ID from the current widget
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PlanScreen9(
+                                  jsonResponse: jsonResponse,
+                                  action: action,
+                                  UserId: widget.UserId,
+                                ),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Colors.blue.shade800, // Darker blue color
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 30,
+                                vertical: 12), // Adjusted padding
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  8), // Reduced corner radius
+                            ),
+                            elevation:
+                                5, // Slight elevation for a floating effect
+                          ),
+                          icon: Icon(
+                            Icons.save_alt, // Save icon
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                          label: Text(
+                            'Save Itinerary',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ],
               ),
-            ),
-          );
-        },
-        label: Text('Save itinerary'),
-        icon: Icon(Icons.favorite_border),
-        backgroundColor: Colors.blue,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+          ],
+        );
+      }),
     );
   }
 }

@@ -20,102 +20,112 @@ class PlanScreen8 extends StatelessWidget {
   final PlanScreenController planScreenController = Get.find<PlanScreenController>();
 
   @override
-  Widget build(BuildContext context) {
-    // Ensure user profile is fetched
-    profileScreenController.fetchUserProfile();
+  @override
+Widget build(BuildContext context) {
+  // Debug: Print the IDs of selected destinations
+  print('Selected Hotel IDs: $selectedHotelIDs');
+  print('Selected Restaurant IDs: $selectedRestaurantIDs');
+  print('Selected ThingsToDo IDs: $selectedThingsToDoIDs');
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Plan Your Trip',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        backgroundColor: Colors.blue,
-        elevation: 0,
-        centerTitle: true,
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey[100], // Nền chính màu trắng
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/images/ai_trip_icon.png', // Thêm hình minh họa
-                height: 150,
-              ),
-              SizedBox(height: 80),
-              Text(
-                'Let’s Plan Your Dream Trip',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF13357B),
-                  shadows: [
-                    Shadow(
-                      offset: Offset(0, 3),
-                      blurRadius: 5,
-                      color: Colors.black.withOpacity(0.3),
-                    ),
-                  ],
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Save your selections and get inspired with more guidance',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black87,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 40),
-              _buildOptionButton(
+  // Ensure user profile is fetched
+  profileScreenController.fetchUserProfile();
 
-                icon: Icons.calendar_today,
-                title: 'Create an Itinerary',
-                description: 'We’ll smartly organize your picks into a daily itinerary you can edit and add to.',
-                backgroundColor: Color(0xFF13357B),
-                textColor: Colors.white,
-                onPressed: () async {
-                  _buildAndNavigate(context);
-                },
-              ),
-              const SizedBox(height: 20),
-              _buildOptionButton(
-                icon: Icons.save,
-                title: 'Just save for now',
-                description: 'We’ll keep all your selections together in a trip you can review, organize, and create an itinerary later.',
-                backgroundColor: Colors.black,
-                textColor: Colors.white,
-                onPressed: () {
-                  final Map<String, dynamic> jsonResponse = {
-                    'hotels': selectedHotelIDs,
-                    'restaurants': selectedRestaurantIDs,
-                    'things_to_do': selectedThingsToDoIDs,
-                  };
-
-                  // Navigate to PlanScreen9
-                  Get.to(() => PlanScreen9(
-                        jsonResponse: jsonResponse,
-                        action: 'Justsave',
-                        UserId: profileScreenController.profileModelObj.value.id,
-                      ));
-                },
-              ),
-            ],
-          ),
+  return Scaffold(
+    appBar: AppBar(
+      title: Text(
+        'Plan Your Trip',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
         ),
       ),
-    );
-  }
+      backgroundColor: Colors.blue,
+      elevation: 0,
+      centerTitle: true,
+    ),
+    body: Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[100], // Main background color
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/images/ai_trip_icon.png', // Illustration image
+              height: 150,
+            ),
+            SizedBox(height: 80),
+            Text(
+              'Let’s Plan Your Dream Trip',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF13357B),
+                shadows: [
+                  Shadow(
+                    offset: Offset(0, 3),
+                    blurRadius: 5,
+                    color: Colors.black.withOpacity(0.3),
+                  ),
+                ],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Save your selections and get inspired with more guidance',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 40),
+            _buildOptionButton(
+              icon: Icons.calendar_today,
+              title: 'Create an Itinerary',
+              description:
+                  'We’ll smartly organize your picks into a daily itinerary you can edit and add to.',
+              backgroundColor: Color(0xFF13357B),
+              textColor: Colors.white,
+              onPressed: () async {
+                _buildAndNavigate(context);
+              },
+            ),
+            const SizedBox(height: 20),
+            _buildOptionButton(
+              icon: Icons.save,
+              title: 'Just save for now',
+              description:
+                  'We’ll keep all your selections together in a trip you can review, organize, and create an itinerary later.',
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+              onPressed: () {
+                final Map<String, dynamic> jsonResponse = {
+                  'hotels': selectedHotelIDs,
+                  'restaurants': selectedRestaurantIDs,
+                  'things_to_do': selectedThingsToDoIDs,
+                };
+
+                // Debug: Print the JSON payload
+                print('JSON Payload: $jsonResponse');
+
+                // Navigate to PlanScreen9
+                Get.to(() => PlanScreen9(
+                      jsonResponse: jsonResponse,
+                      action: 'Justsave',
+                      UserId: profileScreenController.profileModelObj.value.id,
+                    ));
+              },
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
 
   Future<void> _buildAndNavigate(BuildContext context) async {
     // Show loading dialog
@@ -169,7 +179,7 @@ class PlanScreen8 extends StatelessWidget {
 
   void _showErrorSnackbar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error: $message')),
+      SnackBar(content: Text('Error khi bấm save nè: $message')),
     );
   }
 

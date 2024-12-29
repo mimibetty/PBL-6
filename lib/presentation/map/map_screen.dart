@@ -31,8 +31,14 @@ class _MapScreenState extends State<MapScreen> {
   PolylinePoints polylinePoints = PolylinePoints();
   Symbol? _currentMarker;
   OverlayEntry? _popupOverlayEntry;
-  String api_key = 'ArPlUISaEBAdJFTABi9dcNGcue8WQ4cOAuGcNoBE';
-  String map_tiles_key = 'tLyW2vk0aY3yfQLu8ZPy986mAgaW8igMYufv3BLY';
+  //api cu
+  // String api_key = 'ArPlUISaEBAdJFTABi9dcNGcue8WQ4cOAuGcNoBE';
+  // String map_tiles_key = 'tLyW2vk0aY3yfQLu8ZPy986mAgaW8igMYufv3BLY';
+  //api moi
+  String api_key = 'dBjVmbNph3v3amPwQVLeudGY0Dcw7W3Eh8enfyTs';
+  String map_tiles_key = 'raZBeyW5t5wQ4yBk9bgqxL1MikWPSHJ0fKY0zU92';
+
+
 
   @override
   void initState() {

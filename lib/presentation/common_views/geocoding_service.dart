@@ -5,7 +5,9 @@ import 'package:http/http.dart' as http;
 class GeocodingService {
   static Future<Map<String, double>?> getCoordinatesFromAddress(
       String address) async {
-    String api_key = 'ArPlUISaEBAdJFTABi9dcNGcue8WQ4cOAuGcNoBE';
+    // String api_key = 'ArPlUISaEBAdJFTABi9dcNGcue8WQ4cOAuGcNoBE';
+    String api_key = 'dBjVmbNph3v3amPwQVLeudGY0Dcw7W3Eh8enfyTs';
+
 
     final String encodedAddress = Uri.encodeComponent(address); // Mã hóa địa chỉ
     // print("Encoded Address: $encodedAddress");
