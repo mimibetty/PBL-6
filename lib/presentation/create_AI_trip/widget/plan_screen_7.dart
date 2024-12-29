@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:travelappflutter/core/app_export.dart';
+import 'package:travelappflutter/presentation/common_views/geocoding_service.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/controller/plan_screen_controller.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_9.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/widget/trip_data.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
+import 'package:travelappflutter/presentation/map/map_screen.dart';
+
 class PlanScreen7 extends StatefulWidget {
   final int UserId;
   final Map<String, dynamic> jsonResponse; // JSON từ PlanScreen8
@@ -19,14 +23,15 @@ class PlanScreen7 extends StatefulWidget {
 
 class _PlanScreen7State extends State<PlanScreen7>
     with SingleTickerProviderStateMixin {
-
   TabController? _tabController;
-  final PlanScreenController planScreenController = Get.find<PlanScreenController>();
+  final PlanScreenController planScreenController =
+      Get.find<PlanScreenController>();
   late List<String> dailyScheduleKeys;
+  List<LatLng> newCoordinates = [];
+  Map<String, List<LatLng>> dailyCoordinates = {};
 
   @override
   void initState() {
-    print(widget.jsonResponse);
     super.initState();
     _fetchData();
     dailyScheduleKeys = widget.jsonResponse['daily_schedule'].keys.toList();
@@ -34,14 +39,64 @@ class _PlanScreen7State extends State<PlanScreen7>
     _tabController = TabController(
         length: numberOfDays + 1, vsync: this); // +1 for 'Places to stay'
   }
-  Future<void> _fetchData() async {
-    final hotels = widget.jsonResponse['hotels'];
-    final dailySchedule = widget.jsonResponse['daily_schedule'];
 
-    // Fetch dữ liệu từ Controller
-    await planScreenController.fetchHotels(List<int>.from(hotels));
-    await planScreenController.fetchDailyDestinations(dailySchedule);
+ Future<void> _fetchData() async {
+  final dailySchedule = widget.jsonResponse['daily_schedule'];
+
+  await planScreenController.fetchDailyDestinations(dailySchedule);
+
+  dailyCoordinates.clear(); // Ensure this is empty before populating
+
+  for (String dayKey in dailySchedule.keys) {
+    List<TravelDestination> destinations =
+        planScreenController.dailyGroupedDestinations[dayKey] ?? [];
+    List<LatLng> coordinates = [];
+
+    print("Processing day: $dayKey");
+    for (var destination in destinations) {
+      // Exclude hotels
+        String fullAddress = [
+          destination.address.street?.trimRight(),
+          destination.address.ward?.trimRight(),
+          destination.address.district?.trimRight(),
+          planScreenController.cityName.value.isNotEmpty
+              ? planScreenController.cityName.value
+              : "Không rõ thành phố"
+        ]
+            .where((item) =>
+                item != null &&
+                item.isNotEmpty) // Filter out null or empty values
+            .map((item) =>
+                item?.replaceAll(RegExp(r',\s*$'), '')) // Remove trailing commas
+            .join(', '); // Join with a comma
+
+        try {
+          await Future.delayed(Duration(milliseconds: 500));
+
+          var coordinate =
+              await GeocodingService.getCoordinatesFromAddress(fullAddress);
+          if (coordinate != null) {
+            LatLng latLng =
+                LatLng(coordinate['latitude']!, coordinate['longitude']!);
+            coordinates.add(latLng);
+
+            // Print destination and its coordinates
+            print("Destination: ${destination.name}, LatLng: $latLng");
+          } else {
+            print('Failed to get coordinates for address: $fullAddress');
+          }
+        } catch (e) {
+          print('Error geocoding $fullAddress: $e');
+        }
+      
+    }
+
+    dailyCoordinates[dayKey] = coordinates;
+    print("Coordinates for $dayKey: $coordinates");
   }
+
+  setState(() {});
+}
 
   @override
   void dispose() {
@@ -59,31 +114,41 @@ class _PlanScreen7State extends State<PlanScreen7>
         .inDays; // Calculate the number of days
   }
 
-
   @override
   Widget build(BuildContext context) {
     int numberOfDays = _calculateNumberOfDays();
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.grey[200],
-        title: Text('${planScreenController.cityName} City Itinerary',
-            style: TextStyle(color: Colors.black)),
+        title: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Text(
+            '${planScreenController.cityName} City Itinerary',
+            style: TextStyle(color: Colors.black),
+          ),
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.close, color: Colors.black),
             onPressed: () {},
           ),
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          indicatorColor: Colors.black,
-          tabs: [
-            Tab(text: 'Places to stay'),
-            for (int day = 1; day <= numberOfDays; day++) Tab(text: 'Day $day'),
-          ],
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(50.0),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: TabBar(
+              controller: _tabController,
+              isScrollable: true,
+              indicatorColor: Colors.black,
+              tabs: [
+                Tab(text: 'Places to stay'),
+                for (int day = 1; day <= numberOfDays; day++)
+                  Tab(text: 'Day $day'),
+              ],
+            ),
+          ),
         ),
       ),
       body: Obx(() {
@@ -91,42 +156,113 @@ class _PlanScreen7State extends State<PlanScreen7>
         return TabBarView(
           controller: _tabController,
           children: [
+            // Places to Stay Tab
             PlacesToStayTab(),
+
+            // Day Tabs with Map
             for (var dayKey in dailyScheduleKeys)
-              ItineraryDayTab(
-                day: dayKey,
-                destinations: planScreenController.dailyGroupedDestinations[dayKey] ?? [],
+              Column(
+                children: [
+                  // Card Section for Day Content
+                  Expanded(
+                    child: ItineraryDayTab(
+                      day: dayKey,
+                      destinations: planScreenController
+                              .dailyGroupedDestinations[dayKey] ??
+                          [],
+                    ),
+                  ),
+
+                  // Map and Save Button Section
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
+                        child: Container(
+                          height: 250, // Reduced height for a closer look
+                          
+                          child: Builder(
+                            builder: (context) {
+
+                              final coordinates = dailyCoordinates[dayKey] ?? [];
+                              return coordinates.isNotEmpty
+                                  ? MapScreen(
+                                      coordinates: coordinates,
+                                      zoom: 12.0,
+                                    )
+                                  : Center(
+                                      child: Text(
+                                        "No coordinates available for $dayKey",
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                    );
+                            },
+                          ),
+                        ),
+                      ),
+                      // Centered Save Button
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            final Map<String, dynamic> jsonResponse =
+                                widget.jsonResponse;
+                            final String action = "Itinerary";
+
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PlanScreen9(
+                                  jsonResponse: jsonResponse,
+                                  action: action,
+                                  UserId: widget.UserId,
+                                ),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Colors.blue.shade800, // Darker blue color
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 30,
+                                vertical: 12), // Adjusted padding
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  8), // Reduced corner radius
+                            ),
+                            elevation:
+                                5, // Slight elevation for a floating effect
+                          ),
+                          icon: Icon(
+                            Icons.save_alt, // Save icon
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                          label: Text(
+                            'Save Itinerary',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ],
               ),
           ],
         );
       }),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          final Map<String, dynamic> jsonResponse = widget.jsonResponse; // Use existing JSON data
-          final String action = "Itinerary"; // Set the action
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => PlanScreen9(
-                jsonResponse: jsonResponse,
-                action: action,
-                UserId: widget.UserId, // Pass the user ID from the current widget
-              ),
-            ),
-          );
-        },
-        label: Text('Save itinerary'),
-        icon: Icon(Icons.favorite_border),
-        backgroundColor: Colors.blue,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
 
 class PlacesToStayTab extends StatelessWidget {
-  final PlanScreenController planScreenController = Get.find<PlanScreenController>();
+  final PlanScreenController planScreenController =
+      Get.find<PlanScreenController>();
 
   @override
   Widget build(BuildContext context) {
@@ -201,8 +337,7 @@ class PlacesToStayTab extends StatelessWidget {
             const SizedBox(height: 5),
             Text(
               "Time: ${time}",
-              style: TextStyle(
-                  fontSize: 14, color: Colors.black54),
+              style: TextStyle(fontSize: 14, color: Colors.black54),
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
             ),
@@ -218,15 +353,13 @@ class PlacesToStayTab extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   "${rating} ★",
-                  style: TextStyle(
-                      fontSize: 14, color: Colors.grey),
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     "(${numOfReviews} reviews)",
-                    style: TextStyle(
-                        fontSize: 14, color: Colors.grey),
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
                   ),
@@ -251,10 +384,10 @@ class PlacesToStayTab extends StatelessWidget {
   }
 }
 
-
 class ItineraryDayTab extends StatelessWidget {
   final String day;
-  final List<TravelDestination> destinations; // Danh sách địa điểm cho ngày hiện tại
+  final List<TravelDestination>
+      destinations; // Danh sách địa điểm cho ngày hiện tại
   ItineraryDayTab({
     required this.day,
     required this.destinations,
@@ -272,7 +405,8 @@ class ItineraryDayTab extends StatelessWidget {
           imageUrl: destination.images[0],
           description: destination.description,
           address: destination.address.district,
-          addressDetail: destination.address.street + " " + destination.address.ward,
+          addressDetail:
+              destination.address.street + " " + destination.address.ward,
           time: destination.openTime.toString(),
           rating: destination.rating.toStringAsFixed(1),
           numOfReviews: destination.numOfReviews.toString(),
@@ -290,12 +424,12 @@ class ItineraryDayTab extends StatelessWidget {
     required String time,
     required String rating,
     required String numOfReviews,
-
   }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0), // Adjust bottom padding to increase spacing
+      padding: const EdgeInsets.only(
+          bottom: 16.0), // Adjust bottom padding to increase spacing
       child: Card(
-        color: Colors.grey[100], 
+        color: Colors.grey[100],
         elevation: 4,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
@@ -306,7 +440,8 @@ class ItineraryDayTab extends StatelessWidget {
             backgroundColor: Colors.grey[100],
             tilePadding: EdgeInsets.all(0),
             title: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
               child: Text(name, style: TextStyle(color: Colors.black)),
             ),
             subtitle: Padding(
@@ -358,7 +493,8 @@ class ItineraryDayTab extends StatelessWidget {
                               const SizedBox(height: 10),
                               Row(
                                 children: [
-                                  Icon(Icons.location_pin, color: Colors.red, size: 16),
+                                  Icon(Icons.location_pin,
+                                      color: Colors.red, size: 16),
                                   SizedBox(width: 2),
                                   Expanded(
                                     child: Text(

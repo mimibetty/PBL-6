@@ -33,7 +33,7 @@ class _PlanScreen2State extends State<PlanScreen2> with SingleTickerProviderStat
       appBar: AppBar(
         title: Text(
           'Where do you want to go?',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
         ),
         backgroundColor: Colors.blue,
       ),
@@ -135,22 +135,37 @@ class _PlanScreen2State extends State<PlanScreen2> with SingleTickerProviderStat
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
                   ),
                   SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => PlanScreen3()),
-                      );
-                    },
-                    child: Text("Next", style: TextStyle(color: Colors.white)),
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      backgroundColor: Colors.blue,
+                  Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PlanScreen3(),
                     ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.blue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
+                ),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  child: Text(
+                    "Next",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+              ),
+            ),
+          ),
                 ],
               );
             } else {
@@ -159,7 +174,7 @@ class _PlanScreen2State extends State<PlanScreen2> with SingleTickerProviderStat
           }),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavBar(),
+      // bottomNavigationBar: CustomBottomNavBar(),
     );
   }
 }

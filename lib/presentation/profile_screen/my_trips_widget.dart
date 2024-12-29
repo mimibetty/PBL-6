@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/home_screen/widgets/recomendate.dart';
+import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
 
 class MyTripsWidget extends StatefulWidget {
   final List<TravelDestination> thingsToDo;
@@ -44,7 +45,10 @@ class _MyTripsWidgetState extends State<MyTripsWidget> {
           ],
         ),
       ),
+
     );
+    
+    
   }
 
   Widget _buildSortDropdown() {

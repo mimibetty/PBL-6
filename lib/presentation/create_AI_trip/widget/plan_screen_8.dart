@@ -20,79 +20,110 @@ class PlanScreen8 extends StatelessWidget {
   final PlanScreenController planScreenController = Get.find<PlanScreenController>();
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Choose an Option'),
-        backgroundColor: Colors.lightBlue.shade100,
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              const Color.fromARGB(85, 131, 206, 241),
-              const Color.fromARGB(33, 105, 175, 207),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Continue planning your trip',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(211, 49, 201, 228),
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Save your selections and get inspired with more guidance',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Color.fromARGB(225, 1, 36, 107),
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 40),
-              _buildOptionButton(
-                icon: Icons.calendar_today,
-                title: 'Create an itinerary',
-                description: 'We’ll smartly organize your picks into a daily itinerary you can edit and add to.',
-                onPressed: () => _buildAndNavigate(context),
-              ),
-              const SizedBox(height: 20),
-              _buildOptionButton(
-                icon: Icons.save,
-                title: 'Just save for now',
-                description: 'We’ll keep all your selections together in a trip you can review, organize, and create an itinerary later.',
-                onPressed: () {
-                  final Map<String, dynamic> jsonResponse = {
-                    'hotels': selectedHotelIDs,
-                    'restaurants': selectedRestaurantIDs,
-                    'things_to_do': selectedThingsToDoIDs,
-                  };
+  @override
+Widget build(BuildContext context) {
+  // Debug: Print the IDs of selected destinations
+  print('Selected Hotel IDs: $selectedHotelIDs');
+  print('Selected Restaurant IDs: $selectedRestaurantIDs');
+  print('Selected ThingsToDo IDs: $selectedThingsToDoIDs');
 
-                  // Navigate to PlanScreen9
-                  Get.to(() => PlanScreen9(
-                        jsonResponse: jsonResponse,
-                        action: 'Justsave',
-                        UserId: authController.userId.value,
-                      ));
-                },
-              ),
-            ],
-          ),
+
+  return Scaffold(
+    appBar: AppBar(
+      title: Text(
+        'Plan Your Trip',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
         ),
       ),
-    );
-  }
+      backgroundColor: Colors.blue,
+      elevation: 0,
+      centerTitle: true,
+    ),
+    body: Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[100], // Main background color
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/images/ai_trip_icon.png', // Illustration image
+              height: 150,
+            ),
+            SizedBox(height: 80),
+            Text(
+              'Let’s Plan Your Dream Trip',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF13357B),
+                shadows: [
+                  Shadow(
+                    offset: Offset(0, 3),
+                    blurRadius: 5,
+                    color: Colors.black.withOpacity(0.3),
+                  ),
+                ],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Save your selections and get inspired with more guidance',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 40),
+            _buildOptionButton(
+              icon: Icons.calendar_today,
+              title: 'Create an Itinerary',
+              description:
+                  'We’ll smartly organize your picks into a daily itinerary you can edit and add to.',
+              backgroundColor: Color(0xFF13357B),
+              textColor: Colors.white,
+              onPressed: () async {
+                _buildAndNavigate(context);
+              },
+            ),
+            const SizedBox(height: 20),
+            _buildOptionButton(
+              icon: Icons.save,
+              title: 'Just save for now',
+              description:
+                  'We’ll keep all your selections together in a trip you can review, organize, and create an itinerary later.',
+              backgroundColor: Colors.black,
+              textColor: Colors.white,
+              onPressed: () {
+                final Map<String, dynamic> jsonResponse = {
+                  'hotels': selectedHotelIDs,
+                  'restaurants': selectedRestaurantIDs,
+                  'things_to_do': selectedThingsToDoIDs,
+                };
+
+                // Debug: Print the JSON payload
+                print('JSON Payload: $jsonResponse');
+
+                // Navigate to PlanScreen9
+                Get.to(() => PlanScreen9(
+                      jsonResponse: jsonResponse,
+                      action: 'Justsave',
+                      UserId: Get.find<AuthController>().userId.value,
+                    ));
+              },
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
 
   Future<void> _buildAndNavigate(BuildContext context) async {
     // Show loading dialog
@@ -146,56 +177,69 @@ class PlanScreen8 extends StatelessWidget {
 
   void _showErrorSnackbar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error: $message')),
+      SnackBar(content: Text('Error khi bấm save nè: $message')),
     );
   }
 
-  Widget _buildOptionButton({
+  Widget _buildOptionButton(
+     {
     required IconData icon,
     required String title,
     required String description,
+    required Color backgroundColor,
+    required Color textColor,
     required VoidCallback onPressed,
   }) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.white,
-        backgroundColor: Colors.blue.shade700,
-        padding: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+    return Container(
+      width: double.infinity,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          padding: EdgeInsets.zero,
+          backgroundColor: backgroundColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          elevation: 5,
         ),
-        elevation: 5,
-      ),
-      onPressed: onPressed,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 40, color: Colors.white),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
+        onPressed: onPressed,
+        child: Ink(
+          child: Container(
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  description,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.white70,
+                Icon(icon, size: 40, color: textColor),
+                SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: textColor,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        description,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: textColor.withOpacity(0.8),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

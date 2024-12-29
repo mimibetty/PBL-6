@@ -14,21 +14,21 @@ class PlanScreen extends StatefulWidget {
 class _PlanScreenState extends State<PlanScreen> {
   final ProfileController profileScreenController = Get.put(ProfileController());
   final TripController tripController = Get.put(TripController());
+  final userId = Get.find<AuthController>().userId.value;
 
   @override
   void initState() {
     super.initState();
     // Chỉ gọi API khi cần
-    if (tripController.trips.isEmpty) {
-      final userId = Get.find<AuthController>().userId.value;
-      if (userId != 0) {
-        tripController.getTripByUserId(userId);
-      }
-    }
+    //if (tripController.trips.isEmpty) {
+    //}
   }
 
   @override
   Widget build(BuildContext context) {
+    if (userId != 0) {
+      tripController.getTripByUserId(userId);
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -40,10 +40,9 @@ class _PlanScreenState extends State<PlanScreen> {
         iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: Obx(() {
-        if (tripController.isLoading.value) {
-          return _loadingOverlay("Fetching Trip List...");
-        }
-
+        // if (tripController.isLoading.value) {
+        //   return _loadingOverlay("Fetching Trip List...");
+        // }
         if (tripController.trips.isEmpty) {
           return const Center(
             child: Text(
@@ -70,7 +69,7 @@ class _PlanScreenState extends State<PlanScreen> {
                   ClipRRect(
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
                     child: Image.network(
-                      trip.imageUrl ?? 'https://i.ytimg.com/vi/Z20pEmSdig0/maxresdefault.jpg',
+                      'https://i.ytimg.com/vi/Z20pEmSdig0/maxresdefault.jpg',
                       height: 160,
                       width: double.infinity,
                       fit: BoxFit.cover,
@@ -114,19 +113,19 @@ class _PlanScreenState extends State<PlanScreen> {
                         ),
                         Row(
                           children: [
-                            const Icon(Icons.location_on, color: Colors.redAccent, size: 20),
-                            const SizedBox(width: 8),
-                            Text(
-                              trip.cityName ?? 'Unknown City',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
-                            ),
+                            // const Icon(Icons.location_on, color: Colors.redAccent, size: 20),
+                            // const SizedBox(width: 8),
+                            // Text(
+                            //   trip.cityName ?? 'Unknown City',
+                            //   style: const TextStyle(
+                            //     fontSize: 16,
+                            //     fontWeight: FontWeight.bold,
+                            //     color: Colors.black87,
+                            //   ),
+                            // ),
                           ],
                         ),
-                        const SizedBox(height: 12),
+                        //const SizedBox(height: 12),
                         Row(
                           children: [
                             const Icon(Icons.timer, color: Colors.green, size: 20),
@@ -226,7 +225,10 @@ class _PlanScreenState extends State<PlanScreen> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                tripController.deleteTripByID(tripId);
+                tripController.deleteTripByID(tripId).then((_) {
+                  // Reload the trip list after deletion
+                  tripController.getTripByUserId(userId);
+                });
               },
               child: const Text('Delete', style: TextStyle(color: Colors.red)),
             ),

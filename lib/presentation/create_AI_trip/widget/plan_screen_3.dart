@@ -11,13 +11,15 @@ class PlanScreen3 extends StatefulWidget {
 }
 
 class _PlanScreen3State extends State<PlanScreen3> {
-  final PlanScreenController planScreenController = Get.find<PlanScreenController>();
+  final PlanScreenController planScreenController =
+      Get.find<PlanScreenController>();
   DateTime? _selectedStartDate;
 
   // Calculate the end date based on the selected start date and trip length
   DateTime? get _calculatedEndDate {
     if (_selectedStartDate == null) return null;
-    return _selectedStartDate!.add(Duration(days: planScreenController.tripLength.value));
+    return _selectedStartDate!
+        .add(Duration(days: planScreenController.tripLength.value));
   }
 
   Future<void> _selectStartDate(BuildContext context) async {
@@ -30,7 +32,8 @@ class _PlanScreen3State extends State<PlanScreen3> {
     if (picked != null && picked != _selectedStartDate) {
       setState(() {
         _selectedStartDate = picked;
-        planScreenController.monthTime.value = DateFormat('MMMM').format(picked);
+        planScreenController.monthTime.value =
+            DateFormat('MMMM').format(picked);
       });
     }
   }
@@ -119,7 +122,8 @@ class _PlanScreen3State extends State<PlanScreen3> {
                         }
                       },
                     ),
-                    Obx(() => Text('${planScreenController.tripLength.value}', style: TextStyle(fontSize: 20))),
+                    Obx(() => Text('${planScreenController.tripLength.value}',
+                        style: TextStyle(fontSize: 20))),
                     IconButton(
                       icon: Icon(Icons.add),
                       onPressed: () {
@@ -146,25 +150,29 @@ class _PlanScreen3State extends State<PlanScreen3> {
             Spacer(),
 
             // Next Button
-            Padding(
-              padding: const EdgeInsets.only(
-                  bottom: 30.0), // Adjust the bottom padding
-              child: ElevatedButton(
-                onPressed: () => _navigateToNextPage(context),
-                child: Text(
-                  'Next',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white, // Text color set to white
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    _navigateToNextPage(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 32),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 12),
+                    child: Text(
+                      "Next",
+                      style: TextStyle(fontSize: 16),
+                    ),
                   ),
-                  backgroundColor:
-                      Colors.blue, // Button background color set to blue
                 ),
               ),
             ),

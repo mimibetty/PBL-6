@@ -13,8 +13,9 @@ class PlanScreen6 extends StatefulWidget {
 }
 
 class _PlanScreen6 extends State<PlanScreen6> {
-  final PlanScreenController planScreenController = Get.find<PlanScreenController>();
-  
+  final PlanScreenController planScreenController =
+      Get.find<PlanScreenController>();
+
   bool selectAll = true;
   Set<String> selectedCards = {};
   List<int> selectedThingsToDoIDs = [];
@@ -89,19 +90,15 @@ class _PlanScreen6 extends State<PlanScreen6> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Trip Builder Preview'),
-        backgroundColor: Colors.white,
-        elevation: 1,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.share, color: Colors.black),
-            onPressed: () {},
+        title: Text(
+          'Trip Builder Preview',
+          style: TextStyle(
+            fontWeight: FontWeight.bold, // Makes the text bold
+            color: Colors.black, // Ensures the text color is visible
           ),
-        ],
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
         ),
+        backgroundColor: Colors.blue,
+        elevation: 1,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -190,7 +187,8 @@ class _PlanScreen6 extends State<PlanScreen6> {
                       child: Switch(
                         value: selectedCards.length ==
                             (planScreenController.thingsToDoPlanScreen.length +
-                                planScreenController.restaurantPlanScreen.length +
+                                planScreenController
+                                    .restaurantPlanScreen.length +
                                 planScreenController.hotelPlanScreen.length),
                         onChanged: (value) {
                           _toggleSelectAll(value);
@@ -202,13 +200,37 @@ class _PlanScreen6 extends State<PlanScreen6> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) =>
-                    //         PlanScreen7(), // Replace `NextPage` with your target page
-                    //   ),
-                    // );
+                    final numberOfDays = TripDates().endDate != null &&
+                            TripDates().startDate != null
+                        ? TripDates()
+                            .endDate!
+                            .difference(TripDates().startDate!)
+                            .inDays
+                        : 0;
+
+                    if (selectedRestaurantIDs.length < numberOfDays) {
+                      // Show an alert dialog
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text('Insufficient Restaurants Selected'),
+                            content: Text(
+                              'You need to select at least $numberOfDays restaurant(s) for your trip.',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context)
+                                      .pop(); // Close the dialog
+                                },
+                                child: Text('OK'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -219,6 +241,7 @@ class _PlanScreen6 extends State<PlanScreen6> {
                         ),
                       ),
                     );
+                  };
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue, // Blue background
@@ -243,8 +266,8 @@ class _PlanScreen6 extends State<PlanScreen6> {
     );
   }
 
-  Widget _buildSection(
-      String title, String description, List<TravelDestination> items, String type) {
+  Widget _buildSection(String title, String description,
+      List<TravelDestination> items, String type) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -311,7 +334,9 @@ class _PlanScreen6 extends State<PlanScreen6> {
                                     top: Radius.circular(8),
                                   ),
                                   child: Image.network(
-                                    item.images.isNotEmpty ? item.images[0] : '',
+                                    item.images.isNotEmpty
+                                        ? item.images[0]
+                                        : '',
                                     width: double.infinity,
                                     height: 140, // Fixed image height
                                     fit: BoxFit.cover,
@@ -322,15 +347,18 @@ class _PlanScreen6 extends State<PlanScreen6> {
                                   right: 8,
                                   child: GestureDetector(
                                     onTap: () {
-                                      _toggleSelection(item.name, item.id, type);
+                                      _toggleSelection(
+                                          item.name, item.id, type);
                                     },
                                     child: Icon(
                                       isSelected
                                           ? Icons.check_circle
                                           : Icons.add_circle,
                                       color: isSelected
-                                          ? const Color.fromARGB(255, 63, 240, 10)
-                                          : const Color.fromARGB(255, 2, 145, 255),
+                                          ? const Color.fromARGB(
+                                              255, 63, 240, 10)
+                                          : const Color.fromARGB(
+                                              255, 2, 145, 255),
                                       size: 28,
                                     ),
                                   ),
@@ -356,7 +384,8 @@ class _PlanScreen6 extends State<PlanScreen6> {
                                     ),
                                     const SizedBox(height: 4),
                                     CircleRatingWidget(
-                                      rating: double.parse(item.rating.toStringAsFixed(1)),
+                                      rating: double.parse(
+                                          item.rating.toStringAsFixed(1)),
                                       size: 16,
                                     ),
                                     const SizedBox(height: 4),
