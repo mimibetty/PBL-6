@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_2.dart';
-import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
 import '../../navigation/custom_bottom_nav_bar.dart';
 
 class PlanScreen extends StatefulWidget {
@@ -13,119 +12,119 @@ class _PlanScreenState extends State<PlanScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Plan'),
+        title: Text(
+          'Plan',
+          style: TextStyle(
+            fontWeight: FontWeight.bold, // Makes the text bold
+            color: Colors.black, // Ensures the text color is visible
+          ),
+        ),
+        backgroundColor: Colors.blue,
+        elevation: 1,
       ),
-      body: Stack(
+      body: Column(
         children: [
-          ListView.builder(
-            padding: EdgeInsets.only(
-                bottom:
-                    120), // Để trống khoảng dưới để tránh trùng với các nút cố định
-            itemCount:
-                4, // Giả sử có 10 ảnh, bạn có thể thay đổi số lượng này tùy ý
-            itemBuilder: (context, index) {
-              return Card(
-                margin: EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Stack(
-                      children: [
-                        Image.network(
-                          'https://banahills.sunworld.vn/wp-content/uploads/2020/05/image6.jpg',
-                          height: 200,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                        ),
-                        Positioned(
-                          top: 8,
-                          left: 8,
-                          child: Icon(Icons.lock, color: Colors.white),
-                        ),
-                        Positioned(
-                          top: 8,
-                          right: 8,
-                          child:
-                              Icon(Icons.favorite_border, color: Colors.white),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
+          SizedBox(height: 16), // Khoảng cách giữa AppBar và nội dung chính
+          Expanded(
+            child: Stack(
+              children: [
+                ListView.builder(
+                  padding: EdgeInsets.only(
+                      bottom:
+                          120), // Để trống khoảng dưới để tránh trùng với các nút cố định
+                  itemCount:
+                      4, // Giả sử có 10 ảnh, bạn có thể thay đổi số lượng này tùy ý
+                  itemBuilder: (context, index) {
+                    return Card(
+                      margin: EdgeInsets.all(10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Image Name $index', // Thay bằng tên ảnh của bạn
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+                          Stack(
+                            children: [
+                              Image.network(
+                                'https://banahills.sunworld.vn/wp-content/uploads/2020/05/image6.jpg',
+                                height: 200,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                              Positioned(
+                                top: 20,
+                                left: 8,
+                                child: Icon(Icons.lock, color: Colors.white),
+                              ),
+                              Positioned(
+                                top: 20,
+                                right: 8,
+                                child: Icon(Icons.favorite_border,
+                                    color: Colors.white),
+                              ),
+                            ],
                           ),
-                          SizedBox(height: 4),
-                          Text(
-                            '${index + 1} days', // Thay bằng số ngày tương ứng
-                            style: TextStyle(color: Colors.grey),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Image Name $index', // Thay bằng tên ảnh của bạn
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  '${index + 1} days', // Thay bằng số ngày tương ứng
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
-              );
-            },
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              color: Colors.white,
-              padding: EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // ElevatedButton(
-                  //   onPressed: () {
-                  //     // Xử lý khi nhấn nút "Create a Trip"
-                  //   },
-                  //   style: ElevatedButton.styleFrom(
-                  //     backgroundColor: Colors.blue, // Màu nền xanh cho nút trên
-                  //     minimumSize: Size(double.infinity,
-                  //         50), // Chiều rộng full và chiều cao 50
-                  //   ),
-                  //   child: Text(
-                  //     '+ Create a Trip',
-                  //     style: TextStyle(color: Colors.white),
-                  //   ),
-                  // ),
-                  // SizedBox(height: 8), // Khoảng cách giữa hai nút
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => PlanScreen2()),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Colors.white, // Màu nền trắng cho nút dưới
-                      minimumSize: Size(double.infinity, 50),
-                      side: BorderSide(
-                          color: Colors.blue), // Viền màu xanh cho nút dưới
-                    ),
-                    child: Text(
-                      'Build a Trip with AI',
-                      style: TextStyle(color: Colors.black),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    color: Colors.white,
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => PlanScreen2()),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Colors.white, // Màu nền trắng cho nút dưới
+                            minimumSize: Size(double.infinity, 50),
+                            side: BorderSide(
+                                color: Colors.blue), // Viền màu xanh cho nút dưới
+                          ),
+                          child: Text(
+                            'Build a Trip with AI',
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
       ),
-            bottomNavigationBar: CustomBottomNavBar(),
-
+      bottomNavigationBar: CustomBottomNavBar(),
     );
   }
 }

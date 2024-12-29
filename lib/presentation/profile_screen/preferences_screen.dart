@@ -62,36 +62,22 @@ class PreferencesPage extends StatelessWidget {
           ),
           Divider(),
           // Currency
-          ListTile(
-            title: Text(
-              'Currency',
-              style: TextStyle(fontSize: 18),
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Vietnamese Dong'),
-                Icon(Icons.chevron_right),
-              ],
-            ),
-          ),
-          Divider(),
-          // Units
-          ListTile(
-            title: Text(
-              'Units',
-              style: TextStyle(fontSize: 18),
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Kilometers / Meters'),
-                Icon(Icons.chevron_right),
-              ],
-            ),
-          ),
-          Divider(),
-          // Payment Preferences
+          // ListTile(
+          //   title: Text(
+          //     'Currency',
+          //     style: TextStyle(fontSize: 18),
+          //   ),
+          //   trailing: Row(
+          //     mainAxisSize: MainAxisSize.min,
+          //     children: [
+          //       Text('Vietnamese Dong'),
+          //       Icon(Icons.chevron_right),
+          //     ],
+          //   ),
+          // ),
+          // Divider(),
+          // // Units
+         
 
           ListTile(
             title: Text(

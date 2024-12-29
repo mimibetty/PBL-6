@@ -146,28 +146,37 @@ class _PlanScreen3State extends State<PlanScreen3> {
             Spacer(),
 
             // Next Button
-            Padding(
-              padding: const EdgeInsets.only(
-                  bottom: 30.0), // Adjust the bottom padding
+            Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.all(30.0),
               child: ElevatedButton(
-                onPressed: () => _navigateToNextPage(context),
-                child: Text(
-                  'Next',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white, // Text color set to white
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PlanScreen4(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.blue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 32),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  child: Text(
+                    "Next",
+                    style: TextStyle(fontSize: 16),
                   ),
-                  backgroundColor:
-                      Colors.blue, // Button background color set to blue
                 ),
               ),
             ),
+          ),
           ],
         ),
       ),

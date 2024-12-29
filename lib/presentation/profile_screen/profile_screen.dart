@@ -58,27 +58,27 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
 
-          ListTile(
-            leading: Icon(Icons.monetization_on, color: Colors.amber),
-            title: Text('Rewards'),
-            trailing: Icon(Icons.chevron_right),
-          ),
-          Divider(),
-          ListTile(
-            leading: Icon(
-              Icons.trip_origin_sharp,
-              color: const Color.fromARGB(255, 3, 161, 240),
-            ),
-            title: Text('Trips'),
-            trailing: Icon(Icons.chevron_right),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MyTripsScreen()),
-              );
-            },
-          ),
-          Divider(),
+          // ListTile(
+          //   leading: Icon(Icons.monetization_on, color: Colors.amber),
+          //   title: Text('Rewards'),
+          //   trailing: Icon(Icons.chevron_right),
+          // ),
+          // Divider(),
+          // ListTile(
+          //   leading: Icon(
+          //     Icons.trip_origin_sharp,
+          //     color: const Color.fromARGB(255, 3, 161, 240),
+          //   ),
+          //   title: Text('Trips'),
+          //   trailing: Icon(Icons.chevron_right),
+          //   onTap: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(builder: (context) => MyTripsScreen()),
+          //     );
+          //   },
+          // ),
+          // Divider(),
           ListTile(
             leading: Icon(
               Icons.reviews,

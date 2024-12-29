@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_7.dart';
+import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_9.dart';
 import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/controller/plan_screen_controller.dart';
 
@@ -20,7 +21,9 @@ class PlanScreen8 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Ensure user profile is fetched
     profileScreenController.fetchUserProfile();
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -30,7 +33,7 @@ class PlanScreen8 extends StatelessWidget {
             color: Colors.black,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.blue,
         elevation: 0,
         centerTitle: true,
       ),
@@ -47,7 +50,7 @@ class PlanScreen8 extends StatelessWidget {
                 'assets/images/ai_trip_icon.png', // Thêm hình minh họa
                 height: 150,
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 80),
               Text(
                 'Let’s Plan Your Dream Trip',
                 style: TextStyle(
@@ -64,37 +67,47 @@ class PlanScreen8 extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 12),
-              Text(
-                'We’ll help you organize your picks into a perfect itinerary or save them for later.',
+              const SizedBox(height: 8),
+              const Text(
+                'Save your selections and get inspired with more guidance',
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.black87,
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               _buildOptionButton(
-                context,
+
                 icon: Icons.calendar_today,
                 title: 'Create an Itinerary',
-                description: 'Smartly organize your picks into a daily schedule.',
+                description: 'We’ll smartly organize your picks into a daily itinerary you can edit and add to.',
                 backgroundColor: Color(0xFF13357B),
                 textColor: Colors.white,
                 onPressed: () async {
                   _buildAndNavigate(context);
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               _buildOptionButton(
-                context,
                 icon: Icons.save,
-                title: 'Save for Later',
-                description: 'Keep all your selections and revisit them anytime.',
+                title: 'Just save for now',
+                description: 'We’ll keep all your selections together in a trip you can review, organize, and create an itinerary later.',
                 backgroundColor: Colors.black,
                 textColor: Colors.white,
                 onPressed: () {
-                  // Add your save functionality here
+                  final Map<String, dynamic> jsonResponse = {
+                    'hotels': selectedHotelIDs,
+                    'restaurants': selectedRestaurantIDs,
+                    'things_to_do': selectedThingsToDoIDs,
+                  };
+
+                  // Navigate to PlanScreen9
+                  Get.to(() => PlanScreen9(
+                        jsonResponse: jsonResponse,
+                        action: 'Justsave',
+                        UserId: profileScreenController.profileModelObj.value.id,
+                      ));
                 },
               ),
             ],
@@ -105,6 +118,37 @@ class PlanScreen8 extends StatelessWidget {
   }
 
   Future<void> _buildAndNavigate(BuildContext context) async {
+    // Show loading dialog
+    _showLoadingDialog(context);
+
+    try {
+      // Call buildTripAI
+      final result = await planScreenController.buildTripAI(
+        duration: planScreenController.tripLength.value,
+        hotelIds: selectedHotelIDs,
+        thingToDoIds: selectedThingsToDoIDs,
+        restaurantIds: selectedRestaurantIDs,
+      );
+
+      Navigator.pop(context); // Dismiss the loading dialog
+
+      if (result['success']) {
+        final jsonResponse = result['data'];
+        // Navigate to PlanScreen7
+        Get.to(() => PlanScreen7(
+              UserId: profileScreenController.profileModelObj.value.id,
+              jsonResponse: jsonResponse,
+            ));
+      } else {
+        _showErrorSnackbar(context, result['message']);
+      }
+    } catch (e) {
+      Navigator.pop(context); // Dismiss the loading dialog
+      _showErrorSnackbar(context, e.toString());
+    }
+  }
+
+  void _showLoadingDialog(BuildContext context) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -112,7 +156,7 @@ class PlanScreen8 extends StatelessWidget {
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           content: Row(
-            children: [
+            children: const [
               CircularProgressIndicator(),
               SizedBox(width: 16),
               Text("Please wait for building trip"),
@@ -121,40 +165,16 @@ class PlanScreen8 extends StatelessWidget {
         );
       },
     );
+  }
 
-    try {
-      final result = await planScreenController.buildTripAI(
-        duration: planScreenController.tripLength.value,
-        hotelIds: selectedHotelIDs,
-        thingToDoIds: selectedThingsToDoIDs,
-        restaurantIds: selectedRestaurantIDs,
-      );
-
-      Navigator.pop(context);
-
-      if (result['success']) {
-        final jsonResponse = result['data'];
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PlanScreen7(jsonResponse: jsonResponse),
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to build trip: ${result['message']}')),
-        );
-      }
-    } catch (e) {
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
-    }
+  void _showErrorSnackbar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error: $message')),
+    );
   }
 
   Widget _buildOptionButton(
-    BuildContext context, {
+     {
     required IconData icon,
     required String title,
     required String description,

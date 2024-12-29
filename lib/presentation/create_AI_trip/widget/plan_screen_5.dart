@@ -29,34 +29,34 @@ class _PlanScreen5State extends State<PlanScreen5> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.grey.shade300,
+        backgroundColor: Colors.blue,
         elevation: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               "${planScreenController.cityName.value} Itinerary",
-              style: TextStyle(color: Colors.black, fontSize: 16),
+              style: TextStyle(color: Colors.black, fontSize: 16,fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 4),
             Row(
               children: [
-                Icon(Icons.location_on, color: Colors.purple, size: 20),
+                Icon(Icons.location_on, color: Colors.red, size: 20),
                 SizedBox(width: 4),
                 Text(
                   "Powered by AI",
-                  style: TextStyle(color: Colors.black54, fontSize: 12),
+                  style: TextStyle(color: Colors.black, fontSize: 12),
                 ),
               ],
             ),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.close, color: Colors.black),
-            onPressed: () {},
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: Icon(Icons.close, color: Colors.black),
+        //     onPressed: () {},
+        //   ),
+        // ],
       ),
       body: Stack(
         children: [

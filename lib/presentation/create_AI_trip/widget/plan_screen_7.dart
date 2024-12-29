@@ -3,28 +3,31 @@ import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/common_views/geocoding_service.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/controller/plan_screen_controller.dart';
+import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_9.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/widget/trip_data.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/map/map_screen.dart';
 
 class PlanScreen7 extends StatefulWidget {
+  final int UserId;
   final Map<String, dynamic> jsonResponse; // JSON từ PlanScreen8
 
   PlanScreen7({
+    required this.UserId,
     required this.jsonResponse,
   });
 
   @override
   _PlanScreen7State createState() => _PlanScreen7State();
 }
+
 class _PlanScreen7State extends State<PlanScreen7>
     with SingleTickerProviderStateMixin {
   TabController? _tabController;
   final PlanScreenController planScreenController =
       Get.find<PlanScreenController>();
   late List<String> dailyScheduleKeys;
-
-  List<LatLng> coordinates = []; // Store coordinates as a state variable
+  List<LatLng> newCoordinates = [];
 
   @override
   void initState() {
@@ -37,51 +40,55 @@ class _PlanScreen7State extends State<PlanScreen7>
   }
 
   Future<void> _fetchData() async {
-  final hotels = widget.jsonResponse['hotels'];
-  final dailySchedule = widget.jsonResponse['daily_schedule'];
+    final hotels = widget.jsonResponse['hotels'];
+    final dailySchedule = widget.jsonResponse['daily_schedule'];
 
-  await planScreenController.fetchHotels(List<int>.from(hotels));
-  await planScreenController.fetchDailyDestinations(dailySchedule);
+    await planScreenController.fetchHotels(List<int>.from(hotels));
+    await planScreenController.fetchDailyDestinations(dailySchedule);
 
-  List<LatLng> newCoordinates = [];
-  List<TravelDestination> allDestinations = planScreenController
-      .dailyGroupedDestinations.values
-      .expand((x) => x)
-      .toList();
+    List<TravelDestination> allDestinations = planScreenController
+        .dailyGroupedDestinations.values
+        .expand((x) => x)
+        .toList();
 
-  for (var destination in allDestinations) {
-    String street = destination.address.street ?? "Không rõ số nhà/đường";
-    String ward = destination.address.ward ?? "Không rõ phường/xã";
-    String district = destination.address.district ?? "Không rõ quận/huyện";
-    String city = planScreenController.cityName.value.isNotEmpty
-        ? planScreenController.cityName.value
-        : "Không rõ thành phố";
+    for (var destination in allDestinations) {
+      String street = destination.address.street ?? "Không rõ số nhà/đường";
+      String ward = destination.address.ward ?? "Không rõ phường/xã";
+      String district = destination.address.district ?? "Không rõ quận/huyện";
+      String city = planScreenController.cityName.value.isNotEmpty
+          ? planScreenController.cityName.value
+          : "Không rõ thành phố";
 
-    String fullAddress = '$street, $ward, $district, $city';
-    print("fullAddress: $fullAddress");
+      String fullAddress = '$street, $ward, $district, $city';
+      print("fullAddress: $fullAddress");
 
-    try {
-      // Add a delay between requests
-      await Future.delayed(Duration(milliseconds: 500));
+      try {
+        // Add a delay between requests
+        await Future.delayed(Duration(milliseconds: 500));
 
-      var coordinate =
-          await GeocodingService.getCoordinatesFromAddress(fullAddress);
-      if (coordinate != null) {
-        newCoordinates
-            .add(LatLng(coordinate['latitude']!, coordinate['longitude']!));
-      } else {
-        print('Failed to get coordinates for address: $fullAddress');
+        var coordinate =
+            await GeocodingService.getCoordinatesFromAddress(fullAddress);
+        if (coordinate != null) {
+          LatLng latLng =
+              LatLng(coordinate['latitude']!, coordinate['longitude']!);
+          newCoordinates.add(latLng);
+
+          // Debugging log
+          print("Added coordinate: $latLng");
+        } else {
+          print('Failed to get coordinates for address: $fullAddress');
+        }
+      } catch (e) {
+        print('Error geocoding $fullAddress: $e');
       }
-    } catch (e) {
-      print('Error geocoding $fullAddress: $e');
     }
+
+    // Final log for debugging
+    print("Final newCoordinates: $newCoordinates");
+
+    // Update state to trigger UI rebuild if necessary
+    setState(() {});
   }
-
-  setState(() {
-    coordinates = newCoordinates; // Update the state with fetched coordinates
-  });
-}
-
 
   @override
   void dispose() {
@@ -101,7 +108,6 @@ class _PlanScreen7State extends State<PlanScreen7>
 
   @override
   Widget build(BuildContext context) {
-
     int numberOfDays = _calculateNumberOfDays();
     return Scaffold(
       backgroundColor: Colors.white,
@@ -170,19 +176,49 @@ class _PlanScreen7State extends State<PlanScreen7>
             child: Container(
               height: 300,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12), // Bo góc
-                border: Border.all(color: Colors.grey.shade300), // Viền
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300),
               ),
-              child: MapScreen(
-                coordinates: coordinates,
-                zoom: 14,
+              child: Builder(
+                builder: (context) {
+                  // Verify the data being passed to MapScreen
+                  print('Coordinates passed to MapScreen: $newCoordinates');
+
+                  return newCoordinates.isNotEmpty
+                      ? MapScreen(
+                          coordinates: newCoordinates, // Pass coordinates
+                          zoom: 14.0,
+                        )
+                      : Center(
+                          child: Text(
+                            "No coordinates available",
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        );
+                },
               ),
             ),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () {
+          final Map<String, dynamic> jsonResponse =
+              widget.jsonResponse; // Use existing JSON data
+          final String action = "Itinerary"; // Set the action
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PlanScreen9(
+                jsonResponse: jsonResponse,
+                action: action,
+                UserId:
+                    widget.UserId, // Pass the user ID from the current widget
+              ),
+            ),
+          );
+        },
         label: Text('Save itinerary'),
         icon: Icon(Icons.favorite_border),
         backgroundColor: Colors.blue,

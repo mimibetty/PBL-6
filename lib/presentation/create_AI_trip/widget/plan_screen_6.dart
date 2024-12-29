@@ -90,19 +90,15 @@ class _PlanScreen6 extends State<PlanScreen6> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Trip Builder Preview'),
-        backgroundColor: Colors.white,
-        elevation: 1,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.share, color: Colors.black),
-            onPressed: () {},
+        title: Text(
+          'Trip Builder Preview',
+          style: TextStyle(
+            fontWeight: FontWeight.bold, // Makes the text bold
+            color: Colors.black, // Ensures the text color is visible
           ),
-        ],
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
         ),
+        backgroundColor: Colors.blue,
+        elevation: 1,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -213,42 +209,42 @@ class _PlanScreen6 extends State<PlanScreen6> {
                         : 0;
 
                     // Check if the number of selected restaurants is at least the number of days
-                    if (selectedRestaurantIDs.length < numberOfDays) {
-                      // Show an alert dialog
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Text('Insufficient Restaurants Selected'),
-                            content: Text(
-                              'You need to select at least $numberOfDays restaurant(s) for your trip.',
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context)
-                                      .pop(); // Close the dialog
-                                },
-                                child: Text('OK'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    } else {
-                      // Navigate to the next screen if the condition is satisfied
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PlanScreen8(
-                            selectedHotelIDs: selectedHotelIDs,
-                            selectedRestaurantIDs: selectedRestaurantIDs,
-                            selectedThingsToDoIDs: selectedThingsToDoIDs,
-                          ),
+                    // if (selectedRestaurantIDs.length < numberOfDays) {
+                    //   // Show an alert dialog
+                    //   showDialog(
+                    //     context: context,
+                    //     builder: (context) {
+                    //       return AlertDialog(
+                    //         title: Text('Insufficient Restaurants Selected'),
+                    //         content: Text(
+                    //           'You need to select at least $numberOfDays restaurant(s) for your trip.',
+                    //         ),
+                    //         actions: [
+                    //           TextButton(
+                    //             onPressed: () {
+                    //               Navigator.of(context)
+                    //                   .pop(); // Close the dialog
+                    //             },
+                    //             child: Text('OK'),
+                    //           ),
+                    //         ],
+                    //       );
+                    //     },
+                    //   );
+                    // } else {
+                    // Navigate to the next screen if the condition is satisfied
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PlanScreen8(
+                          selectedHotelIDs: selectedHotelIDs,
+                          selectedRestaurantIDs: selectedRestaurantIDs,
+                          selectedThingsToDoIDs: selectedThingsToDoIDs,
                         ),
-                      );
-                    }
+                      ),
+                    );
                   },
+                  // },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue, // Blue background
                     shape: RoundedRectangleBorder(

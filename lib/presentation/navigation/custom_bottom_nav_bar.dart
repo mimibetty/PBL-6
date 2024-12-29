@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:travelappflutter/presentation/navigation/controller/app_navigation_controller.dart';
+import 'package:travelappflutter/presentation/profile_screen/trip.dart';
 import 'package:travelappflutter/presentation/sign_in_screen/controller/sign_in_controller.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
@@ -42,7 +43,7 @@ class CustomBottomNavBar extends StatelessWidget {
                     : 'Destination',
               ),
               const BottomNavigationBarItem(
-                  icon: Icon(Icons.bookmark_outline), label: 'Forum'),
+                  icon: Icon(Icons.bookmark_outline), label: 'My Trips'),
               const BottomNavigationBarItem(
                   icon: Icon(Icons.person_outline), label: 'Profile'),
             ],
@@ -68,7 +69,11 @@ class CustomBottomNavBar extends StatelessWidget {
                   }
                   break;
                 case 3:
-                  Get.toNamed('/saved_screen');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyTripsScreen()),
+                  );
+
                   break;
                 case 4:
                   Get.toNamed('/profile_screen');
