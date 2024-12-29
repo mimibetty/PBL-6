@@ -284,7 +284,7 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
           ),
           const SizedBox(width: 5),
           Text(
-            currentCity, // Hiển thị thành phố hiện tại
+            'Đà Nẵng', // Hiển thị thành phố hiện tại
             style: const TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 18,
