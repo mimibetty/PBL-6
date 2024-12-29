@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
 import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
 import 'package:travelappflutter/presentation/profile_screen/account_info_screen.dart';
 import 'package:travelappflutter/presentation/profile_screen/change_pw_screen.dart';

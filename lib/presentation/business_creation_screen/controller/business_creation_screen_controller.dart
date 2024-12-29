@@ -1,12 +1,8 @@
 import 'dart:convert';
-import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
-import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
-import 'package:http/http.dart' as http;
-import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
-import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
+import 'package:travelappflutter/presentation/sign_in_screen/controller/auth_controller.dart';
 
 class BusinessCreationController extends GetxController {
   var selectedPage = 0.obs; // Track selected tab/page
@@ -38,7 +34,7 @@ class BusinessCreationController extends GetxController {
 
     try {
       // Fetch the user ID from the profile controller
-      final int userId = Get.find<ProfileController>().profileModelObj.value.id;
+      final int userId = Get.find<AuthController>().userId.value;
       final Uri url = Uri.parse('$baseUrl?user_id=$userId&limit=$limit&page_size=$pageSize');
 
       final response = await http.get(url);

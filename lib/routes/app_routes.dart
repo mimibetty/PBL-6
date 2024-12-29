@@ -1,7 +1,6 @@
 import 'package:travelappflutter/presentation/business_creation_screen/binding/business_creation_screen_binding.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/business_creation_screen.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/business_post_screen.dart';
-import 'package:travelappflutter/presentation/business_creation_screen/models/business_model.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/binding/plan_screen_binding.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_1.dart';
 import 'package:travelappflutter/presentation/home_screen/binding/welcome_binding.dart';
@@ -40,8 +39,6 @@ import 'package:travelappflutter/presentation/search_screen/search_screen.dart';
 import 'package:travelappflutter/presentation/search_screen/binding/search_binding.dart';
 import 'package:travelappflutter/presentation/edit_profile_screen/edit_profile_screen.dart';
 import 'package:travelappflutter/presentation/edit_profile_screen/binding/edit_profile_binding.dart';
-import 'package:travelappflutter/presentation/notification_screen/notification_screen.dart';
-import 'package:travelappflutter/presentation/notification_screen/binding/notification_binding.dart';
 import 'package:get/get.dart';
 
 
@@ -118,6 +115,7 @@ class AppRoutes {
       bindings: [
         WelcomeBinding(),
       ],
+      //middlewares: [AuthMiddleware()],
     ),
     GetPage(
       name: onboardOneScreen,

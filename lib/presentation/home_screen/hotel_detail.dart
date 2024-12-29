@@ -9,6 +9,7 @@ import 'package:travelappflutter/presentation/profile_screen/controller/profile_
 import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/create_review.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
+import 'package:travelappflutter/presentation/sign_in_screen/controller/auth_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:travelappflutter/presentation/search_screen/models/hotel_model.dart';
 
@@ -90,7 +91,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
         ),
         centerTitle: true,
         title: const Text(
-          "Detail Page",
+          "Detail Hotel",
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -98,7 +99,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
         ),
         actions: [
           HeartIconWidget(
-            userId: Get.find<ProfileController>().profileModelObj.value.id, // Add the userId argument
+            userId: Get.find<AuthController>().userId.value, // Add the userId argument
             destinationId: widget.hotel.hotelID, // Add the destinationId argument
             isLiked: isLiked, // Truyền trạng thái isLiked vào
             //size: 18,
@@ -481,7 +482,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
                         return ReviewWidget(destinationId: widget.hotel.destinationID ,
                                             //reviews: controller.reviews, 
                                             ratingCounts: controller.ratingCounts,
-                                            UserId: Get.find<ProfileController>().profileModelObj.value.id);
+                                            UserId: Get.find<AuthController>().userId.value);
                       }),
                     ),
                   ),

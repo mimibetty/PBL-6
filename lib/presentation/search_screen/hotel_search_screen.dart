@@ -292,16 +292,7 @@ class _HotelSearchScreenState extends State<HotelSearchScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 16),
-                FormBuilderDateRangePicker(
-                  name: 'date_range',
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime(2030),
-                  decoration: InputDecoration(
-                    labelText: 'Select Check-in & Check-out Dates',
-                  ),
-                ),
-                const SizedBox(height: 16),
+            
                 _buildCheckboxGroup('Price Range', 'price', [
                   'Low',
                   'Medium',

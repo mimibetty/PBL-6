@@ -3,9 +3,9 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:travelappflutter/presentation/common_views/circle_rating_widget_view.dart';
 import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
-import 'package:travelappflutter/presentation/profile_screen/models/profile_model.dart';
 import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
+import 'package:travelappflutter/presentation/sign_in_screen/controller/auth_controller.dart';
 
 class Review extends StatefulWidget {
   const Review({Key? key}) : super(key: key);
@@ -25,17 +25,12 @@ class _ReviewState extends State<Review> {
     super.initState();
     profileController = Get.put(ProfileController()); // Ensure it's initialized
     reviewController = Get.put(ReviewWidgetController()); // Initialize ReviewController
-
-    // Wait for userId and then fetch reviews
-    ever(profileController.profileModelObj, (profile) {
-      if ((profile as ProfileModel).id != 0) {
-        reviewController.fetchReviewsByUserId(userId: profile.id);
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    // Fetch reviews during build
+    reviewController.fetchReviewsByUserId(userId: Get.find<AuthController>().userId.value);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.grey[100],
@@ -49,15 +44,14 @@ class _ReviewState extends State<Review> {
             child: CircularProgressIndicator(),
           );
         }
-
         List<ReviewModel> reviews = reviewController.reviews;
-
         // Sort reviews based on selected order
         if (_sortOrder == 'Newest First') {
           reviews.sort((a, b) => DateTime.parse(b.dateCreated).compareTo(DateTime.parse(a.dateCreated)));
         } else {
           reviews.sort((a, b) => DateTime.parse(a.dateCreated).compareTo(DateTime.parse(b.dateCreated)));
         }
+
         return SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,11 +117,13 @@ class _ReviewState extends State<Review> {
                                     CircleAvatar(
                                       backgroundColor: const Color(0xFF1B1B1B),
                                       radius: 20,
-                                      child: Text(
-                                        review.content[0].toUpperCase(),
-                                        style: const TextStyle(
-                                            color: Colors.white, fontSize: 20),
-                                      ),
+                                      backgroundImage: NetworkImage(review.userAvatarUrl ?? ''),
+                                      child: (review.userAvatarUrl?.isEmpty ?? true)
+                                          ? Text(
+                                              review.content[0].toUpperCase(),
+                                              style: const TextStyle(color: Colors.white, fontSize: 20),
+                                            )
+                                          : null, // Nếu không có ảnh, hiển thị chữ cái đầu tiên
                                     ),
                                     const SizedBox(width: 20),
                                     Text(

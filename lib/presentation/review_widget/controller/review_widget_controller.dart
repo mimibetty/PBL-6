@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
 import 'package:intl/intl.dart';
+import 'package:travelappflutter/presentation/sign_in_screen/controller/auth_controller.dart';
 
 class ReviewWidgetController extends GetxController {
   String typeOfReview = '';
@@ -120,7 +120,7 @@ class ReviewWidgetController extends GetxController {
   Future<void> fetchReviews({required int id}) async {
     isLoading.value = true; // Set loading to true
     reviews.clear(); // Clear old reviews
-    int thisUserId = Get.find<ProfileController>().profileModelObj.value.id;
+    int thisUserId = Get.find<AuthController>().userId.value;
 
     try {
       // Construct the API URL based on the type
@@ -323,58 +323,69 @@ class ReviewWidgetController extends GetxController {
   }
   
   Future<void> fetchReviewsByUserId({required int userId}) async {
-  isLoading.value = true; // Đặt trạng thái loading
-  reviews.clear(); // Xóa dữ liệu review cũ
+    try {
+      isLoading.value = true; // Đặt trạng thái loading
+      reviews.clear(); // Xóa dữ liệu review cũ
 
-  try {
-    // Tạo URL với user_id
-    final Uri url = Uri.parse('${apiBaseUrl}?user_id=$userId');
+      // Tạo URL với user_id
+      final response = await http.get(Uri.parse('$apiBaseUrl?user_id=$userId'));
+      if (response.statusCode == 200) {
+        final List<dynamic> responseData =
+            json.decode(utf8.decode(response.bodyBytes));
 
-    final response = await http.get(url);
+        // Lấy danh sách userIds cần fetch
+        final Set<int> userIds = responseData.map<int>((reviewData) {
+          return reviewData['user_id'] as int;
+        }).toSet();
 
-    if (response.statusCode == 200) {
-      final List<dynamic> responseData =
-          json.decode(utf8.decode(response.bodyBytes));
-
-      final List<Future<ReviewModel>> reviewFutures =
-          responseData.map((reviewData) async {
-        // Fetch thêm thông tin người dùng
-        final int userId = reviewData['user_id'];
-        final Uri userUrl = Uri.parse(
-            'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/user/$userId');
-
-        String userName = 'Unknown';
-        String userAvatarUrl =
-            'https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png';
-
-        final userResponse = await http.get(userUrl);
-        if (userResponse.statusCode == 200) {
-          final userData = json.decode(utf8.decode(userResponse.bodyBytes));
-          userName = userData['username'] ?? userName;
-          userAvatarUrl =
-              userData['user_info']?['image']?['url'] ?? userAvatarUrl;
+        // Fetch thông tin tất cả userIds trong một lần
+        final Map<int, Map<String, dynamic>> userMap = {};
+        for (int id in userIds) {
+          final Uri userUrl = Uri.parse(
+              'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/user/$id');
+          final userResponse = await http.get(userUrl);
+          if (userResponse.statusCode == 200) {
+            final userData = json.decode(utf8.decode(userResponse.bodyBytes));
+            userMap[id] = {
+              'userName': userData['username'] ?? 'Unknown',
+              'userAvatarUrl': userData['user_info']?['image']?['url'] ??
+                  'https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png',
+            };
+          } else {
+            userMap[id] = {
+              'userName': 'Unknown',
+              'userAvatarUrl':
+                  'https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png',
+            };
+          }
         }
 
-        return ReviewModel.fromJson({
-          ...reviewData,
-          'user_name': userName,
-          'user_avatar_url': userAvatarUrl,
-        });
-      }).toList();
+        // Gắn thông tin người dùng vào danh sách review
+        reviews.value = responseData.map<ReviewModel>((reviewData) {
+          final int uid = reviewData['user_id'];
+          final userInfo = userMap[uid] ?? {
+            'userName': 'Unknown',
+            'userAvatarUrl':
+                'https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png',
+          };
 
-      // Cập nhật reviews
-      reviews.value = await Future.wait(reviewFutures);
+          return ReviewModel.fromJson({
+            ...reviewData,
+            'user_name': userInfo['userName'],
+            'user_avatar_url': userInfo['userAvatarUrl'],
+          });
+        }).toList();
 
-      // Cập nhật tổng số và điểm trung bình
-      totalReviews.value = reviews.length;
-      averageRating.value = calculateAverageRating(reviews);
-    } else {
-      Get.snackbar('Error', 'Failed to load user reviews');
+        // Cập nhật tổng số và điểm trung bình
+        totalReviews.value = reviews.length;
+        averageRating.value = calculateAverageRating(reviews);
+      } else {
+        Get.snackbar('Error', 'Failed to load user reviews');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'An error occurred: $e');
+    } finally {
+      isLoading.value = false; // Đặt trạng thái loading về false
     }
-  } catch (e) {
-    Get.snackbar('Error', 'An error occurred: $e');
-  } finally {
-    isLoading.value = false; // Đặt trạng thái loading về false
   }
-}
 }

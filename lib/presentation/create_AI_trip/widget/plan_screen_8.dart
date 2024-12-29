@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_7.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_9.dart';
-import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
 import 'package:travelappflutter/presentation/create_AI_trip/controller/plan_screen_controller.dart';
+import 'package:travelappflutter/presentation/sign_in_screen/controller/auth_controller.dart';
 
 class PlanScreen8 extends StatelessWidget {
   final List<int> selectedHotelIDs;
@@ -16,7 +16,7 @@ class PlanScreen8 extends StatelessWidget {
     required this.selectedThingsToDoIDs,
   });
 
-  final ProfileController profileScreenController = Get.put(ProfileController());
+  final AuthController authController = Get.find<AuthController>();
   final PlanScreenController planScreenController = Get.find<PlanScreenController>();
 
   @override
@@ -27,8 +27,6 @@ Widget build(BuildContext context) {
   print('Selected Restaurant IDs: $selectedRestaurantIDs');
   print('Selected ThingsToDo IDs: $selectedThingsToDoIDs');
 
-  // Ensure user profile is fetched
-  profileScreenController.fetchUserProfile();
 
   return Scaffold(
     appBar: AppBar(
@@ -116,7 +114,7 @@ Widget build(BuildContext context) {
                 Get.to(() => PlanScreen9(
                       jsonResponse: jsonResponse,
                       action: 'Justsave',
-                      UserId: profileScreenController.profileModelObj.value.id,
+                      UserId: Get.find<AuthController>().userId.value,
                     ));
               },
             ),
@@ -146,7 +144,7 @@ Widget build(BuildContext context) {
         final jsonResponse = result['data'];
         // Navigate to PlanScreen7
         Get.to(() => PlanScreen7(
-              UserId: profileScreenController.profileModelObj.value.id,
+              UserId: authController.userId.value,
               jsonResponse: jsonResponse,
             ));
       } else {

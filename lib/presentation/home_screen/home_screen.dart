@@ -12,6 +12,7 @@ import 'package:travelappflutter/presentation/profile_screen/controller/profile_
 import 'package:travelappflutter/presentation/search_screen/hotel_search_screen.dart';
 import 'package:travelappflutter/presentation/search_screen/restaurant_search_screen.dart';
 import 'package:travelappflutter/presentation/search_screen/thing_to_do_screen.dart';
+import 'package:travelappflutter/presentation/sign_in_screen/controller/auth_controller.dart';
 import './widgets/recomendate.dart';
 import 'package:iconsax/iconsax.dart';
 import './widgets/popular_place.dart';
@@ -50,7 +51,7 @@ class _TravelHomeScreenState extends State<HomeScreen> {
   Future<bool> _initializeIsLiked(String destinationId) async {
   final String baseUrl =
       "https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net";
-  final String userId = Get.find<ProfileController>().profileModelObj.value.id.toString();
+  final String userId = Get.find<AuthController>().userId.value.toString();
 
   try {
     // Tạo URL request
@@ -93,7 +94,7 @@ Future<void> _fetchDestinations() async {
     // Nếu `cityID` và `cityName` không null, gọi cả hai hàm
     await Future.wait([
       homeController.getPopularDestinations(widget.cityID!, widget.cityName!),
-      homeController.getRecommendationDestinations(profileController.profileModelObj.value.id,widget.cityID!, widget.cityName!),
+      homeController.getRecommendationDestinations(Get.find<AuthController>().userId.value,widget.cityID!, widget.cityName!),
     ]);
   }
 }

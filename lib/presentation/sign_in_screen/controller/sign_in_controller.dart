@@ -1,4 +1,5 @@
 import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
+import 'package:travelappflutter/presentation/sign_in_screen/controller/auth_controller.dart';
 import '/core/app_export.dart';
 import 'package:travelappflutter/presentation/sign_in_screen/models/sign_in_model.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,7 @@ class SignInController extends GetxController {
   Rx<SignInModel> signInModelObj = SignInModel().obs;
   var isLoading = false.obs;
   var accessToken = ''.obs;
-  var userRole = ''.obs; // Variable to store the user's role
+  //var userRole = ''.obs; // Variable to store the user's role
 
   final storage = GetStorage();
 
@@ -22,12 +23,6 @@ class SignInController extends GetxController {
     super.onReady();
   }
 
-  // @override
-  // void onClose() {
-  //   super.onClose();
-    // usernameController.dispose();
-    // passwordController.dispose();
-  // }
 
   Future<void> signIn() async {
     isLoading.value = true;
@@ -38,6 +33,7 @@ class SignInController extends GetxController {
     signInModelObj.value = SignInModel(username: username, password: password);
 
     try {
+      // Gọi API để đăng nhập
       final response = await http.post(
         Uri.parse('https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/login'),
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -48,51 +44,98 @@ class SignInController extends GetxController {
       ).timeout(Duration(seconds: 5));
 
       if (response.statusCode == 200) {
+        // Parse JSON response
         final responseData = json.decode(response.body);
+        String accessTokenValue = responseData['access_token'];
 
-        SignInResponseModel signInResponse = SignInResponseModel.fromJson(responseData);
-        accessToken.value = signInResponse.accessToken!;
+        if (accessTokenValue.isNotEmpty) {
+          // Lưu access_token vào local storage
+          accessToken.value = accessTokenValue;
+          storage.write('accessToken', accessTokenValue);
 
-        storage.write('accessToken', accessToken.value);
+          // Gọi API lấy thông tin người dùng
+          await fetchUserInfo(accessTokenValue);
 
-        await fetchUserRole();
+          // //Cập nhật role người dùng
+          // await fetchUserRole();
 
-        Get.toNamed(AppRoutes.welcomeScreen);
-        Get.snackbar('Success', 'Logged in successfully!');
+          // Chuyển hướng đến màn hình chính
+          Get.offAllNamed(AppRoutes.welcomeScreen);
+          Get.snackbar('Success', 'Logged in successfully!');
+        } else {
+          Get.snackbar('Error', 'Invalid token received', snackPosition: SnackPosition.BOTTOM);
+        }
       } else {
+        // Xử lý lỗi từ API đăng nhập
         final responseData = json.decode(response.body);
         String errorDetail = responseData['detail'] ?? 'Failed to sign in';
         Get.snackbar('Error', errorDetail, snackPosition: SnackPosition.BOTTOM);
       }
     } catch (e) {
+      // Xử lý lỗi chung
       Get.snackbar('Error', 'Something went wrong: $e', snackPosition: SnackPosition.BOTTOM);
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<void> fetchUserRole() async {
+  // Hàm gọi API lấy thông tin người dùng
+  Future<void> fetchUserInfo(String token) async {
     try {
       final response = await http.get(
         Uri.parse('https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/current-user'),
         headers: {
-          'Authorization': 'Bearer $accessToken',
+          'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
       );
 
       if (response.statusCode == 200) {
+        // Parse JSON response
         final responseData = json.decode(response.body);
-        userRole.value = responseData['role'] ?? 'unknown';
 
-        storage.write('userRole', userRole.value);
+        // Lấy thông tin user ID và role
+        int userId = responseData['id'];
+        String userRoleValue = responseData['role'] ?? 'guest';
+        
+        // Lưu vào local storage hoặc state
+        storage.write('userId', userId);
+        storage.write('userRole', userRoleValue);
+
+        // Cập nhật vào AuthController hoặc bất kỳ nơi nào cần sử dụng
+        final authController = Get.find<AuthController>();
+        authController.updateUserId(userId);
       } else {
-        Get.snackbar('Error', 'Failed to fetch user role', snackPosition: SnackPosition.BOTTOM);
+        Get.snackbar('Error', 'Failed to fetch user info', snackPosition: SnackPosition.BOTTOM);
       }
     } catch (e) {
-      Get.snackbar('Error', 'An error occurred: $e', snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar('Error', 'An error occurred while fetching user info: $e', snackPosition: SnackPosition.BOTTOM);
     }
   }
+
+  // Future<void> fetchUserRole() async {
+  //   try {
+  //     final response = await http.get(
+  //       Uri.parse('https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/current-user'),
+  //       headers: {
+  //         'Authorization': 'Bearer $accessToken',
+  //         'Content-Type': 'application/json',
+  //       },
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       final responseData = json.decode(response.body);
+  //       userRole.value = responseData['role'] ?? 'unknown';
+
+  //       storage.write('userRole', userRole.value);
+  //       print("User role: " + userRole.value);
+  //     } else {
+  //       Get.snackbar('Error', 'Failed to fetch user role', snackPosition: SnackPosition.BOTTOM);
+  //     }
+  //   } catch (e) {
+  //     Get.snackbar('Error', 'An error occurred: $e', snackPosition: SnackPosition.BOTTOM);
+  //   }
+  // }
 
   String? getStoredAccessToken() {
     return storage.read('accessToken');
@@ -102,15 +145,20 @@ class SignInController extends GetxController {
     return storage.read('userRole');
   }
 
+  // Future<void> logout() async {
+  //   storage.remove('accessToken');
+  //   storage.remove('userRole');
+  //   accessToken.value = '';
+  //   userRole.value = '';
+
+  //   final profileController = Get.find<ProfileController>();
+  //   profileController.resetProfile();
+
+  //   Get.offAllNamed(AppRoutes.signInScreen);
+  // }
+    // Đăng xuất
   Future<void> logout() async {
-    storage.remove('accessToken');
-    storage.remove('userRole');
-    accessToken.value = '';
-    userRole.value = '';
-
-    final profileController = Get.find<ProfileController>();
-    profileController.resetProfile();
-
-    Get.offAllNamed(AppRoutes.signInScreen);
+    await storage.erase(); // Xóa tất cả dữ liệu trong GetStorage
+    Get.offAllNamed('/sign_in_screen'); // Quay về màn hình đăng nhập
   }
 }

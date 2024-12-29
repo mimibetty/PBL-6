@@ -4,11 +4,11 @@ import 'package:travelappflutter/presentation/home_screen/const.dart';
 import 'package:travelappflutter/presentation/home_screen/controller/tour_controller.dart';
 import 'package:travelappflutter/presentation/home_screen/models/tour_model.dart';
 import 'package:travelappflutter/presentation/home_screen/widgets/tour_overview_screen.dart';
-import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/create_review.dart';
 import 'package:travelappflutter/presentation/home_screen/widgets/other_info_widget.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
+import 'package:travelappflutter/presentation/sign_in_screen/controller/auth_controller.dart';
 
 class TourDetailScreen extends StatefulWidget {
   final cityName ;
@@ -63,7 +63,7 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
         ),
         centerTitle: true,
         title: const Text(
-          "Detail Page",
+          "Detail Tour",
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -177,7 +177,7 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: List.generate(
-                                    tourImages!.length,
+                                    tourImages.length,
                                     (index) => GestureDetector(
                                       onTap: () {
                                         if (pageController.hasClients) {
@@ -378,7 +378,7 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
                           ReviewWidget(
                             destinationId: widget.tour.id,
                             ratingCounts: reviewController.ratingCounts,
-                            UserId: Get.find<ProfileController>().profileModelObj.value.id,
+                            UserId: Get.find<AuthController>().userId.value,
                           ),
                         ],
                       ),

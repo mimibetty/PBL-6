@@ -10,6 +10,7 @@ import 'package:travelappflutter/presentation/profile_screen/controller/profile_
 import 'package:travelappflutter/presentation/review_widget/controller/review_widget_controller.dart';
 import 'package:travelappflutter/presentation/review_widget/widgets/review_widget.dart';
 import 'package:travelappflutter/presentation/search_screen/models/restaurant_model.dart';
+import 'package:travelappflutter/presentation/sign_in_screen/controller/auth_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../review_widget/widgets/create_review.dart';
 
@@ -154,7 +155,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
         ),
         centerTitle: true,
         title: const Text(
-          "Detail Page",
+          "Detail Restaurant",
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -162,10 +163,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
         ),
         actions: [
           HeartIconWidget(
-            userId: Get.find<ProfileController>()
-                .profileModelObj
-                .value
-                .id, // Add the userId argument
+            userId: Get.find<AuthController>().userId.value, // Add the userId argument
             destinationId: widget
                 .restaurant.restaurantID, // Add the destinationId argument
             isLiked: isLiked, // Truyền trạng thái isLiked vào
@@ -233,7 +231,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                         });
                       },
                       children: List.generate(
-                        widget.restaurant.images!.length,
+                        widget.restaurant.images.length,
                         (index) => GestureDetector(
                           onTap: () {
                             Navigator.push(
@@ -246,7 +244,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                             );
                           },
                           child: Image.network(
-                            widget.restaurant.images![index],
+                            widget.restaurant.images[index],
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -270,13 +268,13 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                               ),
                               borderRadius: BorderRadius.circular(15),
                               image: DecorationImage(
-                                image: widget.restaurant.images!.length - 1 !=
+                                image: widget.restaurant.images.length - 1 !=
                                         pageView
                                     ? NetworkImage(
-                                        widget.restaurant.images![pageView + 1],
+                                        widget.restaurant.images[pageView + 1],
                                       )
                                     : NetworkImage(
-                                        widget.restaurant.images![0],
+                                        widget.restaurant.images[0],
                                       ),
                                 fit: BoxFit.cover,
                               ),
@@ -292,7 +290,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: List.generate(
-                                    widget.restaurant.images!.length,
+                                    widget.restaurant.images.length,
                                     (index) => GestureDetector(
                                       onTap: () {
                                         if (pageController.hasClients) {
@@ -516,10 +514,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                                         widget.restaurant.destinationID,
                                     //reviews: controller.reviews,
                                     ratingCounts: controller.ratingCounts,
-                                    UserId: Get.find<ProfileController>()
-                                        .profileModelObj
-                                        .value
-                                        .id);
+                                    UserId: Get.find<AuthController>().userId.value);
                               }),
                             ),
                           ),
