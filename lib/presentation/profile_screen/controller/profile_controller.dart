@@ -225,7 +225,7 @@ class ProfileController extends GetxController {
       isLoading.value = false;
     }
   }
-    Future<void> fetchLikedDestinations(int userId) async {
+  Future<void> fetchLikedDestinations(int userId) async {
     isLoading.value = true; // Start loading
     try {
       // Fetch liked destination IDs
@@ -236,17 +236,22 @@ class ProfileController extends GetxController {
       if (likedIdsResponse.statusCode == 200) {
         List<int> likedIds = List<int>.from(json.decode(utf8.decode(likedIdsResponse.bodyBytes)));
         
-        // Fetch destination details for each ID
-        List<TravelDestination> destinations = [];
-        for (var id in likedIds) {
-          final destinationResponse = await http.get(
+        // Fetch all destination details in parallel
+        List<Future<TravelDestination?>> fetchTasks = likedIds.map((id) async {
+          final response = await http.get(
             Uri.parse('https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/$id'),
           );
-
-          if (destinationResponse.statusCode == 200) {
-            destinations.add(TravelDestination.fromJson(json.decode(utf8.decode(destinationResponse.bodyBytes))));
+          if (response.statusCode == 200) {
+            return TravelDestination.fromJson(json.decode(utf8.decode(response.bodyBytes)));
+          } else {
+            return null; // Skip invalid destinations
           }
-        }
+        }).toList();
+
+        // Wait for all requests to complete
+        List<TravelDestination> destinations = (await Future.wait(fetchTasks))
+            .whereType<TravelDestination>() // Filter out null values
+            .toList();
 
         likedDestinations.value = destinations; // Update the liked destinations
       } else {
@@ -258,4 +263,5 @@ class ProfileController extends GetxController {
       isLoading.value = false; // Stop loading
     }
   }
+
 }

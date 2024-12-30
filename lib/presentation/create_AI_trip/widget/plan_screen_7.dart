@@ -11,7 +11,7 @@ import 'package:travelappflutter/presentation/map/map_screen.dart';
 class PlanScreen7 extends StatefulWidget {
   final int UserId;
   final Map<String, dynamic> jsonResponse; // JSON từ PlanScreen8
-
+  
   PlanScreen7({
     required this.UserId,
     required this.jsonResponse,
@@ -201,13 +201,12 @@ class _PlanScreen7State extends State<PlanScreen7>
                           ),
                         ),
                       ),
-                      // Centered Save Button
+                    // Centered Save Button (Conditionally Rendered)
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: ElevatedButton.icon(
                           onPressed: () {
-                            final Map<String, dynamic> jsonResponse =
-                                widget.jsonResponse;
+                            final Map<String, dynamic> jsonResponse = widget.jsonResponse;
                             final String action = "Itinerary";
 
                             Navigator.push(
@@ -222,20 +221,15 @@ class _PlanScreen7State extends State<PlanScreen7>
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Colors.blue.shade800, // Darker blue color
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 30,
-                                vertical: 12), // Adjusted padding
+                            backgroundColor: Colors.blue.shade800,
+                            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  8), // Reduced corner radius
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            elevation:
-                                5, // Slight elevation for a floating effect
+                            elevation: 5,
                           ),
                           icon: Icon(
-                            Icons.save_alt, // Save icon
+                            Icons.save_alt,
                             color: Colors.white,
                             size: 20,
                           ),
@@ -248,7 +242,7 @@ class _PlanScreen7State extends State<PlanScreen7>
                             ),
                           ),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ],

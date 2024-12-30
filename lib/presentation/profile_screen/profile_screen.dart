@@ -5,18 +5,17 @@ import 'package:travelappflutter/presentation/profile_screen/favourites.dart'
     as favourites;
 import 'package:travelappflutter/presentation/profile_screen/preferences_screen.dart';
 import 'package:travelappflutter/presentation/profile_screen/reviews.dart';
-import 'package:travelappflutter/presentation/profile_screen/trip.dart';
 import 'package:travelappflutter/presentation/search_screen/controller/things_to_do_controller.dart';
 import 'package:travelappflutter/presentation/sign_in_screen/controller/sign_in_controller.dart';
 
 import '../sign_in_screen/sign_in_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
+
   void _signOut(BuildContext context) async {
     // Gọi hàm logout từ ProfileController
-    final signInController = Get.find<SignInController>();
+    final signInController = Get.put(SignInController());
     await signInController.logout();
-
     // Điều hướng tới màn hình đăng nhập
     Get.offAll(() => SignInScreen());
   }

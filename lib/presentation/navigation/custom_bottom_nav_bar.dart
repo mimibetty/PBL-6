@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:travelappflutter/presentation/my_trip_widget/widget/trip.dart';
 import 'package:travelappflutter/presentation/navigation/controller/app_navigation_controller.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:travelappflutter/presentation/profile_screen/trip.dart';
-import 'package:travelappflutter/presentation/sign_in_screen/controller/sign_in_controller.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   final AppController appController = Get.put(AppController());

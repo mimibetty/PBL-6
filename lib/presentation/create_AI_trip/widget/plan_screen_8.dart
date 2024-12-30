@@ -20,13 +20,11 @@ class PlanScreen8 extends StatelessWidget {
   final PlanScreenController planScreenController = Get.find<PlanScreenController>();
 
   @override
-  @override
 Widget build(BuildContext context) {
   // Debug: Print the IDs of selected destinations
   print('Selected Hotel IDs: $selectedHotelIDs');
   print('Selected Restaurant IDs: $selectedRestaurantIDs');
   print('Selected ThingsToDo IDs: $selectedThingsToDoIDs');
-
 
   return Scaffold(
     appBar: AppBar(

@@ -4,7 +4,7 @@ import 'package:travelappflutter/presentation/create_AI_trip/widget/plan_screen_
 import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
 import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
 import 'package:travelappflutter/presentation/sign_in_screen/controller/auth_controller.dart';
-import 'package:travelappflutter/presentation/create_AI_trip/controller/trip_controller.dart';
+import 'package:travelappflutter/presentation/my_trip_widget/controller/trip_controller.dart';
 
 class PlanScreen extends StatefulWidget {
   @override
