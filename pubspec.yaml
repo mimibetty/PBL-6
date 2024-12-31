@@ -23,7 +23,9 @@ dependencies:
   flutter_bloc: ^8.0.0  # Phiên bản mới nhất
   flutter_form_builder: ^8.0.0
   curved_navigation_bar: ^1.0.6
-  fl_chart: ^0.69.2
+  fl_chart: ^0.70.0
+
+
   cupertino_icons: ^1.0.6
   maplibre_gl: ^0.20.0
   dio: ^5.1.2
@@ -48,5 +50,5 @@ flutter:
   assets: 
     - assets/
     - assets/images/
-    - assets/images/marker.png
+    - assets/images/location.png
 

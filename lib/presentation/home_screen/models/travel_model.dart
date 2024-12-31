@@ -36,7 +36,7 @@ class TravelDestination {
     required this.location,
     required this.description,
   });
-
+  
   factory TravelDestination.fromJson(Map<String, dynamic> json) {
     // Default image URL if none exists
     const String defaultImageUrl = 'https://experienceleaguecommunities.adobe.com/t5/image/serverpage/image-id/34749i7C7BB1DB5E28E527?v=v2';
@@ -69,6 +69,7 @@ class TravelDestination {
       description: json['description'] ?? 'No description available',
     );
   }
+ 
 }
 
 class Address {

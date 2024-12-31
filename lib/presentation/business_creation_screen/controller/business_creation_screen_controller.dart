@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:travelappflutter/presentation/business_creation_screen/models/business_model.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/sign_in_screen/controller/auth_controller.dart';
 
@@ -8,6 +9,7 @@ class BusinessCreationController extends GetxController {
   var selectedPage = 0.obs; // Track selected tab/page
   RxList<TravelDestination> destinations = <TravelDestination>[].obs; // Destination data
   RxBool isLoading = false.obs; // Loading state
+  final int userId = Get.find<AuthController>().userId.value;
 
   final String baseUrl =
       'https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net/destination/';
@@ -65,4 +67,5 @@ class BusinessCreationController extends GetxController {
   void onClose() {
     super.onClose();
   }
+  
 }

@@ -3,7 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 
 class RatingBarChart extends StatelessWidget {
   final String chartTitle;
-  final List<double> chartData;
+  final List<List<double>> chartData; // Multi-level list: 5 rating categories, 12 months
 
   RatingBarChart({
     required this.chartTitle,
@@ -46,7 +46,7 @@ class RatingBarChart extends StatelessWidget {
             child: BarChart(
               BarChartData(
                 alignment: BarChartAlignment.spaceAround,
-                maxY: chartData.reduce((a, b) => a > b ? a : b) + 1.0,
+                maxY: _calculateMaxY(chartData),
                 minY: 0.0,
                 titlesData: FlTitlesData(
                   leftTitles: AxisTitles(
@@ -70,6 +70,7 @@ class RatingBarChart extends StatelessWidget {
                           'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                           'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
                         ];
+                        // Mapping chartData correctly to month index
                         return Padding(
                           padding: EdgeInsets.only(top: 8.0),
                           child: Text(
@@ -108,20 +109,36 @@ class RatingBarChart extends StatelessWidget {
 
   // Function to generate bar groups based on `chartData`
   List<BarChartGroupData> _generateBarGroups() {
-    return List.generate(chartData.length, (index) {
-      return BarChartGroupData(
-        x: index,
-        barRods: [
-          BarChartRodData(
-            toY: chartData[index],
-            width: 16.0,
-            gradient: LinearGradient(
-              colors: [Colors.blue[800]!, Colors.blue[900]!],
-            ),
-            borderRadius: BorderRadius.zero, // Makes the top of the bars square
+    return List.generate(12, (index) {
+      final List<BarChartRodData> rods = [];
+      for (int i = 0; i < chartData.length; i++) {
+        rods.add(BarChartRodData(
+          toY: chartData[i][index], // Use the multi-level list for data
+          width: 16.0,
+          gradient: LinearGradient(
+            colors: [Colors.blue[800]!, Colors.blue[900]!],
           ),
-        ],
+          borderRadius: BorderRadius.zero, // Makes the top of the bars square
+        ));
+      }
+
+      return BarChartGroupData(
+        x: index, // Ensures x corresponds to the correct month (0-11)
+        barRods: rods,
+        barsSpace: -15.0, // Adjusted space between bars for better visibility
       );
     });
+  }
+
+  // Calculate maxY value based on the sum of ratings in each month
+  double _calculateMaxY(List<List<double>> chartData) {
+    double max = 0.0;
+    for (var i = 0; i < 12; i++) { // Loop through all 12 months (from Jan (0) to Dec (11))
+      double monthTotal = chartData.fold(0.0, (sum, list) => sum + list[i]);
+      if (monthTotal > max) {
+        max = monthTotal;
+      }
+    }
+    return max + 1.0; // Add padding for better visualization
   }
 }

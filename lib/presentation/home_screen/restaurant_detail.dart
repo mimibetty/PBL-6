@@ -333,7 +333,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                                         children: [
                                           Text(
                                             widget.restaurant.restaurantName,
-                                            maxLines: 1,
+                                            maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                             style: const TextStyle(
                                               fontSize: 20,

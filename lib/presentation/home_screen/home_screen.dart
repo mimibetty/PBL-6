@@ -401,6 +401,8 @@ Future<void> _fetchDestinations() async {
         ),
       ),
       actions: [
+        if (widget.show)
+
         PopupMenuButton<String>(
           icon: const Icon(Icons.menu,
               color: Colors.black, size: 30), // Màu biểu tượng menu
