@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:travelappflutter/presentation/business_creation_screen/models/business_model.dart';
 import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 import 'package:travelappflutter/presentation/sign_in_screen/controller/auth_controller.dart';
 

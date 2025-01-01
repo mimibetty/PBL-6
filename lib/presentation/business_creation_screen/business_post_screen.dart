@@ -81,10 +81,10 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
           },
           itemBuilder: (context) {
             return [
-              _buildPopupMenuItem('Tours'),
-              _buildPopupMenuItem('Facilities'),
-              _buildPopupMenuItem('Hotels'),
-              _buildPopupMenuItem('Restaurants'),
+              // _buildPopupMenuItem('Tours'),
+              // _buildPopupMenuItem('Facilities'),
+              // _buildPopupMenuItem('Hotels'),
+              // _buildPopupMenuItem('Restaurants'),
               _buildPopupMenuItem('Business Statistics'),
             ];
           },
