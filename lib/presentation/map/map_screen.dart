@@ -38,17 +38,11 @@ class _MapScreenState extends State<MapScreen> {
   String api_key = 'dBjVmbNph3v3amPwQVLeudGY0Dcw7W3Eh8enfyTs';
   String map_tiles_key = 'raZBeyW5t5wQ4yBk9bgqxL1MikWPSHJ0fKY0zU92';
 
-
-
   @override
   void initState() {
     super.initState();
     _getCurrentLocation();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.coordinates.isNotEmpty) {
-        fetchAndDrawMultiPointRoute(widget.coordinates);
-      }
-    });
+    
   }
 
   Future<void> _getCurrentLocation() async {
@@ -162,134 +156,24 @@ class _MapScreenState extends State<MapScreen> {
       print("Error drawing path: $e");
     }
   }
-  //duong chim bay
-  // Future<void> fetchAndDrawMultiPointRoute(List<LatLng> points) async {
-//   if (points.length < 2) {
-//     print("Not enough points to draw a route.");
-//     return;
-//   }
 
-//   List<List<double>> combinedCoordinates = [];
-
-//   for (int i = 0; i < points.length - 1; i++) {
-//     final origin = points[i];
-//     final destination = points[i + 1];
-
-//     final url = Uri.parse(
-//         'https://rsapi.goong.io/Direction?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&vehicle=car&api_key=$api_key');
-
-//     try {
-//       final response = await http.get(url);
-//       if (response.statusCode == 200) {
-//         final data = jsonDecode(response.body);
-//         String polyline = data['routes'][0]['overview_polyline']['points'];
-//         List<PointLatLng> decodedPolyline =
-//             polylinePoints.decodePolyline(polyline);
-
-//         // Sample points to reduce the number of coordinates
-//         List<List<double>> sampledCoordinates = _sampleCoordinates(decodedPolyline);
-
-//         combinedCoordinates.addAll(sampledCoordinates);
-//       } else {
-//         print("Failed to fetch route for segment $i.");
-//       }
-//     } catch (e) {
-//       print("Error fetching route for segment $i: $e");
-//     }
-//   }
-
-//   print("Combined GeoJSON Data: $combinedCoordinates");
-//   _drawPath(combinedCoordinates);
-// }
-
-// // Helper function to sample coordinates
-// List<List<double>> _sampleCoordinates(List<PointLatLng> decodedPolyline, {int step = 5}) {
-//   List<List<double>> sampledCoordinates = [];
-//   for (int i = 0; i < decodedPolyline.length; i += step) {
-//     sampledCoordinates.add([decodedPolyline[i].longitude, decodedPolyline[i].latitude]);
-//   }
-
-//   // Ensure the last point is included
-//   if (decodedPolyline.isNotEmpty) {
-//     sampledCoordinates.add([
-//       decodedPolyline.last.longitude,
-//       decodedPolyline.last.latitude,
-//     ]);
-//   }
-
-//   return sampledCoordinates;
-// }
-
-// void _drawPath(List<List<double>> coordinates) {
-//   if (mapController == null) {
-//     print("Map controller is not initialized.");
-//     return;
-//   }
-
-//   if (coordinates.isEmpty) {
-//     print("No coordinates provided for the path.");
-//     return;
-//   }
-
-//   mapController?.removeLayer("route_layer");
-//   mapController?.removeSource("route_source");
-
-//   final geoJsonData = {
-//     "type": "FeatureCollection",
-//     "features": [
-//       {
-//         "type": "Feature",
-//         "geometry": {
-//           "type": "LineString",
-//           "coordinates": coordinates,
-//         },
-//         "properties": {}
-//       },
-//     ],
-//   };
-
-//   try {
-//     mapController?.addSource(
-//       "route_source",
-//       GeojsonSourceProperties(
-//         data: geoJsonData,
-//       ),
-//     );
-
-//     mapController?.addLineLayer(
-//       "route_source",
-//       "route_layer",
-//       LineLayerProperties(
-//         lineColor: "#0000FF", // Blue color
-//         lineWidth: 6, // Adjust the width of the line
-//         lineOpacity: 0.9, // Adjust opacity if needed
-//         lineCap: "round",
-//         lineJoin: "round",
-//       ),
-//     );
-
-//     print("Route drawn successfully with ${coordinates.length} points.");
-//   } catch (e) {
-//     print("Error drawing path: $e");
-//   }
-// }
 
   void _onMapCreated(MaplibreMapController controller) async {
     mapController = controller;
     _loadMarkerImage();
-    _loadMarkerEndImage();
+    // _loadMarkerEndImage();
     _addMarkerAtDestinationPoint();
   }
 
   Future<void> _loadMarkerImage() async {
-    final ByteData bytes = await rootBundle.load('assets/images/location.png');
-    mapController?.addImage('location', bytes.buffer.asUint8List());
-  }
-
-  Future<void> _loadMarkerEndImage() async {
-    final ByteData bytes =
-        await rootBundle.load('assets/images/locationEnd.png');
-    mapController?.addImage('locationEnd', bytes.buffer.asUint8List());
+    try {
+      final ByteData bytes =
+          await rootBundle.load('assets/images/location.png');
+      mapController?.addImage('location', bytes.buffer.asUint8List());
+      print("Marker image loaded successfully.");
+    } catch (e) {
+      print("Error loading marker image: $e");
+    }
   }
 
   void _onStyleLoadedCallback() {
@@ -362,7 +246,7 @@ class _MapScreenState extends State<MapScreen> {
       // Add a marker with a title
       _currentMarker = await mapController!.addSymbol(SymbolOptions(
         geometry: _destinationPoint!,
-        iconImage: 'locationEnd', // Ensure this matches the loaded image name
+        iconImage: 'location', // Ensure this matches the loaded image name
         iconSize: 0.1,
         draggable: true,
       ));

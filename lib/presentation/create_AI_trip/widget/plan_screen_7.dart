@@ -27,8 +27,8 @@ class _PlanScreen7State extends State<PlanScreen7>
   final PlanScreenController planScreenController =
       Get.find<PlanScreenController>();
   late List<String> dailyScheduleKeys;
-  List<LatLng> newCoordinates = [];
   Map<String, List<LatLng>> dailyCoordinates = {};
+  LatLng? selectedHotelCoordinates;
 
   @override
   void initState() {
@@ -40,21 +40,21 @@ class _PlanScreen7State extends State<PlanScreen7>
         length: numberOfDays + 1, vsync: this); // +1 for 'Places to stay'
   }
 
- Future<void> _fetchData() async {
-  final dailySchedule = widget.jsonResponse['daily_schedule'];
+  Future<void> _fetchData() async {
+    final dailySchedule = widget.jsonResponse['daily_schedule'];
 
-  await planScreenController.fetchDailyDestinations(dailySchedule);
+    await planScreenController.fetchDailyDestinations(dailySchedule);
 
-  dailyCoordinates.clear(); // Ensure this is empty before populating
+    dailyCoordinates.clear(); // Ensure this is empty before populating
 
-  for (String dayKey in dailySchedule.keys) {
-    List<TravelDestination> destinations =
-        planScreenController.dailyGroupedDestinations[dayKey] ?? [];
-    List<LatLng> coordinates = [];
+    for (String dayKey in dailySchedule.keys) {
+      List<TravelDestination> destinations =
+          planScreenController.dailyGroupedDestinations[dayKey] ?? [];
+      List<LatLng> coordinates = [];
 
-    print("Processing day: $dayKey");
-    for (var destination in destinations) {
-      // Exclude hotels
+      print("Processing day: $dayKey");
+      for (var destination in destinations) {
+        // Exclude hotels
         String fullAddress = [
           destination.address.street?.trimRight(),
           destination.address.ward?.trimRight(),
@@ -66,8 +66,8 @@ class _PlanScreen7State extends State<PlanScreen7>
             .where((item) =>
                 item != null &&
                 item.isNotEmpty) // Filter out null or empty values
-            .map((item) =>
-                item?.replaceAll(RegExp(r',\s*$'), '')) // Remove trailing commas
+            .map((item) => item?.replaceAll(
+                RegExp(r',\s*$'), '')) // Remove trailing commas
             .join(', '); // Join with a comma
 
         try {
@@ -88,15 +88,14 @@ class _PlanScreen7State extends State<PlanScreen7>
         } catch (e) {
           print('Error geocoding $fullAddress: $e');
         }
-      
+      }
+
+      dailyCoordinates[dayKey] = coordinates;
+      print("Coordinates for $dayKey: $coordinates");
     }
 
-    dailyCoordinates[dayKey] = coordinates;
-    print("Coordinates for $dayKey: $coordinates");
+    setState(() {});
   }
-
-  setState(() {});
-}
 
   @override
   void dispose() {
@@ -181,11 +180,11 @@ class _PlanScreen7State extends State<PlanScreen7>
                             horizontal: 16.0, vertical: 8.0),
                         child: Container(
                           height: 250, // Reduced height for a closer look
-                          
+
                           child: Builder(
                             builder: (context) {
-
-                              final coordinates = dailyCoordinates[dayKey] ?? [];
+                              final coordinates =
+                                  dailyCoordinates[dayKey] ?? [];
                               return coordinates.isNotEmpty
                                   ? MapScreen(
                                       coordinates: coordinates,
@@ -254,14 +253,23 @@ class _PlanScreen7State extends State<PlanScreen7>
   }
 }
 
-class PlacesToStayTab extends StatelessWidget {
+class PlacesToStayTab extends StatefulWidget {
+  @override
+  _PlacesToStayTabState createState() => _PlacesToStayTabState();
+}
+
+class _PlacesToStayTabState extends State<PlacesToStayTab> {
   final PlanScreenController planScreenController =
       Get.find<PlanScreenController>();
+
+  // Lưu tọa độ của khách sạn đã chọn
+  LatLng? selectedCoordinates;
+  bool showMap = false;
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      // Kiểm tra nếu danh sách khách sạn rỗng
+      // Kiểm tra nếu danh sách khách sạn trống
       if (planScreenController.hotelPlanScreen.isEmpty) {
         return Center(
           child: Text(
@@ -272,28 +280,110 @@ class PlacesToStayTab extends StatelessWidget {
       }
 
       // Hiển thị danh sách khách sạn
-      return ListView.builder(
-        padding: EdgeInsets.all(16),
-        itemCount: planScreenController.hotelPlanScreen.length,
-        itemBuilder: (context, index) {
-          final hotel = planScreenController.hotelPlanScreen[index];
-          return _buildPlaceToStay(
-            imageUrl: hotel.images[0],
-            name: hotel.name,
-            address: hotel.address.district,
-            time: hotel.openTime.toString(),
-            rating: hotel.rating.toStringAsFixed(1),
-            numOfReviews: hotel.numOfReviews.toString(),
-            price: hotel.priceTop - hotel.priceBottom == 0
-                ? '\$${hotel.priceTop}'
-                : '\$${hotel.priceBottom} - \$${hotel.priceTop}',
-            description: hotel.description,
-          );
-        },
+      return Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              padding: EdgeInsets.all(16),
+              itemCount: planScreenController.hotelPlanScreen.length,
+              itemBuilder: (context, index) {
+                final hotel = planScreenController.hotelPlanScreen[index];
+
+                return GestureDetector(
+                  onTap: () async {
+                    // Lấy tọa độ từ địa chỉ của khách sạn
+                    String fullAddress = [
+                      hotel.address.street?.trimRight(),
+                      hotel.address.ward?.trimRight(),
+                      hotel.address.district?.trimRight(),
+                      planScreenController.cityName.value
+                    ]
+                        .where((item) => item != null && item.isNotEmpty)
+                        .map((item) => item!.replaceAll(RegExp(r',\s*\$'), ''))
+                        .join(', ');
+
+                    try {
+                      var coordinate =
+                          await GeocodingService.getCoordinatesFromAddress(
+                              fullAddress);
+
+                      if (coordinate != null) {
+                        setState(() {
+                          selectedCoordinates = LatLng(coordinate['latitude']!,
+                              coordinate['longitude']!);
+                          showMap = true;
+                        });
+                      } else {
+                        print('Unable to find coordinates for: $fullAddress');
+                      }
+                    } catch (e) {
+                      print('Geocoding error: $e');
+                    }
+                  },
+                  child: _buildPlaceToStay(
+                    imageUrl: hotel.images[0],
+                    name: hotel.name,
+                    address: hotel.address.district ?? "No address available",
+                    time: hotel.openTime.toString(),
+                    rating: hotel.rating.toStringAsFixed(1),
+                    numOfReviews: hotel.numOfReviews.toString(),
+                    price: hotel.priceTop - hotel.priceBottom == 0
+                        ? '\$${hotel.priceTop}'
+                        : '\$${hotel.priceBottom} - \$${hotel.priceTop}',
+                    description: hotel.description,
+                  ),
+                );
+              },
+            ),
+          ),
+
+          // Bản đồ hiển thị tọa độ đã chọn với nút đóng
+          if (showMap)
+            Stack(
+              children: [
+                Container(
+                  height: 250,
+                  margin: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  child: MapScreen(
+                    coordinates: [selectedCoordinates!],
+                    zoom: 12.0,
+                  ),
+                ),
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        showMap = false;
+                      });
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.black.withOpacity(0.7),
+                      ),
+                      padding: EdgeInsets.all(8),
+                      child: Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+        ],
       );
     });
   }
 
+  // Widget hiển thị chi tiết một khách sạn
   Widget _buildPlaceToStay({
     required String imageUrl,
     required String name,
@@ -305,71 +395,78 @@ class PlacesToStayTab extends StatelessWidget {
     required String description,
   }) {
     return Card(
-      color: Colors.grey[100], // Lighter gray color for the card background
+      color: Colors.grey[100],
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.network(imageUrl,
-                height: 120, width: double.infinity, fit: BoxFit.cover),
+            // Hình ảnh khách sạn
+            Image.network(
+              imageUrl,
+              height: 120,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
             SizedBox(height: 5),
+
+            // Tên khách sạn
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(name,
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold)),
+                Text(
+                  name,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 Icon(Icons.favorite_border, color: Colors.black),
               ],
             ),
             SizedBox(height: 5),
+
+            // Địa chỉ
             Text(address, style: TextStyle(color: Colors.black54)),
-            const SizedBox(height: 5),
+            SizedBox(height: 5),
+
+            // Thời gian
             Text(
-              "Time: ${time}",
+              "Time: $time",
               style: TextStyle(fontSize: 14, color: Colors.black54),
               overflow: TextOverflow.ellipsis,
               maxLines: 2,
             ),
-            const SizedBox(height: 5),
+            SizedBox(height: 5),
+
+            // Đánh giá và số lượt đánh giá
             Row(
               children: [
-                for (int i = 1; i <= 5; i++)
-                  Icon(
-                    Icons.circle,
-                    size: 12,
-                    color: Colors.grey,
-                  ),
-                const SizedBox(width: 8),
-                Text(
-                  "${rating} ★",
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    "(${numOfReviews} reviews)",
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                  ),
-                ),
+                Icon(Icons.star, size: 14, color: Colors.amber),
+                SizedBox(width: 4),
+                Text("$rating ★",
+                    style: TextStyle(fontSize: 14, color: Colors.grey)),
+                SizedBox(width: 10),
+                Text("($numOfReviews reviews)",
+                    style: TextStyle(fontSize: 14, color: Colors.grey)),
               ],
             ),
             SizedBox(height: 5),
+
+            // Giá
             Text(
               price,
               style: TextStyle(
-                color: Colors.black, // Màu chữ đen
-                fontSize: 15, // Font size lớn hơn một chút
-                fontWeight: FontWeight.bold, // Chữ in đậm
+                color: Colors.black,
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
               ),
             ),
             SizedBox(height: 8),
+
+            // Mô tả
             Text(description, style: TextStyle(color: Colors.black54)),
           ],
         ),

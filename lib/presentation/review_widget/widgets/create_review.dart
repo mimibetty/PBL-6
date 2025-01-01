@@ -100,23 +100,7 @@ class _ReviewFormPageState extends State<ReviewFormPage> {
               ),
             ),
             SizedBox(height: 16),
-            Text('How would you rate your experience?',
-                style: TextStyle(fontSize: 17)),
-            RatingBar.builder(
-              initialRating: 0,
-              minRating: 1,
-              direction: Axis.horizontal,
-              allowHalfRating: true,
-              itemCount: 5,
-              itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-              itemBuilder: (context, _) =>
-                  Icon(Icons.star, color: Colors.amber),
-              onRatingUpdate: (rating) {
-                setState(() {
-                  _rating = rating;
-                });
-              },
-            ),
+           
             SizedBox(height: 14),
             Text('Select your language', style: TextStyle(fontSize: 17)),
             SizedBox(height: 1),

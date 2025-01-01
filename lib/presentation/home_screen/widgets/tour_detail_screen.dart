@@ -63,7 +63,7 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
         ),
         centerTitle: true,
         title: const Text(
-          "Detail Page",
+          "Detail Tour",
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,

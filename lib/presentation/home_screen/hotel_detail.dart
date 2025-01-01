@@ -90,7 +90,7 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
         ),
         centerTitle: true,
         title: const Text(
-          "Detail Page",
+          "Detail Hotel",
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,

@@ -46,7 +46,7 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
           ),
         );
       }),
-      bottomNavigationBar: _buildBottomNavBar(),
+      // bottomNavigationBar: _buildBottomNavBar(),
     );
   }
 
@@ -271,35 +271,35 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
     );
   }
 
-  Widget _buildBottomNavBar() {
-    return BottomAppBar(
-      shape: CircularNotchedRectangle(),
-      notchMargin: 6.0,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          IconButton(
-            icon: Icon(Icons.home, color: Colors.blue),
-            onPressed: () {
-              // Navigate to Home
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.dashboard, color: Colors.grey),
-            onPressed: () {
-              // Navigate to Dashboard
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.person, color: Colors.grey),
-            onPressed: () {
-              // Navigate to Profile
-            },
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildBottomNavBar() {
+  //   return BottomAppBar(
+  //     shape: CircularNotchedRectangle(),
+  //     notchMargin: 6.0,
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  //       children: [
+  //         IconButton(
+  //           icon: Icon(Icons.home, color: Colors.blue),
+  //           onPressed: () {
+  //             // Navigate to Home
+  //           },
+  //         ),
+  //         IconButton(
+  //           icon: Icon(Icons.dashboard, color: Colors.grey),
+  //           onPressed: () {
+  //             // Navigate to Dashboard
+  //           },
+  //         ),
+  //         IconButton(
+  //           icon: Icon(Icons.person, color: Colors.grey),
+  //           onPressed: () {
+  //             // Navigate to Profile
+  //           },
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   void _navigateToBusinessesDashboard(BuildContext context, String type) {
     Navigator.push(

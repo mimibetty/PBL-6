@@ -1,13 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:travelappflutter/presentation/review_widget/models/review_widget_model.dart';
 
 class ImagePickerWidget extends StatefulWidget {
   final List<File> selectedImages; // Ảnh mới được chọn
   final Function(List<File>) onImagesPicked; // Callback khi chọn ảnh mới
   final String action; // "create" hoặc "update"
-  final List<ReviewImage>? existingImages; // Danh sách ảnh cũ từ server (nullable)
+  final List<String>? existingImages; // Danh sách ảnh cũ từ server (nullable)
   final Function(List<int>)? onImagesRemoved; // Callback để cập nhật danh sách ID ảnh bị xóa (nullable)
 
   ImagePickerWidget({
@@ -33,30 +32,28 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
     if (pickedFiles != null && pickedFiles.isNotEmpty) {
       final List<File> images = pickedFiles.map((file) => File(file.path)).toList();
 
-      if (widget.action == 'update') {
-        if ((widget.existingImages?.length ?? 0) + pendingSelectedImages.length + images.length > 3) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('You can only add up to 3 images.')),
-          );
-          return;
-        }
+      // Check if the total image count (including existing and new) is within the limit
+      if (widget.action == 'update' && (widget.existingImages?.length ?? 0) + pendingSelectedImages.length + images.length > 3) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('You can only add up to 3 images.')),
+        );
+        return;
       }
 
       setState(() {
-        // Chỉ thêm ảnh vào pendingSelectedImages, không làm thay đổi widget.selectedImages
-        pendingSelectedImages.addAll(images);
+        pendingSelectedImages.addAll(images); // Add the new images to the pending list
       });
 
-      // Gọi callback để cập nhật ảnh mới mà không thêm lại vào pendingSelectedImages
-      widget.onImagesPicked(pendingSelectedImages);
+      // Update the parent with the new selected images
+      widget.onImagesPicked([...widget.selectedImages, ...pendingSelectedImages]);
     }
   }
-
 
   void _markImageForRemoval(int index) {
     setState(() {
       if (widget.existingImages != null && index < widget.existingImages!.length) {
-        final imageId = widget.existingImages![index].id;
+        // Mark an existing image for removal
+        final imageId = index; // Assuming index represents the image ID (adjust based on API structure)
         if (pendingRemovedImageIds.contains(imageId)) {
           pendingRemovedImageIds.remove(imageId);
         } else {
@@ -64,14 +61,13 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
         }
         widget.onImagesRemoved?.call(pendingRemovedImageIds);
       } else {
-        // Xóa ảnh mới
+        // Mark a newly selected image for removal
         final adjustedIndex = index - (widget.existingImages?.length ?? 0);
         pendingSelectedImages.removeAt(adjustedIndex);
-        widget.onImagesPicked(pendingSelectedImages); // Cập nhật callback với danh sách mới
+        widget.onImagesPicked([...widget.selectedImages, ...pendingSelectedImages]);
       }
     });
-}
-
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +88,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
                     scrollDirection: Axis.horizontal,
                     itemCount: widget.existingImages!.length,
                     itemBuilder: (context, index) {
-                      final isMarkedForRemoval = pendingRemovedImageIds.contains(widget.existingImages![index].id);
+                      final isMarkedForRemoval = pendingRemovedImageIds.contains(index);
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 5.0),
                         child: Stack(
@@ -104,7 +100,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
                                     ? ColorFilter.mode(Colors.grey, BlendMode.saturation)
                                     : ColorFilter.mode(Colors.transparent, BlendMode.multiply),
                                 child: Image.network(
-                                  widget.existingImages![index].url,
+                                  widget.existingImages![index],
                                   height: 100,
                                   width: 100,
                                   fit: BoxFit.cover,

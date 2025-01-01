@@ -154,7 +154,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
         ),
         centerTitle: true,
         title: const Text(
-          "Detail Page",
+          "Detail Restaurant",
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -332,7 +332,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                                         children: [
                                           Text(
                                             widget.restaurant.restaurantName,
-                                            maxLines: 1,
+                                            maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                             style: const TextStyle(
                                               fontSize: 20,

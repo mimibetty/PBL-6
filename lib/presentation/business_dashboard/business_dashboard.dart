@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:travelappflutter/core/app_export.dart';
+import 'package:travelappflutter/presentation/business_creation_screen/controller/business_controller.dart';
 import 'package:travelappflutter/presentation/business_dashboard/rating_screen.dart';
+import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 
 class BusinessDashboard extends StatefulWidget {
   @override
@@ -7,131 +10,148 @@ class BusinessDashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<BusinessDashboard> {
-  final mockData = [
-    {
-      'image':
-          'https://images.unsplash.com/photo-1600891964599-f61ba0e24092?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
-      'name': 'Cơm mộc Lê Gia',
-      'location': 'Số 2 ngõ 59 Mễ Trì, Nguyễn Trãi, Hà Đông, Hà Nội',
-      'rating': 5.0,
-      'chartData': [2.0, 5.0, 3.0, 7.0, 8.0, 5.0, 6.0, 9.0, 4.0, 8.0, 7.0, 5.0]
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
-      'name': 'Sân Golf Vân Trì',
-      'location': 'Kim Nỗ, Xã Kim Nỗ, Đông Anh, Hà Nội',
-      'rating': 5.0,
-      'chartData': [3.0, 4.0, 2.0, 8.0, 5.0, 6.0, 7.0, 8.0, 4.0, 6.0, 9.0, 7.0]
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1546069901-eacef0df6022?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
-      'name': 'Yu long - Buffet lẩu nướng',
-      'location': '10, lô 10, ngõ 67 Phùng Khoang, Nam Từ Liêm, Hà Nội',
-      'rating': 5.0,
-      'chartData': [5.0, 6.0, 7.0, 5.0, 4.0, 8.0, 6.0, 7.0, 9.0, 5.0, 8.0, 6.0]
-    },
-    {
-      'image':
-          'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
-      'name': 'Somerset West Lake Hà Nội',
-      'location': '254D Thuỵ Khuê, Thuỵ Khuê, Tây Hồ, Hà Nội',
-      'rating': 5.0,
-      'chartData': [4.0, 5.0, 6.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 7.0, 6.0, 8.0]
-    },
-    {
-      'image':
-          'https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/473768Xww/reency-ngo-838611.jpg',
-      'name': 'Hotel du Monde Art',
-      'location': '69 Hoàng Như Tiếp, Bồ Đề, Long Biên',
-      'rating': 4.5,
-      'chartData': [3.0, 6.0, 8.0, 5.0, 4.0, 6.0, 7.0, 8.0, 9.0, 6.0, 7.0, 5.0]
-    },
-  ];
+  final BusinessController businessController =
+      Get.put(BusinessController()); // Initialize controller
 
-  // Track selected data for the chart
-  Map<String, dynamic>? selectedLocation;
+  var selectedDestinationIndex = 0; // Track selected destination
 
   @override
   void initState() {
     super.initState();
-    selectedLocation = mockData[0];
+    businessController.fetchTotalReviews();
+    businessController.fetchTop5Ids().then((_) {
+      businessController.fetchTopDestinationDetails();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Business Dashboard'),
+        title: const Text('Business Dashboard'),
         backgroundColor: Colors.grey[100],
       ),
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0, vertical: 12.0),
-                child: Text(
-                  "Welcome to VinGroup Company Dashboard \n\nAnalyze your business performance",
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.start,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Center(
-                  child: Wrap(
-                    alignment: WrapAlignment.center,
-                    spacing: 30.0,
-                    runSpacing: 20.0,
-                    children: <Widget>[
-                      buildDashboardCard("assets/images/places.png",
-                          "Total Places", "69 Places"),
-                      buildDashboardCard("assets/images/total_tours.png",
-                          "Total Tour Packages", "12 Tours"),
-                      buildDashboardCard("assets/images/total_review.png",
-                          "Total Reviews", "96 Review"),
-                      buildDashboardCard("assets/images/total_rating.png",
-                          "Average Ratings", "3.6"),
-                    ],
+        child: Obx(() {
+          if (businessController.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          } else {
+            final totalReviews = businessController.totalReview.value;
+
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0, vertical: 12.0),
+                    child: const Text(
+                      "Welcome to VinGroup Company Dashboard \n\nAnalyze your business performance",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.start,
+                    ),
                   ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: Container(
-                  alignment: Alignment.center,
-                  height: 400,
-                  child: RatingBarChart(
-                    chartTitle: selectedLocation!['name'] as String,
-                    chartData: selectedLocation!['chartData'] as List<double>,
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Center(
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 30.0,
+                        runSpacing: 20.0,
+                        children: <Widget>[
+                          buildDashboardCard(
+                            "assets/images/places.png",
+                            "Total Places",
+                            "${businessController.businessMetrics.value?.totalPlaces ?? 0} Places",
+                          ),
+                          buildDashboardCard(
+                            "assets/images/total_tours.png",
+                            "Total Tour Packages",
+                            "${businessController.businessMetrics.value?.totalTours ?? 0} Tours",
+                          ),
+                          buildDashboardCard(
+                            "assets/images/total_review.png",
+                            "Total Reviews",
+                            "$totalReviews Reviews",
+                          ),
+                          buildDashboardCard(
+                            "assets/images/total_rating.png",
+                            "Average Ratings",
+                            "${businessController.businessMetrics.value?.averageRatings.toStringAsFixed(1) ?? "0.0"}",
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: Obx(() {
+                      if (businessController.simpleDestinations.isEmpty) {
+                        return const Center(
+                          child: Text('No chart data available.'),
+                        );
+                      }
+
+                      // Get the selected destination
+                      final selectedDestination = businessController
+                          .simpleDestinations[selectedDestinationIndex];
+
+                 
+                      if (selectedDestination.chartData == null ||
+                          selectedDestination.chartData!.isEmpty) {
+                        return const Center(
+                          child: Text(
+                              'No chart data available for this destination.'),
+                        );
+                      }
+
+                      // Convert chartData into List<List<double>> for stacked chart
+                      List<List<double>> stackedChartData = List.generate(
+                        5, // Assuming 1-star to 5-star ratings
+                        (starIndex) => List.generate(
+                          12, // 12 months
+                          (monthIndex) =>
+                              selectedDestination.chartData![starIndex]
+                                  [monthIndex] ??
+                              0.0,
+                        ),
+                      );
+
+                      return Container(
+                        alignment: Alignment.center,
+                        height: 400,
+                        child: RatingBarChart(
+                          chartTitle: selectedDestination.name,
+                          chartData: stackedChartData, // Pass stacked data
+                        ),
+                      );
+                    }),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.all(18.0),
+                    child: Text(
+                      "Top 5 Destinations",
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: _buildTopDestinationsTable(),
+                  ),
+                ],
               ),
-              Padding(
-                padding: const EdgeInsets.all(18.0),
-                child: Text(
-                  "Top 5 Destinations",
-                  style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: _buildTopDestinationsTable(),
-              ),
-            ],
-          ),
-        ),
+            );
+          }
+        }),
       ),
     );
   }
@@ -156,10 +176,10 @@ class _DashboardState extends State<BusinessDashboard> {
                   assetPath,
                   width: 50.0,
                 ),
-                SizedBox(height: 10.0),
+                const SizedBox(height: 10.0),
                 Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
                     fontSize: 16.0,
@@ -168,10 +188,10 @@ class _DashboardState extends State<BusinessDashboard> {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(height: 5.0),
+                const SizedBox(height: 5.0),
                 Text(
                   subtitle,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.w200,
                   ),
@@ -188,67 +208,82 @@ class _DashboardState extends State<BusinessDashboard> {
   }
 
   Widget _buildTopDestinationsTable() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-          horizontal: 16.0), // Adds horizontal spacing
-      child: ListView.builder(
-        itemCount: mockData.length,
+    return Obx(() {
+      if (businessController.simpleDestinations.isEmpty) {
+        return const Center(
+          child: Text('No destinations available.'),
+        );
+      }
+
+      return ListView.builder(
+        itemCount: businessController.simpleDestinations.length,
         shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
-          final location = mockData[index];
+          final destination = businessController.simpleDestinations[index];
+
           return GestureDetector(
             onTap: () {
               setState(() {
-                selectedLocation = location;
+                selectedDestinationIndex = index; // Update selected index
               });
             },
             child: Card(
-              margin: EdgeInsets.symmetric(vertical: 10.0),
+              margin: const EdgeInsets.symmetric(vertical: 10.0),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
               elevation: 2,
               child: Padding(
-                padding: EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(10.0),
                 child: Row(
                   children: <Widget>[
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Image.network(
-                        location['image'] as String,
-                        width: 60.0,
-                        height: 60.0,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            Icon(Icons.image, size: 60.0, color: Colors.grey),
-                      ),
-                    ),
-                    SizedBox(width: 10.0),
+                    // Display image if available
+                    destination.imageUrl.isNotEmpty
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Image.network(
+                              destination.imageUrl ??
+                                  '', // Ensure imageUrl is not null
+                              width: 80.0, // Set width for the image
+                              height: 80.0, // Set height for the image
+                              fit: BoxFit
+                                  .cover, // Make sure image fits within box
+                            ),
+                          )
+                        : Container(
+                            width: 80.0,
+                            height: 80.0), // Empty container if no image
+                    const SizedBox(width: 10.0),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            location['name'] as String,
-                            style: TextStyle(
+                            destination.name,
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16.0,
                             ),
                           ),
-                          SizedBox(height: 4.0),
+                          const SizedBox(height: 4.0),
                           Text(
-                            'Rating: ${(location['rating'] as double).toString()} ★',
+                            destination.address,
+                            style: const TextStyle(fontSize: 14.0),
                           ),
-                          Text(location['location'] as String),
+                          const SizedBox(height: 4.0),
+                          Text(
+                            'Rating: ${destination.averageRating.toStringAsFixed(1)} ★',
+                            style: const TextStyle(fontSize: 14.0),
+                          ),
                         ],
                       ),
                     ),
-                    SizedBox(width: 10.0),
+                    const SizedBox(width: 10.0),
                     Text(
                       '#${index + 1}',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                   ],
                 ),
@@ -256,7 +291,7 @@ class _DashboardState extends State<BusinessDashboard> {
             ),
           );
         },
-      ),
-    );
+      );
+    });
   }
 }

@@ -19,7 +19,15 @@ class UpdateReviewFormPage extends StatefulWidget {
   final String destinationContent;
 
   UpdateReviewFormPage(
-      {Key? key, required this.reviewId, required this.destinationRating, required this.destinationSelectedImages, required this.destinationLanguage, required this.destinationCompanions, required this.destinationTitle, required this.destinationContent, required this.destinationId})
+      {Key? key,
+      required this.reviewId,
+      required this.destinationRating,
+      required this.destinationSelectedImages,
+      required this.destinationLanguage,
+      required this.destinationCompanions,
+      required this.destinationTitle,
+      required this.destinationContent,
+      required this.destinationId})
       : super(key: key);
 
   @override
@@ -50,15 +58,17 @@ class _ReviewFormPageState extends State<UpdateReviewFormPage> {
   ];
   // Các biến để lưu giá trị đã chọn
   List<String> selectedCompanions = []; // Biến lưu Companions
-  late String selectedLanguage = widget.destinationLanguage; // Biến lưu trữ ngôn ngữ đã chọn
+  late String selectedLanguage =
+      widget.destinationLanguage; // Biến lưu trữ ngôn ngữ đã chọn
   String reviewText = '';
   String reviewTitle = '';
   late List<ReviewImage> existingImage = widget.destinationSelectedImages;
   List<int> existingImageIdsToRemove = [];
 
-  String destinationName = 'Default Name'; 
-  String destinationAddress = 'Default Address'; 
-  String destinationImageURL = 'https://experienceleaguecommunities.adobe.com/t5/image/serverpage/image-id/34749i7C7BB1DB5E28E527?v=v2'; 
+  String destinationName = 'Default Name';
+  String destinationAddress = 'Default Address';
+  String destinationImageURL =
+      'https://experienceleaguecommunities.adobe.com/t5/image/serverpage/image-id/34749i7C7BB1DB5E28E527?v=v2';
 
   Future<void> loadDestinationInfo() async {
     // Gọi API để lấy thông tin địa điểm
@@ -84,7 +94,6 @@ class _ReviewFormPageState extends State<UpdateReviewFormPage> {
     loadDestinationInfo();
   }
 
-  
   @override
   void dispose() {
     _contextController.dispose();
@@ -94,7 +103,6 @@ class _ReviewFormPageState extends State<UpdateReviewFormPage> {
   }
 
   @override
-
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -120,7 +128,7 @@ class _ReviewFormPageState extends State<UpdateReviewFormPage> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      '${destinationName}\n${destinationAddress}',  // Nối tên với địa chỉ
+                      '${destinationName}\n${destinationAddress}', // Nối tên với địa chỉ
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -159,13 +167,13 @@ class _ReviewFormPageState extends State<UpdateReviewFormPage> {
               }).toList(),
               onChanged: (String? newValue) {
                 setState(() {
-                  selectedLanguage = newValue ?? 'English'; // Cập nhật ngôn ngữ đã chọn
+                  selectedLanguage =
+                      newValue ?? 'English'; // Cập nhật ngôn ngữ đã chọn
                 });
               },
             ),
             SizedBox(height: 9),
-            Text('Who did you go with ?',
-                style: TextStyle(fontSize: 17)),
+            Text('Who did you go with ?', style: TextStyle(fontSize: 17)),
             SizedBox(height: 3),
             SelectableChipWidget(
               initialSelectedLabels: widget.destinationCompanions.split(','),
@@ -201,18 +209,22 @@ class _ReviewFormPageState extends State<UpdateReviewFormPage> {
             ),
             SizedBox(height: 4),
             ImagePickerWidget(
-              selectedImages: selectedImages, // Ảnh mới (List<File>)
+              selectedImages:
+                  selectedImages, // Your list of selected images (List<File>)
               onImagesPicked: (images) {
                 setState(() {
-                  selectedImages = images; // Cập nhật ảnh mới
+                  selectedImages = images; // Update with the new images
                 });
               },
-              action: "update", // Chỉ định hành động
-              existingImages: existingImage, // Ảnh cũ đã tải từ server (List<File>)
+              action: "update", // Action type for update
+              existingImages: existingImage
+                  ?.map((e) => e.url)
+                  .toList(), // Convert List<ReviewImage> to List<String> (image URLs)
               onImagesRemoved: (removedIds) {
                 setState(() {
-                  existingImageIdsToRemove = removedIds; // Cập nhật ảnh cũ bị xóa
-                  print('Removed Image IDs: $removedIds'); // In ra ID của ảnh bị xóa
+                  existingImageIdsToRemove =
+                      removedIds; // Update removed image IDs
+                  print('Removed Image IDs: $removedIds');
                 });
               },
             ),
@@ -224,18 +236,20 @@ class _ReviewFormPageState extends State<UpdateReviewFormPage> {
                   onPressed: () {
                     // Submit the review
                     try {
-                      // Call the createReview function to submit the review  
-                        controller.updateReview(
-                          id: widget.destinationId, // Pass destination
-                          reviewId: widget.reviewId, // Pass review ID       
-                          title: reviewTitle, // Pass title
-                          content: reviewText, // Pass content
-                          rating: _rating, // Pass rating
-                          companion: selectedCompanions.join(','), // Pass companion(s)
-                          language: selectedLanguage, // Pass language
-                          newImages: selectedImages, // Pass selected images
-                          imageIdsToRemove: existingImageIdsToRemove, // Pass empty list for image IDs to remove
-                        );
+                      // Call the createReview function to submit the review
+                      controller.updateReview(
+                        id: widget.destinationId, // Pass destination
+                        reviewId: widget.reviewId, // Pass review ID
+                        title: reviewTitle, // Pass title
+                        content: reviewText, // Pass content
+                        rating: _rating, // Pass rating
+                        companion:
+                            selectedCompanions.join(','), // Pass companion(s)
+                        language: selectedLanguage, // Pass language
+                        newImages: selectedImages, // Pass selected images
+                        imageIdsToRemove:
+                            existingImageIdsToRemove, // Pass empty list for image IDs to remove
+                      );
                       // Navigate back
                       Navigator.pop(context);
                     } catch (e) {
@@ -316,4 +330,3 @@ class _ReviewFormPageState extends State<UpdateReviewFormPage> {
     );
   }
 }
-

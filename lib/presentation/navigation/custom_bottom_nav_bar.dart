@@ -11,7 +11,8 @@ class CustomBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String? userRole = storage.read('userRole') ?? 'guest'; // Lấy userRole từ Storage
+    String? userRole =
+        storage.read('userRole') ?? 'guest'; // Lấy userRole từ Storage
     print("User role: $userRole");
 
     return Obx(() => Material(
@@ -39,11 +40,18 @@ class CustomBottomNavBar extends StatelessWidget {
                 icon: userRole == 'guest'
                     ? const Icon(Icons.computer) // Icon for AI Trip
                     : const Icon(
-                        Icons.domain_add_outlined), // Icon for Destination
-                label: userRole == 'guest' ? 'AI Trip' : 'Destination',
+                        Icons.business_center), // Icon for Destination
+                label: userRole == 'guest' ? 'AI Trip' : 'Company',
               ),
-              const BottomNavigationBarItem(
-                  icon: Icon(Icons.bookmark_outline), label: 'My Trips'),
+               BottomNavigationBarItem(
+                icon: userRole == 'guest'
+                    ? const Icon(Icons.bookmark_outline) // Icon for AI Trip
+                    : const Icon(
+                        Icons.domain_add_outlined), // Icon for Destination
+                label: userRole == 'guest' ? 'My Trips' : 'Business',
+              ),
+              // const BottomNavigationBarItem(
+              //     icon: Icon(Icons.bookmark_outline), label: 'My Trips'),
               const BottomNavigationBarItem(
                   icon: Icon(Icons.person_outline), label: 'Profile'),
             ],
@@ -69,10 +77,14 @@ class CustomBottomNavBar extends StatelessWidget {
                   }
                   break;
                 case 3:
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MyTripsScreen()),
-                  );
+                  if (userRole == 'guest') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyTripsScreen()),
+                    );
+                  } else {
+                    Get.toNamed('/business_creation_screen');
+                  }
 
                   break;
                 case 4:

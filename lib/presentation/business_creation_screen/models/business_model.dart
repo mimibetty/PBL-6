@@ -1,3 +1,4 @@
+
 class Business {
   final String id;
   final String name;
@@ -129,5 +130,65 @@ final List<Business> mockBusinessDatabase = [
     reviewCount: 85,
   ),
 ];
+class BusinessMetrics {
+  final int totalPlaces;
+  final int totalTours;
+  final double averageRatings;
 
+  BusinessMetrics({
+    required this.totalPlaces,
+    required this.totalTours,
+    required this.averageRatings,
+  });
 
+  factory BusinessMetrics.fromJson(Map<String, dynamic> json) {
+    return BusinessMetrics(
+      totalPlaces: json['total_destinations'],
+      totalTours: json['total_tours'],
+      averageRatings: json['average_rating'],
+    );
+  }
+  
+}
+class SimpleDestination {
+  final String name;
+  final String address;
+  final double averageRating;
+  final int id;
+  final int cityId;
+  final List<List<double>> chartData; // Updated to handle stacked chart data
+  final String imageUrl; // Add the imageUrl field
+
+  SimpleDestination({
+    required this.name,
+    required this.address,
+    required this.averageRating,
+    required this.id,
+    required this.cityId,
+    required this.chartData, // Required to ensure valid data
+    required this.imageUrl, // Ensure the image URL is passed
+  });
+}
+class City {
+  final int id;
+  final String name;
+  final String description;
+  final List<String> imageUrls;
+
+  City({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.imageUrls,
+  });
+
+  factory City.fromJson(Map<String, dynamic> json) {
+    var imageUrls = (json['images'] as List).map((image) => image['url'] as String).toList();
+    return City(
+      id: json['id'],
+      name: json['name'],
+      description: json['description'],
+      imageUrls: imageUrls,
+    );
+  }
+}
