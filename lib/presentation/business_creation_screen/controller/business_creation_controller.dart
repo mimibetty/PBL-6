@@ -29,6 +29,10 @@ class DestinationController extends ChangeNotifier {
       // Định dạng lại ngày tháng trước khi gửi
       String formattedDate = DateFormat('yyyy-MM-dd').format(dateCreate);
 
+      // Ensure openTime is in HH:mm:ss format
+      DateTime openTimeDateTime = DateFormat('HH:mm').parse(openTime);
+      String formattedOpenTime = DateFormat('HH:mm:ss').format(openTimeDateTime);
+
       // In ra dữ liệu trước khi gửi tới API
       print("Business Information before call api:");
       print("0. User ID: $userId");
@@ -39,42 +43,83 @@ class DestinationController extends ChangeNotifier {
       print("4. Price Top: $priceTop");
       print("5. Date Created: $formattedDate");
       print("6. Age: $age");
-      print("7. Open Time: $openTime");
+      print("7. Open Time: $formattedOpenTime");
       print("8. Duration: $duration");
       print("9. City ID: $cityId");
       print("10. Description: $description");
       print("11. Images: ${images.map((file) => file.path).toList()}");
 
-      final destinationUrl = Uri.parse('$baseUrl/destination');
+      // Construct the URL with query parameters
+      final Uri url = Uri.parse('$baseUrl/destination/').replace(queryParameters: {
+        'user_id': userId.toString(),
+        'name': name,
+        'price_bottom': priceBottom.toString(),
+        'price_top': priceTop.toString(),
+        'age': age.toString(),
+        'opentime': formattedOpenTime,
+        'duration': duration.toString(),
+        'description': description,
+        'date_create': formattedDate,
+        'district': district,
+        'street': street,
+        'ward': ward,
+        'city_id': cityId.toString(),
+      });
 
-      var request = http.MultipartRequest('POST', destinationUrl);
-      request.fields['user_id'] = userId.toString();
-      request.fields['name'] = name;
-      request.fields['price_bottom'] = priceBottom.toString();
-      request.fields['price_top'] = priceTop.toString();
-      request.fields['age'] = age.toString();
-      request.fields['opentime'] = openTime;
-      request.fields['duration'] = duration.toString();
-      request.fields['description'] = description;
-      request.fields['date_create'] = formattedDate;
-      request.fields['district'] = district;
-      request.fields['street'] = street;
-      request.fields['ward'] = ward;
-      request.fields['city_id'] = cityId.toString();
+      http.Response response;
 
-      // Thêm các tệp ảnh vào request
-      for (var image in images) {
-        request.files.add(await http.MultipartFile.fromPath(
-            'images', image.path,
-            filename: image.uri.pathSegments.last)); // Đảm bảo gửi tên tệp đúng
+      if (images.isNotEmpty) {
+        // Nếu có ảnh, tạo request multipart
+        final request = http.MultipartRequest('POST', url);
+
+        // Thêm tệp hình ảnh  
+        for (File image in images) {
+          request.files.add(await http.MultipartFile.fromPath('images', image.path));
+        }
+
+        print("Request URL: ${request.url}");
+        print("Request fields: ${request.fields}");
+        print("Request files: ${request.files.map((file) => file.filename).toList()}");
+
+        // Gửi yêu cầu
+        final streamedResponse = await request.send();
+        response = await http.Response.fromStream(streamedResponse);
+
+        // Handle redirect
+        if (response.statusCode == 307) {
+          final redirectUrl = response.headers['location'];
+          if (redirectUrl != null) {
+            final newRequest = http.MultipartRequest('POST', Uri.parse(redirectUrl));
+            newRequest.fields.addAll(request.fields);
+
+            // Create new MultipartFile objects for the redirected request
+            for (var image in images) {
+              newRequest.files.add(await http.MultipartFile.fromPath(
+                  'images', image.path,
+                  filename: image.uri.pathSegments.last));
+            }
+
+            print("Redirected Request URL: ${newRequest.url}");
+            print("Redirected Request fields: ${newRequest.fields}");
+            print("Redirected Request files: ${newRequest.files.map((file) => file.filename).toList()}");
+
+            var newStreamedResponse = await newRequest.send();
+            response = await http.Response.fromStream(newStreamedResponse);
+          } else {
+            throw Exception('Redirect URL is missing');
+          }
+        }
+      } else {
+        // Nếu không có ảnh, gửi request thường
+        response = await http.post(url);
       }
 
-      // Gửi yêu cầu
-      var response = await request.send();
+      print("Response: " + response.body);
 
+      // Xử lý phản hồi
+      print('Response status code: ${response.statusCode}');
       if (response.statusCode == 200) {
-        final responseBody = await response.stream.bytesToString();
-        final destinationData = json.decode(responseBody);
+        final destinationData = json.decode(response.body);
 
         // Kiểm tra dữ liệu trước khi truy cập
         if (destinationData != null &&
@@ -88,9 +133,7 @@ class DestinationController extends ChangeNotifier {
           throw Exception('Failed to find a valid ID in destination data');
         }
       } else {
-        print('Error creating destination: ${response.statusCode}');
-        final responseBody = await response.stream.bytesToString();
-        print('Error creating destination: $responseBody');
+        print('Error creating destination: ${response.body}');
         throw Exception('Failed to create destination');
       }
     } catch (e) {
@@ -137,7 +180,10 @@ class DestinationController extends ChangeNotifier {
       hotelRequest.fields['website'] = website;
 
       var hotelResponse = await hotelRequest.send();
+      
+      print("Hotel request: $hotelRequest");
 
+      print ("Hotel response: $hotelResponse");
       if (hotelResponse.statusCode == 200) {
         print("Hotel created successfully.");
       } else {

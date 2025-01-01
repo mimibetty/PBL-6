@@ -78,7 +78,7 @@ class _TourDetailScreenState extends State<TourDetailScreen> {
                     destinationId: destinationId,
                     destinationName: widget.tour.name,
                     destinationImageURL:tourImages[0],
-                    //destinationAddress: widget.tour.location,
+                    //destinationAddress: widget.tour.,
                     destinationAddress: "Đà Nẵng",
                   ),
                 ),
