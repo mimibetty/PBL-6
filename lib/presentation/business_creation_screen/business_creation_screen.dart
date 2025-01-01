@@ -70,6 +70,12 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
   String language = '';
   final int userId = Get.find<AuthController>().userId.value;
 
+  void _updatePriceRange(String range) {
+    setState(() {
+      priceRange = range; // Cập nhật khoảng giá
+    });
+  }
+
   void initState() {
     super.initState();
     _fetchCities(); // Fetch city data when the screen is loaded
@@ -175,6 +181,103 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
     }
   }
 
+  void _createBusiness() async {
+  if (_formKey.currentState!.validate()) {
+    print("Business Information:");
+
+    // Ensure openingHours is properly formatted or provide a default value
+    String formattedOpeningHours = openingHours.isNotEmpty
+        ? openingHours
+        : '00:00'; // Default to '00:00' if openingHours is empty or invalid
+
+    // If you need more specific validation, check if the openingHours follows a valid time format
+    if (!RegExp(r'^\d{2}:\d{2}$').hasMatch(formattedOpeningHours)) {
+      // If the format is incorrect, provide a default time or show an error
+      formattedOpeningHours = '00:00'; // Set to a default valid time if invalid format
+      print("Invalid openingHours format, setting to default '00:00'");
+    }
+
+    // Parse price range
+    final priceRangeParts = priceRange.split('-');
+    int priceBottom = 0;
+    int priceTop = 0;
+
+    if (priceRangeParts.length == 2) {
+      priceBottom = int.tryParse(priceRangeParts[0].trim()) ?? 0;
+      priceTop = int.tryParse(priceRangeParts[1].trim()) ?? 0;
+    }
+
+    // Create destination and get destinationId
+    int? destinationId = await DestinationController().createDestination(
+      userId: userId,
+      name: name,
+      district: district,
+      street: street,
+      ward: ward,
+      cityId: int.tryParse(cityId) ?? 0,
+      priceBottom: priceBottom,
+      priceTop: priceTop,
+      dateCreate: DateTime.now(),
+      age: int.tryParse(age) ?? 0,
+      openTime: formattedOpeningHours, // Use the formatted or default openingHours
+      duration: int.tryParse(duration) ?? 0,
+      description: description,
+      images: selectedImages,
+    );
+    print("Destination ID: $destinationId");
+
+    if (destinationId != null) {
+      print("Destination created with ID: $destinationId");
+
+      // Now create the hotel with the destinationId
+      await DestinationController().createHotel(
+        destinationId: destinationId, // Pass the destinationId
+        propertyAmenities: selectedHotelFeatures.join(', '),
+        roomFeatures: roomFeatures.join(', '),
+        roomTypes: roomTypes.join(', '),
+        hotelClass: hotelClass,
+        hotelStyles: hotelStyles,
+        language: language,
+        phone: phoneNumber,
+        email: email,
+        website: website,
+      );
+      print("Hotel created successfully.");
+
+      // After hotel creation, fetch both destination and hotel details
+      final destinationWithHotel = await DestinationController()
+          .getDestinationWithHotel(destinationId);
+      if (destinationWithHotel != null) {
+        print("Fetched Destination with Hotel: $destinationWithHotel");
+        // You can now use the combined data (destination + hotel) as needed
+      } else {
+        print("Error fetching destination with hotel.");
+      }
+
+      // Reset the form after successful creation
+      setState(() {
+        _resetForm(); // Ensure this is called inside setState to trigger UI update
+      });
+
+      // Show a success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Business and Hotel created successfully')),
+      );
+    } else {
+      print("Failed to create destination.");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to create destination')),
+      );
+    }
+  } else {
+    print('Form is invalid. Please fill in all required fields.');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Please fill in all required fields')),
+    );
+  }
+}
+
+
   void _resetForm() {
     setState(() {
       selectedBusinessType = null;
@@ -189,12 +292,13 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
       selectedRestaurantFeatures.clear();
       cuisine = '';
       meal = '';
-      priceRange = '';
+      priceRange = '0 - 1000'; // Reset default price range
       overview = '';
       guide = '';
       ticketRequired = false;
       age = '';
       duration = '';
+      openingHours = '';
       whatIncluded = '';
       whatNotIncluded = '';
       additionalInfo = '';
@@ -202,55 +306,13 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
       roomFeatures.clear();
       roomTypes.clear();
       language = '';
+      selectedCityName = null;
+      cityId = '';
+      selectedImages.clear(); // Clear selected images
+
+      // Reset form state
+      _formKey.currentState?.reset(); // Reset form fields
     });
-  }
-
-  void _updatePriceRange(String range) {
-    setState(() {
-      priceRange = range; // Cập nhật khoảng giá
-    });
-  }
-
-  void _createBusiness() async {
-    if (_formKey.currentState!.validate()) {
-      print("Business Information:");
-
-      // Parse price range
-      final priceRangeParts = priceRange.split('-');
-      int priceBottom = 0;
-      int priceTop = 0;
-
-      if (priceRangeParts.length == 2) {
-        priceBottom = int.tryParse(priceRangeParts[0].trim()) ?? 0;
-        priceTop = int.tryParse(priceRangeParts[1].trim()) ?? 0;
-      }
-
-      // Call your createDestination function here with the priceBottom and priceTop
-      int? destinationId = await DestinationController().createDestination(
-        userId: userId,
-        name: name,
-        district: district,
-        street: street,
-        ward: ward,
-        cityId: int.tryParse(cityId) ?? 0,
-        priceBottom: priceBottom,
-        priceTop: priceTop,
-        dateCreate: DateTime.now(),
-        age: int.tryParse(age) ?? 0,
-        openTime: openingHours,
-        duration: int.tryParse(duration) ?? 0,
-        description: description,
-        images: selectedImages,
-      );
-      print("Destination ID: $destinationId");
-      if (destinationId != null) {
-        print("Destination created with ID: $destinationId");
-      } else {
-        print("Failed to create destination.");
-      }
-    } else {
-      print('Form is invalid. Please fill in all required fields.');
-    }
   }
 
   @override
@@ -259,22 +321,22 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
       appBar: AppBar(
         title: Text('Business Creation Screen'),
         backgroundColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add, color: Colors.black),
-            onPressed: () {
-              // Replace this with the actual Business object
+        // actions: [
+        //   IconButton(
+        //     icon: Icon(Icons.add, color: Colors.black),
+        //     onPressed: () {
+        //       // Replace this with the actual Business object
 
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      BusinessPostScreen(),
-                ),
-              );
-            },
-          ),
-        ],
+        //       Navigator.push(
+        //         context,
+        //         MaterialPageRoute(
+        //           builder: (context) =>
+        //               BusinessPostScreen(business: businessA1),
+        //         ),
+        //       );
+        //     },
+        //   ),
+        // ],
       ),
       body: Container(
         color: Colors.grey[100], // Màu nền xám nhạt
@@ -560,13 +622,43 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildElevatedButton('Reset', _resetForm),
-                    SizedBox(width: 16), // Khoảng cách giữa hai nút
-                    _buildElevatedButton('Create post', () {
-                      if (_formKey.currentState!.validate()) {
-                        _createBusiness(); // Call _createBusiness when "Create Post" button is pressed
-                      }
-                    }),
+                    // Reset Button
+                    ElevatedButton(
+                      onPressed: () {
+                        _resetForm(); // Reset form fields
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Form has been reset')),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            Colors.red, // Gray background for reset
+                      ),
+                      child:
+                          Text('Reset', style: TextStyle(color: Colors.white)),
+                    ),
+                    SizedBox(width: 16), // Space between the two buttons
+
+                    // Create Post Button
+                    ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          _createBusiness(); // Create business if the form is valid
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content:
+                                    Text('Please fill in all required fields')),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            Colors.blue, // Blue background for create post
+                      ),
+                      child: Text('Create Post',
+                          style: TextStyle(color: Colors.white)),
+                    ),
                   ],
                 ),
               ],

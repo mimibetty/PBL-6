@@ -29,54 +29,53 @@ class DestinationController extends ChangeNotifier {
       // Định dạng lại ngày tháng trước khi gửi
       String formattedDate = DateFormat('yyyy-MM-dd').format(dateCreate);
 
-      // In ra dữ liệu trước khi gửi tới API
-      print("Business Information before call api:");
-      print("0. User ID: $userId");
-      print("1. Name: $name");
-      print(
-          "2. Address: district: $district, street: $street, ward: $ward, cityId: $cityId");
-      print("3. Price Bottom: $priceBottom");
-      print("4. Price Top: $priceTop");
-      print("5. Date Created: $formattedDate");
-      print("6. Age: $age");
-      print("7. Open Time: $openTime");
-      print("8. Duration: $duration");
-      print("9. City ID: $cityId");
-      print("10. Description: $description");
-      print("11. Images: ${images.map((file) => file.path).toList()}");
+      // Ensure openTime is in HH:mm:ss format
+      DateTime openTimeDateTime = DateFormat('HH:mm').parse(openTime);
+      String formattedOpenTime =
+          DateFormat('HH:mm:ss').format(openTimeDateTime);
 
-      final destinationUrl = Uri.parse('$baseUrl/destination/');
+      // Construct the URL with query parameters
+      final Uri url =
+          Uri.parse('$baseUrl/destination/').replace(queryParameters: {
+        'user_id': userId.toString(),
+        'name': name,
+        'price_bottom': priceBottom.toString(),
+        'price_top': priceTop.toString(),
+        'age': age.toString(),
+        'opentime': formattedOpenTime,
+        'duration': duration.toString(),
+        'description': description,
+        'date_create': formattedDate,
+        'district': district,
+        'street': street,
+        'ward': ward,
+        'city_id': cityId.toString(),
+      });
 
-      var request = http.MultipartRequest('POST', destinationUrl);
-      request.fields['user_id'] = userId.toString();
-      request.fields['name'] = name;
-      request.fields['price_bottom'] = priceBottom.toString();
-      request.fields['price_top'] = priceTop.toString();
-      request.fields['age'] = age.toString();
-      request.fields['opentime'] = openTime;
-      request.fields['duration'] = duration.toString();
-      request.fields['description'] = description;
-      request.fields['date_create'] = formattedDate;
-      request.fields['district'] = district;
-      request.fields['street'] = street;
-      request.fields['ward'] = ward;
-      request.fields['city_id'] = cityId.toString();
+      http.Response response;
 
-      // Thêm các tệp ảnh vào request
-      for (var image in images) {
-        request.files.add(await http.MultipartFile.fromPath(
-            'images', image.path,
-            filename: image.uri.pathSegments.last)); // Đảm bảo gửi tên tệp đúng
+      if (images.isNotEmpty) {
+        // If there are images, create a multipart request
+        final request = http.MultipartRequest('POST', url);
+
+        // Add image files
+        for (File image in images) {
+          request.files
+              .add(await http.MultipartFile.fromPath('images', image.path));
+        }
+
+        // Send the request
+        final streamedResponse = await request.send();
+        response = await http.Response.fromStream(streamedResponse);
+      } else {
+        // If no images, send a regular POST request
+        response = await http.post(url);
       }
 
-      // Gửi yêu cầu
-      var response = await request.send();
-
+      // Handle response
       if (response.statusCode == 200) {
-        final responseBody = await response.stream.bytesToString();
-        final destinationData = json.decode(responseBody);
+        final destinationData = json.decode(response.body);
 
-        // Kiểm tra dữ liệu trước khi truy cập
         if (destinationData != null &&
             destinationData is Map &&
             destinationData.containsKey('id')) {
@@ -88,9 +87,7 @@ class DestinationController extends ChangeNotifier {
           throw Exception('Failed to find a valid ID in destination data');
         }
       } else {
-        print('Error creating destination: ${response.statusCode}');
-        final responseBody = await response.stream.bytesToString();
-        print('Error creating destination: $responseBody');
+        print('Error creating destination: ${response.body}');
         throw Exception('Failed to create destination');
       }
     } catch (e) {
@@ -100,57 +97,59 @@ class DestinationController extends ChangeNotifier {
   }
 
   // Tạo Hotel từ destinationId
-  Future<void> createHotel({
-    required int destinationId,
-    required String propertyAmenities,
-    required String roomFeatures,
-    required String roomTypes,
-    required String hotelClass,
-    required String hotelStyles,
-    required String language,
-    required String phone,
-    required String email,
-    required String website,
-  }) async {
-    try {
-      print("Creating hotel with destination ID: $destinationId");
-      print("Property Amenities: $propertyAmenities");
-      print("Room Features: $roomFeatures");
-      print("Room Types: $roomTypes");
-      print("Hotel Class: $hotelClass");
-      print("Hotel Styles: $hotelStyles");
-      print("Language: $language");
-      print("Phone: $phone");
-      print("Email: $email");
-      print("Website: $website");
 
-      final hotelUrl = Uri.parse('$baseUrl/hotel/$destinationId');
-      var hotelRequest = http.MultipartRequest('POST', hotelUrl);
-      hotelRequest.fields['property_amenities'] = propertyAmenities;
-      hotelRequest.fields['room_features'] = roomFeatures;
-      hotelRequest.fields['room_types'] = roomTypes;
-      hotelRequest.fields['hotel_class'] = hotelClass;
-      hotelRequest.fields['hotel_styles'] = hotelStyles;
-      hotelRequest.fields['language'] = language;
-      hotelRequest.fields['phone'] = phone;
-      hotelRequest.fields['email'] = email;
-      hotelRequest.fields['website'] = website;
+Future<void> createHotel({
+  required int destinationId,
+  required String propertyAmenities,
+  required String roomFeatures,
+  required String roomTypes,
+  required String hotelClass,
+  required String hotelStyles,
+  required String language,
+  required String phone,
+  required String email,
+  required String website,
+}) async {
+  try {
+    // Create the hotel data as a JSON object
+    final hotelData = {
+      'destination_id': destinationId,
+      'property_amenities': propertyAmenities,
+      'room_features': roomFeatures,
+      'room_types': roomTypes,
+      'hotel_class': hotelClass,
+      'hotel_styles': hotelStyles,
+      'language': language,
+      'phone': phone,
+      'email': email,
+      'website': website,
+    };
 
-      var hotelResponse = await hotelRequest.send();
+    final hotelUrl = Uri.parse('$baseUrl/hotel/$destinationId');
+    final headers = {
+      "Content-Type": "application/json; charset=utf-8",
+    };
 
-      if (hotelResponse.statusCode == 200) {
-        print("Hotel created successfully.");
-      } else {
-        final hotelResponseBody = await hotelResponse.stream.bytesToString();
-        print('Error creating hotel: $hotelResponseBody');
-        throw Exception('Failed to create hotel');
-      }
-    } catch (e) {
-      print("Error creating hotel: $e");
+    // Send the request with the JSON body
+    final response = await http.post(
+      hotelUrl,
+      headers: headers,
+      body: json.encode(hotelData),
+    );
+
+    // Check the response status code
+    if (response.statusCode == 200) {
+      print("Hotel created successfully.");
+    } else {
+      final responseBody = response.body;
+      print('Error creating hotel: $responseBody');
+      throw Exception('Failed to create hotel');
     }
+  } catch (e) {
+    print("Error creating hotel: $e");
   }
+}
 
-  // Fetch list of cities (unchanged)
   Future<List<Map<String, dynamic>>> getCities() async {
     try {
       final cityUrl = Uri.parse('$baseUrl/city');
@@ -179,4 +178,33 @@ class DestinationController extends ChangeNotifier {
       return [];
     }
   }
+  // After destination and hotel creation, fetch the destination and hotel together
+Future<Map<String, dynamic>?> getDestinationWithHotel(int destinationId) async {
+  try {
+    final destinationUrl = Uri.parse('$baseUrl/destination/$destinationId');
+    final response = await http.get(destinationUrl, headers: {
+      "Content-Type": "application/json; charset=utf-8",
+    });
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> destinationData = json.decode(response.body);
+      
+      // Ensure the destination data includes hotel information
+      if (destinationData.containsKey('hotel') && destinationData['hotel'] != null) {
+        print('Destination and Hotel data fetched successfully!');
+        return destinationData;
+      } else {
+        print('Hotel data is missing for this destination');
+        return null;
+      }
+    } else {
+      print('Error fetching destination with hotel: ${response.body}');
+      return null;
+    }
+  } catch (e) {
+    print('Error fetching destination with hotel: $e');
+    return null;
+  }
+}
+
 }
