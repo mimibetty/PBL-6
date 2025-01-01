@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:travelappflutter/core/app_export.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/controller/business_controller.dart';
 import 'package:travelappflutter/presentation/business_dashboard/rating_screen.dart';
-import 'package:travelappflutter/presentation/home_screen/models/travel_model.dart';
 
 class BusinessDashboard extends StatefulWidget {
   @override
@@ -47,7 +46,7 @@ class _DashboardState extends State<BusinessDashboard> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20.0, vertical: 12.0),
                     child: const Text(
-                      "Welcome to VinGroup Company Dashboard \n\nAnalyze your business performance",
+                      "Welcome to our Company Dashboard \n\nAnalyze your business performance",
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 18.0,

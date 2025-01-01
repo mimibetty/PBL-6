@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/controller/business_info_controller.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/models/business_model.dart';
+import 'package:travelappflutter/presentation/business_dashboard/business_dashboard.dart';
 import 'package:travelappflutter/presentation/map/map_screen.dart';
 
 class BusinessPostScreen extends StatefulWidget {
@@ -75,16 +76,16 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
                 _navigateToBusinessesFacilities();
                 break;
               case 'Business Statistics':
-                _navigateToBusinessesDashboard(context, 'restaurant');
+                _navigateToBusinessesDashboard();
                 break;
             }
           },
           itemBuilder: (context) {
             return [
-              _buildPopupMenuItem('Tours'),
-              _buildPopupMenuItem('Facilities'),
-              _buildPopupMenuItem('Hotels'),
-              _buildPopupMenuItem('Restaurants'),
+              // _buildPopupMenuItem('Tours'),
+              // _buildPopupMenuItem('Facilities'),
+              // _buildPopupMenuItem('Hotels'),
+              // _buildPopupMenuItem('Restaurants'),
               _buildPopupMenuItem('Business Statistics'),
             ];
           },
@@ -301,11 +302,11 @@ class _BusinessPostScreenState extends State<BusinessPostScreen> {
   //   );
   // }
 
-  void _navigateToBusinessesDashboard(BuildContext context, String type) {
+  void _navigateToBusinessesDashboard() {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => Container(), // Replace with actual dashboard screen
+        builder: (context) => BusinessDashboard(), // Replace with actual dashboard screen
       ),
     );
   }

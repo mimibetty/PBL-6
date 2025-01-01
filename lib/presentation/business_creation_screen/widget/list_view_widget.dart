@@ -248,17 +248,17 @@ class _DestinationListWidgetState extends State<DestinationListWidget> {
                             ],
                           ),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.black),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => EditBusinessPostScreen(),
-                              ),
-                            );
-                          },
-                        ),
+                        // IconButton(
+                        //   icon: const Icon(Icons.edit, color: Colors.black),
+                        //   onPressed: () {
+                        //     Navigator.push(
+                        //       context,
+                        //       MaterialPageRoute(
+                        //         builder: (context) => EditBusinessPostScreen(),
+                        //       ),
+                        //     );
+                        //   },
+                        // ),
                         // Checkbox under the edit button
                         Positioned(
                           bottom: 8,

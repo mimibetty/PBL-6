@@ -117,7 +117,7 @@ Future<void> createHotel({
       'property_amenities': propertyAmenities,
       'room_features': roomFeatures,
       'room_types': roomTypes,
-      'hotel_class': hotelClass,
+      'hotel_class': getValidHotelClass(hotelClass),
       'hotel_styles': hotelStyles,
       'language': language,
       'phone': phone,
@@ -130,6 +130,7 @@ Future<void> createHotel({
       "Content-Type": "application/json; charset=utf-8",
     };
 
+    print("Hotel URL: $hotelUrl");
     // Send the request with the JSON body
     final response = await http.post(
       hotelUrl,
@@ -206,5 +207,27 @@ Future<Map<String, dynamic>?> getDestinationWithHotel(int destinationId) async {
     return null;
   }
 }
+
+  int getValidHotelClass(String hotelClass) {
+    try {
+      // Kiểm tra xem giá trị có phải là số thực hay không
+      final double? parsedDouble = double.tryParse(hotelClass);
+      if (parsedDouble != null) {
+        // Nếu là số thực, chuyển sang số nguyên
+        return parsedDouble.toInt();
+      }
+
+      // Nếu không phải số thực, kiểm tra xem có phải là số nguyên hay không
+      final int? parsedInt = int.tryParse(hotelClass);
+      if (parsedInt != null) {
+        return parsedInt;
+      }
+
+      // Nếu không thể chuyển đổi, ném lỗi
+      throw Exception("Invalid hotel_class value: $hotelClass");
+    } catch (e) {
+      throw Exception("Error parsing hotel_class: $e");
+    }
+  }
 
 }

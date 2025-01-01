@@ -71,9 +71,10 @@ class CustomBottomNavBar extends StatelessWidget {
                   if (userRole == 'guest') {
                     Get.toNamed('/plan_screen'); // Navigate to AI Trip
                   } else {
-                    Get.toNamed('/business_creation_screen', arguments: {
-                      "businessId": "3"
-                    }); // Navigate to Destination
+                    // Get.toNamed('/business_creation_screen', arguments: {
+                    //   "businessId": "3"
+                    // }); // Navigate to Destination
+                    Get.toNamed('/business_post_screen');
                   }
                   break;
                 case 3:

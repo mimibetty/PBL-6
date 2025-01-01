@@ -182,138 +182,149 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
   }
 
   void _createBusiness() async {
-  if (_formKey.currentState!.validate()) {
-    print("Business Information:");
+    if (_formKey.currentState!.validate()) {
+      print("Business Information:");
 
-    // Ensure openingHours is properly formatted or provide a default value
-    String formattedOpeningHours = openingHours.isNotEmpty
-        ? openingHours
-        : '00:00'; // Default to '00:00' if openingHours is empty or invalid
+      // Ensure openingHours is properly formatted or provide a default value
+      String formattedOpeningHours = openingHours.isNotEmpty
+          ? openingHours
+          : '00:00'; // Default to '00:00' if openingHours is empty or invalid
 
-    // If you need more specific validation, check if the openingHours follows a valid time format
-    if (!RegExp(r'^\d{2}:\d{2}$').hasMatch(formattedOpeningHours)) {
-      // If the format is incorrect, provide a default time or show an error
-      formattedOpeningHours = '00:00'; // Set to a default valid time if invalid format
-      print("Invalid openingHours format, setting to default '00:00'");
-    }
-
-    // Parse price range
-    final priceRangeParts = priceRange.split('-');
-    int priceBottom = 0;
-    int priceTop = 0;
-
-    if (priceRangeParts.length == 2) {
-      priceBottom = int.tryParse(priceRangeParts[0].trim()) ?? 0;
-      priceTop = int.tryParse(priceRangeParts[1].trim()) ?? 0;
-    }
-
-    // Create destination and get destinationId
-    int? destinationId = await DestinationController().createDestination(
-      userId: userId,
-      name: name,
-      district: district,
-      street: street,
-      ward: ward,
-      cityId: int.tryParse(cityId) ?? 0,
-      priceBottom: priceBottom,
-      priceTop: priceTop,
-      dateCreate: DateTime.now(),
-      age: int.tryParse(age) ?? 0,
-      openTime: formattedOpeningHours, // Use the formatted or default openingHours
-      duration: int.tryParse(duration) ?? 0,
-      description: description,
-      images: selectedImages,
-    );
-    print("Destination ID: $destinationId");
-
-    if (destinationId != null) {
-      print("Destination created with ID: $destinationId");
-
-      // Now create the hotel with the destinationId
-      await DestinationController().createHotel(
-        destinationId: destinationId, // Pass the destinationId
-        propertyAmenities: selectedHotelFeatures.join(', '),
-        roomFeatures: roomFeatures.join(', '),
-        roomTypes: roomTypes.join(', '),
-        hotelClass: hotelClass,
-        hotelStyles: hotelStyles,
-        language: language,
-        phone: phoneNumber,
-        email: email,
-        website: website,
-      );
-      print("Hotel created successfully.");
-
-      // After hotel creation, fetch both destination and hotel details
-      final destinationWithHotel = await DestinationController()
-          .getDestinationWithHotel(destinationId);
-      if (destinationWithHotel != null) {
-        print("Fetched Destination with Hotel: $destinationWithHotel");
-        // You can now use the combined data (destination + hotel) as needed
-      } else {
-        print("Error fetching destination with hotel.");
+      // If you need more specific validation, check if the openingHours follows a valid time format
+      if (!RegExp(r'^\d{2}:\d{2}$').hasMatch(formattedOpeningHours)) {
+        // If the format is incorrect, provide a default time or show an error
+        formattedOpeningHours =
+            '00:00'; // Set to a default valid time if invalid format
+        print("Invalid openingHours format, setting to default '00:00'");
       }
 
-      // Reset the form after successful creation
-      setState(() {
-        _resetForm(); // Ensure this is called inside setState to trigger UI update
-      });
+      // Parse price range
+      final priceRangeParts = priceRange.split('-');
+      int priceBottom = 0;
+      int priceTop = 0;
 
-      // Show a success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Business and Hotel created successfully')),
+      if (priceRangeParts.length == 2) {
+        priceBottom = int.tryParse(priceRangeParts[0].trim()) ?? 0;
+        priceTop = int.tryParse(priceRangeParts[1].trim()) ?? 0;
+      }
+
+      // Create destination and get destinationId
+      int? destinationId = await DestinationController().createDestination(
+        userId: userId,
+        name: name,
+        district: district,
+        street: street,
+        ward: ward,
+        cityId: int.tryParse(cityId) ?? 0,
+        priceBottom: priceBottom,
+        priceTop: priceTop,
+        dateCreate: DateTime.now(),
+        age: int.tryParse(age) ?? 0,
+        openTime:
+            formattedOpeningHours, // Use the formatted or default openingHours
+        duration: int.tryParse(duration) ?? 0,
+        description: description,
+        images: selectedImages,
       );
+      print("Destination ID: $destinationId");
+
+      if (destinationId != null) {
+        print("Destination created with ID: $destinationId");
+
+        // Now create the hotel with the destinationId
+        await DestinationController().createHotel(
+          destinationId: destinationId, // Pass the destinationId
+          propertyAmenities: selectedHotelFeatures.join(', '),
+          roomFeatures: roomFeatures.join(', '),
+          roomTypes: roomTypes.join(', '),
+          hotelClass: hotelClass,
+          hotelStyles: hotelStyles,
+          language: language,
+          phone: phoneNumber,
+          email: email,
+          website: website,
+        );
+        print("Hotel created successfully.");
+
+        // After hotel creation, fetch both destination and hotel details
+        final destinationWithHotel = await DestinationController()
+            .getDestinationWithHotel(destinationId);
+        if (destinationWithHotel != null) {
+          print("Fetched Destination with Hotel: $destinationWithHotel");
+          // You can now use the combined data (destination + hotel) as needed
+        } else {
+          print("Error fetching destination with hotel.");
+        }
+
+        // Reset the form after successful creation
+        setState(() {
+          _resetForm(); // Ensure this is called inside setState to trigger UI update
+        });
+
+        // Show a success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Business and Hotel created successfully')),
+        );
+      } else {
+        print("Failed to create destination.");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to create destination')),
+        );
+      }
     } else {
-      print("Failed to create destination.");
+      print('Form is invalid. Please fill in all required fields.');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to create destination')),
+        SnackBar(content: Text('Please fill in all required fields')),
       );
     }
-  } else {
-    print('Form is invalid. Please fill in all required fields.');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Please fill in all required fields')),
-    );
   }
-}
-
 
   void _resetForm() {
     setState(() {
+      // Reset tất cả các trường dữ liệu
       selectedBusinessType = null;
       name = '';
       phoneNumber = '';
+      district = '';
+      street = '';
+      ward = '';
       website = '';
-      openingHours = '';
-      closingHours = '';
+      email = '';
+      openingHours = ''; // Reset giờ mở cửa
+      closingHours = ''; // Reset giờ đóng cửa
       hotelStyles = '';
       hotelClass = '';
       selectedHotelFeatures.clear();
       selectedRestaurantFeatures.clear();
       cuisine = '';
       meal = '';
-      priceRange = '0 - 1000'; // Reset default price range
+      priceRange = '0 - 1000'; // Reset giá mặc định
       overview = '';
       guide = '';
       ticketRequired = false;
       age = '';
       duration = '';
-      openingHours = '';
       whatIncluded = '';
       whatNotIncluded = '';
       additionalInfo = '';
-      selectedCuisine.clear();
-      roomFeatures.clear();
-      roomTypes.clear();
+      description = '';
       language = '';
-      selectedCityName = null;
-      cityId = '';
-      selectedImages.clear(); // Clear selected images
+      selectedCityName = null; // Reset city name
+      cityId = ''; // Reset city ID
 
-      // Reset form state
-      _formKey.currentState?.reset(); // Reset form fields
+      cityDropdownReset(); // Reset trạng thái CityDropdownWidget
     });
   }
+
+// Hàm reset cho CityDropdownWidget
+  void cityDropdownReset() {
+    setState(() {
+      selectedCityName = null;
+      cityId = '';
+    });
+  }
+
+// Hàm reset cho ImagePickerWidget
 
   @override
   Widget build(BuildContext context) {
@@ -321,22 +332,6 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
       appBar: AppBar(
         title: Text('Business Creation Screen'),
         backgroundColor: Colors.white,
-        // actions: [
-        //   IconButton(
-        //     icon: Icon(Icons.add, color: Colors.black),
-        //     onPressed: () {
-        //       // Replace this with the actual Business object
-
-        //       Navigator.push(
-        //         context,
-        //         MaterialPageRoute(
-        //           builder: (context) =>
-        //               BusinessPostScreen(business: businessA1),
-        //         ),
-        //       );
-        //     },
-        //   ),
-        // ],
       ),
       body: Container(
         color: Colors.grey[100], // Màu nền xám nhạt
@@ -827,18 +822,24 @@ class CityDropdownWidget extends StatelessWidget {
   final String? selectedCityName; // The currently selected city name
   final Function(String?)
       onChanged; // Callback to handle changes to the selected city
+  final VoidCallback? onReset; // Callback to reset the selected city
 
   CityDropdownWidget({
     required this.cities,
     required this.selectedCityName,
     required this.onChanged,
+    this.onReset, // Optional reset callback
   });
 
   @override
   Widget build(BuildContext context) {
-    return cities.isEmpty
-        ? CircularProgressIndicator() // Show a loader while cities are being fetched
-        : DropdownButtonFormField<String>(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (cities.isEmpty)
+          CircularProgressIndicator() // Show a loader while cities are being fetched
+        else
+          DropdownButtonFormField<String>(
             decoration: InputDecoration(
               labelText: 'Select City',
               filled: true,
@@ -856,6 +857,19 @@ class CityDropdownWidget extends StatelessWidget {
             }).toList(),
             onChanged: onChanged,
             hint: Text('Select City'),
-          );
+          ),
+        if (onReset != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: TextButton(
+              onPressed: onReset,
+              child: Text(
+                'Reset City',
+                style: TextStyle(color: Colors.blue),
+              ),
+            ),
+          ),
+      ],
+    );
   }
 }
