@@ -93,7 +93,9 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
         ),
         actions: [
           HeartIconWidget(
-            userId: Get.find<AuthController>().userId.value, // Add the userId argument
+            userId: Get.find<AuthController>()
+                .userId
+                .value, // Add the userId argument
             destinationId:
                 widget.destination.id, // Add the destinationId argument
             isLiked: isLiked, // Truyền trạng thái isLiked vào
@@ -169,8 +171,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => FullScreenImageViewer(
-                                    imageUrl:
-                                        widget.destination.images[index]),
+                                    imageUrl: widget.destination.images[index]),
                               ),
                             );
                           },
@@ -202,8 +203,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                 image: widget.destination.images.length - 1 !=
                                         pageView
                                     ? NetworkImage(
-                                        widget
-                                            .destination.images[pageView + 1],
+                                        widget.destination.images[pageView + 1],
                                       )
                                     : NetworkImage(
                                         widget.destination.images[0],
@@ -342,36 +342,42 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      child: const TabBar(
-                        labelColor: blueTextColor,
-                        labelStyle: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        unselectedLabelColor: Colors.black,
-                        indicatorColor: blueTextColor,
-                        dividerColor: Colors.transparent,
-                        tabs: [
-                          Tab(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
+                        width: MediaQuery.of(context).size.width,
+                        child: const TabBar(
+                          labelColor:
+                              blueTextColor, // Color for the selected tab
+                          labelStyle: TextStyle(
+                            fontSize: 18, // Font size for the selected tab
+                            fontWeight: FontWeight
+                                .w500, // Font weight for the selected tab
+                          ),
+                          unselectedLabelColor:
+                              Colors.black, // Color for the unselected tab
+                          indicatorColor:
+                              blueTextColor, // Color of the indicator (the line under the selected tab)
+                          dividerColor: Colors
+                              .transparent, // Optional: If you want to hide the divider
+                          tabs: [
+                            Tab(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
                                   horizontal:
-                                      4.0), // Tăng chiều cao của tab Overview
-                              child: Text('Overview'),
+                                      4.0, // Adjust the width of the 'Overview' tab
+                                ),
+                                child: Text('Overview'),
+                              ),
                             ),
-                          ),
-                          Tab(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
+                            Tab(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
                                   vertical:
-                                      8.0), // Chiều cao bình thường cho tab Review
-                              child: Text('Review'),
+                                      8.0, // Adjust the height of the 'Review' tab
+                                ),
+                                child: Text('Review'),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
+                          ],
+                        )),
                     Expanded(
                       child: TabBarView(
                         children: [
@@ -451,7 +457,9 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                                     destinationId: widget.destination.id,
                                     //reviews: controller.reviews,
                                     ratingCounts: controller.ratingCounts,
-                                    UserId: Get.find<AuthController>().userId.value);
+                                    UserId: Get.find<AuthController>()
+                                        .userId
+                                        .value);
                               }),
                             ),
                           ),

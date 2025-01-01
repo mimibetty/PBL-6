@@ -127,12 +127,7 @@ class _PlanScreen7State extends State<PlanScreen7>
             style: TextStyle(color: Colors.black),
           ),
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.close, color: Colors.black),
-            onPressed: () {},
-          ),
-        ],
+        
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(50.0),
           child: Container(
@@ -262,14 +257,12 @@ class _PlacesToStayTabState extends State<PlacesToStayTab> {
   final PlanScreenController planScreenController =
       Get.find<PlanScreenController>();
 
-  // Lưu tọa độ của khách sạn đã chọn
   LatLng? selectedCoordinates;
   bool showMap = false;
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      // Kiểm tra nếu danh sách khách sạn trống
       if (planScreenController.hotelPlanScreen.isEmpty) {
         return Center(
           child: Text(
@@ -279,7 +272,6 @@ class _PlacesToStayTabState extends State<PlacesToStayTab> {
         );
       }
 
-      // Hiển thị danh sách khách sạn
       return Column(
         children: [
           Expanded(
@@ -291,7 +283,6 @@ class _PlacesToStayTabState extends State<PlacesToStayTab> {
 
                 return GestureDetector(
                   onTap: () async {
-                    // Lấy tọa độ từ địa chỉ của khách sạn
                     String fullAddress = [
                       hotel.address.street?.trimRight(),
                       hotel.address.ward?.trimRight(),
@@ -336,8 +327,6 @@ class _PlacesToStayTabState extends State<PlacesToStayTab> {
               },
             ),
           ),
-
-          // Bản đồ hiển thị tọa độ đã chọn với nút đóng
           if (showMap)
             Stack(
               children: [
@@ -383,7 +372,6 @@ class _PlacesToStayTabState extends State<PlacesToStayTab> {
     });
   }
 
-  // Widget hiển thị chi tiết một khách sạn
   Widget _buildPlaceToStay({
     required String imageUrl,
     required String name,
@@ -402,7 +390,7 @@ class _PlacesToStayTabState extends State<PlacesToStayTab> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Hình ảnh khách sạn
+            // Image
             Image.network(
               imageUrl,
               height: 120,
@@ -411,7 +399,7 @@ class _PlacesToStayTabState extends State<PlacesToStayTab> {
             ),
             SizedBox(height: 5),
 
-            // Tên khách sạn
+            // Title and Heart Icon for favorite
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -423,16 +411,16 @@ class _PlacesToStayTabState extends State<PlacesToStayTab> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Icon(Icons.favorite_border, color: Colors.black),
+                Icon(Icons.favorite_border, color: Colors.red, size: 24), // Favorite icon
               ],
             ),
             SizedBox(height: 5),
 
-            // Địa chỉ
+            // Address
             Text(address, style: TextStyle(color: Colors.black54)),
             SizedBox(height: 5),
 
-            // Thời gian
+            // Time
             Text(
               "Time: $time",
               style: TextStyle(fontSize: 14, color: Colors.black54),
@@ -441,21 +429,19 @@ class _PlacesToStayTabState extends State<PlacesToStayTab> {
             ),
             SizedBox(height: 5),
 
-            // Đánh giá và số lượt đánh giá
+            // Rating and Reviews
             Row(
               children: [
                 Icon(Icons.star, size: 14, color: Colors.amber),
                 SizedBox(width: 4),
-                Text("$rating ★",
-                    style: TextStyle(fontSize: 14, color: Colors.grey)),
+                Text("$rating", style: TextStyle(fontSize: 14, color: Colors.black)),
                 SizedBox(width: 10),
-                Text("($numOfReviews reviews)",
-                    style: TextStyle(fontSize: 14, color: Colors.grey)),
+                Text("($numOfReviews reviews)", style: TextStyle(fontSize: 14, color: Colors.grey)),
               ],
             ),
             SizedBox(height: 5),
 
-            // Giá
+            // Price
             Text(
               price,
               style: TextStyle(
@@ -466,7 +452,7 @@ class _PlacesToStayTabState extends State<PlacesToStayTab> {
             ),
             SizedBox(height: 8),
 
-            // Mô tả
+            // Description
             Text(description, style: TextStyle(color: Colors.black54)),
           ],
         ),
@@ -477,8 +463,8 @@ class _PlacesToStayTabState extends State<PlacesToStayTab> {
 
 class ItineraryDayTab extends StatelessWidget {
   final String day;
-  final List<TravelDestination>
-      destinations; // Danh sách địa điểm cho ngày hiện tại
+  final List<TravelDestination> destinations; // List of destinations for the current day
+
   ItineraryDayTab({
     required this.day,
     required this.destinations,
@@ -495,9 +481,8 @@ class ItineraryDayTab extends StatelessWidget {
           name: destination.name,
           imageUrl: destination.images[0],
           description: destination.description,
-          address: destination.address.district,
-          addressDetail:
-              destination.address.street + " " + destination.address.ward,
+          address: destination.address.district ?? "No address available",
+          addressDetail: "${destination.address.street ?? ''} ${destination.address.ward ?? ''}",
           time: destination.openTime.toString(),
           rating: destination.rating.toStringAsFixed(1),
           numOfReviews: destination.numOfReviews.toString(),
@@ -517,27 +502,25 @@ class ItineraryDayTab extends StatelessWidget {
     required String numOfReviews,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(
-          bottom: 16.0), // Adjust bottom padding to increase spacing
+      padding: const EdgeInsets.only(bottom: 16.0), // Increased bottom padding for better separation
       child: Card(
-        color: Colors.grey[100],
-        elevation: 4,
+        color: Colors.white, // Changed to white for better contrast
+        elevation: 5, // Increased elevation for better card effect
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(15), // Rounded corners for a smoother look
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(15),
           child: ExpansionTile(
-            backgroundColor: Colors.grey[100],
+            backgroundColor: Colors.white, // Same background color as the card
             tilePadding: EdgeInsets.all(0),
             title: Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-              child: Text(name, style: TextStyle(color: Colors.black)),
+              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+              child: Text(name, style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
             ),
             subtitle: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(address, style: TextStyle(color: Colors.black54)),
+              child: Text(address, style: TextStyle(color: Colors.black54, fontSize: 14)),
             ),
             children: <Widget>[
               Padding(
@@ -584,9 +567,8 @@ class ItineraryDayTab extends StatelessWidget {
                               const SizedBox(height: 10),
                               Row(
                                 children: [
-                                  Icon(Icons.location_pin,
-                                      color: Colors.red, size: 16),
-                                  SizedBox(width: 2),
+                                  Icon(Icons.location_pin, color: Colors.red, size: 18),
+                                  SizedBox(width: 4),
                                   Expanded(
                                     child: Text(
                                       addressDetail,
@@ -599,27 +581,25 @@ class ItineraryDayTab extends StatelessWidget {
                               ),
                               const SizedBox(height: 5),
                               Text(
-                                "Time: ${time.toString()}",
-                                style: TextStyle(
-                                    fontSize: 14, color: Colors.black54),
+                                "Time: $time",
+                                style: TextStyle(fontSize: 14, color: Colors.black54),
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 2,
                               ),
                               const SizedBox(height: 5),
                               Row(
                                 children: [
-                                  const SizedBox(width: 8),
+                                  Icon(Icons.star, color: Colors.amber, size: 16),
+                                  SizedBox(width: 5),
                                   Text(
-                                    "${rating} ★",
-                                    style: TextStyle(
-                                        fontSize: 14, color: Colors.grey),
+                                    "$rating ★",
+                                    style: TextStyle(fontSize: 14, color: Colors.grey),
                                   ),
                                   const SizedBox(width: 5),
                                   Expanded(
                                     child: Text(
-                                      "(${numOfReviews} reviews)",
-                                      style: TextStyle(
-                                          fontSize: 14, color: Colors.grey),
+                                      "($numOfReviews reviews)",
+                                      style: TextStyle(fontSize: 14, color: Colors.grey),
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 2,
                                     ),

@@ -21,7 +21,10 @@ class ThingToDoScreen extends StatefulWidget {
   final int cityID;
 
   const ThingToDoScreen(
-      {super.key, required this.destinations, required this.cityNames, required this.cityID});
+      {super.key,
+      required this.destinations,
+      required this.cityNames,
+      required this.cityID});
 
   @override
   State<ThingToDoScreen> createState() => _ThingToDoScreenState();
@@ -54,9 +57,10 @@ Widget experienceButton(String label, int count, IconData icon) {
 }
 
 class _ThingToDoScreenState extends State<ThingToDoScreen> {
-  final ThingsToDoController thingsToDoController = Get.put(ThingsToDoController());
+  final ThingsToDoController thingsToDoController =
+      Get.put(ThingsToDoController());
   final TourController tourController = Get.put(TourController());
-  
+
   @override
   void initState() {
     super.initState();
@@ -72,7 +76,6 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
         widget.destinations.toList();
     // Sắp xếp giảm dần theo rating
     recommendDestinations.sort((a, b) => b.rating.compareTo(a.rating));
-
 
     return Scaffold(
       backgroundColor: kBackgroundColor,
@@ -163,7 +166,7 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
                 return {
                   'label': tag.name,
                   'icon': _getIconForTag(tag.name),
-                  'count' : tag.destinationCount,
+                  'count': tag.destinationCount,
                   //'count' : thingsToDoController.thingsToDoList.length,
                 };
               }).toList(),
@@ -265,7 +268,9 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Column(
               children: List.generate(
-                recommendDestinations.length <= 8 ? recommendDestinations.length : 8,
+                recommendDestinations.length <= 8
+                    ? recommendDestinations.length
+                    : 8,
                 (index) => Padding(
                   padding: const EdgeInsets.only(bottom: 15),
                   child: GestureDetector(
@@ -323,7 +328,7 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Row(
                 children: List.generate(
-                 tourController.tours.length,
+                  tourController.tours.length,
                   (index) => Padding(
                     padding: const EdgeInsets.only(bottom: 15, right: 10),
                     child: GestureDetector(
@@ -332,14 +337,14 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
                           context,
                           MaterialPageRoute(
                             builder: (_) => TourDetailScreen(
-                              tour:tourController.tours[index],
+                              tour: tourController.tours[index],
                               cityName: widget.cityNames,
                             ),
                           ),
                         );
                       },
                       child: TourWidget(
-                        tour:tourController.tours[index],
+                        tour: tourController.tours[index],
                       ),
                     ),
                   ),
@@ -382,43 +387,9 @@ class _ThingToDoScreenState extends State<ThingToDoScreen> {
                 color: Colors.black,
               ),
             ),
-            const Icon(
-              Icons.keyboard_arrow_down,
-              size: 30,
-              color: Colors.black26,
-            ),
           ],
         ),
       ),
-      actions: [
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(
-              color: Colors.black12,
-            ),
-          ),
-          padding: const EdgeInsets.all(7),
-          child: const Stack(
-            children: [
-              Icon(
-                Iconsax.notification,
-                color: Colors.black,
-                size: 30,
-              ),
-              Positioned(
-                top: 5,
-                right: 5,
-                child: CircleAvatar(
-                  radius: 5,
-                  backgroundColor: Colors.red,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 15),
-      ],
     );
   }
 }

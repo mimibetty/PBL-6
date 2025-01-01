@@ -45,7 +45,7 @@ class DestinationController extends ChangeNotifier {
       print("10. Description: $description");
       print("11. Images: ${images.map((file) => file.path).toList()}");
 
-      final destinationUrl = Uri.parse('$baseUrl/destination');
+      final destinationUrl = Uri.parse('$baseUrl/destination/');
 
       var request = http.MultipartRequest('POST', destinationUrl);
       request.fields['user_id'] = userId.toString();

@@ -17,43 +17,16 @@ class _SearchScreenState extends State<SearchScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  final SearchDestinationController searchController = Get.put(SearchDestinationController());
-  
+  final SearchDestinationController searchController =
+      Get.put(SearchDestinationController());
+
   @override
   void initState() {
     super.initState();
-    // Gọi API khi khởi tạo màn hình
     searchController.fetchAllDestinations();
-    _tabController = TabController(length: 4, vsync: this);
-    // _tabController.addListener(() {
-    //   if (!_tabController.indexIsChanging) {
-    //     if (_tabController.index == 3) {
-    //       Future.microtask(() {
-    //         Navigator.push(
-    //           context,
-    //           MaterialPageRoute(
-    //             builder: (_) => search
-    //                 .RestaurantSearchScreen(), // Điều hướng đến trang RestaurantSearchScreen
-    //           ),
-    //         );
-    //       });
-    //     }
-    //   }
-    //   if (!_tabController.indexIsChanging) {
-    //     if (_tabController.index == 2) {
-    //       Future.microtask(() {
-    //         Navigator.push(
-    //           context,
-    //           MaterialPageRoute(
-    //             builder: (_) => ThingToDoScreen(
-    //                 destinations:
-    //                     daNangDestinations), // Điều hướng đến trang RestaurantSearchScreen
-    //           ),
-    //         );
-    //       });
-    //     }
-    //   }
-    // });
+
+    // Ensure the TabController length matches the number of tabs in the TabBar
+    _tabController = TabController(length: 1, vsync: this); // Length is set to 1 for a single tab
   }
 
   @override
@@ -64,11 +37,12 @@ class _SearchScreenState extends State<SearchScreen>
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Where to?',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        title: Text(
+          'Where to?',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
@@ -77,12 +51,10 @@ class _SearchScreenState extends State<SearchScreen>
           indicatorColor: Colors.black,
           tabs: [
             Tab(icon: Icon(Icons.search), text: "Search All"),
-            Tab(icon: Icon(Icons.hotel), text: "Hotels"),
-            Tab(icon: Icon(Icons.event), text: "Things to Do"),
-            Tab(icon: Icon(Icons.restaurant), text: "Restaurants"),
           ],
         ),
       ),
+      
       body: Column(
         children: [
           // Thêm khoảng cách giữa TabBar và Search bar
@@ -98,7 +70,9 @@ class _SearchScreenState extends State<SearchScreen>
                     child: Column(
                       children: [
                         TextField(
-                          onChanged: (query) => searchController.onSearchChanged(query), // Gọi debounce trong controller
+                          onChanged: (query) =>
+                              searchController.onSearchChanged(
+                                  query), // Gọi debounce trong controller
                           decoration: InputDecoration(
                             hintText: 'Places to go, things to do, hotels...',
                             suffixIcon: IconButton(
@@ -120,7 +94,8 @@ class _SearchScreenState extends State<SearchScreen>
                           }
 
                           if (searchController.searchResults.isEmpty) {
-                            return Text('No results found.', style: TextStyle(color: Colors.grey));
+                            return Text('No results found.',
+                                style: TextStyle(color: Colors.grey));
                           }
 
                           return SizedBox(
@@ -128,13 +103,17 @@ class _SearchScreenState extends State<SearchScreen>
                             child: ListView.builder(
                               itemCount: searchController.searchResults.length,
                               itemBuilder: (context, index) {
-                                final item = searchController.searchResults[index];
+                                final item =
+                                    searchController.searchResults[index];
 
                                 return ListTile(
                                   title: Text(item['name']),
-                                  subtitle: Text(item['type'] == 'city' ? "City" : "Destination"),
+                                  subtitle: Text(item['type'] == 'city'
+                                      ? "City"
+                                      : "Destination"),
                                   onTap: () {
-                                    searchController.handleResultClick(item, context); // Xử lý khi click vào kết quả
+                                    searchController.handleResultClick(item,
+                                        context); // Xử lý khi click vào kết quả
                                   },
                                 );
                               },
@@ -208,13 +187,15 @@ class _SearchScreenState extends State<SearchScreen>
                                   context,
                                   MaterialPageRoute(
                                     builder: (_) => PlaceDetailScreen(
-                                      destination: searchController.spotlightDestinations[index],
+                                      destination: searchController
+                                          .spotlightDestinations[index],
                                     ),
                                   ),
                                 );
                               },
                               child: PopularPlace(
-                                destination: searchController.spotlightDestinations[index],
+                                destination: searchController
+                                    .spotlightDestinations[index],
                               ),
                             ),
                           ),
@@ -257,7 +238,8 @@ class _SearchScreenState extends State<SearchScreen>
                       return const Center(
                         child: CircularProgressIndicator(),
                       );
-                    } else if (searchController.moreExploreDestinations.isEmpty) {
+                    } else if (searchController
+                        .moreExploreDestinations.isEmpty) {
                       return const Center(
                         child: Text("Không có địa điểm để hiển thị."),
                       );
@@ -277,13 +259,15 @@ class _SearchScreenState extends State<SearchScreen>
                                   context,
                                   MaterialPageRoute(
                                     builder: (_) => PlaceDetailScreen(
-                                      destination: searchController.moreExploreDestinations[index],
+                                      destination: searchController
+                                          .moreExploreDestinations[index],
                                     ),
                                   ),
                                 );
                               },
                               child: Recomendate(
-                                destination: searchController.moreExploreDestinations[index],
+                                destination: searchController
+                                    .moreExploreDestinations[index],
                               ),
                             ),
                           ),
@@ -330,7 +314,8 @@ class _SearchScreenState extends State<SearchScreen>
                       padding: const EdgeInsets.only(bottom: 40),
                       child: Row(
                         children: List.generate(
-                          searchController.searchRecommendations.length, // Sử dụng danh sách gợi ý
+                          searchController.searchRecommendations
+                              .length, // Sử dụng danh sách gợi ý
                           (index) => Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 15),
                             child: GestureDetector(
@@ -340,7 +325,8 @@ class _SearchScreenState extends State<SearchScreen>
                                   MaterialPageRoute(
                                     builder: (_) => PlaceDetailScreen(
                                       // Chuyển search recommendation vào PlaceDetailScreen
-                                      destination: searchController.searchRecommendations[index],
+                                      destination: searchController
+                                          .searchRecommendations[index],
                                     ),
                                   ),
                                 );
@@ -354,10 +340,14 @@ class _SearchScreenState extends State<SearchScreen>
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10),
                                       image: DecorationImage(
-                                        image: NetworkImage(
-                                            searchController.searchRecommendations[index].images.isNotEmpty
-                                                ? searchController.searchRecommendations[index].images[0]
-                                                : 'https://via.placeholder.com/200x150'), // Placeholder nếu không có ảnh
+                                        image: NetworkImage(searchController
+                                                .searchRecommendations[index]
+                                                .images
+                                                .isNotEmpty
+                                            ? searchController
+                                                .searchRecommendations[index]
+                                                .images[0]
+                                            : 'https://via.placeholder.com/200x150'), // Placeholder nếu không có ảnh
                                         fit: BoxFit.cover,
                                       ),
                                     ),
@@ -366,7 +356,8 @@ class _SearchScreenState extends State<SearchScreen>
 
                                   // Hiển thị tên recommendation destination
                                   Text(
-                                    searchController.searchRecommendations[index].name,
+                                    searchController
+                                        .searchRecommendations[index].name,
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500,
@@ -386,98 +377,109 @@ class _SearchScreenState extends State<SearchScreen>
                                           size: 12,
                                           color: i <=
                                                   searchController
-                                                      .searchRecommendations[index].rating
+                                                      .searchRecommendations[
+                                                          index]
+                                                      .rating
                                                       .floor()
-                                              ? const Color(0xFF13357B) // Màu chính: 13357B
+                                              ? const Color(
+                                                  0xFF13357B) // Màu chính: 13357B
                                               : (i ==
                                                           searchController
-                                                                  .searchRecommendations[index]
+                                                                  .searchRecommendations[
+                                                                      index]
                                                                   .rating
                                                                   .floor() +
                                                               1 &&
                                                       searchController
-                                                              .searchRecommendations[index]
-                                                              .rating -
-                                                          searchController
-                                                              .searchRecommendations[index]
-                                                              .rating
-                                                              .floor() >=
+                                                                  .searchRecommendations[
+                                                                      index]
+                                                                  .rating -
+                                                              searchController
+                                                                  .searchRecommendations[
+                                                                      index]
+                                                                  .rating
+                                                                  .floor() >=
                                                           0.5)
-                                                  ? const Color(0xFF13357B).withOpacity(
-                                                      0.5) // Màu nửa cho rating lẻ
-                                                  : Colors.grey, // Màu xám cho phần còn lại
+                                                  ? const Color(0xFF13357B)
+                                                      .withOpacity(
+                                                          0.5) // Màu nửa cho rating lẻ
+                                                  : Colors
+                                                      .grey, // Màu xám cho phần còn lại
                                         ),
                                       const SizedBox(width: 8),
                                       Text(
                                         "${searchController.searchRecommendations[index].rating.toStringAsFixed(1)} ★",
-                                        style:
-                                            const TextStyle(fontSize: 14, color: Colors.grey),
+                                        style: const TextStyle(
+                                            fontSize: 14, color: Colors.grey),
                                       ),
                                       const SizedBox(width: 5),
                                       Text(
                                         "(${searchController.searchRecommendations[index].numOfReviews} reviews)", // Số lượng reviews từ reviewCount
-                                        style:
-                                            const TextStyle(fontSize: 14, color: Colors.grey),
+                                        style: const TextStyle(
+                                            fontSize: 14, color: Colors.grey),
                                       ),
                                     ],
                                   ),
 
                                   const SizedBox(height: 5),
 
-                               // Hiển thị các features (opentime, age, price_bottom-price_top)
-                              Wrap(
-                                spacing: 4,
-                                children: [
-                                  // Hiển thị thời gian mở cửa
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(15),
-                                    ),
-                                    child: Text(
-                                      "Open: ${searchController.searchRecommendations[index].openTime}",
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.black87,
+                                  // Hiển thị các features (opentime, age, price_bottom-price_top)
+                                  Wrap(
+                                    spacing: 5,
+                                    children: [
+                                      // Hiển thị thời gian mở cửa
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 6, vertical: 3),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black.withOpacity(0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                        ),
+                                        child: Text(
+                                          "Open: ${searchController.searchRecommendations[index].openTime}",
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.black87,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
 
-                                  // // Hiển thị độ tuổi
-                                  // Container(
-                                  //   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                                  //   decoration: BoxDecoration(
-                                  //     color: Colors.black.withOpacity(0.1),
-                                  //     borderRadius: BorderRadius.circular(15),
-                                  //   ),
-                                  //   child: Text(
-                                  //     "Age: ${searchController.searchRecommendations[index].age}",
-                                  //     style: const TextStyle(
-                                  //       fontSize: 12,
-                                  //       color: Colors.black87,
-                                  //     ),
-                                  //   ),
-                                  // ),
+                                      // // Hiển thị độ tuổi
+                                      // Container(
+                                      //   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                      //   decoration: BoxDecoration(
+                                      //     color: Colors.black.withOpacity(0.1),
+                                      //     borderRadius: BorderRadius.circular(15),
+                                      //   ),
+                                      //   child: Text(
+                                      //     "Age: ${searchController.searchRecommendations[index].age}",
+                                      //     style: const TextStyle(
+                                      //       fontSize: 12,
+                                      //       color: Colors.black87,
+                                      //     ),
+                                      //   ),
+                                      // ),
 
-                                  // Hiển thị giá (price_bottom-price_top)
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(15),
-                                    ),
-                                    child: Text(
-                                      "Price: ${searchController.searchRecommendations[index].priceBottom} - ${searchController.searchRecommendations[index].priceTop} \$",
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.black87,
+                                      // Hiển thị giá (price_bottom-price_top)
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 6, vertical: 3),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black.withOpacity(0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                        ),
+                                        child: Text(
+                                          "Price: ${searchController.searchRecommendations[index].priceBottom} - ${searchController.searchRecommendations[index].priceTop} \$",
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.black87,
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                    ],
                                   ),
-                                ],
-                              ),
-
                                 ],
                               ),
                             ),

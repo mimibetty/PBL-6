@@ -49,35 +49,34 @@ class _TravelHomeScreenState extends State<HomeScreen> {
   }
 
   Future<bool> _initializeIsLiked(String destinationId) async {
-  final String baseUrl =
-      "https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net";
-  final String userId = Get.find<AuthController>().userId.value.toString();
+    final String baseUrl =
+        "https://pbl6-travel-fastapi-azfpceg2czdybuh3.eastasia-01.azurewebsites.net";
+    final String userId = Get.find<AuthController>().userId.value.toString();
 
-  try {
-    // Tạo URL request
-    final Uri url = Uri.parse('$baseUrl/user/$userId/has_liked/$destinationId');
+    try {
+      // Tạo URL request
+      final Uri url =
+          Uri.parse('$baseUrl/user/$userId/has_liked/$destinationId');
 
-    // Gửi request GET
-    final response = await http.get(url);
+      // Gửi request GET
+      final response = await http.get(url);
 
-    // Kiểm tra trạng thái HTTP response
-    if (response.statusCode == 200) {
-      // Parse kết quả trả về
-      final bool likeStatus = response.body.toLowerCase() == 'true';
-      return likeStatus; // Trả về giá trị true/false
-    } else {
-      // Xử lý khi API trả về mã lỗi
-      debugPrint('Failed to fetch like status: ${response.statusCode}');
+      // Kiểm tra trạng thái HTTP response
+      if (response.statusCode == 200) {
+        // Parse kết quả trả về
+        final bool likeStatus = response.body.toLowerCase() == 'true';
+        return likeStatus; // Trả về giá trị true/false
+      } else {
+        // Xử lý khi API trả về mã lỗi
+        debugPrint('Failed to fetch like status: ${response.statusCode}');
+        return false; // Trả về false nếu có lỗi
+      }
+    } catch (e) {
+      // Xử lý lỗi nếu có
+      debugPrint('Error checking like status: $e');
       return false; // Trả về false nếu có lỗi
     }
-  } catch (e) {
-    // Xử lý lỗi nếu có
-    debugPrint('Error checking like status: $e');
-    return false; // Trả về false nếu có lỗi
   }
-}
-
-
 
   @override
   void initState() {
@@ -85,20 +84,22 @@ class _TravelHomeScreenState extends State<HomeScreen> {
     _fetchDestinations(); // Fetch destinations based on parameters
   }
 
-Future<void> _fetchDestinations() async {
-  if (widget.tag != null) {
-    // Nếu `tag` không null, lấy dữ liệu theo chủ đề
-    await topicController.fetchDestinationsByTopic(widget.tag!);
-    homeController.myDestination.value = topicController.destinations;
-  } else if (widget.cityID != null && widget.cityName != null) {
-    // Nếu `cityID` và `cityName` không null, gọi cả hai hàm
-    await Future.wait([
-      homeController.getPopularDestinations(widget.cityID!, widget.cityName!),
-      homeController.getRecommendationDestinations(Get.find<AuthController>().userId.value,widget.cityID!, widget.cityName!),
-    ]);
+  Future<void> _fetchDestinations() async {
+    if (widget.tag != null) {
+      // Nếu `tag` không null, lấy dữ liệu theo chủ đề
+      await topicController.fetchDestinationsByTopic(widget.tag!);
+      homeController.myDestination.value = topicController.destinations;
+    } else if (widget.cityID != null && widget.cityName != null) {
+      // Nếu `cityID` và `cityName` không null, gọi cả hai hàm
+      await Future.wait([
+        homeController.getPopularDestinations(widget.cityID!, widget.cityName!),
+        homeController.getRecommendationDestinations(
+            Get.find<AuthController>().userId.value,
+            widget.cityID!,
+            widget.cityName!),
+      ]);
+    }
   }
-}
-
 
 // Chuyển đổi danh sách điểm đến thành danh sách hotelId
   List<int> getHotelIDs(List<TravelDestination> destinations) {
@@ -136,16 +137,19 @@ Future<void> _fetchDestinations() async {
 
         if (widget.tag != null) {
           // Chia đôi danh sách nếu widget.tag != null
-          List<TravelDestination> allDestinations = homeController.myDestination.value.toList();
+          List<TravelDestination> allDestinations =
+              homeController.myDestination.value.toList();
           int midIndex = (allDestinations.length / 2).ceil();
 
-          popularDestinations = allDestinations.sublist(0, midIndex); // Nửa đầu danh sách
-          recommendDestinations = allDestinations.sublist(midIndex); // Nửa sau danh sách
+          popularDestinations =
+              allDestinations.sublist(0, midIndex); // Nửa đầu danh sách
+          recommendDestinations =
+              allDestinations.sublist(midIndex); // Nửa sau danh sách
         } else {
           // Lấy từ controller nếu widget.tag == null
           popularDestinations = homeController.popularDestinations.value;
-          recommendDestinations = homeController.recommendationDestinations.value;
-
+          recommendDestinations =
+              homeController.recommendationDestinations.value;
         }
 
         var cities = Get.find<WelcomeController>()
@@ -155,7 +159,8 @@ Future<void> _fetchDestinations() async {
             .toList();
         // Sau khi in, tạo `allImages` như trước:
         List<String> allImages = [
-          ...homeController.popularDestinations.value.expand((destination) => destination.images),
+          ...homeController.popularDestinations.value
+              .expand((destination) => destination.images),
           ...cities.expand((city) => city.images.map((image) => image.url)),
         ];
 
@@ -253,7 +258,9 @@ Future<void> _fetchDestinations() async {
               padding: const EdgeInsets.only(bottom: 40),
               child: Row(
                 children: List.generate(
-                  popularDestinations.length <= 8 ? popularDestinations.length : 8,
+                  popularDestinations.length <= 8
+                      ? popularDestinations.length
+                      : 8,
                   (index) => Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: GestureDetector(
@@ -320,7 +327,9 @@ Future<void> _fetchDestinations() async {
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Column(
                 children: List.generate(
-                  recommendDestinations.length <= 8 ? recommendDestinations.length : 8,
+                  recommendDestinations.length <= 8
+                      ? recommendDestinations.length
+                      : 8,
                   (index) => Padding(
                     padding: const EdgeInsets.only(bottom: 15),
                     child: GestureDetector(
@@ -335,9 +344,11 @@ Future<void> _fetchDestinations() async {
                         );
                       },
                       child: FutureBuilder<bool>(
-                        future: _initializeIsLiked(recommendDestinations[index].id.toString()),
+                        future: _initializeIsLiked(
+                            recommendDestinations[index].id.toString()),
                         builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
                             return CircularProgressIndicator();
                           } else if (snapshot.hasError) {
                             return Text('Error: ${snapshot.error}');
@@ -362,7 +373,6 @@ Future<void> _fetchDestinations() async {
   }
 
   AppBar headerParts() {
-    
     return AppBar(
       elevation: 0,
       backgroundColor: Colors.grey[200], // Thay đổi màu nền sáng hơn
@@ -378,11 +388,8 @@ Future<void> _fetchDestinations() async {
                 Navigator.pop(context); // Quay lại trang trước đó
               },
             ),
-            const SizedBox(width: 5),
-            const Icon(
-              Iconsax.location,
-              color: Colors.black, // Màu biểu tượng location
-            ),
+            
+            
             const SizedBox(width: 5),
             Text(
               widget.cityName ?? 'Unknown City', // Tên thành phố hien tại
@@ -392,90 +399,94 @@ Future<void> _fetchDestinations() async {
                 color: Colors.black87, // Màu chữ tối hơn
               ),
             ),
-            const Icon(
-              Icons.keyboard_arrow_down,
-              size: 30,
-              color: Colors.black26, // Màu mũi tên
-            ),
+            
           ],
         ),
       ),
       actions: [
         if (widget.show)
-
-        PopupMenuButton<String>(
-          icon: const Icon(Icons.menu,
-              color: Colors.black, size: 30), // Màu biểu tượng menu
-          onSelected: (value) {
-            // Xử lý sự kiện khi chọn một mục trong menu
-            switch (value) {
-              case 'Things to do':
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ThingToDoScreen(
-                      cityNames: widget.cityName!,
-                      destinations: getThingsToDoDestinations(homeController.combineDestinations(homeController.popularDestinations.value, homeController.recommendationDestinations.value)),
-                      cityID: widget.cityID!,
-                    )
-                  ),
-                );
-                break;
-              case 'Hotels':
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => HotelSearchScreen(
-                      cityNames: widget.cityName!,
-                      cityID: widget.cityID!,
-                      hotelIDs: getHotelIDs(homeController.combineDestinations(homeController.popularDestinations.value, homeController.recommendationDestinations.value)), // Directly fetching hotel IDs here
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.menu,
+                color: Colors.black, size: 30), // Màu biểu tượng menu
+            onSelected: (value) {
+              // Xử lý sự kiện khi chọn một mục trong menu
+              switch (value) {
+                case 'Things to do':
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ThingToDoScreen(
+                              cityNames: widget.cityName!,
+                              destinations: getThingsToDoDestinations(
+                                  homeController.combineDestinations(
+                                      homeController.popularDestinations.value,
+                                      homeController
+                                          .recommendationDestinations.value)),
+                              cityID: widget.cityID!,
+                            )),
+                  );
+                  break;
+                case 'Hotels':
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HotelSearchScreen(
+                        cityNames: widget.cityName!,
+                        cityID: widget.cityID!,
+                        hotelIDs: getHotelIDs(homeController.combineDestinations(
+                            homeController.popularDestinations.value,
+                            homeController.recommendationDestinations
+                                .value)), // Directly fetching hotel IDs here
+                      ),
                     ),
+                  );
+                  break;
+                case 'Restaurants':
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => RestaurantSearchScreen(
+                        cityNames: widget.cityName!,
+                        cityID: widget.cityID!,
+                        restaurantIDs: getRestaurantIDs(
+                            homeController.combineDestinations(
+                                homeController.popularDestinations.value,
+                                homeController.recommendationDestinations
+                                    .value)), // Directly fetching hotel IDs here
+                      ),
+                    ),
+                  );
+                  break;
+              }
+            },
+            // Thay đổi màu nền và màu chữ của menu
+            color: Colors.white, // Màu nền của menu
+            itemBuilder: (BuildContext context) {
+              return [
+                const PopupMenuItem<String>(
+                  value: 'Things to do',
+                  child: Text(
+                    'Things to do',
+                    style: TextStyle(color: Colors.black), // Màu chữ
                   ),
-                );
-                break;
-              case 'Restaurants':
-                Navigator.push(
-                context,
-                
-                MaterialPageRoute(
-                  builder: (context) => RestaurantSearchScreen(
-                     cityNames: widget.cityName!,
-                     cityID: widget.cityID!,
-                     restaurantIDs: getRestaurantIDs(homeController.combineDestinations(homeController.popularDestinations.value, homeController.recommendationDestinations.value)), // Directly fetching hotel IDs here
+                ),
+                const PopupMenuItem<String>(
+                  value: 'Hotels',
+                  child: Text(
+                    'Hotels',
+                    style: TextStyle(color: Colors.black), // Màu chữ
                   ),
                 ),
-              );
-                break;
-            }
-          },
-          // Thay đổi màu nền và màu chữ của menu
-          color: Colors.white, // Màu nền của menu
-          itemBuilder: (BuildContext context) {
-            return [
-              const PopupMenuItem<String>(
-                value: 'Things to do',
-                child: Text(
-                  'Things to do',
-                  style: TextStyle(color: Colors.black), // Màu chữ
+                const PopupMenuItem<String>(
+                  value: 'Restaurants',
+                  child: Text(
+                    'Restaurants',
+                    style: TextStyle(color: Colors.black), // Màu chữ
+                  ),
                 ),
-              ),
-              const PopupMenuItem<String>(
-                value: 'Hotels',
-                child: Text(
-                  'Hotels',
-                  style: TextStyle(color: Colors.black), // Màu chữ
-                ),
-              ),
-              const PopupMenuItem<String>(
-                value: 'Restaurants',
-                child: Text(
-                  'Restaurants',
-                  style: TextStyle(color: Colors.black), // Màu chữ
-                ),
-              ),
-            ];
-          },
-        ),
+              ];
+            },
+          ),
         const SizedBox(width: 15),
       ],
     );

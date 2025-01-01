@@ -33,7 +33,7 @@ class _MyTripsScreenState extends State<MyTripsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("My Trips"),
-        backgroundColor: Colors.grey[100],
+        backgroundColor: Colors.grey[200],
         iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: Obx(() {

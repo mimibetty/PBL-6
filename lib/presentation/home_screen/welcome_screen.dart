@@ -291,42 +291,9 @@ class _TravelWelcomeScreenState extends State<WelcomeScreen> {
               color: Colors.black,
             ),
           ),
-          const Icon(
-            Icons.keyboard_arrow_down,
-            size: 30,
-            color: Colors.black26,
-          ),
+         
         ],
       ),
-      actions: [
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(
-              color: Colors.black12,
-            ),
-          ),
-          padding: const EdgeInsets.all(7),
-          child: const Stack(
-            children: [
-              Icon(
-                Iconsax.notification,
-                color: Colors.black,
-                size: 30,
-              ),
-              Positioned(
-                top: 5,
-                right: 5,
-                child: CircleAvatar(
-                  radius: 5,
-                  backgroundColor: Colors.red,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 15),
-      ],
     );
   }
 }

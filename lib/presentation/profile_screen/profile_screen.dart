@@ -42,7 +42,7 @@ class ProfileScreen extends StatelessWidget {
               'Profile',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
-            trailing: Icon(Icons.chevron_right),
+            // trailing: Icon(Icons.chevron_right),
           ),
           Divider(),
 
@@ -50,7 +50,7 @@ class ProfileScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 10.0),
             child: Text(
-              'Rewards',
+              'Our space',
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
           ),
@@ -108,13 +108,7 @@ class ProfileScreen extends StatelessWidget {
           ),
           Divider(),
 
-          ListTile(
-            leading: Icon(Icons.local_offer_outlined),
-            title: Text('Offers'),
-            trailing: Icon(Icons.chevron_right),
-          ),
-          Divider(),
-
+         
           // Settings Section
           Padding(
             padding: const EdgeInsets.only(top: 10.0),
