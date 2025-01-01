@@ -1,22 +1,12 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:travelappflutter/presentation/business_creation_screen/business_post_screen.dart';
+import 'package:get/get.dart';
+import 'package:travelappflutter/presentation/business_creation_screen/controller/business_info_controller.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/models/business_model.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/widget/open_hours_widget.dart';
-import 'package:travelappflutter/presentation/business_creation_screen/widget/price_slide_widget.dart';
-import 'package:travelappflutter/presentation/business_creation_screen/widget/start_rating_widget.dart';
-import 'package:travelappflutter/presentation/business_creation_screen/widget/ticket_requirement_widget.dart';
-import 'package:travelappflutter/presentation/common_views/image_picker_widget.dart';
 import 'package:travelappflutter/presentation/common_views/selected_chip_widget.dart';
-import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
 import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
 
-Business getBusinessById(String id) {
-  return mockBusinessDatabase.firstWhere(
-    (business) => business.id == id,
-  );
-}
 
 class EditBusinessPostScreen extends StatefulWidget {
   @override
@@ -24,6 +14,10 @@ class EditBusinessPostScreen extends StatefulWidget {
 }
 
 class _EditBusinessPostScreenState extends State<EditBusinessPostScreen> {
+  
+  final BusinessInfoController businessController = Get.put(BusinessInfoController());
+  late Business thisBusiness;
+
   String? selectedBusinessType;
   final _formKey = GlobalKey<FormState>();
 
@@ -37,7 +31,7 @@ class _EditBusinessPostScreenState extends State<EditBusinessPostScreen> {
   String name = '';
   String phoneNumber = '';
   String location = '';
-  String website = '';
+  String email = '';
   String openingHours = '';
   String closingHours = '';
   String description = '';
@@ -60,9 +54,7 @@ class _EditBusinessPostScreenState extends State<EditBusinessPostScreen> {
   @override
   void initState() {
     super.initState();
-
-    // Fetch the business details in the initState
-    _fetchBusinessData();
+    thisBusiness = businessController.business.value;
   }
   void _resetForm() {
     setState(() {
@@ -70,7 +62,7 @@ class _EditBusinessPostScreenState extends State<EditBusinessPostScreen> {
       name = '';
       phoneNumber = '';
       location = '';
-      website = '';
+      email = '';
       openingHours = '';
       closingHours = '';
       description = '';
@@ -90,26 +82,7 @@ class _EditBusinessPostScreenState extends State<EditBusinessPostScreen> {
       additionalInfo = '';
     });
   }
-  void _fetchBusinessData() async {
-    var fetchedBusiness = getBusinessById("A1");
 
-    setState(() {
-      businessA1 = fetchedBusiness;
-
-      // Now, set form fields with the fetched business data
-      name = businessA1!.name;
-      phoneNumber = businessA1!.phoneNumber;
-      location = businessA1!.address;
-      website = businessA1!.website;
-      description = businessA1!.description;
-      // selectedBusinessType = businessA1!.type;
-      // selectedHotelFeatures = businessA1!.selectedHotelFeatures ?? [];
-      // selectedRestaurantFeatures = businessA1!.selectedRestaurantFeatures ?? [];
-      // selectedCuisine = businessA1!.selectedCuisine ?? [];
-      starRating = businessA1!.rating as String;
-      // ticketRequired = businessA1!.ticketRequired ?? false;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +116,7 @@ class _EditBusinessPostScreenState extends State<EditBusinessPostScreen> {
                 SizedBox(height: 16.0),
                 _buildTextInput('Location', (value) => location = value),
                 SizedBox(height: 16.0),
-                _buildTextInput('Website', (value) => website = value),
+                _buildTextInput('Email', (value) => email = value),
                 SizedBox(height: 16.0),
                 OpeningHoursInput(
                   onOpeningTimeChanged: (time) {

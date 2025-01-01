@@ -134,7 +134,8 @@ class AppRoutes {
     ),
     GetPage(
       name: businessPostScreen,
-      page: () => BusinessPostScreen(business: Get.arguments),
+      //page: () => BusinessPostScreen(business: Get.arguments),
+      page: () => BusinessPostScreen(),
       binding:
           BusinessCreationBinding(), // Gán Binding nếu bạn sử dụng cho Controller
     ),

@@ -1,7 +1,8 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/business_post_screen.dart';
+import 'package:travelappflutter/presentation/business_creation_screen/controller/business_info_controller.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/models/business_model.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/widget/open_hours_widget.dart';
 import 'package:travelappflutter/presentation/business_creation_screen/widget/price_slide_widget.dart';
@@ -9,7 +10,6 @@ import 'package:travelappflutter/presentation/business_creation_screen/widget/st
 import 'package:travelappflutter/presentation/business_creation_screen/widget/ticket_requirement_widget.dart';
 import 'package:travelappflutter/presentation/common_views/image_picker_widget.dart';
 import 'package:travelappflutter/presentation/common_views/selected_chip_widget.dart';
-import 'package:travelappflutter/presentation/home_screen/controller/home_controller.dart';
 import 'package:travelappflutter/presentation/navigation/custom_bottom_nav_bar.dart';
 
 class CreateBusinessPostScreen extends StatefulWidget {
@@ -17,13 +17,20 @@ class CreateBusinessPostScreen extends StatefulWidget {
   _CreateBusinessPostScreenState createState() =>
       _CreateBusinessPostScreenState();
 }
-Business getBusinessById(String id) {
-  return mockBusinessDatabase.firstWhere(
-    (business) => business.id == id,
-   
-  );
-}
+
+
 class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
+
+  final BusinessInfoController businessController = Get.put(BusinessInfoController());
+  late Business thisBusiness;
+
+  @override
+  void initState() {
+    super.initState();
+    thisBusiness = businessController.business.value;
+  }
+  
+  
   String? selectedBusinessType;
   final _formKey = GlobalKey<FormState>();
 
@@ -31,13 +38,12 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
   final List<String> restaurantFeatures = ["Ăn nhanh", "Giao hàng", "Đặt bàn"];
   final List<String> cuisines = ["Việt Nam", "Trung Quốc", "Nhật Bản"];
   List<File> selectedImages = []; // Danh sách hình ảnh đã chọn
-  
-  Business businessA1 = getBusinessById("A1");
+
 
   String name = '';
   String phoneNumber = '';
   String location = '';
-  String website = '';
+  String email = '';
   String openingHours = '';
   String closingHours = '';
   String description = '';
@@ -69,7 +75,7 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
       name = '';
       phoneNumber = '';
       location = '';
-      website = '';
+      email = '';
       openingHours = '';
       closingHours = '';
       description = '';
@@ -105,7 +111,7 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => BusinessPostScreen(business: businessA1),
+                  builder: (context) => BusinessPostScreen(),
                 ),
               );
             },
@@ -129,7 +135,7 @@ class _CreateBusinessPostScreenState extends State<CreateBusinessPostScreen> {
                 SizedBox(height: 16.0),
                 _buildTextInput('Location', (value) => location = value),
                 SizedBox(height: 16.0),
-                _buildTextInput('Website', (value) => website = value),
+                _buildTextInput('Website', (value) => email = value),
                 SizedBox(height: 16.0),
                 OpeningHoursInput(
                   onOpeningTimeChanged: (time) {

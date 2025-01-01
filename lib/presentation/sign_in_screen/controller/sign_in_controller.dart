@@ -1,4 +1,3 @@
-import 'package:travelappflutter/presentation/profile_screen/controller/profile_controller.dart';
 import 'package:travelappflutter/presentation/sign_in_screen/controller/auth_controller.dart';
 import '/core/app_export.dart';
 import 'package:travelappflutter/presentation/sign_in_screen/models/sign_in_model.dart';

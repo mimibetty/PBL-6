@@ -263,5 +263,4 @@ class ProfileController extends GetxController {
       isLoading.value = false; // Stop loading
     }
   }
-
 }
