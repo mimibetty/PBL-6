@@ -11,7 +11,7 @@ class StarRatingWidget extends StatelessWidget {
     return Row(
       children: [
         Text(
-          'Rating:',
+          'Hotel Class:',
           style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,

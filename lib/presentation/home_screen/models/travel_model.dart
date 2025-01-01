@@ -84,7 +84,7 @@ class Address {
     required this.street,
     required this.ward,
     required this.cityId,
-    required this.id,
+    this.id=0,
   });
 
   factory Address.fromJson(Map<String, dynamic> json) {

@@ -106,4 +106,26 @@ class SimpleDestination {
     required this.imageUrl, // Ensure the image URL is passed
   });
 }
+class City {
+  final int id;
+  final String name;
+  final String description;
+  final List<String> imageUrls;
 
+  City({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.imageUrls,
+  });
+
+  factory City.fromJson(Map<String, dynamic> json) {
+    var imageUrls = (json['images'] as List).map((image) => image['url'] as String).toList();
+    return City(
+      id: json['id'],
+      name: json['name'],
+      description: json['description'],
+      imageUrls: imageUrls,
+    );
+  }
+}
