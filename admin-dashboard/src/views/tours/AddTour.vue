@@ -111,6 +111,7 @@
     await loadCity();
     await loadUsers();
     await fetchDestination();
+    isLoading.value = false;
   });
   
   const addDestination = () => {
