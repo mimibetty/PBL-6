@@ -44,12 +44,15 @@
         <div class="form-group mb-3">
           <label class="form-label">Destinations:</label>
           <div v-for="(destination, index) in currentTour.destination_ids" :key="index" class="input-group mb-2">
-            <select v-model="currentTour.destination_ids[index]" class="form-select" required>
-              <option disabled value="">Select a destination</option>
-              <option v-for="dest in destinations" :key="dest.id" :value="dest.id">
-                {{ dest.name }}
-              </option>
-            </select>
+            <v-select
+              v-model="currentTour.destination_ids[index]"
+              :options="destinations"
+              label="name" 
+              :reduce="dest => dest.id" 
+              placeholder="Search for a destination"
+              class="form-select"
+              required
+            ></v-select>
             <button type="button" @click="removeDestinationUpdate(index)" class="btn btn-danger">-</button>
           </div>
           <button type="button" @click="addDestinationUpdate" class="btn btn-primary mt-2">
