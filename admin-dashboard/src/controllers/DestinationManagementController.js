@@ -80,8 +80,14 @@ export default function () {
   const confirmCreate = async (destination, images) => {
     try {
       const result = await addDestination(destination, images);
-      window.location.assign(`/destinations`);
-      toast.success(`Add Destination successful: ${result.name}`);
+      if (result.success){
+        toast.success(`Add Destination successful: ${result.name}`);
+        setTimeout(() => {
+          window.location.assign(`/destinations`);
+        }, 3000);
+      } else {
+        toast.error("Error add destination");
+      }
     } catch (error) {
       toast.error("Error add destination");
     }
@@ -92,9 +98,15 @@ export default function () {
     image_ids_to_remove
   ) => {
     try {
-      await updateDestinationAPI(destination, new_images, image_ids_to_remove);
-      window.location.assign(`/destinations/${destination.id}`);
-      toast.success("Update Destination successfull");
+      const result =  await updateDestinationAPI(destination, new_images, image_ids_to_remove);
+      if (result.success) {
+        toast.success("Update Destination successfull");
+        setTimeout(() => {
+          window.location.assign(`/destinations/${destination.id}`);
+        }, 3000);
+      } else {
+        toast.error("Error update destination");
+      }
     } catch (error) {
       toast.error("Error update destination");
     }
@@ -132,18 +144,30 @@ export default function () {
 
   const confirmCreateHotel = async (hotel) => {
     try {
-      await addHotel(hotel);
-      window.location.assign(`/destinations/${hotel.id}`);
-      toast.success("Add Hotel successfull");
+      const result =  await addHotel(hotel);
+      if(result.success){
+        toast.success("Create a hotel success");
+        setTimeout(() => {
+          window.location.assign(`/destinations/${hotel.id}`);
+        }, 3000);
+      } else {
+        toast.error("Error add hotel");
+      }
     } catch (error) {
       toast.error("Error add Hotel");
     }
   };
   const confirmUpdateHotel = async (hotel) => {
     try {
-      await updateHotelAPI(hotel);
-      window.location.assign(`/destinations/${hotel.id}`);
-      toast.success("Update Hotel successfull");
+      const result =  await updateHotelAPI(hotel);
+      if (result.success) {
+        toast.success("Update Hotel successfull");
+        setTimeout(() => {
+          window.location.assign(`/destinations/${hotel.id}`);
+        }, 3000);
+      } else {
+        toast.error("Error update Hotel");
+      }
     } catch (error) {
       toast.error("Error update Hotel");
     }
@@ -179,18 +203,31 @@ export default function () {
 
   const confirmCreateRestaurant = async (Restaurant) => {
     try {
-      await addRestaurant(Restaurant);
-      window.location.assign(`/destinations/${Restaurant.id}`);
-      toast.success("Add Restaurant successfull");
+      const result =  await addRestaurant(Restaurant);
+      if (result.success){
+        toast.success(`Add Restaurant successful: ${result.name}`);
+        setTimeout(() => {
+          window.location.assign(`/destinations/${Restaurant.id}`);
+        }, 3000);
+        
+      } else {
+        toast.error("Error to add Restaurant");
+      }
     } catch (error) {
       toast.error("Error to add Restaurant");
     }
   };
   const confirmUpdateRestaurant = async (Restaurant) => {
     try {
-      await updateRestaurantAPI(Restaurant);
-      window.location.assign(`/destinations/${Restaurant.id}`);
-      toast.success("Update Restaurant successfull");
+      const result =  await updateRestaurantAPI(Restaurant);
+      if (result.success) {
+        toast.success("Update Restaurant successfull");
+        setTimeout(() => {
+          window.location.assign(`/destinations/${Restaurant.id}`);
+        }, 3000);
+      } else {
+        toast.error("Error to update Restaurant");
+      }
     } catch (error) {
       toast.error("Error to update Restaurant");
     }

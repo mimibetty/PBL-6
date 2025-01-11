@@ -72,18 +72,26 @@ export default function () {
 
   const confirmCreate = async (tour) => {
     try {
-      await addTour(tour);
-      toast.success("Create a tour success");
-      window.location.assign("tours/${tour.id}");
+      const result =  await addTour(tour);
+      if(result.success){
+        toast.success("Create a tour success");
+        window.location.assign("/tours");
+      } else {
+        toast.error("Error add tour");
+      }
     } catch (error) {
       toast.error("Error add tour");
     }
   };
   const confirmUpdate = async (tour) => {
     try {
-      await updateTourAPI(tour);
-      toast.success("Update a tour success");
-      window.location.assign("tours/${tour.id}");
+      const result =  await updateTourAPI(tour);
+      if (result.success) {
+        toast.success("Update a tour success");
+        window.location.assign("/tours");
+      } else {
+        toast.error("Error update tour");
+      }
     } catch (error) {
       toast.error("Error update tour");
     }

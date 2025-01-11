@@ -45,7 +45,7 @@
           <label class="form-label">Destinations:</label>
           <div v-for="(destination, index) in tour.destination_ids" :key="index" class="input-group mb-2">
             <v-select
-              v-model="currentTour.destination_ids[index]"
+              v-model="tour.destination_ids[index]"
               :options="destinations"
               label="name" 
               :reduce="dest => dest.id" 

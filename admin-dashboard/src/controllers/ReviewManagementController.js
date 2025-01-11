@@ -80,8 +80,12 @@ export default function () {
   const confirmCreate = async (review, images) => {
     try {
       const result = await addReview(review, images);
-      toast.success(`Add Destination successful: ${result.name}`);
-      window.location.assign(`/reviews/:${review.destination_id}`);
+      if (result.success) {
+        toast.success(`Add Review successful: ${result.name}`);
+        window.location.assign(`/reviews/:${review.destination_id}`);
+      } else {
+        toast.error("Error add review");
+      }
     } catch (error) {
       toast.error("Error add destination");
     }
@@ -92,9 +96,13 @@ export default function () {
     image_ids_to_remove
   ) => {
     try {
-      await updateReviewAPI(review, new_images, image_ids_to_remove);
-      toast.success("Update Review successfull");
-      window.location.assign(`/reviews/:${review.destination_id}`);
+      const result =  await updateReviewAPI(review, new_images, image_ids_to_remove);
+      if (result.success) {
+        toast.success("Update Review successfull");
+        window.location.assign(`/reviews/:${review.destination_id}`);
+      } else {
+        toast.error("Error update review");
+      }
     } catch (error) {
       toast.error("Error update review");
     }

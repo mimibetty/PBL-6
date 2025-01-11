@@ -6,7 +6,7 @@
     </div>
 
     <!-- Form Container -->
-    <div class="form-container">
+    <div v-else class="form-container">
       <form @submit.prevent="submitUpdateTour" class="form-style">
         <!-- Tour Name -->
         <div class="form-floating mb-3">
