@@ -1,30 +1,32 @@
 <template>
-    <div class="signup-container">
-      <form @submit.prevent="handleSignUp">
-        
-        <!-- Sign up Title -->
-        <h2 class="title">Sign up</h2>
-        
-        <!-- Sign up form -->
-        <input type="text" v-model="username"
-          placeholder="Username" required />
-        <input type="email" v-model="email"
-          placeholder="Email" required/>
-          <input type="password" v-model="password"
-          placeholder="Password" required/>
-        <input type="password" v-model="password_confirm"
-          placeholder="Confirm Password" required />
+  <div class="signup-container">
+  </div>
+  <div class="container container-fluid">
+    <form @submit.prevent="handleSignUp">
+      
+      <!-- Sign up Title -->
+      <h2 class="title">Sign up</h2>
+      
+      <!-- Sign up form -->
+      <input type="text" v-model="username"
+        placeholder="Username" required />
+      <input type="email" v-model="email"
+        placeholder="Email" required/>
+        <input type="password" v-model="password"
+        placeholder="Password" required/>
+      <input type="password" v-model="password_confirm"
+        placeholder="Confirm Password" required />
 
-        <!-- Sign up button -->
-        <button type="submit">Sign up</button>
+      <!-- Sign up button -->
+      <button type="submit">Sign up</button>
 
-        <!-- Options -->
-        <p>
-          Already have an account? <router-link to="/login">Sign in here</router-link>
-        </p>
-    
-      </form>
-    </div>
+      <!-- Options -->
+      <h5 style="font-family: 'roboto'; color: #EDF6F9; padding-top: 10px;">
+        Already have an account? <router-link class="sign-in-link" to="/login">Sign in here</router-link>
+      </h5>
+  
+    </form>
+  </div>
   </template>
   
   <script>
@@ -47,12 +49,7 @@
           password: this.password,
           password_confirm: this.password_confirm
         });
-        const result = signUpVM.validate();
-        if (result.success) {
-          alert('Sign up successfully');
-        } else {
-          alert(result.message);
-        }
+        signUpVM.validate();
       },
     },
   };
@@ -66,6 +63,7 @@ html, body {
 }
   
 .signup-container {
+  font-family: 'Roboto';
   position: absolute;
   top : 0;
   left : 0;
@@ -91,7 +89,6 @@ html, body {
   right: 0;
   bottom: 0;
   background-color: rgba(39, 45, 45, 0.48);
-  z-index: 1; /* Đặt lớp phủ lên trên hình nền */
 }
 
 .signup-container > * {
@@ -100,8 +97,36 @@ html, body {
   color: #EDF6F9; /* Màu chữ */
 }
 
+.container {
+  position: absolute;
+  top: calc(10% + 10px); /* Đảm bảo khoảng cách tương đối với viewport */
+  left: 20%; /* Cách phải 20% */
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+/* Responsive cho màn hình nhỏ */
+@media (max-width: 768px) {
+  .container {
+    top: 50%; /* Đưa form vào giữa chiều dọc */
+    left: 50%; /* Đưa form vào giữa chiều ngang */
+    right: auto; /* Xóa định nghĩa right */
+    transform: translate(-50%, -50%); /* Căn chính xác giữa màn hình */
+    max-width: 90%; /* Đảm bảo form không vượt quá chiều ngang màn hình */
+  }
+}
+
+/* Điều chỉnh cho màn hình rất lớn hoặc scale cao */
+@media (min-height: 1400px) and (min-width: 2560px) {
+  .container {
+    top: calc(10% + 50px); /* Giảm khoảng cách top để phù hợp với scale */
+    right: 15%; /* Cách phải 15% để giữ sự cân đối */
+  }
+}
+
 .title {
-  color: #13357B; /* Blue color for the title */
+  color: #EDF6F9; /* Blue color for the title */
   font-weight: bold;
   margin-bottom: 10px;
 }
@@ -173,6 +198,27 @@ a {
   color: #fff;
   text-decoration: underline;
   cursor: pointer;
+}
+.sign-in-link{
+  font-size:20px;
+  color: #EDF6F9;
+  text-decoration: underline;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  margin: 10px 10px;
+  padding: 10px 10px;
+  border-radius: 10px;
+}
+.sign-in-link:hover{
+  color: #13357B;
+  text-decoration: underline;
+  cursor: pointer;
+  background-color: #caf0f8;
+  border: none;
+  margin: 10px 10;
+  padding: 10px 10px;
+  border-radius: 10px;
 }
 </style>
   

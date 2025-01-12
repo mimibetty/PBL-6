@@ -1,147 +1,216 @@
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { getDestinationById } from '../models/destinationModel.js';
+import { getReviewByDestinationId } from '../models/ReviewModel.js';
+import { getUserById } from '../models/UserModel.js';
+import { fetchCityDetails } from '../models/CityModel'; 
+import SignInModel from '../models/SignInModel';
+import generateViewModel from './generate_ratingViewModel'; 
 
-import { RatingModel, mockComments, ImageModel, descriptionModel } from '../models/detailLocation_AttractionModel.js';
+export default function(destinationID) {
+  class DescriptionModel {
+    constructor(fullDescription) {
+        this.fullDescription = fullDescription;
+    }
 
-// Khởi tạo dữ liệu đánh giá
-const ratingModel = new RatingModel(3422, 2122, 5622, 2100, 300);
+    getTruncatedDescription() {
+        return this.fullDescription.split(' ').slice(0, 40).join(' ') + '...';
+    }
 
-const isDropdownVisible= ref(false)
-const isMenuVisible = ref(false)
-const isReadMore = ref(false);
+    getDescription(isReadMore) {
+        return isReadMore.value ? this.fullDescription : this.getTruncatedDescription();
+    }
+}
 
-const truncatedDescription = ref(descriptionModel.getTruncatedDescription());
+  // Khởi tạo dữ liệu đánh giá
+  const isLoading = ref(false);
+  const isDropdownVisible = ref(false);
+  const isMenuVisible = ref(false);
+  const isReadMore = ref(false);
+  const destination = ref(null);
+  const descriptionModel = ref(null);
+  const truncatedDescription = ref('');
+  const images = ref([]);
+  const commentList = ref([]);
+  const city = ref(null);
+  const canReview = ref(true);
+  const { fetchRatingDistribution, ratings} = generateViewModel();
 
-  const toggleReadMore = () => {
-    isReadMore.value = !isReadMore.value;
-    truncatedDescription.value = descriptionModel.getDescription(isReadMore);
+  const user = ref(null);
+  const token = sessionStorage.getItem('access_token');
+  const loadUser = async () => {
+    const signInModel = new SignInModel("", "");
+    try{
+      if(token){
+        const userResult = await signInModel.fetchCurrentUser(token);
+        if(userResult.success){
+          user.value = userResult.user;
+        } else {
+        console.error('Cannot get user:', error);
+        }
+      }
+      
+    } catch (error) {
+      console.error('An error occurred during authentication:', error);
+      return { success: false, message: error.message || 'An error occurred' };
+    }
+    
+  }
+
+  const loadDestination = async () => {
+    try {
+      destination.value = await getDestinationById(destinationID);
+      if (destination.value && destination.value.description) {
+        // Khởi tạo DescriptionModel với mô tả đầy đủ lấy từ API
+        descriptionModel.value = new DescriptionModel(destination.value.description);
+        truncatedDescription.value = descriptionModel.value.getTruncatedDescription();
+      
+      }
+      images.value = destination.value.images;
+      city.value = await fetchCityDetails(destination.value.address.city_id);
+      isLoading.value = true;
+    } catch (error) {
+      console.error("Có lỗi xảy ra khi lấy dữ liệu destination:", error);
+    }
   };
-
-const toggleDropdown = () => {
-  isDropdownVisible.value = !isDropdownVisible.value;
-  console.log(isDropdownVisible);
-}
-
-const toggleMenu = () => {
-  isMenuVisible.value = !isMenuVisible.value;
-  console.log(isMenuVisible);
-}
-
-// Tạo danh sách sao
-const generateStars = (rating) => {
-  const fullStar = new URL('@/assets/star_full.svg', import.meta.url).href;
-  const halfStar = new URL('@/assets/star_half.svg', import.meta.url).href;
-  const emptyStar = new URL('@/assets/star_none.svg', import.meta.url).href;
-
-  let stars = [];
-  for (let i = 1; i <= 5; i++) {
-    if (rating >= i) {
-      stars.push(fullStar);
-    } else if ((rating > i - 1 && rating - i + 1 >= 0.5) && rating < i) {
-      stars.push(halfStar);
-    } else {
-      stars.push(emptyStar);
+  const getAllcomments = async () => {
+    if (!destination.value || !destination.value.id) {
+      console.error("Không thể lấy nhận xét: destination chưa được tải.");
+      return;
     }
-  }
-  return stars;
-};
-
-// Tạo danh sách hình tròn
-const generateCircle = (rating) => {
-  const fullCircle = new URL('@/assets/circle-full.svg', import.meta.url).href;
-  const halfCircle = new URL('@/assets/circle-half.svg', import.meta.url).href;
-  const emptyCircle = new URL('@/assets/circle-none.svg', import.meta.url).href;
-
-  let circles = [];
-  for (let i = 1; i <= 5; i++) {
-    if (rating >= i) {
-      circles.push(fullCircle);
-    } else if ((rating > i - 1 && rating - i + 1 >= 0.5) && rating < i) {
-      circles.push(halfCircle);
-    } else {
-      circles.push(emptyCircle);
-    }
-  }
-  return circles;
-};
-
-// Tính toán tỷ lệ phần trăm và rating tổng
-const stars = ref(generateStars(ratingModel.getAverageRating()));
-const circles = ref(generateCircle(ratingModel.getAverageRating()));
-
-// Tính tỷ lệ phần trăm cho mỗi loại đánh giá
-const ratings = {
-  'Excellent': {
-    count: ratingModel.excellent,
-    percentage: ratingModel.getPercentage(ratingModel.excellent),
-  },
-  'Very Good': {
-    count: ratingModel.veryGood,
-    percentage: ratingModel.getPercentage(ratingModel.veryGood),
-  },
-  'Medium': {
-    count: ratingModel.medium,
-    percentage: ratingModel.getPercentage(ratingModel.medium),
-  },
-  'Bad': {
-    count: ratingModel.bad,
-    percentage: ratingModel.getPercentage(ratingModel.bad),
-  },
-  'Terrible': {
-    count: ratingModel.terrible,
-    percentage: ratingModel.getPercentage(ratingModel.terrible),
-  },
-};
-const rating = ref(ratingModel.getAverageRating());
-const totalRating = ref(ratingModel.getTotal());
-// Danh sách bình luận
-const commentList = ref(mockComments);
-const images = ref([]);
-const fetchImages = async () => {
-  images.value = await ImageModel.fetchImages();
-};
-
-const currentIndex = ref(0);
-
-  const currentImage = computed(() => {
-    // Kiểm tra xem images có rỗng hay currentIndex nằm ngoài giới hạn không
-    if (!images.value.length || currentIndex.value < 0 || currentIndex.value >= images.value.length) {
-      return null; // Hoặc một giá trị mặc định, ví dụ: '/cities/default.jpg'
-    }
-    return images.value[currentIndex.value].imageUrl;
-  });
-
-  const nextImage = () => {
-    if (images.value.length) {  // Kiểm tra images không rỗng
-      currentIndex.value = (currentIndex.value + 1) % images.value.length;
+  
+    try {
+      console.log(destination.value.id);
+      commentList.value = await getReviewByDestinationId(destination.value.id);
+    } catch (error) {
+      console.error("Có lỗi xảy ra khi lấy nhận xét:", error);
     }
   };
   
+  const loadUsersForComments = async () => {
+    if (commentList.value.length === 0) {
+      console.warn("Danh sách nhận xét trống, không thể tải thông tin người dùng.");
+      return;
+    }
+  
+    const userSet = new Set(); // Dùng Set để tránh gọi lại API cho các user_id trùng nhau
+    try {
+      commentList.value.forEach(comment => {
+        if (comment.user_id) {
+          userSet.add(comment.user_id);
+          if(user.value && comment.user_id == user.value.id){
+            canReview.value = false;
+          }
+      }
+      });
+  
+      const userPromises = Array.from(userSet).map(userID => getUserById(userID));
+      const userResults = await Promise.all(userPromises);
+  
+      const userMap = new Map();
+      userResults.forEach(user => {
+        if (user && user.id) {
+          userMap.set(user.id, user);
+        }
+      });
+  
+      commentList.value.forEach(comment => {
+        const user = userMap.get(comment.user_id);
+        if (user) {
+          comment.user = user; // Thêm thông tin user vào mỗi comment
+        }
+      });
+  
+      console.log("Danh sách nhận xét với thông tin người dùng:", commentList.value);
+    } catch (error) {
+      console.error("Có lỗi xảy ra khi tải thông tin người dùng:", error);
+    }
+  };
+  
+  const initializePage = async () => {
+    try {
+      await loadDestination();      // Đợi loadRestaurant hoàn tất
+      await getAllcomments();      // Sau đó gọi getAllcomments
+      await loadUsersForComments(); // Cuối cùng là loadUsersForComments
+      await fetchRatingDistribution(destination.value.id);
+  
+      isLoading.value = true; // Chuyển trạng thái sang loaded khi hoàn thành
+    } catch (error) {
+      console.error("Có lỗi xảy ra khi tải trang:", error);
+    }
+  };
+  loadUser();
+  initializePage();
+  
+  
+
+  const toggleReadMore = () => {
+    isReadMore.value = !isReadMore.value;
+    truncatedDescription.value = descriptionModel.value.getDescription(isReadMore);
+  };
+
+  const toggleDropdown = () => {
+    isDropdownVisible.value = !isDropdownVisible.value;
+    console.log(isDropdownVisible);
+  };
+
+  const toggleMenu = () => {
+    isMenuVisible.value = !isMenuVisible.value;
+    console.log(isMenuVisible);
+  };
+
+  // Danh sách bình luận
+  
+
+
+  // Hàm lấy bình luận
+  
+
+  // Chuyển đổi hình ảnh
+  const currentIndex = ref(0);
+
+  const currentImage = computed(() => {
+    if (!images.value.length || currentIndex.value < 0 || currentIndex.value >= images.value.length) {
+      return null;
+    }
+    console.log("Current image: ", images.value[currentIndex.value].url);
+    return images.value[currentIndex.value].url;
+  });
+
+  const nextImage = () => {
+    if (images.value.length) {
+      currentIndex.value = (currentIndex.value + 1) % images.value.length;
+    }
+  };
+
   const prevImage = () => {
-    if (images.value.length) { // Kiểm tra images không rỗng
+    if (images.value.length) {
       currentIndex.value = (currentIndex.value - 1 + images.value.length) % images.value.length;
     }
   };
 
-fetchImages();
+  // Fetch dữ liệu ảnh và bình luận
+  
 
-export {
-  isDropdownVisible,
-  toggleDropdown,
-  totalRating,
-  stars,
-  currentImage,
-  nextImage,
-  prevImage,
-  circles,
-  rating,
-  ratings,
-  commentList,
-  generateStars,
-  generateCircle,
-  images,
-  isMenuVisible,
-  toggleMenu,
-  truncatedDescription,
-  toggleReadMore,
-  isReadMore,
-};
+  return {
+    isDropdownVisible,
+    toggleDropdown,
+    currentImage,
+    nextImage,
+    prevImage,
+    commentList,
+    images,
+    isMenuVisible,
+    toggleMenu,
+    truncatedDescription,
+    toggleReadMore,
+    isReadMore,
+    destination,
+    city,
+    isLoading,
+    user,
+    token,
+    ratings,
+    canReview,
+  };
+}
+

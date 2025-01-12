@@ -1,4 +1,5 @@
 import SignInModel from '../models/SignInModel';
+import router from '../../router';
 
 class SignInViewModel {
   constructor({ username, password, rememberMe }) {
@@ -9,45 +10,46 @@ class SignInViewModel {
 
   async validate() {
     const signInModel = new SignInModel(this.username, this.password);
-
+    
     try {
-      // Send API request for authentication
       const result = await signInModel.authenticate();
 
-      // Log the result for debugging purposes
-      console.log('Authentication result:', result);
-
-      // Handle failed authentication
       if (!result.success) {
-        console.error('Login failed: ', result.message);
-        alert('Login failed: ' + result.message);  // Display error
+        alert(`Login failed: ${result.message}`);
         return { success: false, message: result.message };
       }
 
-      // Handle successful authentication with a token
       if (result.token) {
-        console.log('Token received:', result.token); // Log token for debugging
         if (this.rememberMe) {
           localStorage.setItem('access_token', result.token);
         } else {
           sessionStorage.setItem('access_token', result.token);
         }
 
-        // Display success message
-        alert('Login successful! Token: ' + result.token);
-        return { success: true, token: result.token };
+        // Fetch user data with the token
+        const userResult = await signInModel.fetchCurrentUser(result.token);
+
+        if (userResult.success) {
+          console.log('User role:', userResult.user);
+          sessionStorage.setItem('role', userResult.user.role);
+          if(userResult.user.role === 'business') {
+            router.push('/Business');
+          }
+          else{
+            router.push('/home');
+          }
+        } else {
+          console.error('Failed to fetch user data:', userResult.message);
+        }
+
+        return { success: true };
       } else {
-        // Handle case where the token is missing
-        console.error('Authentication succeeded but token is missing.');
-        alert('Authentication succeeded but token is missing.');
+        console.error('Token not received.');
         return { success: false, message: 'Token not received' };
       }
-
     } catch (error) {
-      // Handle any unexpected errors (e.g., network issues, server errors)
       console.error('An error occurred during authentication:', error);
-      alert('An error occurred: ' + error.message);
-      return { success: false, message: 'An error occurred' };
+      return { success: false, message: error.message || 'An error occurred' };
     }
   }
 }

@@ -1,5 +1,8 @@
 <template>
   <div class="login-container">
+
+  </div>
+  <div class="container container-fluid row-cols-1" style="z-index: 1000;">
     <form @submit.prevent="handleSignIn">
       
       <!-- Sign in Title -->
@@ -7,21 +10,13 @@
       <p>Have an account?</p>
       
       <!-- Sign in form -->
-      <input type="text" v-model="username"
-        placeholder="Username" required />
+      <input type="email" v-model="username"
+        placeholder="Email" required />
       <input type="password" v-model="password"
         placeholder="Password" required />
 
       <!-- Sign in button -->
       <button type="submit">Sign in</button>
-
-      <!-- Google Sign in -->
-      <div class="google-signin-container">
-        <img src="@/assets/google_logo.svg" alt="Google Logo" class="google-logo"/>
-        <button class="google-signin">
-          Join With Google
-        </button>
-      </div>
 
       <!-- Options -->
       <div class="options">
@@ -30,11 +25,11 @@
           <span class="checkbox"></span>
           Remember me
         </label>
-        <a href="#">Forgot password</a>
+        <button class="forgot-password">Forgot password</button>
       </div>
-      <h4>
-        Don’t have an account? <router-link to="/sign-up">Sign up here</router-link>
-      </h4>
+      <h5 style="color: #EDF6F9">
+        Don’t have an account? <router-link class="sign-up-link" to="/sign-up">Sign up here</router-link>
+      </h5>
     </form>
   </div>
 </template>
@@ -57,12 +52,7 @@ export default {
         password: this.password,
         rememberMe: this.rememberMe,
       });
-      const result = signInVM.validate();
-      if (result.success) {
-        alert('Sign in successfully');
-      } else {
-        alert(result.message);
-      }
+      signInVM.validate();
     },
   },
 };
@@ -83,6 +73,7 @@ html, body {
 }
 
 .login-container {
+  font-family: 'Roboto';
   position: absolute;
   top : 0;
   left : 0;
@@ -93,12 +84,9 @@ html, body {
   background-image: url('@/assets/images/frame_bg.png');
   background-size: cover;
   background-position: center 0%;
-  height: 100vh;
-  width: 100vw;
-  max-width: 100vw;
-  padding: 50px;
-  text-align: center;
-  
+  height: 100%;
+  width: 100%;
+  text-align: center;  
 }
 
 .login-container::before {
@@ -109,17 +97,47 @@ html, body {
   right: 0;
   bottom: 0;
   background-color: rgba(39, 45, 45, 0.48);
-  z-index: 1;
 }
 
 .login-container > * {
-  position: relative;
+  position: absolute;
+  top: 0px;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 2;
   color: #EDF6F9;
 }
 
+.container {
+  position: absolute;
+  top: calc(10% + 10px); /* Đảm bảo khoảng cách tương đối với viewport */
+  left: 20%; /* Cách phải 20% */
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+/* Responsive cho màn hình nhỏ */
+@media (max-width: 768px) {
+  .container {
+    top: 50%; /* Đưa form vào giữa chiều dọc */
+    left: 50%; /* Đưa form vào giữa chiều ngang */
+    right: auto; /* Xóa định nghĩa right */
+    transform: translate(-50%, -50%); /* Căn chính xác giữa màn hình */
+    max-width: 90%; /* Đảm bảo form không vượt quá chiều ngang màn hình */
+  }
+}
+
+/* Điều chỉnh cho màn hình rất lớn hoặc scale cao */
+@media (min-height: 1400px) and (min-width: 2560px) {
+  .container {
+    top: calc(10% + 50px); /* Giảm khoảng cách top để phù hợp với scale */
+    right: 15%; /* Cách phải 15% để giữ sự cân đối */
+  }
+}
+
 .title {
-  color: #13357B;
+  color: #EDF6F9;
   font-weight: bold;
 }
 
@@ -129,6 +147,7 @@ form {
   width: 100%;
   max-width: 400px;
   margin: 0 auto;
+  z-index: 0;
 }
 
 input {
@@ -205,7 +224,7 @@ button:pressed {
   position: absolute;
   width: 30px;
   height: 30px;
-  margin-left: 3px;
+  margin-left: 6px;
 }
 
 .options {
@@ -221,6 +240,7 @@ button:pressed {
 .custom-checkbox {
   display: flex; /* Sử dụng Flexbox để căn chỉnh checkbox và text */
   align-items: center; /* Căn giữa checkbox và văn bản theo chiều dọc */
+  color: #EDF6F9
 }
 
 input[type="checkbox"] {
@@ -266,40 +286,42 @@ a {
   cursor: pointer;
 }
 p {
+  color: #EDF6F9;
+}
+
+.forgot-password {
+  color: #EDF6F9;
+  text-decoration: underline;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  margin: 10px 0;
+  padding: 10px 0px;
+  border-radius: 15px;
+  width :150px;
+}
+.forgot-password:hover{
+  border-radius: 15px;
+}
+.sign-up-link{
+  font-size:20px;
+  color: #EDF6F9;
+  text-decoration: underline;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  margin: 10px 10px;
+  padding: 10px 10px;
+  border-radius: 10px;
+}
+.sign-up-link:hover{
   color: #13357B;
-}
-
-
-/* Media Queries for Responsiveness */
-@media (max-width: 768px) {
-  .login-container {
-    padding: 10px;
-  }
-
-  .title {
-    font-size: 1.5rem;
-  }
-
-  input, button {
-    font-size: 1.05rem;
-  }
-
-  .google-signin {
-    font-size: 1.05rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .title {
-    font-size: 1.2rem;
-  }
-
-  input, button {
-    font-size: 0.8rem;
-  }
-
-  .google-signin {
-    font-size: 0.8rem;
-  }
+  text-decoration: underline;
+  cursor: pointer;
+  background-color: #caf0f8;
+  border: none;
+  margin: 10px 10;
+  padding: 10px 10px;
+  border-radius: 10px;
 }
 </style>

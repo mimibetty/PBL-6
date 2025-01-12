@@ -1,4 +1,5 @@
 import SignUpModel from '../models/SignUpModel';
+import router from '../../router';
 
 class SignUpViewModel {
   constructor({ username, email, password, password_confirm }) {
@@ -32,6 +33,7 @@ class SignUpViewModel {
 
           // Display success message
           alert('Register complete, congratulations to ' + result.name + '!');
+          router.push('/login');
           return { success: true, name: result.name };
         } else {
           // Handle case where the name is missing

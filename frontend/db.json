@@ -219,89 +219,133 @@
       "id": 1,
       "name": "Ho Tay WaterPark",
       "tag": ["WaterPark", "Park"],
+      "location": "Ho chi minh",
       "reviewNumber": 1000,
       "rating": 3.3,
-      "imageUrl": "/cities/binhduong.jpg"
+      "description": "A fantastic family destination, Ho Tay WaterPark offers thrilling water slides and relaxing pools. With lush greenery surrounding the park, it's an ideal spot for a refreshing day out. Don't miss the wave pool for some fun!",
+      "imageUrl": "/cities/binhduong.jpg",
+      "price": "From VND 300.000",
+      "destinationType":"Attraction"
     },
     {
       "id": 2,
       "name": "Vinpearl Oceanpark",
       "tag": ["Hotel", "Park", "WaterPark"],
+      "location": "Ha Noi",
       "reviewNumber": 800,
       "rating": 4.3,
-      "imageUrl": "/cities/caobang.jpg"
+      "description": "This vibrant water park features exciting attractions and shows. From lazy rivers to thrilling rides, there's something for everyone. The clean facilities and friendly staff enhance the overall experience, making it a must-visit.",
+      "imageUrl": "/cities/caobang.jpg",
+      "price": "From USD 25",
+      "destinationType":"Hotel"
     },
     {
       "id": 3,
       "name": "Bảo tàng quốc gia",
       "tag": ["Museum"],
+      "location": "Ho chi minh",
       "reviewNumber": 1200,
       "rating": 4.8,
-      "imageUrl": "/cities/daklak.jpg"
+      "description": "The National Museum showcases Vietnam's rich history and culture. Its diverse exhibits, including ancient artifacts and artworks, provide a captivating insight into the nation's heritage. A perfect spot for history enthusiasts!",
+      "imageUrl": "/cities/daklak.jpg",
+      "price": "From VND 50.000",
+      "destinationType":"Attraction"
     },
     {
       "id": 4,
       "name": "Bitexco",
       "tag": ["Market", "F&B"],
+      "location": "Thua Thien Hue",
       "reviewNumber": 1500,
       "rating": 4.7,
-      "imageUrl": "/cities/dalat.jpg"
+      "description": "The Bitexco Financial Tower is an architectural marvel. Its sky deck offers breathtaking views of the city skyline. Enjoy dining and shopping within the building, making it a great place to visit for both tourists and locals.",
+      "imageUrl": "/cities/dalat.jpg",
+      "price": "From VND 500.000",
+      "destinationType":"Restaurant"
     },
     {
       "id": 5,
       "name": "King BBQ",
       "tag": ["F&B"],
+      "location": "Ho chi minh",
       "reviewNumber": 2000,
       "rating": 5.0,
-      "imageUrl": "/cities/danang.jpg"
+      "description": "King BBQ offers a delightful Korean dining experience with a wide range of grilled meats and side dishes. The cozy atmosphere and attentive service make it an enjoyable place to gather with friends and family.",
+      "imageUrl": "/cities/danang.jpg",
+      "price": "From USD 100",
+      "destinationType":"Restaurant"
     },
     {
       "id": 6,
       "name": "Phúc Long Coffee & Tea",
       "tag": ["F&B"],
+      "location": "Hai Phong",
       "reviewNumber": 950,
       "rating": 4.0,
-      "imageUrl": "/cities/hagiang.jpg"
+      "description": "A popular spot for coffee lovers, Phuc Long serves delicious beverages and light snacks. The relaxing ambiance and friendly staff create a perfect environment for socializing or studying.",
+      "imageUrl": "/cities/hagiang.jpg",
+      "price": "From VND 5.000.000",
+      "destinationType":"Restaurant"
     },
     {
       "id": 7,
       "name": "Rạp chiếu phim quốc gia",
       "tag": ["F&B", "Movie", "Museum"],
+      "location": "Can Tho",
       "reviewNumber": 1800,
       "rating": 4.5,
-      "imageUrl": "/cities/hanoi.jpg"
+      "description": "The National Cinema is a great venue for movie lovers. With comfortable seating and a wide selection of films, it's an ideal place to catch the latest releases. The ticket prices are also quite reasonable!",
+      "imageUrl": "/cities/hanoi.jpg",
+      "price": "From USD 2.50",
+      "destinationType":"Place"
     },
     {
       "id": 8,
       "name": "Bảo tàng du lịch quốc gia",
       "tag": ["Museum"],
+      "location": "Ho chi minh",
       "reviewNumber": 1100,
       "rating": 4.6,
-      "imageUrl": "/cities/laocai.jpg"
+      "description": "This museum offers a fascinating exploration of Vietnam's tourism industry. Engaging displays and informative exhibits make it a valuable stop for anyone interested in the country's travel culture and heritage.",
+      "imageUrl": "/cities/laocai.jpg",
+      "price": "Free for all",
+      "destinationType":"Place"
     },
     {
       "id": 9,
       "name": "CGV",
       "tag": ["Entertainment", "F&B"],
+      "location": "Bac Giang",
       "reviewNumber": 1400,
       "rating": 4.7,
-      "imageUrl": "/cities/khanhhoa.jpg"
+      "description": "CGV cinemas provide a premium movie-watching experience with state-of-the-art screens and sound systems. The comfortable seating and variety of films cater to all audiences, making it a favorite among moviegoers.",
+      "imageUrl": "/cities/khanhhoa.jpg",
+      "price": "From VND 100.000",
+      "destinationType":"Restaurant"
     },
     {
       "id": 10,
       "name": "Jump Area",
       "tag": ["Entertainment"],
+      "location": "Da Nang",
       "reviewNumber": 900,
       "rating": 4.4,
-      "imageUrl": "/cities/nghean.jpg"
+      "description": "Jump Area is an exciting trampoline park that promises hours of fun for all ages. The various activities, from dodgeball to foam pits, create an exhilarating environment for friends and family to enjoy together",
+      "imageUrl": "/cities/nghean.jpg",
+      "price": "From VND 150.000",
+      "destinationType":"Place"
     },
     {
       "id": 11,
-      "name": "Bãi biển Quảng Nimh",
+      "name": "Bãi biển Quảng Ninh",
       "tag": ["Entertainment", "Beach"],
+      "location": "Ho chi minh",
       "reviewNumber": 1300,
       "rating": 4.8,
-      "imageUrl": "/cities/thuathienhue.jpg"
+      "description": "Quang Ninh Beach offers stunning views and a relaxing atmosphere. The soft sand and gentle waves make it perfect for sunbathing or swimming. A great escape from the city's hustle and bustle!",
+      "imageUrl": "/cities/thuathienhue.jpg",
+      "price": "Free for all",
+      "destinationType":"Place"
     }
   ],
   "images":[
@@ -335,15 +379,27 @@
     },
     {
       "id": 8,
-      "imageUrl": "/cities/laocai.jpg"
+      "imageUrl": "/cities/thuathienhue.jpg"
     },
     {
       "id": 9,
-      "imageUrl": "/cities/khanhhoa.jpg"
+      "imageUrl": "/cities/tphochiminh.jpg"
     },
     {
       "id": 10,
       "imageUrl": "/cities/nghean.jpg"
+    }
+  ],
+  "companys": [
+    {
+      "id": 1,
+      "name": "Vinpearl",
+      "logo": "/image/company/Vinpearl/logo/logo_vinpearl.svg" 
+    },
+    {
+      "id": 2,
+      "name": "Helio",
+      "logo": "/image/company/Helio/logo/logo_helio.png" 
     }
   ]
 }
