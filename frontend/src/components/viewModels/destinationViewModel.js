@@ -57,7 +57,7 @@ export default function (cityId) {
 
       // Phân loại dữ liệu
       destinations.value = place.filter(destination => destination.hotel_id === null && destination.restaurant_id === null);
-      hotels.value = place.filter(destination => destination.hotel_id !== null);
+      hotels.value = place.filter(destination => destination.hotel_id !== null && destination.restaurant_id === null);
       restaurants.value = place.filter(destination => destination.restaurant_id !== null);
       
     } catch (error) {
